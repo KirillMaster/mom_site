@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://angelamoiseenko.ru/sitemap.xml
+
+# Disallow admin area
+Disallow: /admin/
+Disallow: /api/
+
+# Crawl-delay
+Crawl-delay: 1 

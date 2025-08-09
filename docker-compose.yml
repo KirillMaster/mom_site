@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: mom_site_postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-mom_site_db}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # - ./backend/postgres/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf # Commented out due to potential issues
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-mom_site_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mom_site_network
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mom_site_api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=password
+      - JWT__Secret=${JWT_SECRET:-your-super-secret-key-here}
+      - JWT__Issuer=${JWT_ISSUER:-mom-site}
+      - JWT__Audience=${JWT_AUDIENCE:-mom-site}
+      - AdminPassword=${ADMIN_PASSWORD:-admin}
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    volumes:
+      - ./backend/uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["dotnet", "ef", "database", "update"]
+    networks:
+      - mom_site_network
+    
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: mom_site_frontend
+    environment:
+      - NEXT_PUBLIC_API_URL=http://mom_site_api:5000
+    ports:
+      - "3000:3000"
+    networks:
+      - mom_site_network
+
+volumes:
+  postgres_data:
+
+networks:
+  mom_site_network:
