@@ -5,8 +5,40 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { getImageUrl } from '@/hooks/useApi';
 import { HomeData } from '@/lib/api';
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+          infinite: true,
+          dots: true
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          initialSlide: 1
+        }
+      }
+    ]
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero Banner - Full Screen */}
@@ -72,35 +104,35 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
             viewport={{ once: true }}
             className="text-4xl md:text-5xl font-serif font-bold mb-12 text-gradient"
           >
-            Избранные работы
+                        Исследуйте мою галерею
+
           </motion.h2>
 
           {homeData.artworks && homeData.artworks.length > 0 ? (
             <div className="relative">
-              {/* Carousel implementation */}
-              {/* For simplicity, let's just display them in a grid for now,
-                  and then implement actual carousel logic if needed.
-                  This ensures SSR works and images are visible. */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              <Slider {...settings}>
                 {homeData.artworks.map((artwork, index) => (
-                  <motion.div
-                    key={artwork.id}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    className="card p-4"
-                  >
-                    <img
-                      src={getImageUrl(artwork.imagePath)}
-                      alt={artwork.title}
-                      className="w-full h-48 object-cover rounded-lg mb-4"
-                    />
-                    <h3 className="text-lg font-semibold text-gray-900">{artwork.title}</h3>
-                    <p className="text-sm text-gray-600">{artwork.category?.name}</p>
-                  </motion.div>
+                  <div key={artwork.id} className="px-2">
+                    <Link href="/gallery">
+                      <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: index * 0.1 }}
+                        viewport={{ once: true }}
+                        className="card p-4"
+                      >
+                        <img
+                          src={getImageUrl(artwork.imagePath)}
+                          alt={artwork.title}
+                          className="w-full h-48 object-cover rounded-lg mb-4"
+                        />
+                        <h3 className="text-lg font-semibold text-gray-900">{artwork.title}</h3>
+                        <p className="text-sm text-gray-600">{artwork.category?.name}</p>
+                      </motion.div>
+                    </Link>
+                  </div>
                 ))}
-              </div>
+              </Slider>
             </div>
           ) : (
             <p className="text-xl text-gray-700">
