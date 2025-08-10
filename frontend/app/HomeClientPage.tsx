@@ -1,6 +1,7 @@
 'use client';
 
 import { ArrowRight, Star, Quote } from 'lucide-react';
+import { FaInstagram, FaVk, FaTelegram, FaWhatsapp, FaYoutube, FaEnvelope } from 'react-icons/fa';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { getImageUrl } from '@/hooks/useApi';
@@ -182,6 +183,111 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
                 </div>
               )}
             </motion.div>
+          </div>
+        </div>
+      </section>
+
+    {/* Contacts Section */}
+      <section className="py-20 bg-gray-100">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <motion.h2
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-4xl md:text-5xl font-serif font-bold mb-12 text-gradient"
+          >
+            Свяжитесь со мной
+          </motion.h2>
+          <div className="flex flex-wrap justify-center gap-8">
+            {homeData.contacts.socialLinks.instagram && (
+              <motion.a
+                href={homeData.contacts.socialLinks.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                viewport={{ once: true }}
+                className="flex flex-col items-center space-y-2 text-gray-700 hover:text-pink-600 transition-colors"
+              >
+                <FaInstagram className="w-12 h-12" />
+                <span className="text-lg font-medium">Instagram</span>
+              </motion.a>
+            )}
+            {homeData.contacts.socialLinks.vk && (
+              <motion.a
+                href={homeData.contacts.socialLinks.vk}
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                viewport={{ once: true }}
+                className="flex flex-col items-center space-y-2 text-gray-700 hover:text-blue-600 transition-colors"
+              >
+                <FaVk className="w-12 h-12" />
+                <span className="text-lg font-medium">ВКонтакте</span>
+              </motion.a>
+            )}
+            {homeData.contacts.socialLinks.telegram && (
+              <motion.a
+                href={homeData.contacts.socialLinks.telegram}
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                viewport={{ once: true }}
+                className="flex flex-col items-center space-y-2 text-gray-700 hover:text-blue-400 transition-colors"
+              >
+                <FaTelegram className="w-12 h-12" />
+                <span className="text-lg font-medium">Telegram</span>
+              </motion.a>
+            )}
+            {homeData.contacts.socialLinks.whatsapp && (
+              <motion.a
+                href={homeData.contacts.socialLinks.whatsapp}
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                viewport={{ once: true }}
+                className="flex flex-col items-center space-y-2 text-gray-700 hover:text-green-500 transition-colors"
+              >
+                <FaWhatsapp className="w-12 h-12" />
+                <span className="text-lg font-medium">WhatsApp</span>
+              </motion.a>
+            )}
+            {homeData.contacts.socialLinks.youtube && (
+              <motion.a
+                href={homeData.contacts.socialLinks.youtube}
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                viewport={{ once: true }}
+                className="flex flex-col items-center space-y-2 text-gray-700 hover:text-red-600 transition-colors"
+              >
+                <FaYoutube className="w-12 h-12" />
+                <span className="text-lg font-medium">YouTube</span>
+              </motion.a>
+            )}
+            {homeData.contacts.email && (
+              <motion.a
+                href={`mailto:${homeData.contacts.email}`}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+                viewport={{ once: true }}
+                className="flex flex-col items-center space-y-2 text-gray-700 hover:text-indigo-600 transition-colors"
+              >
+                <FaEnvelope className="w-12 h-12" />
+                <span className="text-lg font-medium">Email</span>
+              </motion.a>
+            )}
           </div>
         </div>
       </section>

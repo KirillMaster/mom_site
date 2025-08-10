@@ -159,7 +159,7 @@ export interface HomeData {
   biographyText: string;
   authorPhoto: string;
   artworks: ArtworkDto[];
-  
+  contacts: ContactsData;
 }
 
 export interface GalleryData {

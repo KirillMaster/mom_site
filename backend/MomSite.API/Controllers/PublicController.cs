@@ -42,13 +42,52 @@ public class PublicController : ControllerBase
             .Where(pc => pc.PageKey == "home" && pc.ContentKey == "home_author_photo" && pc.IsActive)
             .FirstOrDefaultAsync();
 
+        var contacts = await _context.PageContents
+            .Where(pc => pc.PageKey == "contacts" && pc.IsActive)
+            .OrderBy(pc => pc.DisplayOrder)
+            .ToListAsync();
+
+        var contactsData = new ContactsData();
+
+        foreach (var contact in contacts)
+        {
+            switch (contact.ContentKey)
+            {
+                case "instagram":
+                    contactsData.SocialLinks.Instagram = contact.LinkUrl;
+                    break;
+                case "vk":
+                    contactsData.SocialLinks.Vk = contact.LinkUrl;
+                    break;
+                case "telegram":
+                    contactsData.SocialLinks.Telegram = contact.LinkUrl;
+                    break;
+                case "whatsapp":
+                    contactsData.SocialLinks.Whatsapp = contact.LinkUrl;
+                    break;
+                case "youtube":
+                    contactsData.SocialLinks.Youtube = contact.LinkUrl;
+                    break;
+                case "email":
+                    contactsData.Email = contact.TextContent;
+                    break;
+                case "phone":
+                    contactsData.Phone = contact.TextContent;
+                    break;
+                case "address":
+                    contactsData.Address = contact.TextContent;
+                    break;
+            }
+        }
+
         return Ok(new HomeData
         {
             WelcomeMessage = welcomeMessage?.TextContent ?? "Добро пожаловать в мир искусства!",
             BannerImage = bannerImage?.ImagePath ?? "/images/banner-default.jpg",
-            BiographyText = biographyText?.TextContent ?? "Информация о художнике", // New
-            AuthorPhoto = authorPhoto?.ImagePath ?? "/images/artist-default.jpg", // New
-            Artworks = artworks.Select(a => a.ToDto()).ToList() // Add artworks to HomeData
+            BiographyText = biographyText?.TextContent ?? "Информация о художнике",
+            AuthorPhoto = authorPhoto?.ImagePath ?? "/images/artist-default.jpg",
+            Artworks = artworks.Select(a => a.ToDto()).ToList(),
+            Contacts = contactsData // Assign the populated contactsData
         });
 
         

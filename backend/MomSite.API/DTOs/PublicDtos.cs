@@ -10,6 +10,7 @@ namespace MomSite.API.DTOs
         public string BiographyText { get; set; } = string.Empty;
         public string AuthorPhoto { get; set; } = string.Empty;
         public List<ArtworkDto> Artworks { get; set; } = new();
+        public ContactsData Contacts { get; set; } = new ContactsData();
         
     }
 

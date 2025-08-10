@@ -113,7 +113,9 @@ public class ApplicationDbContext : DbContext
             new PageContent { Id = 7, PageKey = "contacts", ContentKey = "telegram", LinkUrl = "https://t.me/", DisplayOrder = 3 },
             new PageContent { Id = 8, PageKey = "contacts", ContentKey = "whatsapp", LinkUrl = "https://wa.me/", DisplayOrder = 4 },
             new PageContent { Id = 9, PageKey = "contacts", ContentKey = "youtube", LinkUrl = "https://youtube.com/", DisplayOrder = 5 },
-            new PageContent { Id = 10, PageKey = "contacts", ContentKey = "email", TextContent = "info@angelamoiseenko.ru", DisplayOrder = 6 }
+            new PageContent { Id = 10, PageKey = "contacts", ContentKey = "email", TextContent = "info@angelamoiseenko.ru", DisplayOrder = 6 },
+            new PageContent { Id = 11, PageKey = "home", ContentKey = "home_biography_text", TextContent = "Это текст биографии автора для главной страницы.", DisplayOrder = 3 },
+            new PageContent { Id = 12, PageKey = "home", ContentKey = "home_author_photo", ImagePath = "/images/artist-default.jpg", DisplayOrder = 4 }
         );
 
         
