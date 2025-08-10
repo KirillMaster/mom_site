@@ -12,7 +12,7 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Artwork> Artworks { get; set; }
     public DbSet<Category> Categories { get; set; }
-    public DbSet<Review> Reviews { get; set; }
+    
     public DbSet<Video> Videos { get; set; }
     public DbSet<VideoCategory> VideoCategories { get; set; }
     public DbSet<PageContent> PageContents { get; set; }
@@ -45,14 +45,7 @@ public class ApplicationDbContext : DbContext
             entity.HasIndex(e => e.Name).IsUnique();
         });
 
-        // Review configuration
-        modelBuilder.Entity<Review>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.AuthorName).IsRequired().HasMaxLength(200);
-            entity.Property(e => e.Content).IsRequired().HasMaxLength(1000);
-            entity.Property(e => e.Rating).HasDefaultValue(5);
-        });
+        
 
         // Video configuration
         modelBuilder.Entity<Video>(entity =>
@@ -123,12 +116,7 @@ public class ApplicationDbContext : DbContext
             new PageContent { Id = 10, PageKey = "contacts", ContentKey = "email", TextContent = "info@angelamoiseenko.ru", DisplayOrder = 6 }
         );
 
-        // Seed reviews
-        modelBuilder.Entity<Review>().HasData(
-            new Review { Id = 1, AuthorName = "Анна Петрова", Content = "Потрясающие работы! Каждая картина передает особую атмосферу и эмоции. Очень рекомендую!", Rating = 5 },
-            new Review { Id = 2, AuthorName = "Михаил Иванов", Content = "Уникальный стиль и мастерство. Картины завораживают своей красотой и глубиной.", Rating = 5 },
-            new Review { Id = 3, AuthorName = "Елена Сидорова", Content = "Прекрасные натюрморты и театральные работы. Искусство высочайшего уровня!", Rating = 5 }
-        );
+        
     }
 
     public override int SaveChanges()

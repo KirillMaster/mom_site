@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Lock, Eye, EyeOff, Palette, FileText, Video, Users, Settings, Tag } from 'lucide-react';
 import { auth } from '@/lib/api';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import { useLogin, useArtworks, useCategories, useVideos, useReviews } from '@/hooks/useApi';
+import { useLogin, useArtworks, useCategories, useVideos } from '@/hooks/useApi';
 import Link from 'next/link';
 
 const AdminPage = () => {
@@ -21,12 +21,12 @@ const AdminPage = () => {
   const { data: artworks, isLoading: isLoadingArtworks } = useArtworks();
   const { data: categories, isLoading: isLoadingCategories } = useCategories();
   const { data: videos, isLoading: isLoadingVideos } = useVideos();
-  const { data: reviews, isLoading: isLoadingReviews } = useReviews();
+  
 
   const artworksCount = artworks?.length || 0;
   const categoriesCount = categories?.length || 0;
   const videosCount = videos?.length || 0;
-  const reviewsCount = reviews?.length || 0;
+  
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -247,25 +247,7 @@ const AdminPage = () => {
             </motion.div>
 
             {/* Reviews Management */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="card p-6 hover:shadow-xl transition-shadow duration-300 cursor-pointer"
-            >
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
-                  <Users className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900">Отзывы</h3>
-              </div>
-              <p className="text-gray-600 text-sm mb-4">
-                Управление отзывами и рейтингами
-              </p>
-              <Link href="/admin/reviews" className="btn-primary w-full text-center">
-                Управлять
-              </Link>
-            </motion.div>
+            
 
             {/* Categories Management */}
             <motion.div
@@ -307,10 +289,7 @@ const AdminPage = () => {
                 <div className="text-3xl font-bold text-warm-600 mb-2">{videosCount}</div>
                 <div className="text-gray-600">Видео в галерее</div>
               </div>
-              <div className="card p-6">
-                <div className="text-3xl font-bold text-green-600 mb-2">{reviewsCount}</div>
-                <div className="text-gray-600">Отзывов</div>
-              </div>
+              
             </div>
           </div>
         </motion.div>

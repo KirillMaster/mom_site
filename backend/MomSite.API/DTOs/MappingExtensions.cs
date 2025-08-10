@@ -34,16 +34,7 @@ namespace MomSite.API.DTOs
             };
         }
 
-        public static ReviewDto ToDto(this Review review)
-        {
-            return new ReviewDto
-            {
-                Id = review.Id,
-                AuthorName = review.AuthorName,
-                Content = review.Content,
-                Rating = review.Rating
-            };
-        }
+        
 
         public static VideoDto ToDto(this Video video)
         {

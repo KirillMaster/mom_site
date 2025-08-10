@@ -28,17 +28,12 @@ public class PublicController : ControllerBase
             .Where(pc => pc.PageKey == "home" && pc.ContentKey == "banner_image" && pc.IsActive)
             .FirstOrDefaultAsync();
 
-        var reviews = await _context.Reviews
-            .Where(r => r.IsActive)
-            .OrderByDescending(r => r.CreatedAt)
-            .Take(6)
-            .ToListAsync();
+        
 
         return Ok(new HomeData
         {
             WelcomeMessage = welcomeMessage?.TextContent ?? "Добро пожаловать в мир искусства!",
-            BannerImage = bannerImage?.ImagePath ?? "/images/banner-default.jpg",
-            Reviews = reviews.Select(r => r.ToDto()).ToList()
+            BannerImage = bannerImage?.ImagePath ?? "/images/banner-default.jpg"
         });
     }
 

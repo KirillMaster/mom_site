@@ -81,60 +81,6 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
         </div>
       </section>
 
-      {/* Reviews Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6">
-              Отзывы
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Что говорят о моих работах
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {homeData.reviews && Array.isArray(homeData.reviews) && homeData.reviews.map((review, index) => (
-              <motion.div
-                key={review.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="card p-8 text-center hover:shadow-xl transition-shadow duration-300"
-              >
-                <div className="flex justify-center mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`w-5 h-5 ${
-                        i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                      }`}
-                    />
-                  ))}
-                </div>
-                
-                <Quote className="w-8 h-8 text-primary-600 mx-auto mb-4" />
-                
-                <p className="text-gray-600 mb-6 leading-relaxed">
-                  "{review.content}"
-                </p>
-                
-                <h4 className="font-semibold text-gray-900">
-                  {review.authorName}
-                </h4>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
     </div>
   );
 };

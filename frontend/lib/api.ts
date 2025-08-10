@@ -56,15 +56,7 @@ export interface Category {
   artworks?: Artwork[]; // Original backend model might have this
 }
 
-export interface Review {
-  id: number;
-  authorName: string;
-  content: string;
-  rating: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+
 
 export interface Video {
   id: number;
@@ -141,12 +133,7 @@ export interface ArtworkAdminDto {
   category?: CategoryDto; // Включаем DTO категории
 }
 
-export interface ReviewDto {
-  id: number;
-  authorName: string;
-  content: string;
-  rating: number;
-}
+
 
 export interface VideoDto {
   id: number;
@@ -169,7 +156,7 @@ export interface VideoCategoryDto {
 export interface HomeData {
   welcomeMessage: string;
   bannerImage: string;
-  reviews: ReviewDto[]; // Изменено на ReviewDto
+  
 }
 
 export interface GalleryData {

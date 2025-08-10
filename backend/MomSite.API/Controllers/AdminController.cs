@@ -29,6 +29,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpPost("login")]
+    [AllowAnonymous]
     public Task<ActionResult<string>> Login([FromBody] LoginDto loginDto)
     {
         var adminPassword = _configuration["AdminPassword"] ?? "admin";
@@ -88,51 +89,11 @@ public class AdminController : ControllerBase
         return NoContent();
     }
 
-    [HttpGet("reviews")]
-    public async Task<ActionResult<IEnumerable<Review>>> GetReviews()
-    {
-        var reviews = await _context.Reviews
-            .OrderByDescending(r => r.CreatedAt)
-            .ToListAsync();
-        return Ok(reviews);
-    }
+    
 
-    [HttpPost("reviews")]
-    public async Task<ActionResult<Review>> CreateReview([FromBody] CreateReviewDto dto)
-    {
-        var review = new Review
-        {
-            AuthorName = dto.AuthorName,
-            Content = dto.Content,
-            Rating = dto.Rating,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
+    
 
-        _context.Reviews.Add(review);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetReviews), new { id = review.Id }, review);
-    }
-
-    [HttpPut("reviews/{id}")]
-    public async Task<IActionResult> UpdateReview(int id, [FromBody] UpdateReviewDto dto)
-    {
-        var review = await _context.Reviews.FindAsync(id);
-        if (review == null)
-        {
-            return NotFound();
-        }
-
-        review.AuthorName = dto.AuthorName;
-        review.Content = dto.Content;
-        review.Rating = dto.Rating;
-        review.IsActive = dto.IsActive;
-        review.UpdatedAt = DateTime.UtcNow;
-
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
+    
 
     [HttpGet("page-content-by-key")]
     public async Task<ActionResult<IEnumerable<PageContent>>> GetPageContent([FromQuery] string? pageKey = null)
@@ -389,20 +350,9 @@ public class UpdateCategoryDto
     public bool IsActive { get; set; } = true;
 }
 
-public class CreateReviewDto
-{
-    public string AuthorName { get; set; } = string.Empty;
-    public string Content { get; set; } = string.Empty;
-    public int Rating { get; set; } = 5;
-}
 
-public class UpdateReviewDto
-{
-    public string AuthorName { get; set; } = string.Empty;
-    public string Content { get; set; } = string.Empty;
-    public int Rating { get; set; } = 5;
-    public bool IsActive { get; set; } = true;
-}
+
+
 
 public class UpdatePageContentDto
 {
