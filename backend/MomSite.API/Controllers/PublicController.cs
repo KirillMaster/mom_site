@@ -28,6 +28,19 @@ public class PublicController : ControllerBase
             .Where(pc => pc.PageKey == "home" && pc.ContentKey == "banner_image" && pc.IsActive)
             .FirstOrDefaultAsync();
 
+        var artworks = await _context.Artworks
+            .Include(a => a.Category) // Include category for display
+            .OrderByDescending(a => a.CreatedAt) // Latest first
+            .Take(9) // Limit to 9 artworks for the carousel
+            .ToListAsync();
+
+        return Ok(new HomeData
+        {
+            WelcomeMessage = welcomeMessage?.TextContent ?? "Добро пожаловать в мир искусства!",
+            BannerImage = bannerImage?.ImagePath ?? "/images/banner-default.jpg",
+            Artworks = artworks.Select(a => a.ToDto()).ToList() // Add artworks to HomeData
+        });
+
         
 
         return Ok(new HomeData

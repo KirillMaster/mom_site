@@ -7,6 +7,7 @@ namespace MomSite.API.DTOs
     {
         public string WelcomeMessage { get; set; } = string.Empty;
         public string BannerImage { get; set; } = string.Empty;
+        public List<ArtworkDto> Artworks { get; set; } = new();
         
     }
 

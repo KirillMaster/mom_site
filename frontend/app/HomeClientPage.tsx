@@ -62,22 +62,51 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
         </div>
       </section>
 
-      {/* Welcome Section */}
-      <section className="py-20 gradient-bg">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <motion.div
+    {/* Artwork Carousel Section */}
+      <section className="py-20 bg-gray-100">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
+            className="text-4xl md:text-5xl font-serif font-bold mb-12 text-gradient"
           >
-            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-8 text-gradient">
-              Добро пожаловать
-            </h2>
-            <p className="text-xl text-gray-700 leading-relaxed max-w-3xl mx-auto">
-              {homeData.welcomeMessage}
+            Избранные работы
+          </motion.h2>
+
+          {homeData.artworks && homeData.artworks.length > 0 ? (
+            <div className="relative">
+              {/* Carousel implementation */}
+              {/* For simplicity, let's just display them in a grid for now,
+                  and then implement actual carousel logic if needed.
+                  This ensures SSR works and images are visible. */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {homeData.artworks.map((artwork, index) => (
+                  <motion.div
+                    key={artwork.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    className="card p-4"
+                  >
+                    <img
+                      src={getImageUrl(artwork.imagePath)}
+                      alt={artwork.title}
+                      className="w-full h-48 object-cover rounded-lg mb-4"
+                    />
+                    <h3 className="text-lg font-semibold text-gray-900">{artwork.title}</h3>
+                    <p className="text-sm text-gray-600">{artwork.category?.name}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <p className="text-xl text-gray-700">
+              Пока нет избранных работ для отображения.
             </p>
-          </motion.div>
+          )}
         </div>
       </section>
 
