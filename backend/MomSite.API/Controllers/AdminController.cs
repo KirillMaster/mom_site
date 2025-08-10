@@ -113,7 +113,7 @@ public class AdminController : ControllerBase
         return Ok(content);
     }
 
-    [HttpPut("page-content/{id}")]
+        [HttpPut("page-content/{id}")]
     public async Task<IActionResult> UpdatePageContent(int id, [FromForm] UpdatePageContentDto dto)
     {
         var content = await _context.PageContents.FindAsync(id);
@@ -136,6 +136,32 @@ public class AdminController : ControllerBase
 
         await _context.SaveChangesAsync();
         return NoContent();
+    }
+
+    [HttpPost("page-content")]
+    public async Task<ActionResult<PageContent>> CreatePageContent([FromForm] CreatePageContentDto dto)
+    {
+        var pageContent = new PageContent
+        {
+            PageKey = dto.PageKey,
+            ContentKey = dto.ContentKey,
+            TextContent = dto.TextContent,
+            LinkUrl = dto.LinkUrl,
+            DisplayOrder = dto.DisplayOrder,
+            IsActive = dto.IsActive,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        if (dto.Image != null)
+        {
+            pageContent.ImagePath = await _imageService.SaveImageAsync(dto.Image, "page-content");
+        }
+
+        _context.PageContents.Add(pageContent);
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetPageContent), new { pageKey = pageContent.PageKey }, pageContent);
     }
 
     [HttpGet("videos")]
@@ -397,4 +423,15 @@ public class UpdateVideoCategoryDto
     public string? Description { get; set; }
     public int? DisplayOrder { get; set; }
     public bool? IsActive { get; set; }
+}
+
+public class CreatePageContentDto
+{
+    public string PageKey { get; set; } = string.Empty;
+    public string ContentKey { get; set; } = string.Empty;
+    public string? TextContent { get; set; }
+    public string? LinkUrl { get; set; }
+    public int DisplayOrder { get; set; } = 0;
+    public bool IsActive { get; set; } = true;
+    public IFormFile? Image { get; set; }
 }

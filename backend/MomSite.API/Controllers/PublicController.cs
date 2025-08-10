@@ -34,20 +34,26 @@ public class PublicController : ControllerBase
             .Take(9) // Limit to 9 artworks for the carousel
             .ToListAsync();
 
+        var biographyText = await _context.PageContents
+            .Where(pc => pc.PageKey == "home" && pc.ContentKey == "home_biography_text" && pc.IsActive)
+            .FirstOrDefaultAsync();
+
+        var authorPhoto = await _context.PageContents
+            .Where(pc => pc.PageKey == "home" && pc.ContentKey == "home_author_photo" && pc.IsActive)
+            .FirstOrDefaultAsync();
+
         return Ok(new HomeData
         {
             WelcomeMessage = welcomeMessage?.TextContent ?? "Добро пожаловать в мир искусства!",
             BannerImage = bannerImage?.ImagePath ?? "/images/banner-default.jpg",
+            BiographyText = biographyText?.TextContent ?? "Информация о художнике", // New
+            AuthorPhoto = authorPhoto?.ImagePath ?? "/images/artist-default.jpg", // New
             Artworks = artworks.Select(a => a.ToDto()).ToList() // Add artworks to HomeData
         });
 
         
 
-        return Ok(new HomeData
-        {
-            WelcomeMessage = welcomeMessage?.TextContent ?? "Добро пожаловать в мир искусства!",
-            BannerImage = bannerImage?.ImagePath ?? "/images/banner-default.jpg"
-        });
+        
     }
 
     [HttpGet("gallery")] // Явный маршрут для галереи

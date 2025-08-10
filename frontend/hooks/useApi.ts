@@ -236,6 +236,23 @@ export function useUpdatePageContent() {
   });
 }
 
+export function useCreatePageContent() {
+  const queryClient = useQueryClient();
+  return useMutation<PageContent, Error, FormData>({
+    mutationFn: async (data) => {
+      const response = await api.post('/api/admin/page-content', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pageContent'] });
+    },
+  });
+}
+
 export function useVideos() {
   return useQuery<Video[], Error>({
     queryKey: ['videos'],

@@ -7,18 +7,25 @@ import { useQueryClient } from '@tanstack/react-query';
 import { PageContent } from '@/lib/api';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import Link from 'next/link';
-import { usePageContent, useUpdatePageContent, getImageUrl } from '@/hooks/useApi';
+import { usePageContent, useUpdatePageContent, useCreatePageContent, getImageUrl } from '@/hooks/useApi';
 
 const PageContentManagement = () => {
   const [selectedPage, setSelectedPage] = useState('home');
+  const [isCreatingNew, setIsCreatingNew] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: pageContent, isLoading, error: pageContentError } = usePageContent(selectedPage);
 
   const mutation = useUpdatePageContent();
+  const { mutate: createMutation } = useCreatePageContent();
 
   const handleUpdate = (id: number, data: any) => {
     mutation.mutate({ id, data });
+  };
+
+  const handleCreate = (data: FormData) => {
+    createMutation(data);
+    setIsCreatingNew(false);
   };
 
   const pageKeys = ['home', 'about', 'contacts'];
@@ -49,6 +56,22 @@ const PageContentManagement = () => {
             ))}
           </nav>
         </div>
+
+        {selectedPage !== 'home' && (
+          <div className="flex justify-end mb-4">
+            <button onClick={() => setIsCreatingNew(true)} className="btn-primary">
+              Добавить новый элемент контента
+            </button>
+          </div>
+        )}
+
+        {selectedPage !== 'home' && isCreatingNew && (
+          <CreatePageContentForm
+            onClose={() => setIsCreatingNew(false)}
+            onCreate={handleCreate}
+            selectedPage={selectedPage}
+          />
+        )}
 
         {isLoading && <div className="flex justify-center items-center h-64"><LoadingSpinner /></div>}
         {pageContentError && <div className="text-red-500 text-center">Ошибка: {pageContentError?.message || 'Неизвестная ошибка'}</div>}
@@ -137,7 +160,116 @@ const ContentItem = ({ content, onUpdate }: { content: PageContent, onUpdate: (i
         )}
       </div>
     </div>
-  )
-}
+  );
+};
+
+const CreatePageContentForm = ({ onClose, onCreate, selectedPage }: { onClose: () => void; onCreate: (data: FormData) => void; selectedPage: string }) => {
+  const [formState, setFormState] = useState({
+    pageKey: selectedPage,
+    contentKey: '',
+    textContent: '',
+    linkUrl: '',
+    displayOrder: 0,
+    isActive: true,
+  });
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedImage(e.target.files[0]);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('pageKey', formState.pageKey);
+    formData.append('contentKey', formState.contentKey);
+    formData.append('textContent', formState.textContent);
+    formData.append('linkUrl', formState.linkUrl);
+    formData.append('displayOrder', formState.displayOrder.toString());
+    formData.append('isActive', formState.isActive.toString());
+    if (selectedImage) {
+      formData.append('image', selectedImage);
+    }
+    onCreate(formData);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="card p-6 mb-8"
+    >
+      <h2 className="text-2xl font-bold mb-4">Добавить новый элемент контента</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Ключ страницы (Page Key)</label>
+          <input
+            type="text"
+            value={formState.pageKey}
+            onChange={(e) => setFormState({ ...formState, pageKey: e.target.value })}
+            className="w-full p-2 border rounded-md bg-gray-100"
+            readOnly
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Ключ контента (Content Key)</label>
+          <input
+            type="text"
+            value={formState.contentKey}
+            onChange={(e) => setFormState({ ...formState, contentKey: e.target.value })}
+            className="w-full p-2 border rounded-md"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Текст</label>
+          <textarea
+            value={formState.textContent}
+            onChange={(e) => setFormState({ ...formState, textContent: e.target.value })}
+            className="w-full p-2 border rounded-md"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Ссылка (URL)</label>
+          <input
+            type="text"
+            value={formState.linkUrl}
+            onChange={(e) => setFormState({ ...formState, linkUrl: e.target.value })}
+            className="w-full p-2 border rounded-md"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Изображение</label>
+          <input type="file" onChange={handleFileChange} className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Порядок отображения</label>
+          <input
+            type="number"
+            value={formState.displayOrder}
+            onChange={(e) => setFormState({ ...formState, displayOrder: parseInt(e.target.value) })}
+            className="w-full p-2 border rounded-md"
+          />
+        </div>
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            checked={formState.isActive}
+            onChange={(e) => setFormState({ ...formState, isActive: e.target.checked })}
+            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+          />
+          <label className="ml-2 block text-sm text-gray-900">Активно</label>
+        </div>
+        <div className="flex justify-end space-x-4">
+          <button type="button" onClick={onClose} className="btn-secondary">Отмена</button>
+          <button type="submit" className="btn-primary">Создать</button>
+        </div>
+      </form>
+    </motion.div>
+  );
+};
 
 export default PageContentManagement;

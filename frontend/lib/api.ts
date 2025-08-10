@@ -156,6 +156,8 @@ export interface VideoCategoryDto {
 export interface HomeData {
   welcomeMessage: string;
   bannerImage: string;
+  biographyText: string;
+  authorPhoto: string;
   artworks: ArtworkDto[];
   
 }

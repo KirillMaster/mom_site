@@ -142,6 +142,50 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
         </div>
       </section>
 
+    {/* Biography Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center md:space-x-12">
+            {/* Left: Biography Text */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="md:w-1/2 text-center md:text-left mb-8 md:mb-0"
+            >
+              <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 text-gray-900">
+                Обо мне
+              </h2>
+              <p className="text-xl text-gray-700 leading-relaxed">
+                {homeData.biographyText || "Информация о художнике пока не добавлена."}
+              </p>
+            </motion.div>
+
+            {/* Right: Author Photo */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="md:w-1/2 flex justify-center"
+            >
+              {homeData.authorPhoto ? (
+                <img
+                  src={getImageUrl(homeData.authorPhoto)}
+                  alt="Фотография автора"
+                  className="rounded-lg shadow-lg max-w-full h-auto"
+                />
+              ) : (
+                <div className="w-64 h-64 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500">
+                  Нет фотографии
+                </div>
+              )}
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 };
