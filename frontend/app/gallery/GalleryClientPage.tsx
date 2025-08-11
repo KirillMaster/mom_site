@@ -14,19 +14,11 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
     isOpen: false,
     photoIndex: 0
   });
-  const [filteredArtworks, setFilteredArtworks] = useState<any[]>([]);
+  const [filteredArtworks, setFilteredArtworks] = useState<any[]>(galleryData.artworks || []);
 
-  useEffect(() => {
-    if (galleryData && Array.isArray(galleryData.artworks)) {
-      if (selectedCategory) {
-        setFilteredArtworks(galleryData.artworks.filter(artwork => artwork.categoryId === selectedCategory));
-      } else {
-        setFilteredArtworks(galleryData.artworks);
-      }
-    } else {
-      setFilteredArtworks([]);
-    }
-  }, [selectedCategory, galleryData]);
+  const artworksToDisplay = selectedCategory
+    ? galleryData.artworks.filter(artwork => artwork.categoryId === selectedCategory)
+    : galleryData.artworks;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('ru-RU', {
@@ -112,7 +104,7 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
               transition={{ duration: 0.3 }}
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
             >
-              {filteredArtworks.map((artwork, index) => (
+              {artworksToDisplay.map((artwork, index) => (
                 <motion.div
                   key={artwork.id}
                   initial={{ opacity: 0, y: 30 }}
@@ -149,7 +141,7 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
                       <span className="text-sm text-primary-600 font-medium">
                         {artwork.category?.name || 'Без категории'}
                       </span>
-                      {artwork.isForSale && (
+                      {artwork.isForSale && typeof artwork.price === 'number' && (
                         <span className="text-lg font-bold text-gray-900">
                           {formatPrice(artwork.price)}
                         </span>
@@ -169,7 +161,7 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
             </motion.div>
           </AnimatePresence>
           
-          {filteredArtworks.length === 0 && (
+          {artworksToDisplay.length === 0 && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -188,7 +180,7 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
         open={lightbox.isOpen}
         close={() => setLightbox({ isOpen: false, photoIndex: 0 })}
         index={lightbox.photoIndex}
-        slides={filteredArtworks.map(artwork => ({
+        slides={artworksToDisplay.map(artwork => ({
           src: getImageUrl(artwork.imagePath),
           title: artwork.title,
           description: artwork.description
