@@ -18,13 +18,16 @@ namespace MomSite.API.DTOs
     {
         public List<ArtworkDto> Artworks { get; set; } = new(); // Изменено на ArtworkDto
         public List<CategoryDto> Categories { get; set; } = new(); // Изменено на CategoryDto
+        public string BannerTitle { get; set; } = string.Empty;
+        public string BannerDescription { get; set; } = string.Empty;
     }
 
     public class AboutData
     {
         public string Biography { get; set; } = string.Empty;
         public string ArtistPhoto { get; set; } = string.Empty;
-        public List<Specialty> Specialties { get; set; } = new();
+        public string BannerTitle { get; set; } = string.Empty;
+        public string BannerDescription { get; set; } = string.Empty;
     }
 
     public class ContactsData
@@ -33,6 +36,8 @@ namespace MomSite.API.DTOs
         public string? Email { get; set; }
         public string? Phone { get; set; }
         public string? Address { get; set; }
+        public string BannerTitle { get; set; } = string.Empty;
+        public string BannerDescription { get; set; } = string.Empty;
     }
 
     public class SocialLinks
@@ -67,6 +72,14 @@ namespace MomSite.API.DTOs
         public string? Description { get; set; }
         public int DisplayOrder { get; set; }
         public List<VideoPublicDto> Videos { get; set; } = new();
+    }
+
+    public class FooterData
+    {
+        public string Description { get; set; } = string.Empty;
+        public SocialLinks SocialLinks { get; set; } = new SocialLinks();
+        public string? Email { get; set; }
+        public string? Phone { get; set; }
     }
 
     public class Specialty

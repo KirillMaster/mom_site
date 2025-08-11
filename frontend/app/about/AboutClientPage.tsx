@@ -22,10 +22,10 @@ const AboutClientPage = ({ aboutData }: { aboutData: AboutData }) => {
             className="text-center"
           >
             <h1 className="text-5xl md:text-6xl font-serif font-bold mb-6 text-gradient">
-              Обо мне
+              {aboutData.bannerTitle || "Обо мне"}
             </h1>
             <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-              Познакомьтесь с художником и узнайте больше о моем творческом пути
+              {aboutData.bannerDescription || "Познакомьтесь с художником и узнайте больше о моем творческом пути"}
             </p>
           </motion.div>
         </div>
@@ -91,53 +91,7 @@ const AboutClientPage = ({ aboutData }: { aboutData: AboutData }) => {
         </div>
       </section>
 
-      {/* Specialties */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6">
-              Мои специализации
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Области искусства, в которых я специализируюсь и развиваюсь
-            </p>
-          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {aboutData.specialties && Array.isArray(aboutData.specialties) && aboutData.specialties.map((specialty, index) => {
-              const icons = [Palette, Award, Heart, Camera];
-              const IconComponent = icons[index % icons.length];
-              
-              return (
-                <motion.div
-                  key={specialty.title}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  className="card p-6 text-center hover:shadow-xl transition-shadow duration-300"
-                >
-                  <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <IconComponent className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-xl font-serif font-semibold mb-3 text-gray-900">
-                    {specialty.title}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {specialty.description}
-                  </p>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
 
       {/* Philosophy */}
       <section className="py-20 bg-gradient-to-br from-primary-600 to-secondary-600">

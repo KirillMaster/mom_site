@@ -1,4 +1,13 @@
 using Microsoft.AspNetCore.Http;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing.Processing;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Formats.Gif;
+using SixLabors.ImageSharp.Formats.Bmp;
+using SixLabors.Fonts;
 
 namespace MomSite.Infrastructure.Services;
 
@@ -9,6 +18,7 @@ public interface IImageService
     Task<string> AddWatermarkAsync(string imagePath, string watermarkText);
     void DeleteImage(string imagePath);
     Task<string> CreateVideoThumbnailAsync(string videoPath, int width, int height);
+    string GetWatermarkText();
 }
 
 public class ImageService : IImageService
@@ -18,15 +28,15 @@ public class ImageService : IImageService
 
     public ImageService()
     {
-        _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
+        _uploadPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "uploads");
         _watermarkText = "angelamoiseenko.ru";
         
         // Create upload directories if they don't exist
         Directory.CreateDirectory(_uploadPath);
-        Directory.CreateDirectory(Path.Combine(_uploadPath, "artworks"));
-        Directory.CreateDirectory(Path.Combine(_uploadPath, "thumbnails"));
-        Directory.CreateDirectory(Path.Combine(_uploadPath, "page-content"));
-        Directory.CreateDirectory(Path.Combine(_uploadPath, "videos"));
+        Directory.CreateDirectory(System.IO.Path.Combine(_uploadPath, "artworks"));
+        Directory.CreateDirectory(System.IO.Path.Combine(_uploadPath, "thumbnails"));
+        Directory.CreateDirectory(System.IO.Path.Combine(_uploadPath, "page-content"));
+        Directory.CreateDirectory(System.IO.Path.Combine(_uploadPath, "videos"));
     }
 
     public async Task<string> SaveImageAsync(IFormFile file, string folder)
@@ -34,11 +44,11 @@ public class ImageService : IImageService
         if (file == null || file.Length == 0)
             throw new ArgumentException("File is empty");
 
-        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-        var folderPath = Path.Combine(_uploadPath, folder);
+        var fileName = $"{Guid.NewGuid()}{System.IO.Path.GetExtension(file.FileName)}";
+        var folderPath = System.IO.Path.Combine(_uploadPath, folder);
         Directory.CreateDirectory(folderPath);
         
-        var filePath = Path.Combine(folderPath, fileName);
+        var filePath = System.IO.Path.Combine(folderPath, fileName);
         
         using (var stream = new FileStream(filePath, FileMode.Create))
         {
@@ -48,42 +58,191 @@ public class ImageService : IImageService
         return $"/uploads/{folder}/{fileName}";
     }
 
-    public Task<string> CreateThumbnailAsync(string imagePath, int width, int height)
+    public async Task<string> CreateThumbnailAsync(string imagePath, int width, int height)
     {
-        var fullPath = Path.Combine(_uploadPath, imagePath.TrimStart('/').Replace("uploads/", ""));
+        var fullPath = System.IO.Path.Combine(_uploadPath, imagePath.TrimStart('/').Replace("uploads/", ""));
         
         if (!File.Exists(fullPath))
             throw new FileNotFoundException("Image not found", fullPath);
 
-        var fileName = Path.GetFileName(fullPath);
+        var fileName = System.IO.Path.GetFileName(fullPath);
         var thumbnailName = $"thumb_{fileName}";
-        var thumbnailPath = Path.Combine(_uploadPath, "thumbnails", thumbnailName);
+        var thumbnailPath = System.IO.Path.Combine(_uploadPath, "thumbnails", thumbnailName);
         
-        Directory.CreateDirectory(Path.GetDirectoryName(thumbnailPath)!);
+        Directory.CreateDirectory(System.IO.Path.GetDirectoryName(thumbnailPath)!);
 
-        // For now, just copy the original file as thumbnail
-        // In a production environment, you would implement proper image resizing
-        File.Copy(fullPath, thumbnailPath, true);
+        // Create thumbnail with watermark
+        using (var originalImage = await Image.LoadAsync(fullPath))
+        {
+            // Calculate aspect ratio to maintain proportions
+            var aspectRatio = (double)originalImage.Width / originalImage.Height;
+            var targetWidth = width;
+            var targetHeight = height;
 
-        return Task.FromResult($"/uploads/thumbnails/{thumbnailName}");
+            if (aspectRatio > 1) // Landscape
+            {
+                targetHeight = (int)(width / aspectRatio);
+            }
+            else // Portrait or square
+            {
+                targetWidth = (int)(height * aspectRatio);
+            }
+
+            // Resize image
+            originalImage.Mutate(x => x.Resize(targetWidth, targetHeight));
+
+            // Add simple watermark - corner overlay
+            AddCornerWatermark(originalImage, targetWidth, targetHeight);
+
+            // Save the thumbnail
+            var format = GetImageFormat(System.IO.Path.GetExtension(fullPath));
+            await originalImage.SaveAsync(thumbnailPath, format);
+        }
+
+        return $"/uploads/thumbnails/{thumbnailName}";
     }
 
-    public Task<string> AddWatermarkAsync(string imagePath, string watermarkText)
+    public async Task<string> AddWatermarkAsync(string imagePath, string watermarkText)
     {
-        var fullPath = Path.Combine(_uploadPath, imagePath.TrimStart('/').Replace("uploads/", ""));
+        var fullPath = System.IO.Path.Combine(_uploadPath, imagePath.TrimStart('/').Replace("uploads/", ""));
         
         if (!File.Exists(fullPath))
             throw new FileNotFoundException("Image not found", fullPath);
 
-        var fileName = Path.GetFileName(fullPath);
+        var fileName = System.IO.Path.GetFileName(fullPath);
         var watermarkedName = $"watermarked_{fileName}";
-        var watermarkedPath = Path.Combine(_uploadPath, "artworks", watermarkedName);
+        var watermarkedPath = System.IO.Path.Combine(_uploadPath, "artworks", watermarkedName);
 
-        // For now, just copy the original file as watermarked
-        // In a production environment, you would implement proper watermarking
-        File.Copy(fullPath, watermarkedPath, true);
+        // Create watermarked image
+        using (var originalImage = await Image.LoadAsync(fullPath))
+        {
+            // Add corner watermark
+            AddCornerWatermark(originalImage, originalImage.Width, originalImage.Height);
 
-        return Task.FromResult($"/uploads/artworks/{watermarkedName}");
+            // Save the watermarked image
+            var format = GetImageFormat(System.IO.Path.GetExtension(fullPath));
+            await originalImage.SaveAsync(watermarkedPath, format);
+        }
+
+        return $"/uploads/artworks/{watermarkedName}";
+    }
+
+    private void AddCornerWatermark(Image image, int width, int height)
+    {
+        var watermarkText = "angelamoiseenko.ru";
+        
+        // Calculate font size based on image dimensions - doubled size
+        var fontSize = Math.Max(24, Math.Min(width, height) / 15); // Doubled from /30 to /15
+        fontSize = Math.Min(fontSize, 48); // Doubled cap from 24 to 48
+        
+        // Calculate padding from edges
+        var padding = Math.Max(20, Math.Min(width, height) / 25); // Increased padding
+        
+        try
+        {
+            // Get available fonts
+            var availableFonts = SystemFonts.Collection.Families.ToList();
+            Console.WriteLine($"Available fonts: {string.Join(", ", availableFonts.Select(f => f.Name))}");
+            
+            if (availableFonts.Any())
+            {
+                // Try to find a suitable font
+                var fontFamily = availableFonts.FirstOrDefault(f => 
+                    f.Name.Contains("DejaVu", StringComparison.OrdinalIgnoreCase) || 
+                    f.Name.Contains("Arial", StringComparison.OrdinalIgnoreCase) || 
+                    f.Name.Contains("Sans", StringComparison.OrdinalIgnoreCase));
+                
+                if (fontFamily == null)
+                {
+                    fontFamily = availableFonts.First();
+                }
+                
+                Console.WriteLine($"Using font: {fontFamily.Name}");
+                
+                var font = fontFamily.CreateFont(fontSize);
+                
+                // Create text options for positioning - center bottom
+                var textOptions = new RichTextOptions(font)
+                {
+                    Origin = new PointF(width / 2, height - padding),
+                    KerningMode = KerningMode.Standard,
+                    WrappingLength = 0,
+                    LineSpacing = 1.0f,
+                    HorizontalAlignment = HorizontalAlignment.Center
+                };
+                
+                // Create semi-transparent white text
+                var textColor = Color.FromRgba(255, 255, 255, 180);
+                
+                // Draw text with slight shadow for better visibility
+                var shadowColor = Color.FromRgba(0, 0, 0, 120);
+                var shadowOffset = 1;
+                
+                // Create shadow text options
+                var shadowTextOptions = new RichTextOptions(font)
+                {
+                    Origin = new PointF(width / 2 + shadowOffset, height - padding + shadowOffset),
+                    KerningMode = KerningMode.Standard,
+                    WrappingLength = 0,
+                    LineSpacing = 1.0f,
+                    HorizontalAlignment = HorizontalAlignment.Center
+                };
+                
+                image.Mutate(x => x
+                    .DrawText(shadowTextOptions, watermarkText, shadowColor)
+                    .DrawText(textOptions, watermarkText, textColor));
+                
+                Console.WriteLine("Text watermark applied successfully");
+            }
+            else
+            {
+                Console.WriteLine("No fonts available, using fallback watermark");
+                CreateFallbackWatermark(image, width, height, watermarkText, fontSize, padding);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error applying text watermark: {ex.Message}");
+            CreateFallbackWatermark(image, width, height, watermarkText, fontSize, padding);
+        }
+    }
+    
+    private void CreateFallbackWatermark(Image image, int width, int height, string watermarkText, float fontSize, float padding)
+    {
+        // Create a simple text-like watermark with rectangles - centered
+        var textWidth = watermarkText.Length * fontSize * 0.6f;
+        var textHeight = fontSize;
+        
+        var textRect = new RectangleF(
+            (width - textWidth) / 2, // Center horizontally
+            height - padding - textHeight, 
+            textWidth, 
+            textHeight);
+        
+        // Semi-transparent background
+        image.Mutate(x => x.Fill(Color.FromRgba(0, 0, 0, 100), textRect));
+        
+        // Semi-transparent white overlay
+        var innerRect = new RectangleF(
+            textRect.X + 2, 
+            textRect.Y + 2, 
+            textRect.Width - 4, 
+            textRect.Height - 4);
+        image.Mutate(x => x.Fill(Color.FromRgba(255, 255, 255, 150), innerRect));
+        
+        Console.WriteLine("Fallback watermark applied");
+    }
+
+    private IImageEncoder GetImageFormat(string extension)
+    {
+        return extension.ToLower() switch
+        {
+            ".jpg" or ".jpeg" => new JpegEncoder(),
+            ".png" => new PngEncoder(),
+            ".gif" => new GifEncoder(),
+            ".bmp" => new BmpEncoder(),
+            _ => new JpegEncoder()
+        };
     }
 
     public void DeleteImage(string imagePath)
@@ -91,7 +250,7 @@ public class ImageService : IImageService
         if (string.IsNullOrEmpty(imagePath))
             return;
 
-        var fullPath = Path.Combine(_uploadPath, imagePath.TrimStart('/').Replace("uploads/", ""));
+        var fullPath = System.IO.Path.Combine(_uploadPath, imagePath.TrimStart('/').Replace("uploads/", ""));
         
         if (File.Exists(fullPath))
         {
@@ -101,16 +260,16 @@ public class ImageService : IImageService
 
     public async Task<string> CreateVideoThumbnailAsync(string videoPath, int width, int height)
     {
-        var fullVideoPath = Path.Combine(_uploadPath, videoPath.TrimStart('/').Replace("uploads/", ""));
+        var fullVideoPath = System.IO.Path.Combine(_uploadPath, videoPath.TrimStart('/').Replace("uploads/", ""));
         
         if (!File.Exists(fullVideoPath))
             throw new FileNotFoundException("Video not found", fullVideoPath);
 
-        var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fullVideoPath);
+        var fileNameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(fullVideoPath);
         var thumbnailName = $"{fileNameWithoutExtension}.jpg";
-        var thumbnailPath = Path.Combine(_uploadPath, "thumbnails", thumbnailName);
+        var thumbnailPath = System.IO.Path.Combine(_uploadPath, "thumbnails", thumbnailName);
         
-        Directory.CreateDirectory(Path.GetDirectoryName(thumbnailPath)!);
+        Directory.CreateDirectory(System.IO.Path.GetDirectoryName(thumbnailPath)!);
 
         var command = $"-i \"{fullVideoPath}\" -ss 00:00:01 -vframes 1 -s {width}x{height} -f image2 \"{thumbnailPath}\" ";
         
@@ -140,5 +299,10 @@ public class ImageService : IImageService
         }
 
         return $"/uploads/thumbnails/{thumbnailName}";
+    }
+
+    public string GetWatermarkText()
+    {
+        return _watermarkText;
     }
 } 

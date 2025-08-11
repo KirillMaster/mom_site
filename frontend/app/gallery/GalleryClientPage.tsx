@@ -45,11 +45,10 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
             className="text-center"
           >
             <h1 className="text-5xl md:text-6xl font-serif font-bold mb-6 text-gradient">
-              Галерея работ
+              {galleryData.bannerTitle || "Галерея работ"}
             </h1>
             <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-              Исследуйте коллекцию уникальных работ в стиле импрессионизма. 
-              Каждая картина создана с любовью и передает особую атмосферу.
+              {galleryData.bannerDescription || "Исследуйте коллекцию уникальных работ в стиле импрессионизма. Каждая картина создана с любовью и передает особую атмосферу."}
             </p>
           </motion.div>
         </div>

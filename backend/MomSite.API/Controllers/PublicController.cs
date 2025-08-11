@@ -116,10 +116,21 @@ public class PublicController : ControllerBase
             .OrderBy(c => c.DisplayOrder)
             .ToListAsync();
 
+        // Get banner content for gallery
+        var bannerTitle = await _context.PageContents
+            .Where(pc => pc.PageKey == "gallery" && pc.ContentKey == "banner_title" && pc.IsActive)
+            .FirstOrDefaultAsync();
+
+        var bannerDescription = await _context.PageContents
+            .Where(pc => pc.PageKey == "gallery" && pc.ContentKey == "banner_description" && pc.IsActive)
+            .FirstOrDefaultAsync();
+
         return Ok(new GalleryData
         {
             Artworks = artworks.Select(a => a.ToDto()).ToList(),
-            Categories = categories.Select(c => c.ToDto()).ToList()
+            Categories = categories.Select(c => c.ToDto()).ToList(),
+            BannerTitle = bannerTitle?.TextContent ?? "Галерея работ",
+            BannerDescription = bannerDescription?.TextContent ?? "Исследуйте коллекцию уникальных работ в стиле импрессионизма. Каждая картина создана с любовью и передает особую атмосферу."
         });
     }
 
@@ -134,17 +145,21 @@ public class PublicController : ControllerBase
             .Where(pc => pc.PageKey == "about" && pc.ContentKey == "artist_photo" && pc.IsActive)
             .FirstOrDefaultAsync();
 
-        var specialties = await _context.PageContents
-            .Where(pc => pc.PageKey == "about" && pc.ContentKey == "specialty" && pc.IsActive)
-            .OrderBy(pc => pc.DisplayOrder)
-            .Select(pc => new Specialty { Title = pc.TextContent ?? "", Description = pc.LinkUrl ?? "" })
-            .ToListAsync();
+        // Get banner content for about page
+        var bannerTitle = await _context.PageContents
+            .Where(pc => pc.PageKey == "about" && pc.ContentKey == "banner_title" && pc.IsActive)
+            .FirstOrDefaultAsync();
+
+        var bannerDescription = await _context.PageContents
+            .Where(pc => pc.PageKey == "about" && pc.ContentKey == "banner_description" && pc.IsActive)
+            .FirstOrDefaultAsync();
 
         return Ok(new AboutData
         {
             Biography = biography?.TextContent ?? "Информация о художнике",
             ArtistPhoto = artistPhoto?.ImagePath ?? "/images/artist-default.jpg",
-            Specialties = specialties
+            BannerTitle = bannerTitle?.TextContent ?? "Обо мне",
+            BannerDescription = bannerDescription?.TextContent ?? "Познакомьтесь с художником и узнайте больше о моем творческом пути"
         });
     }
 
@@ -189,6 +204,18 @@ public class PublicController : ControllerBase
             }
         }
 
+        // Get banner content for contacts page
+        var bannerTitle = await _context.PageContents
+            .Where(pc => pc.PageKey == "contacts" && pc.ContentKey == "banner_title" && pc.IsActive)
+            .FirstOrDefaultAsync();
+
+        var bannerDescription = await _context.PageContents
+            .Where(pc => pc.PageKey == "contacts" && pc.ContentKey == "banner_description" && pc.IsActive)
+            .FirstOrDefaultAsync();
+
+        contactsData.BannerTitle = bannerTitle?.TextContent ?? "Свяжитесь со мной";
+        contactsData.BannerDescription = bannerDescription?.TextContent ?? "Буду рада ответить на ваши вопросы и обсудить идеи!";
+
         return Ok(contactsData);
     }
 
@@ -219,6 +246,50 @@ public class PublicController : ControllerBase
             Videos = videos.Select(v => v.ToPublicDto()).ToList(),
             Categories = categories.Select(c => c.ToPublicDto()).ToList()
         });
+    }
+
+    [HttpGet("footer")]
+    public async Task<ActionResult<FooterData>> GetFooterData()
+    {
+        var footerContent = await _context.PageContents
+            .Where(pc => pc.PageKey == "footer" && pc.IsActive)
+            .OrderBy(pc => pc.DisplayOrder)
+            .ToListAsync();
+
+        var footerData = new FooterData();
+
+        foreach (var content in footerContent)
+        {
+            switch (content.ContentKey)
+            {
+                case "description":
+                    footerData.Description = content.TextContent;
+                    break;
+                case "instagram":
+                    footerData.SocialLinks.Instagram = content.LinkUrl;
+                    break;
+                case "vk":
+                    footerData.SocialLinks.Vk = content.LinkUrl;
+                    break;
+                case "telegram":
+                    footerData.SocialLinks.Telegram = content.LinkUrl;
+                    break;
+                case "whatsapp":
+                    footerData.SocialLinks.Whatsapp = content.LinkUrl;
+                    break;
+                case "youtube":
+                    footerData.SocialLinks.Youtube = content.LinkUrl;
+                    break;
+                case "email":
+                    footerData.Email = content.TextContent;
+                    break;
+                case "phone":
+                    footerData.Phone = content.TextContent;
+                    break;
+            }
+        }
+
+        return Ok(footerData);
     }
 
     [HttpGet("health")]

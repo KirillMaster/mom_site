@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api, auth, API_BASE_URL, Artwork, Category, Video, VideoCategory, PageContent, HomeData, GalleryData, AboutData, ContactsData, VideosData, ArtworkDto, CategoryDto, ArtworkAdminDto } from '../lib/api';
+import { api, auth, API_BASE_URL, Artwork, Category, Video, VideoCategory, PageContent, HomeData, GalleryData, AboutData, ContactsData, VideosData, FooterData, ArtworkDto, CategoryDto, ArtworkAdminDto } from '../lib/api';
 
 // Helper to get image URL
 export const getImageUrl = (path: string) => {
@@ -60,6 +60,18 @@ export function useContactsData() {
   return useQuery<ContactsData, Error>({
     queryKey: ['contactsData'],
     queryFn: getContactsData,
+  });
+}
+
+export async function getFooterData(): Promise<FooterData> {
+  const response = await api.get('/api/public/footer');
+  return response.data;
+}
+
+export function useFooterData() {
+  return useQuery<FooterData, Error>({
+    queryKey: ['footerData'],
+    queryFn: getFooterData,
   });
 }
 

@@ -111,32 +111,32 @@ namespace MomSite.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2201),
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9432),
                             Description = "Картины на театральную тематику",
                             DisplayOrder = 1,
                             IsActive = true,
                             Name = "Театральные работы",
-                            UpdatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2204)
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9434)
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2237),
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9439),
                             Description = "Классические натюрморты",
                             DisplayOrder = 2,
                             IsActive = true,
                             Name = "Натюрморты",
-                            UpdatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2237)
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9440)
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2238),
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9443),
                             Description = "Природные пейзажи",
                             DisplayOrder = 3,
                             IsActive = true,
                             Name = "Пейзажи",
-                            UpdatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2238)
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9443)
                         });
                 });
 
@@ -194,133 +194,298 @@ namespace MomSite.Infrastructure.Data.Migrations
                         {
                             Id = 1,
                             ContentKey = "welcome_message",
-                            CreatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2365),
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9560),
                             DisplayOrder = 1,
                             IsActive = true,
                             PageKey = "home",
                             TextContent = "Добро пожаловать в мир искусства! Здесь вы найдете уникальные работы в стиле импрессионизма, созданные с любовью и вдохновением.",
-                            UpdatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2365)
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9561)
                         },
                         new
                         {
                             Id = 2,
                             ContentKey = "banner_image",
-                            CreatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2369),
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9564),
                             DisplayOrder = 2,
                             ImagePath = "/images/banner-default.jpg",
                             IsActive = true,
                             PageKey = "home",
-                            UpdatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2369)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            ContentKey = "biography",
-                            CreatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2370),
-                            DisplayOrder = 1,
-                            IsActive = true,
-                            PageKey = "about",
-                            TextContent = "Я художник-импрессионист, вдохновленный красотой окружающего мира. Мои работы отражают любовь к театральному искусству и классическим натюрмортам.",
-                            UpdatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2370)
-                        },
-                        new
-                        {
-                            Id = 4,
-                            ContentKey = "artist_photo",
-                            CreatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2371),
-                            DisplayOrder = 2,
-                            ImagePath = "/images/artist-default.jpg",
-                            IsActive = true,
-                            PageKey = "about",
-                            UpdatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2371)
-                        },
-                        new
-                        {
-                            Id = 5,
-                            ContentKey = "instagram",
-                            CreatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2372),
-                            DisplayOrder = 1,
-                            IsActive = true,
-                            LinkUrl = "https://instagram.com/",
-                            PageKey = "contacts",
-                            UpdatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2372)
-                        },
-                        new
-                        {
-                            Id = 6,
-                            ContentKey = "vk",
-                            CreatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2373),
-                            DisplayOrder = 2,
-                            IsActive = true,
-                            LinkUrl = "https://vk.com/",
-                            PageKey = "contacts",
-                            UpdatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2373)
-                        },
-                        new
-                        {
-                            Id = 7,
-                            ContentKey = "telegram",
-                            CreatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2374),
-                            DisplayOrder = 3,
-                            IsActive = true,
-                            LinkUrl = "https://t.me/",
-                            PageKey = "contacts",
-                            UpdatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2374)
-                        },
-                        new
-                        {
-                            Id = 8,
-                            ContentKey = "whatsapp",
-                            CreatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2376),
-                            DisplayOrder = 4,
-                            IsActive = true,
-                            LinkUrl = "https://wa.me/",
-                            PageKey = "contacts",
-                            UpdatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2376)
-                        },
-                        new
-                        {
-                            Id = 9,
-                            ContentKey = "youtube",
-                            CreatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2377),
-                            DisplayOrder = 5,
-                            IsActive = true,
-                            LinkUrl = "https://youtube.com/",
-                            PageKey = "contacts",
-                            UpdatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2377)
-                        },
-                        new
-                        {
-                            Id = 10,
-                            ContentKey = "email",
-                            CreatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2378),
-                            DisplayOrder = 6,
-                            IsActive = true,
-                            PageKey = "contacts",
-                            TextContent = "info@angelamoiseenko.ru",
-                            UpdatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2378)
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9564)
                         },
                         new
                         {
                             Id = 11,
                             ContentKey = "home_biography_text",
-                            CreatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2379),
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9566),
                             DisplayOrder = 3,
                             IsActive = true,
                             PageKey = "home",
                             TextContent = "Это текст биографии автора для главной страницы.",
-                            UpdatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2380)
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9566)
                         },
                         new
                         {
                             Id = 12,
                             ContentKey = "home_author_photo",
-                            CreatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2380),
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9568),
                             DisplayOrder = 4,
                             ImagePath = "/images/artist-default.jpg",
                             IsActive = true,
                             PageKey = "home",
-                            UpdatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2380)
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9568)
+                        },
+                        new
+                        {
+                            Id = 13,
+                            ContentKey = "banner_title",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9570),
+                            DisplayOrder = 1,
+                            IsActive = true,
+                            PageKey = "gallery",
+                            TextContent = "Галерея работ",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9571)
+                        },
+                        new
+                        {
+                            Id = 14,
+                            ContentKey = "banner_description",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9572),
+                            DisplayOrder = 2,
+                            IsActive = true,
+                            PageKey = "gallery",
+                            TextContent = "Исследуйте коллекцию уникальных работ в стиле импрессионизма. Каждая картина создана с любовью и передает особую атмосферу.",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9572)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ContentKey = "biography",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9573),
+                            DisplayOrder = 1,
+                            IsActive = true,
+                            PageKey = "about",
+                            TextContent = "Я художник-импрессионист, вдохновленный красотой окружающего мира. Мои работы отражают любовь к театральному искусству и классическим натюрмортам.",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9573)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ContentKey = "artist_photo",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9574),
+                            DisplayOrder = 2,
+                            ImagePath = "/images/artist-default.jpg",
+                            IsActive = true,
+                            PageKey = "about",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9575)
+                        },
+                        new
+                        {
+                            Id = 15,
+                            ContentKey = "banner_title",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9577),
+                            DisplayOrder = 3,
+                            IsActive = true,
+                            PageKey = "about",
+                            TextContent = "Обо мне",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9577)
+                        },
+                        new
+                        {
+                            Id = 16,
+                            ContentKey = "banner_description",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9579),
+                            DisplayOrder = 4,
+                            IsActive = true,
+                            PageKey = "about",
+                            TextContent = "Познакомьтесь с художником и узнайте больше о моем творческом пути",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9579)
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ContentKey = "instagram",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9580),
+                            DisplayOrder = 1,
+                            IsActive = true,
+                            LinkUrl = "https://instagram.com/",
+                            PageKey = "contacts",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9580)
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ContentKey = "vk",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9582),
+                            DisplayOrder = 2,
+                            IsActive = true,
+                            LinkUrl = "https://vk.com/",
+                            PageKey = "contacts",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9582)
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ContentKey = "telegram",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9584),
+                            DisplayOrder = 3,
+                            IsActive = true,
+                            LinkUrl = "https://t.me/",
+                            PageKey = "contacts",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9584)
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ContentKey = "whatsapp",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9586),
+                            DisplayOrder = 4,
+                            IsActive = true,
+                            LinkUrl = "https://wa.me/",
+                            PageKey = "contacts",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9586)
+                        },
+                        new
+                        {
+                            Id = 9,
+                            ContentKey = "youtube",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9587),
+                            DisplayOrder = 5,
+                            IsActive = true,
+                            LinkUrl = "https://youtube.com/",
+                            PageKey = "contacts",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9587)
+                        },
+                        new
+                        {
+                            Id = 10,
+                            ContentKey = "email",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9588),
+                            DisplayOrder = 6,
+                            IsActive = true,
+                            PageKey = "contacts",
+                            TextContent = "info@angelamoiseenko.ru",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9588)
+                        },
+                        new
+                        {
+                            Id = 17,
+                            ContentKey = "phone",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9590),
+                            DisplayOrder = 7,
+                            IsActive = true,
+                            PageKey = "contacts",
+                            TextContent = "+7 (900) 123-45-67",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9590)
+                        },
+                        new
+                        {
+                            Id = 18,
+                            ContentKey = "banner_title",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9592),
+                            DisplayOrder = 8,
+                            IsActive = true,
+                            PageKey = "contacts",
+                            TextContent = "Свяжитесь со мной",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9592)
+                        },
+                        new
+                        {
+                            Id = 19,
+                            ContentKey = "banner_description",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9593),
+                            DisplayOrder = 9,
+                            IsActive = true,
+                            PageKey = "contacts",
+                            TextContent = "Буду рада ответить на ваши вопросы и обсудить идеи!",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9593)
+                        },
+                        new
+                        {
+                            Id = 20,
+                            ContentKey = "description",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9594),
+                            DisplayOrder = 1,
+                            IsActive = true,
+                            PageKey = "footer",
+                            TextContent = "Художник-импрессионист, создающий уникальные работы в стиле импрессионизма. Специализируюсь на театральных картинах и натюрмортах.",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9594)
+                        },
+                        new
+                        {
+                            Id = 21,
+                            ContentKey = "instagram",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9595),
+                            DisplayOrder = 2,
+                            IsActive = true,
+                            LinkUrl = "https://instagram.com/",
+                            PageKey = "footer",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9596)
+                        },
+                        new
+                        {
+                            Id = 22,
+                            ContentKey = "vk",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9597),
+                            DisplayOrder = 3,
+                            IsActive = true,
+                            LinkUrl = "https://vk.com/",
+                            PageKey = "footer",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9597)
+                        },
+                        new
+                        {
+                            Id = 23,
+                            ContentKey = "telegram",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9598),
+                            DisplayOrder = 4,
+                            IsActive = true,
+                            LinkUrl = "https://t.me/",
+                            PageKey = "footer",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9598)
+                        },
+                        new
+                        {
+                            Id = 24,
+                            ContentKey = "whatsapp",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9599),
+                            DisplayOrder = 5,
+                            IsActive = true,
+                            LinkUrl = "https://wa.me/",
+                            PageKey = "footer",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9600)
+                        },
+                        new
+                        {
+                            Id = 25,
+                            ContentKey = "youtube",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9601),
+                            DisplayOrder = 6,
+                            IsActive = true,
+                            LinkUrl = "https://youtube.com/",
+                            PageKey = "footer",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9601)
+                        },
+                        new
+                        {
+                            Id = 26,
+                            ContentKey = "email",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9604),
+                            DisplayOrder = 7,
+                            IsActive = true,
+                            PageKey = "footer",
+                            TextContent = "info@angelamoiseenko.ru",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9604)
+                        },
+                        new
+                        {
+                            Id = 27,
+                            ContentKey = "phone",
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9606),
+                            DisplayOrder = 8,
+                            IsActive = true,
+                            PageKey = "footer",
+                            TextContent = "+7 (900) 123-45-67",
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9606)
                         });
                 });
 
@@ -412,32 +577,32 @@ namespace MomSite.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2342),
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9535),
                             Description = "Видео процесса создания картин",
                             DisplayOrder = 1,
                             IsActive = true,
                             Name = "Процесс создания",
-                            UpdatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2343)
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9535)
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2346),
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9539),
                             Description = "Видео с выставок",
                             DisplayOrder = 2,
                             IsActive = true,
                             Name = "Выставки",
-                            UpdatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2346)
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9539)
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2347),
+                            CreatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9540),
                             Description = "Интервью и рассказы о творчестве",
                             DisplayOrder = 3,
                             IsActive = true,
                             Name = "Интервью",
-                            UpdatedAt = new DateTime(2025, 8, 10, 17, 47, 39, 516, DateTimeKind.Utc).AddTicks(2348)
+                            UpdatedAt = new DateTime(2025, 8, 11, 16, 19, 40, 720, DateTimeKind.Utc).AddTicks(9541)
                         });
                 });
 

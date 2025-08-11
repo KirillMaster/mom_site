@@ -165,12 +165,15 @@ export interface HomeData {
 export interface GalleryData {
   artworks: ArtworkDto[];
   categories: CategoryDto[];
+  bannerTitle: string;
+  bannerDescription: string;
 }
 
 export interface AboutData {
   biography: string;
   artistPhoto: string;
-  specialties: Specialty[];
+  bannerTitle: string;
+  bannerDescription: string;
 }
 
 export interface ContactsData {
@@ -178,6 +181,8 @@ export interface ContactsData {
   email?: string;
   phone?: string;
   address?: string;
+  bannerTitle: string;
+  bannerDescription: string;
 }
 
 export interface SocialLinks {
@@ -191,6 +196,13 @@ export interface SocialLinks {
 export interface VideosData {
   videos: VideoDto[]; // Изменено на VideoDto
   categories: VideoCategoryDto[]; // Изменено на VideoCategoryDto
+}
+
+export interface FooterData {
+  description: string;
+  socialLinks: SocialLinks;
+  email?: string;
+  phone?: string;
 }
 
 export interface Specialty {

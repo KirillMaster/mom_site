@@ -8,7 +8,6 @@ import {
   Youtube, 
   Mail, 
   Phone, 
-  MapPin, 
   ExternalLink,
   MessageSquare,
   Send
@@ -31,10 +30,10 @@ const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) =>
               className="text-center"
             >
               <h1 className="text-5xl md:text-6xl font-serif font-bold text-gray-900 mb-6">
-                Свяжитесь со мной
+                {contactsData.bannerTitle || "Свяжитесь со мной"}
               </h1>
               <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-                Буду рада ответить на ваши вопросы и обсудить идеи!
+                {contactsData.bannerDescription || "Буду рада ответить на ваши вопросы и обсудить идеи!"}
               </p>
             </motion.div>
           </div>
@@ -85,27 +84,6 @@ const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) =>
                         {contactsData.phone}
                       </a>
                     </div>
-                  </div>
-
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center shadow-md">
-                      <MapPin className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900">Местоположение</h3>
-                      <p className="text-gray-600">{contactsData.address}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-10 p-6 bg-white rounded-lg shadow-inner">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                    Часы работы
-                  </h3>
-                  <div className="space-y-2 text-gray-700">
-                    <p>Понедельник - Пятница: 9:00 - 18:00</p>
-                    <p>Суббота: 10:00 - 16:00</p>
-                    <p>Воскресенье: По договоренности</p>
                   </div>
                 </div>
               </motion.div>
