@@ -296,7 +296,6 @@ const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) =>
         </section>
       </main>
 
-      <Footer />
     </div>
   );
 };

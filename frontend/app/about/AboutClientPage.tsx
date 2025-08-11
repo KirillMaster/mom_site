@@ -196,7 +196,6 @@ const AboutClientPage = ({ aboutData }: { aboutData: AboutData }) => {
         </div>
       </section>
 
-      <Footer />
     </div>
   );
 };

@@ -275,7 +275,6 @@ const VideosClientPage = ({ videosData }: { videosData: VideosData }) => {
         </div>
       </section>
 
-      <Footer />
     </div>
   );
 };
