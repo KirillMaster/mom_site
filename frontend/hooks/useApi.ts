@@ -36,40 +36,46 @@ export function useGalleryData() {
   });
 }
 
+export async function getAboutData(): Promise<AboutData> {
+  const response = await api.get('/api/public/about');
+  return {
+    ...response.data,
+    specialties: response.data.specialties?.$values || response.data.specialties || [],
+  };
+}
+
 export function useAboutData() {
   return useQuery<AboutData, Error>({
     queryKey: ['aboutData'],
-    queryFn: async () => {
-      const response = await api.get('/api/public/about');
-      return {
-        ...response.data,
-        specialties: response.data.specialties?.$values || response.data.specialties || [],
-      };
-    },
+    queryFn: getAboutData,
   });
+}
+
+export async function getContactsData(): Promise<ContactsData> {
+  const response = await api.get('/api/public/contacts');
+  return response.data;
 }
 
 export function useContactsData() {
   return useQuery<ContactsData, Error>({
     queryKey: ['contactsData'],
-    queryFn: async () => {
-      const response = await api.get('/api/public/contacts');
-      return response.data;
-    },
+    queryFn: getContactsData,
   });
+}
+
+export async function getVideosData(): Promise<VideosData> {
+  const response = await api.get('/api/public/videos');
+  return {
+    ...response.data,
+    categories: response.data.categories || [],
+    videos: response.data.videos || [],
+  };
 }
 
 export function useVideosData() {
   return useQuery<VideosData, Error>({
     queryKey: ['videosData'],
-    queryFn: async () => {
-      const response = await api.get('/api/public/videos'); // Изменено
-      return {
-        ...response.data,
-        categories: response.data.categories || [],
-        videos: response.data.videos || [],
-      };
-    },
+    queryFn: getVideosData,
   });
 }
 
