@@ -100,7 +100,7 @@ public class ArtworksController : ControllerBase
         var thumbnailPath = await _imageService.CreateThumbnailAsync(imagePath, 300, 300);
         
         // Add watermark to original
-        var watermarkedPath = await _imageService.AddWatermarkAsync(imagePath, "angelamoiseenko.ru");
+        var watermarkedPath = await _imageService.AddWatermarkAsync(imagePath, _imageService.GetWatermarkText());
 
         var artwork = new Artwork
         {
@@ -148,7 +148,7 @@ public class ArtworksController : ControllerBase
             // Save new image
             var imagePath = await _imageService.SaveImageAsync(dto.Image, "artworks");
             var thumbnailPath = await _imageService.CreateThumbnailAsync(imagePath, 300, 300);
-            var watermarkedPath = await _imageService.AddWatermarkAsync(imagePath, "angelamoiseenko.ru");
+            var watermarkedPath = await _imageService.AddWatermarkAsync(imagePath, _imageService.GetWatermarkText());
 
             artwork.ImagePath = watermarkedPath;
             artwork.ThumbnailPath = thumbnailPath;

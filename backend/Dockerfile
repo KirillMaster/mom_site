@@ -3,7 +3,7 @@ WORKDIR /app
 EXPOSE 5000
 EXPOSE 5001
 
-# Install FFmpeg
+# Install FFmpeg for video processing
 RUN apt-get update && apt-get install -y ffmpeg
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
