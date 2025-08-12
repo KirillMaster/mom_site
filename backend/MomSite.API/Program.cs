@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using MomSite.Infrastructure.Data;
 using MomSite.Infrastructure.Services;
+using MomSite.API.Services;
 using Microsoft.Extensions.FileProviders;
 
 
@@ -84,6 +85,7 @@ builder.Services.AddAuthorization();
 
 // Add custom services
 builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
 

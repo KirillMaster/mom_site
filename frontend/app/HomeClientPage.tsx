@@ -43,7 +43,7 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero Banner - Full Screen */}
-      <section className="flex-1 relative flex items-center justify-center overflow-hidden min-h-screen">
+      <section className="relative flex items-center justify-center overflow-hidden h-screen pt-32">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{

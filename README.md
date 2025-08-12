@@ -55,22 +55,47 @@
 
 3. **Настройте переменные окружения** (отредактируйте .env файл)
    ```env
-   # Database
+   # Database Configuration
    POSTGRES_DB=mom_site_db
    POSTGRES_USER=postgres
-   POSTGRES_PASSWORD=your_secure_password_here
 
-   # JWT Settings
-   JWT_SECRET=your-super-secret-jwt-key-here-make-it-long-and-random
+   # JWT Configuration
+   JWT_SECRET=your-super-secret-key-here
    JWT_ISSUER=mom-site
    JWT_AUDIENCE=mom-site
 
-   # Admin Settings
+   # Admin Configuration
    ADMIN_PASSWORD=admin
 
-   # Frontend
-   NEXT_PUBLIC_API_URL=http://localhost:5000
+   # Email SMTP Configuration
+   EMAIL_SMTP_SERVER=smtp.gmail.com
+   EMAIL_SMTP_PORT=587
+   EMAIL_USERNAME=your-email@gmail.com
+   EMAIL_PASSWORD=your-app-password
+   EMAIL_FROM=noreply@angelamoiseenko.ru
+   EMAIL_TO=karangela@narod.ru
    ```
+
+### Настройка SMTP для отправки сообщений
+
+Для работы формы обратной связи на странице "Контакты" необходимо настроить SMTP:
+
+1. **Для Gmail:**
+   - Включите двухфакторную аутентификацию
+   - Создайте "App Password" в настройках безопасности
+   - Используйте этот пароль в `EMAIL_PASSWORD`
+
+2. **Для других провайдеров:**
+   - Укажите соответствующий SMTP сервер и порт
+   - Используйте правильные учетные данные
+
+3. **Переменные окружения для SMTP:**
+   - `EMAIL_SMTP_SERVER` - SMTP сервер (по умолчанию: smtp.gmail.com)
+   - `EMAIL_SMTP_PORT` - порт SMTP (по умолчанию: 587)
+   - `EMAIL_USERNAME` - ваш email
+   - `EMAIL_PASSWORD` - пароль или app password
+   - `EMAIL_FROM` - email отправителя (по умолчанию: noreply@angelamoiseenko.ru)
+   - `EMAIL_TO` - email получателя (по умолчанию: karangela@narod.ru)
 
 4. **Запустите проект**
    ```bash

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, auth, API_BASE_URL, Artwork, Category, Video, VideoCategory, PageContent, HomeData, GalleryData, AboutData, ContactsData, VideosData, FooterData, ArtworkDto, CategoryDto, ArtworkAdminDto } from '../lib/api';
+import { ContactMessage } from '../lib/api';
 
 // Helper to get image URL
 export const getImageUrl = (path: string) => {
@@ -68,12 +69,12 @@ export async function getFooterData(): Promise<FooterData> {
   return response.data;
 }
 
-export function useFooterData() {
-  return useQuery<FooterData, Error>({
-    queryKey: ['footerData'],
+export const useFooterData = () => {
+  return useQuery({
+    queryKey: ['footer'],
     queryFn: getFooterData,
   });
-}
+};
 
 export async function getVideosData(): Promise<VideosData> {
   const response = await api.get('/api/public/videos');
@@ -90,6 +91,11 @@ export function useVideosData() {
     queryFn: getVideosData,
   });
 }
+
+export const sendContactMessage = async (message: ContactMessage) => {
+  const response = await api.post('/api/public/contact-message', message);
+  return response.data;
+};
 
 // Admin API Hooks
 export function useLogin() {

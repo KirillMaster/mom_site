@@ -33,6 +33,13 @@ services:
       - JWT__Issuer=${JWT_ISSUER:-mom-site}
       - JWT__Audience=${JWT_AUDIENCE:-mom-site}
       - AdminPassword=${ADMIN_PASSWORD:-admin}
+      # Email SMTP Configuration
+      - EMAIL_SMTP_SERVER=${EMAIL_SMTP_SERVER:-smtp.gmail.com}
+      - EMAIL_SMTP_PORT=${EMAIL_SMTP_PORT:-587}
+      - EMAIL_USERNAME=${EMAIL_USERNAME}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - EMAIL_FROM=${EMAIL_FROM:-noreply@angelamoiseenko.ru}
+      - EMAIL_TO=${EMAIL_TO:-karangela@narod.ru}
     ports:
       - "5000:5000"
       - "5001:5001"

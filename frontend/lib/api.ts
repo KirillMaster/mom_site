@@ -217,3 +217,10 @@ export interface Specialty {
   title: string;
   description: string;
 }
+
+export interface ContactMessage {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}

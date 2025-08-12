@@ -9,9 +9,44 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { FaInstagram, FaVk, FaTelegram, FaWhatsapp, FaYoutube } from 'react-icons/fa';
-import { ContactsData } from '@/lib/api';
+import { ContactsData, ContactMessage } from '@/lib/api';
+import { sendContactMessage } from '@/hooks/useApi';
+import { useState } from 'react';
 
 const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) => {
+  const [formData, setFormData] = useState<ContactMessage>({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionResult, setSubmissionResult] = useState<'success' | 'error' | null>(null);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmissionResult(null);
+
+    try {
+      await sendContactMessage(formData);
+      setSubmissionResult('success');
+      alert('Сообщение успешно отправлено!');
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (error) {
+      setSubmissionResult('error');
+      alert('Произошла ошибка при отправке сообщения.');
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
@@ -97,7 +132,7 @@ const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) =>
                   Напишите мне сообщение
                 </h3>
                 
-                <form className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -107,6 +142,8 @@ const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) =>
                         type="text"
                         id="name"
                         required
+                        value={formData.name}
+                        onChange={handleInputChange}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                       />
                     </div>
@@ -118,6 +155,8 @@ const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) =>
                         type="email"
                         id="email"
                         required
+                        value={formData.email}
+                        onChange={handleInputChange}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                       />
                     </div>
@@ -130,6 +169,8 @@ const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) =>
                     <input
                       type="text"
                       id="subject"
+                      value={formData.subject}
+                      onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                     />
                   </div>
@@ -142,16 +183,25 @@ const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) =>
                       id="message"
                       rows={6}
                       required
+                      value={formData.message}
+                      onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none transition-all duration-200"
                     ></textarea>
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full bg-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-purple-700 transition-colors duration-300 shadow-md"
+                    disabled={isSubmitting}
+                    className="w-full bg-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-purple-700 transition-colors duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Отправить сообщение
+                    {isSubmitting ? 'Отправка...' : 'Отправить сообщение'}
                   </button>
+                  {submissionResult === 'success' && (
+                    <p className="text-green-600 text-center mt-4">Сообщение успешно отправлено!</p>
+                  )}
+                  {submissionResult === 'error' && (
+                    <p className="text-red-600 text-center mt-4">Произошла ошибка при отправке сообщения.</p>
+                  )}
                 </form>
               </motion.div>
             </div>

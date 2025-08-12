@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MomSite.Core.Models;
 using MomSite.Infrastructure.Data;
+using MomSite.API.Services;
 using MomSite.API.DTOs; // Добавлено
 
 namespace MomSite.API.Controllers;
@@ -11,10 +12,12 @@ namespace MomSite.API.Controllers;
 public class PublicController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
+    private readonly IEmailService _emailService;
 
-    public PublicController(ApplicationDbContext context)
+    public PublicController(ApplicationDbContext context, IEmailService emailService)
     {
         _context = context;
+        _emailService = emailService;
     }
 
     [HttpGet("home")] // Явный маршрут для главной страницы
@@ -375,6 +378,26 @@ public class PublicController : ControllerBase
         }
 
         return Ok(footerData);
+    }
+
+    [HttpPost("contact-message")]
+    public async Task<IActionResult> SendContactMessage([FromBody] ContactMessageDto message)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var success = await _emailService.SendContactMessageAsync(message);
+        
+        if (success)
+        {
+            return Ok(new { message = "Сообщение успешно отправлено!" });
+        }
+        else
+        {
+            return StatusCode(500, new { message = "Ошибка при отправке сообщения. Попробуйте позже." });
+        }
     }
 
     [HttpGet("health")]
