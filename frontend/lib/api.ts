@@ -175,6 +175,7 @@ export interface AboutData {
   bannerTitle: string;
   bannerDescription: string;
   additionalBiography: string;
+  philosophy: string;
 }
 
 export interface ContactsData {
@@ -184,6 +185,12 @@ export interface ContactsData {
   address?: string;
   bannerTitle: string;
   bannerDescription: string;
+  faq: FAQItem[];
+}
+
+export interface FAQItem {
+  question: string;
+  answer: string;
 }
 
 export interface SocialLinks {

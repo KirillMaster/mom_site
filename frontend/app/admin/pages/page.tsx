@@ -38,13 +38,22 @@ const pageFields: Record<string, PageField[]> = {
     { key: 'banner_description', label: 'Описание баннера', type: 'textarea' },
     { key: 'biography', label: 'Биография', type: 'textarea' },
     { key: 'additional_biography', label: 'Дополнительная биография', type: 'textarea' },
+    { key: 'philosophy', label: 'Философия', type: 'textarea' },
     { key: 'artist_photo', label: 'Фото художника', type: 'image' }
   ],
   contacts: [
     { key: 'banner_title', label: 'Заголовок баннера', type: 'text', required: true },
     { key: 'banner_description', label: 'Описание баннера', type: 'textarea' },
     { key: 'phone', label: 'Номер телефона', type: 'text', required: true },
-    { key: 'email', label: 'Email', type: 'text', required: true }
+    { key: 'email', label: 'Email', type: 'text', required: true },
+    { key: 'faq_question_1', label: 'Вопрос 1', type: 'text' },
+    { key: 'faq_answer_1', label: 'Ответ 1', type: 'textarea' },
+    { key: 'faq_question_2', label: 'Вопрос 2', type: 'text' },
+    { key: 'faq_answer_2', label: 'Ответ 2', type: 'textarea' },
+    { key: 'faq_question_3', label: 'Вопрос 3', type: 'text' },
+    { key: 'faq_answer_3', label: 'Ответ 3', type: 'textarea' },
+    { key: 'faq_question_4', label: 'Вопрос 4', type: 'text' },
+    { key: 'faq_answer_4', label: 'Ответ 4', type: 'textarea' }
   ],
   social: [
     { key: 'instagram', label: 'Instagram ссылка', type: 'url' },

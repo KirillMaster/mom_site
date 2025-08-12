@@ -4,14 +4,11 @@ import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { motion } from 'framer-motion';
 import { 
-  Instagram, 
-  Youtube, 
   Mail, 
   Phone, 
-  ExternalLink,
-  MessageSquare,
-  Send
+  ExternalLink
 } from 'lucide-react';
+import { FaInstagram, FaVk, FaTelegram, FaWhatsapp, FaYoutube } from 'react-icons/fa';
 import { ContactsData } from '@/lib/api';
 
 const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) => {
@@ -179,48 +176,88 @@ const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) =>
               </p>
             </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[
-                { name: 'Instagram', url: contactsData.socialLinks.instagram, icon: Instagram, color: 'from-pink-500 to-purple-600', description: 'Следите за моим творчеством' },
-                { name: 'VK', url: contactsData.socialLinks.vk, icon: Send, color: 'from-blue-500 to-blue-600', description: 'Присоединяйтесь к сообществу' },
-                { name: 'Telegram', url: contactsData.socialLinks.telegram, icon: MessageSquare, color: 'from-cyan-500 to-blue-500', description: 'Быстрая связь' },
-                { name: 'WhatsApp', url: contactsData.socialLinks.whatsapp, icon: MessageSquare, color: 'from-green-500 to-green-600', description: 'Мессенджер' },
-                { name: 'YouTube', url: contactsData.socialLinks.youtube, icon: Youtube, color: 'from-red-500 to-red-600', description: 'Видео контент' }
-              ].filter(social => social.url).map((social, index) => (
-                social.url && (
+            <div className="flex flex-wrap justify-center gap-8">
+              {contactsData.socialLinks.instagram && (
                 <motion.a
-                  key={social.name}
-                  href={social.url}
+                  href={contactsData.socialLinks.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: index * 0.1 }}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
                   viewport={{ once: true }}
-                  className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 group flex items-center space-x-4"
+                  className="flex flex-col items-center space-y-2 text-gray-700 hover:text-pink-600 transition-colors"
                 >
-                  <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-lg ${social.color} group-hover:scale-110 transition-transform duration-200`}>
-                    <social.icon className="w-8 h-8 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2">
-                      <h3 className="text-xl font-semibold text-gray-900">
-                        {social.name}
-                      </h3>
-                      <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-purple-600 transition-colors duration-200" />
-                    </div>
-                    <p className="text-gray-600 text-sm mt-1">
-                      {social.description}
-                    </p>
-                  </div>
+                  <FaInstagram className="w-12 h-12" />
+                  <span className="text-lg font-medium">Instagram</span>
                 </motion.a>
-              )))}
+              )}
+              {contactsData.socialLinks.vk && (
+                <motion.a
+                  href={contactsData.socialLinks.vk}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                  viewport={{ once: true }}
+                  className="flex flex-col items-center space-y-2 text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  <FaVk className="w-12 h-12" />
+                  <span className="text-lg font-medium">ВКонтакте</span>
+                </motion.a>
+              )}
+              {contactsData.socialLinks.telegram && (
+                <motion.a
+                  href={contactsData.socialLinks.telegram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  viewport={{ once: true }}
+                  className="flex flex-col items-center space-y-2 text-gray-700 hover:text-blue-400 transition-colors"
+                >
+                  <FaTelegram className="w-12 h-12" />
+                  <span className="text-lg font-medium">Telegram</span>
+                </motion.a>
+              )}
+              {contactsData.socialLinks.whatsapp && (
+                <motion.a
+                  href={contactsData.socialLinks.whatsapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                  viewport={{ once: true }}
+                  className="flex flex-col items-center space-y-2 text-gray-700 hover:text-green-500 transition-colors"
+                >
+                  <FaWhatsapp className="w-12 h-12" />
+                  <span className="text-lg font-medium">WhatsApp</span>
+                </motion.a>
+              )}
+              {contactsData.socialLinks.youtube && (
+                <motion.a
+                  href={contactsData.socialLinks.youtube}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                  viewport={{ once: true }}
+                  className="flex flex-col items-center space-y-2 text-gray-700 hover:text-red-600 transition-colors"
+                >
+                  <FaYoutube className="w-12 h-12" />
+                  <span className="text-lg font-medium">YouTube</span>
+                </motion.a>
+              )}
             </div>
           </div>
         </section>
 
         {/* FAQ Section */}
-        <section className="py-20 bg-white">
+        <section className="py-20 bg-gray-50">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -234,38 +271,21 @@ const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) =>
               </h2>
             </motion.div>
 
-            <div className="space-y-6">
-              {[
-                {
-                  question: "Как заказать картину?",
-                  answer: "Свяжитесь со мной любым удобным способом - по телефону, email или через социальные сети. Мы обсудим ваши пожелания, размеры и сроки выполнения."
-                },
-                {
-                  question: "Сколько времени занимает создание картины?",
-                  answer: "Время создания зависит от сложности работы и размера. Обычно это занимает от 2 до 4 недель. Точные сроки обговариваются индивидуально."
-                },
-                {
-                  question: "Возможна ли доставка картин?",
-                  answer: "Да, я организую безопасную доставку картин по России. Стоимость доставки рассчитывается индивидуально в зависимости от размера и места назначения."
-                },
-                {
-                  question: "Проводите ли вы мастер-классы?",
-                  answer: "Да, я провожу мастер-классы по живописи для всех уровней подготовки. Следите за анонсами в социальных сетях или свяжитесь со мной для уточнения деталей."
-                }
-              ].map((faq, index) => (
+            <div className="space-y-8">
+              {contactsData.faq.map((item, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: index * 0.1 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
                   viewport={{ once: true }}
-                  className="bg-gray-50 p-6 rounded-lg shadow-md"
+                  className="bg-white p-8 rounded-lg shadow-md"
                 >
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {faq.question}
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                    {item.question}
                   </h3>
                   <p className="text-gray-700 leading-relaxed">
-                    {faq.answer}
+                    {item.answer}
                   </p>
                 </motion.div>
               ))}

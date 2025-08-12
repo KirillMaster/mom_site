@@ -3,7 +3,7 @@
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { motion } from 'framer-motion';
-import { Palette, Award, Heart, Camera } from 'lucide-react';
+import { Palette } from 'lucide-react';
 import { getImageUrl } from '@/hooks/useApi';
 import { AboutData } from '@/lib/api';
 
@@ -104,9 +104,7 @@ const AboutClientPage = ({ aboutData }: { aboutData: AboutData }) => {
               Моя философия
             </h2>
             <blockquote className="text-xl md:text-2xl leading-relaxed italic mb-8">
-              "Искусство - это способ передать красоту мира через призму собственного восприятия. 
-              Каждый мазок кисти - это эмоция, каждый цвет - это настроение, 
-              а каждая картина - это история, которую я хочу рассказать зрителю."
+              "{aboutData.philosophy}"
             </blockquote>
             <p className="text-lg opacity-90">
               — Анжела Моисеенко

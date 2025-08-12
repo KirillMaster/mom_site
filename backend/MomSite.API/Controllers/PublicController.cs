@@ -159,6 +159,10 @@ public class PublicController : ControllerBase
             .Where(pc => pc.PageKey == "about" && pc.ContentKey == "additional_biography" && pc.IsActive)
             .FirstOrDefaultAsync();
 
+        var philosophy = await _context.PageContents
+            .Where(pc => pc.PageKey == "about" && pc.ContentKey == "philosophy" && pc.IsActive)
+            .FirstOrDefaultAsync();
+
         // Get banner content for about page
         var bannerTitle = await _context.PageContents
             .Where(pc => pc.PageKey == "about" && pc.ContentKey == "banner_title" && pc.IsActive)
@@ -173,6 +177,7 @@ public class PublicController : ControllerBase
             Biography = biography?.TextContent ?? "Информация о художнике",
             ArtistPhoto = artistPhoto?.ImagePath ?? "/images/artist-default.jpg",
             AdditionalBiography = additionalBiography?.TextContent ?? "Мое творчество основано на глубоком понимании классических техник живописи, которые я сочетаю с современным видением и индивидуальным подходом к каждому произведению. Каждая картина - это история, эмоция, момент времени, запечатленный на холсте.",
+            Philosophy = philosophy?.TextContent ?? "Искусство - это способ передать красоту мира через призму собственного восприятия. Каждый мазок кисти - это эмоция, каждый цвет - это настроение, а каждая картина - это история, которую я хочу рассказать зрителю.",
             BannerTitle = bannerTitle?.TextContent ?? "Обо мне",
             BannerDescription = bannerDescription?.TextContent ?? "Познакомьтесь с художником и узнайте больше о моем творческом пути"
         });
@@ -244,6 +249,30 @@ public class PublicController : ControllerBase
 
         contactsData.BannerTitle = bannerTitle?.TextContent ?? "Свяжитесь со мной";
         contactsData.BannerDescription = bannerDescription?.TextContent ?? "Буду рада ответить на ваши вопросы и обсудить идеи!";
+
+        // Get FAQ items
+        var faqItems = new List<FAQItem>();
+        for (int i = 1; i <= 4; i++)
+        {
+            var question = await _context.PageContents
+                .Where(pc => pc.PageKey == "contacts" && pc.ContentKey == $"faq_question_{i}" && pc.IsActive)
+                .FirstOrDefaultAsync();
+
+            var answer = await _context.PageContents
+                .Where(pc => pc.PageKey == "contacts" && pc.ContentKey == $"faq_answer_{i}" && pc.IsActive)
+                .FirstOrDefaultAsync();
+
+            if (question?.TextContent != null && answer?.TextContent != null)
+            {
+                faqItems.Add(new FAQItem
+                {
+                    Question = question.TextContent,
+                    Answer = answer.TextContent
+                });
+            }
+        }
+
+        contactsData.FAQ = faqItems;
 
         return Ok(contactsData);
     }
