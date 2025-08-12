@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Filter, Eye, ShoppingCart } from 'lucide-react';
+import { Filter, Eye } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
@@ -26,6 +26,14 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
       currency: 'RUB',
       minimumFractionDigits: 0
     }).format(price);
+  };
+
+  const getPriceDisplay = (artwork: any) => {
+    if (!artwork.isForSale) return null;
+    if (artwork.price && typeof artwork.price === 'number' && artwork.price > 0) {
+      return formatPrice(artwork.price);
+    }
+    return 'Цена: договорная';
   };
 
   const openLightbox = (index: number) => {
@@ -119,19 +127,13 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
                     />
                     
                     {/* Overlay */}
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center space-x-4">
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                       <button
                         onClick={() => openLightbox(index)}
                         className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors duration-200"
                       >
                         <Eye className="w-5 h-5" />
                       </button>
-                      
-                      {artwork.isForSale && (
-                        <button className="w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center text-white hover:bg-primary-700 transition-colors duration-200">
-                          <ShoppingCart className="w-5 h-5" />
-                        </button>
-                      )}
                     </div>
                   </div>
                   
@@ -140,9 +142,9 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
                       <span className="text-sm text-primary-600 font-medium">
                         {artwork.category?.name || 'Без категории'}
                       </span>
-                      {artwork.isForSale && typeof artwork.price === 'number' && (
+                      {artwork.isForSale && (
                         <span className="text-lg font-bold text-gray-900">
-                          {formatPrice(artwork.price)}
+                          {getPriceDisplay(artwork)}
                         </span>
                       )}
                     </div>
