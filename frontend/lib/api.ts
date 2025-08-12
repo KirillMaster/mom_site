@@ -174,6 +174,7 @@ export interface AboutData {
   artistPhoto: string;
   bannerTitle: string;
   bannerDescription: string;
+  additionalBiography: string;
 }
 
 export interface ContactsData {

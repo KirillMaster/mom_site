@@ -28,6 +28,7 @@ namespace MomSite.API.DTOs
         public string ArtistPhoto { get; set; } = string.Empty;
         public string BannerTitle { get; set; } = string.Empty;
         public string BannerDescription { get; set; } = string.Empty;
+        public string AdditionalBiography { get; set; } = string.Empty;
     }
 
     public class ContactsData

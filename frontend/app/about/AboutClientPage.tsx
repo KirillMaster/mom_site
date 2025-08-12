@@ -70,9 +70,7 @@ const AboutClientPage = ({ aboutData }: { aboutData: AboutData }) => {
                 {aboutData.biography}
               </p>
               <p className="text-lg text-gray-700 leading-relaxed mb-8">
-                Мое творчество основано на глубоком понимании классических техник живописи, 
-                которые я сочетаю с современным видением и индивидуальным подходом к каждому произведению. 
-                Каждая картина - это история, эмоция, момент времени, запечатленный на холсте.
+                {aboutData.additionalBiography}
               </p>
               
               <div className="flex flex-wrap gap-4">

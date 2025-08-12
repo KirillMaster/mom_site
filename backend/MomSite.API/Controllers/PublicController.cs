@@ -42,32 +42,18 @@ public class PublicController : ControllerBase
             .Where(pc => pc.PageKey == "home" && pc.ContentKey == "home_author_photo" && pc.IsActive)
             .FirstOrDefaultAsync();
 
-        var contacts = await _context.PageContents
+        var contactsData = new ContactsData();
+
+        // Get contact info from contacts page
+        var contactsContent = await _context.PageContents
             .Where(pc => pc.PageKey == "contacts" && pc.IsActive)
             .OrderBy(pc => pc.DisplayOrder)
             .ToListAsync();
 
-        var contactsData = new ContactsData();
-
-        foreach (var contact in contacts)
+        foreach (var contact in contactsContent)
         {
             switch (contact.ContentKey)
             {
-                case "instagram":
-                    contactsData.SocialLinks.Instagram = contact.LinkUrl;
-                    break;
-                case "vk":
-                    contactsData.SocialLinks.Vk = contact.LinkUrl;
-                    break;
-                case "telegram":
-                    contactsData.SocialLinks.Telegram = contact.LinkUrl;
-                    break;
-                case "whatsapp":
-                    contactsData.SocialLinks.Whatsapp = contact.LinkUrl;
-                    break;
-                case "youtube":
-                    contactsData.SocialLinks.Youtube = contact.LinkUrl;
-                    break;
                 case "email":
                     contactsData.Email = contact.TextContent;
                     break;
@@ -76,6 +62,34 @@ public class PublicController : ControllerBase
                     break;
                 case "address":
                     contactsData.Address = contact.TextContent;
+                    break;
+            }
+        }
+
+        // Get social links from social page
+        var socialContent = await _context.PageContents
+            .Where(pc => pc.PageKey == "social" && pc.IsActive)
+            .OrderBy(pc => pc.DisplayOrder)
+            .ToListAsync();
+
+        foreach (var social in socialContent)
+        {
+            switch (social.ContentKey)
+            {
+                case "instagram":
+                    contactsData.SocialLinks.Instagram = social.LinkUrl;
+                    break;
+                case "vk":
+                    contactsData.SocialLinks.Vk = social.LinkUrl;
+                    break;
+                case "telegram":
+                    contactsData.SocialLinks.Telegram = social.LinkUrl;
+                    break;
+                case "whatsapp":
+                    contactsData.SocialLinks.Whatsapp = social.LinkUrl;
+                    break;
+                case "youtube":
+                    contactsData.SocialLinks.Youtube = social.LinkUrl;
                     break;
             }
         }
@@ -89,10 +103,6 @@ public class PublicController : ControllerBase
             Artworks = artworks.Select(a => a.ToDto()).ToList(),
             Contacts = contactsData // Assign the populated contactsData
         });
-
-        
-
-        
     }
 
     [HttpGet("gallery")] // Явный маршрут для галереи
@@ -145,6 +155,10 @@ public class PublicController : ControllerBase
             .Where(pc => pc.PageKey == "about" && pc.ContentKey == "artist_photo" && pc.IsActive)
             .FirstOrDefaultAsync();
 
+        var additionalBiography = await _context.PageContents
+            .Where(pc => pc.PageKey == "about" && pc.ContentKey == "additional_biography" && pc.IsActive)
+            .FirstOrDefaultAsync();
+
         // Get banner content for about page
         var bannerTitle = await _context.PageContents
             .Where(pc => pc.PageKey == "about" && pc.ContentKey == "banner_title" && pc.IsActive)
@@ -158,48 +172,63 @@ public class PublicController : ControllerBase
         {
             Biography = biography?.TextContent ?? "Информация о художнике",
             ArtistPhoto = artistPhoto?.ImagePath ?? "/images/artist-default.jpg",
+            AdditionalBiography = additionalBiography?.TextContent ?? "Мое творчество основано на глубоком понимании классических техник живописи, которые я сочетаю с современным видением и индивидуальным подходом к каждому произведению. Каждая картина - это история, эмоция, момент времени, запечатленный на холсте.",
             BannerTitle = bannerTitle?.TextContent ?? "Обо мне",
             BannerDescription = bannerDescription?.TextContent ?? "Познакомьтесь с художником и узнайте больше о моем творческом пути"
         });
     }
 
-    [HttpGet("contacts")] // Явный маршрут для страницы "Контакты"
+    [HttpGet("contacts")]
     public async Task<ActionResult<ContactsData>> GetContactsData()
     {
-        var contacts = await _context.PageContents
+        var contactsData = new ContactsData();
+
+        // Get contacts page content
+        var contactsContent = await _context.PageContents
             .Where(pc => pc.PageKey == "contacts" && pc.IsActive)
             .OrderBy(pc => pc.DisplayOrder)
             .ToListAsync();
 
-        var contactsData = new ContactsData();
-
-        foreach (var contact in contacts)
+        foreach (var contact in contactsContent)
         {
             switch (contact.ContentKey)
             {
-                case "instagram":
-                    contactsData.SocialLinks.Instagram = contact.LinkUrl;
-                    break;
-                case "vk":
-                    contactsData.SocialLinks.Vk = contact.LinkUrl;
-                    break;
-                case "telegram":
-                    contactsData.SocialLinks.Telegram = contact.LinkUrl;
-                    break;
-                case "whatsapp":
-                    contactsData.SocialLinks.Whatsapp = contact.LinkUrl;
-                    break;
-                case "youtube":
-                    contactsData.SocialLinks.Youtube = contact.LinkUrl;
+                case "phone":
+                    contactsData.Phone = contact.TextContent;
                     break;
                 case "email":
                     contactsData.Email = contact.TextContent;
                     break;
-                case "phone":
-                    contactsData.Phone = contact.TextContent;
-                    break;
                 case "address":
                     contactsData.Address = contact.TextContent;
+                    break;
+            }
+        }
+
+        // Get social links from social page
+        var socialContent = await _context.PageContents
+            .Where(pc => pc.PageKey == "social" && pc.IsActive)
+            .OrderBy(pc => pc.DisplayOrder)
+            .ToListAsync();
+
+        foreach (var social in socialContent)
+        {
+            switch (social.ContentKey)
+            {
+                case "instagram":
+                    contactsData.SocialLinks.Instagram = social.LinkUrl;
+                    break;
+                case "vk":
+                    contactsData.SocialLinks.Vk = social.LinkUrl;
+                    break;
+                case "telegram":
+                    contactsData.SocialLinks.Telegram = social.LinkUrl;
+                    break;
+                case "whatsapp":
+                    contactsData.SocialLinks.Whatsapp = social.LinkUrl;
+                    break;
+                case "youtube":
+                    contactsData.SocialLinks.Youtube = social.LinkUrl;
                     break;
             }
         }
@@ -251,12 +280,13 @@ public class PublicController : ControllerBase
     [HttpGet("footer")]
     public async Task<ActionResult<FooterData>> GetFooterData()
     {
+        var footerData = new FooterData();
+
+        // Get footer description
         var footerContent = await _context.PageContents
             .Where(pc => pc.PageKey == "footer" && pc.IsActive)
             .OrderBy(pc => pc.DisplayOrder)
             .ToListAsync();
-
-        var footerData = new FooterData();
 
         foreach (var content in footerContent)
         {
@@ -265,26 +295,52 @@ public class PublicController : ControllerBase
                 case "description":
                     footerData.Description = content.TextContent;
                     break;
-                case "instagram":
-                    footerData.SocialLinks.Instagram = content.LinkUrl;
-                    break;
-                case "vk":
-                    footerData.SocialLinks.Vk = content.LinkUrl;
-                    break;
-                case "telegram":
-                    footerData.SocialLinks.Telegram = content.LinkUrl;
-                    break;
-                case "whatsapp":
-                    footerData.SocialLinks.Whatsapp = content.LinkUrl;
-                    break;
-                case "youtube":
-                    footerData.SocialLinks.Youtube = content.LinkUrl;
-                    break;
+            }
+        }
+
+        // Get contact info from contacts page
+        var contactsContent = await _context.PageContents
+            .Where(pc => pc.PageKey == "contacts" && pc.IsActive)
+            .OrderBy(pc => pc.DisplayOrder)
+            .ToListAsync();
+
+        foreach (var contact in contactsContent)
+        {
+            switch (contact.ContentKey)
+            {
                 case "email":
-                    footerData.Email = content.TextContent;
+                    footerData.Email = contact.TextContent;
                     break;
                 case "phone":
-                    footerData.Phone = content.TextContent;
+                    footerData.Phone = contact.TextContent;
+                    break;
+            }
+        }
+
+        // Get social links from social page
+        var socialContent = await _context.PageContents
+            .Where(pc => pc.PageKey == "social" && pc.IsActive)
+            .OrderBy(pc => pc.DisplayOrder)
+            .ToListAsync();
+
+        foreach (var social in socialContent)
+        {
+            switch (social.ContentKey)
+            {
+                case "instagram":
+                    footerData.SocialLinks.Instagram = social.LinkUrl;
+                    break;
+                case "vk":
+                    footerData.SocialLinks.Vk = social.LinkUrl;
+                    break;
+                case "telegram":
+                    footerData.SocialLinks.Telegram = social.LinkUrl;
+                    break;
+                case "whatsapp":
+                    footerData.SocialLinks.Whatsapp = social.LinkUrl;
+                    break;
+                case "youtube":
+                    footerData.SocialLinks.Youtube = social.LinkUrl;
                     break;
             }
         }

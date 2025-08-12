@@ -1,8 +1,11 @@
 import Link from 'next/link';
-import { Palette, Instagram, Youtube, Mail, Phone } from 'lucide-react';
+import { Palette, Mail, Phone } from 'lucide-react';
+import { FaInstagram, FaVk, FaTelegram, FaWhatsapp, FaYoutube } from 'react-icons/fa';
+import { useFooterData } from '@/hooks/useApi';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const { data: footerData, isLoading } = useFooterData();
 
   return (
     <footer className="bg-gray-900 text-white">
@@ -19,32 +22,67 @@ const Footer = () => {
               </span>
             </div>
             <p className="text-gray-300 mb-6 max-w-md">
-              Художник-импрессионист, создающий уникальные работы в стиле импрессионизма. 
-              Специализируюсь на театральных картинах и натюрмортах.
+              {footerData?.description || "Художник-импрессионист, создающий уникальные работы в стиле импрессионизма. Специализируюсь на театральных картинах и натюрмортах."}
             </p>
             <div className="flex space-x-4">
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
-              >
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a
-                href="https://youtube.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
-              >
-                <Youtube className="w-5 h-5" />
-              </a>
-              <a
-                href="mailto:info@angelamoiseenko.ru"
-                className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
-              >
-                <Mail className="w-5 h-5" />
-              </a>
+              {footerData?.socialLinks?.instagram && (
+                <a
+                  href={footerData.socialLinks.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
+                >
+                  <FaInstagram className="w-5 h-5" />
+                </a>
+              )}
+              {footerData?.socialLinks?.vk && (
+                <a
+                  href={footerData.socialLinks.vk}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
+                >
+                  <FaVk className="w-5 h-5" />
+                </a>
+              )}
+              {footerData?.socialLinks?.telegram && (
+                <a
+                  href={footerData.socialLinks.telegram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
+                >
+                  <FaTelegram className="w-5 h-5" />
+                </a>
+              )}
+              {footerData?.socialLinks?.whatsapp && (
+                <a
+                  href={footerData.socialLinks.whatsapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
+                >
+                  <FaWhatsapp className="w-5 h-5" />
+                </a>
+              )}
+              {footerData?.socialLinks?.youtube && (
+                <a
+                  href={footerData.socialLinks.youtube}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
+                >
+                  <FaYoutube className="w-5 h-5" />
+                </a>
+              )}
+              {footerData?.email && (
+                <a
+                  href={`mailto:${footerData.email}`}
+                  className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
+                >
+                  <Mail className="w-5 h-5" />
+                </a>
+              )}
             </div>
           </div>
 
@@ -84,24 +122,28 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Контакты</h3>
             <div className="space-y-3">
-              <div className="flex items-center space-x-3">
-                <Mail className="w-5 h-5 text-primary-400" />
-                <a
-                  href="mailto:info@angelamoiseenko.ru"
-                  className="text-gray-300 hover:text-white transition-colors duration-200"
-                >
-                  info@angelamoiseenko.ru
-                </a>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Phone className="w-5 h-5 text-primary-400" />
-                <a
-                  href="tel:+79001234567"
-                  className="text-gray-300 hover:text-white transition-colors duration-200"
-                >
-                  +7 (900) 123-45-67
-                </a>
-              </div>
+              {footerData?.email && (
+                <div className="flex items-center space-x-3">
+                  <Mail className="w-5 h-5 text-primary-400" />
+                  <a
+                    href={`mailto:${footerData.email}`}
+                    className="text-gray-300 hover:text-white transition-colors duration-200"
+                  >
+                    {footerData.email}
+                  </a>
+                </div>
+              )}
+              {footerData?.phone && (
+                <div className="flex items-center space-x-3">
+                  <Phone className="w-5 h-5 text-primary-400" />
+                  <a
+                    href={`tel:${footerData.phone}`}
+                    className="text-gray-300 hover:text-white transition-colors duration-200"
+                  >
+                    {footerData.phone}
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -112,14 +154,7 @@ const Footer = () => {
             <p className="text-gray-400 text-sm">
               © {currentYear} Анжела Моисеенко. Все права защищены.
             </p>
-            <div className="flex space-x-6 mt-4 md:mt-0">
-              <Link href="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors duration-200">
-                Политика конфиденциальности
-              </Link>
-              <Link href="/terms" className="text-gray-400 hover:text-white text-sm transition-colors duration-200">
-                Условия использования
-              </Link>
-            </div>
+
           </div>
         </div>
       </div>

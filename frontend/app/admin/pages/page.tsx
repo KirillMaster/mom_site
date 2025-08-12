@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Save, Plus } from 'lucide-react';
+import { ArrowLeft, Save, Upload } from 'lucide-react';
 
 interface PageContent {
   id: number;
@@ -37,13 +37,16 @@ const pageFields: Record<string, PageField[]> = {
     { key: 'banner_title', label: 'Заголовок баннера', type: 'text', required: true },
     { key: 'banner_description', label: 'Описание баннера', type: 'textarea' },
     { key: 'biography', label: 'Биография', type: 'textarea' },
+    { key: 'additional_biography', label: 'Дополнительная биография', type: 'textarea' },
     { key: 'artist_photo', label: 'Фото художника', type: 'image' }
   ],
   contacts: [
     { key: 'banner_title', label: 'Заголовок баннера', type: 'text', required: true },
     { key: 'banner_description', label: 'Описание баннера', type: 'textarea' },
     { key: 'phone', label: 'Номер телефона', type: 'text', required: true },
-    { key: 'email', label: 'Email', type: 'text', required: true },
+    { key: 'email', label: 'Email', type: 'text', required: true }
+  ],
+  social: [
     { key: 'instagram', label: 'Instagram ссылка', type: 'url' },
     { key: 'vk', label: 'VK ссылка', type: 'url' },
     { key: 'telegram', label: 'Telegram ссылка', type: 'url' },
@@ -51,14 +54,7 @@ const pageFields: Record<string, PageField[]> = {
     { key: 'youtube', label: 'YouTube ссылка', type: 'url' }
   ],
   footer: [
-    { key: 'description', label: 'Описание в футере', type: 'textarea' },
-    { key: 'phone', label: 'Номер телефона', type: 'text', required: true },
-    { key: 'email', label: 'Email', type: 'text', required: true },
-    { key: 'instagram', label: 'Instagram ссылка', type: 'url' },
-    { key: 'vk', label: 'VK ссылка', type: 'url' },
-    { key: 'telegram', label: 'Telegram ссылка', type: 'url' },
-    { key: 'whatsapp', label: 'WhatsApp ссылка', type: 'url' },
-    { key: 'youtube', label: 'YouTube ссылка', type: 'url' }
+    { key: 'description', label: 'Описание в футере', type: 'textarea' }
   ]
 };
 
@@ -67,6 +63,7 @@ const pageNames: Record<string, string> = {
   gallery: 'Галерея',
   about: 'Обо мне',
   contacts: 'Контакты',
+  social: 'Социальные сети',
   footer: 'Футер'
 };
 
@@ -76,6 +73,7 @@ export default function PageContentManagement() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState<Record<string, string>>({});
+  const [files, setFiles] = useState<Record<string, File | null>>({});
 
   useEffect(() => {
     fetchPageContent();
@@ -84,7 +82,7 @@ export default function PageContentManagement() {
   const fetchPageContent = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:5000/api/admin/page-content?pageKey=${selectedPage}`, {
+      const response = await fetch(`http://localhost:5000/api/admin/page-content-by-key?pageKey=${selectedPage}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -117,6 +115,13 @@ export default function PageContentManagement() {
     }));
   };
 
+  const handleFileChange = (key: string, file: File | null) => {
+    setFiles(prev => ({
+      ...prev,
+      [key]: file
+    }));
+  };
+
   const saveContent = async () => {
     try {
       setSaving(true);
@@ -130,18 +135,29 @@ export default function PageContentManagement() {
       for (const item of existingItems) {
         const field = pageFields[selectedPage].find(f => f.key === item.contentKey);
         if (field && formData[item.contentKey] !== undefined) {
-          const updateData: any = {};
-          if (field.type === 'url') updateData.linkUrl = formData[item.contentKey];
-          else if (field.type === 'image') updateData.imagePath = formData[item.contentKey];
-          else updateData.textContent = formData[item.contentKey];
+          const formDataToSend = new FormData();
+          
+          if (field.type === 'url') {
+            formDataToSend.append('linkUrl', formData[item.contentKey]);
+          } else if (field.type === 'image') {
+            if (files[item.contentKey]) {
+              formDataToSend.append('image', files[item.contentKey]!);
+            } else if (formData[item.contentKey]) {
+              formDataToSend.append('imagePath', formData[item.contentKey]);
+            }
+          } else {
+            formDataToSend.append('textContent', formData[item.contentKey]);
+          }
+
+          formDataToSend.append('isActive', 'true');
+          formDataToSend.append('displayOrder', item.displayOrder.toString());
 
           await fetch(`http://localhost:5000/api/admin/page-content/${item.id}`, {
             method: 'PUT',
             headers: {
-              'Content-Type': 'application/json',
               'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
-            body: JSON.stringify(updateData)
+            body: formDataToSend
           });
         }
       }
@@ -152,24 +168,30 @@ export default function PageContentManagement() {
 
       for (const field of missingFields) {
         if (formData[field.key]) {
-          const createData: any = {
-            pageKey: selectedPage,
-            contentKey: field.key,
-            displayOrder: pageFields[selectedPage].findIndex(f => f.key === field.key) + 1,
-            isActive: true
-          };
+          const formDataToSend = new FormData();
+          formDataToSend.append('pageKey', selectedPage);
+          formDataToSend.append('contentKey', field.key);
+          formDataToSend.append('displayOrder', (pageFields[selectedPage].findIndex(f => f.key === field.key) + 1).toString());
+          formDataToSend.append('isActive', 'true');
 
-          if (field.type === 'url') createData.linkUrl = formData[field.key];
-          else if (field.type === 'image') createData.imagePath = formData[field.key];
-          else createData.textContent = formData[field.key];
+          if (field.type === 'url') {
+            formDataToSend.append('linkUrl', formData[field.key]);
+          } else if (field.type === 'image') {
+            if (files[field.key]) {
+              formDataToSend.append('image', files[field.key]!);
+            } else if (formData[field.key]) {
+              formDataToSend.append('imagePath', formData[field.key]);
+            }
+          } else {
+            formDataToSend.append('textContent', formData[field.key]);
+          }
 
           await fetch('http://localhost:5000/api/admin/page-content', {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json',
               'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
-            body: JSON.stringify(createData)
+            body: formDataToSend
           });
         }
       }
@@ -264,6 +286,24 @@ export default function PageContentManagement() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder={`Введите ${field.label.toLowerCase()}`}
                   />
+                ) : field.type === 'image' ? (
+                  <div className="space-y-2">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleFileChange(field.key, e.target.files?.[0] || null)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    {formData[field.key] && (
+                      <div className="mt-2">
+                        <img 
+                          src={formData[field.key]} 
+                          alt={field.label}
+                          className="w-32 h-32 object-cover rounded-lg border border-gray-300"
+                        />
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <input
                     type={field.type === 'url' ? 'url' : 'text'}
@@ -272,16 +312,6 @@ export default function PageContentManagement() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder={field.type === 'url' ? 'https://example.com' : `Введите ${field.label.toLowerCase()}`}
                   />
-                )}
-                
-                {field.type === 'image' && formData[field.key] && (
-                  <div className="mt-2">
-                    <img 
-                      src={formData[field.key]} 
-                      alt={field.label}
-                      className="w-32 h-32 object-cover rounded-lg border border-gray-300"
-                    />
-                  </div>
                 )}
               </div>
             ))}
