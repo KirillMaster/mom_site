@@ -9,7 +9,9 @@ export const getImageUrl = (path: string) => {
     return path;
   }
   // Otherwise, prepend API base URL for local files
-  return `${API_BASE_URL}${path}`;
+  // Use absolute URL for images since they need to be accessible from browser
+  const baseUrl = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || 'https://angelamoiseenko.ru/api';
+  return `${baseUrl}${path}`;
 };
 
 // Public API Hooks
