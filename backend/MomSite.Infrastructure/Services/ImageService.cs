@@ -84,11 +84,11 @@ public class ImageService : IImageService
             Directory.CreateDirectory(folderPath);
             
             var filePath = System.IO.Path.Combine(folderPath, fileName);
-            
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
+        
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
 
             var localPath = $"/uploads/{folder}/{fileName}";
             Console.WriteLine($"Local storage path: {localPath}");
@@ -114,45 +114,45 @@ public class ImageService : IImageService
         {
             // Local storage implementation
             var fullPath = System.IO.Path.Combine(_uploadPath, imagePath.TrimStart('/').Replace("uploads/", ""));
-            
-            if (!File.Exists(fullPath))
-                throw new FileNotFoundException("Image not found", fullPath);
+        
+        if (!File.Exists(fullPath))
+            throw new FileNotFoundException("Image not found", fullPath);
 
             var fileName = System.IO.Path.GetFileName(fullPath);
-            var thumbnailName = $"thumb_{fileName}";
+        var thumbnailName = $"thumb_{fileName}";
             var thumbnailPath = System.IO.Path.Combine(_uploadPath, "thumbnails", thumbnailName);
-            
+        
             Directory.CreateDirectory(System.IO.Path.GetDirectoryName(thumbnailPath)!);
 
-            // Create thumbnail with watermark
-            using (var originalImage = await Image.LoadAsync(fullPath))
+        // Create thumbnail with watermark
+        using (var originalImage = await Image.LoadAsync(fullPath))
+        {
+            // Calculate aspect ratio to maintain proportions
+            var aspectRatio = (double)originalImage.Width / originalImage.Height;
+            var targetWidth = width;
+            var targetHeight = height;
+
+            if (aspectRatio > 1) // Landscape
             {
-                // Calculate aspect ratio to maintain proportions
-                var aspectRatio = (double)originalImage.Width / originalImage.Height;
-                var targetWidth = width;
-                var targetHeight = height;
+                targetHeight = (int)(width / aspectRatio);
+            }
+            else // Portrait or square
+            {
+                targetWidth = (int)(height * aspectRatio);
+            }
 
-                if (aspectRatio > 1) // Landscape
-                {
-                    targetHeight = (int)(width / aspectRatio);
-                }
-                else // Portrait or square
-                {
-                    targetWidth = (int)(height * aspectRatio);
-                }
-
-                // Resize image
-                originalImage.Mutate(x => x.Resize(targetWidth, targetHeight));
+            // Resize image
+            originalImage.Mutate(x => x.Resize(targetWidth, targetHeight));
 
                 // Add simple watermark - corner overlay
                 AddCornerWatermark(originalImage, targetWidth, targetHeight);
 
-                // Save the thumbnail
+            // Save the thumbnail
                 var format = GetImageFormat(System.IO.Path.GetExtension(fullPath));
-                await originalImage.SaveAsync(thumbnailPath, format);
-            }
+            await originalImage.SaveAsync(thumbnailPath, format);
+        }
 
-            return $"/uploads/thumbnails/{thumbnailName}";
+        return $"/uploads/thumbnails/{thumbnailName}";
         }
     }
 
@@ -168,17 +168,17 @@ public class ImageService : IImageService
         {
             // Local storage implementation
             var fullPath = System.IO.Path.Combine(_uploadPath, imagePath.TrimStart('/').Replace("uploads/", ""));
-            
-            if (!File.Exists(fullPath))
-                throw new FileNotFoundException("Image not found", fullPath);
+        
+        if (!File.Exists(fullPath))
+            throw new FileNotFoundException("Image not found", fullPath);
 
             var fileName = System.IO.Path.GetFileName(fullPath);
-            var watermarkedName = $"watermarked_{fileName}";
+        var watermarkedName = $"watermarked_{fileName}";
             var watermarkedPath = System.IO.Path.Combine(_uploadPath, "artworks", watermarkedName);
 
-            // Create watermarked image
-            using (var originalImage = await Image.LoadAsync(fullPath))
-            {
+        // Create watermarked image
+        using (var originalImage = await Image.LoadAsync(fullPath))
+        {
                 // Add corner watermark
                 AddCornerWatermark(originalImage, originalImage.Width, originalImage.Height);
 
@@ -193,7 +193,7 @@ public class ImageService : IImageService
 
     private void AddCornerWatermark(Image image, int width, int height)
     {
-        var watermarkText = "angelamoiseenko.ru";
+            var watermarkText = "angelamoiseenko.ru";
         
         // Calculate font size based on image dimensions - doubled size
         var fontSize = Math.Max(24, Math.Min(width, height) / 15); // Doubled from /30 to /15
@@ -323,10 +323,10 @@ public class ImageService : IImageService
         {
             // Local storage fallback
             var fullPath = System.IO.Path.Combine(_uploadPath, imagePath.TrimStart('/').Replace("uploads/", ""));
-            
-            if (File.Exists(fullPath))
-            {
-                File.Delete(fullPath);
+        
+        if (File.Exists(fullPath))
+        {
+            File.Delete(fullPath);
             }
         }
     }
@@ -432,44 +432,44 @@ public class ImageService : IImageService
         {
             // Локальное хранилище
             var fullVideoPath = System.IO.Path.Combine(_uploadPath, videoPath.TrimStart('/').Replace("uploads/", ""));
-            
-            if (!File.Exists(fullVideoPath))
-                throw new FileNotFoundException("Video not found", fullVideoPath);
+        
+        if (!File.Exists(fullVideoPath))
+            throw new FileNotFoundException("Video not found", fullVideoPath);
 
             var fileNameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(fullVideoPath);
-            var thumbnailName = $"{fileNameWithoutExtension}.jpg";
+        var thumbnailName = $"{fileNameWithoutExtension}.jpg";
             var thumbnailPath = System.IO.Path.Combine(_uploadPath, "thumbnails", thumbnailName);
-            
+        
             Directory.CreateDirectory(System.IO.Path.GetDirectoryName(thumbnailPath)!);
 
-            var command = $"-i \"{fullVideoPath}\" -ss 00:00:01 -vframes 1 -s {width}x{height} -f image2 \"{thumbnailPath}\" ";
-            
-            var startInfo = new System.Diagnostics.ProcessStartInfo
-            {
-                FileName = "ffmpeg",
-                Arguments = command,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-            };
+        var command = $"-i \"{fullVideoPath}\" -ss 00:00:01 -vframes 1 -s {width}x{height} -f image2 \"{thumbnailPath}\" ";
+        
+        var startInfo = new System.Diagnostics.ProcessStartInfo
+        {
+            FileName = "ffmpeg",
+            Arguments = command,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+        };
 
-            using (var process = System.Diagnostics.Process.Start(startInfo))
+        using (var process = System.Diagnostics.Process.Start(startInfo))
+        {
+            if (process == null)
             {
-                if (process == null)
-                {
-                    throw new InvalidOperationException("Failed to start FFmpeg process.");
-                }
-                await process.WaitForExitAsync();
-
-                if (process.ExitCode != 0)
-                {
-                    var error = await process.StandardError.ReadToEndAsync();
-                    throw new InvalidOperationException($"FFmpeg exited with code {process.ExitCode}: {error}");
-                }
+                throw new InvalidOperationException("Failed to start FFmpeg process.");
             }
+            await process.WaitForExitAsync();
 
-            return $"/uploads/thumbnails/{thumbnailName}";
+            if (process.ExitCode != 0)
+            {
+                var error = await process.StandardError.ReadToEndAsync();
+                throw new InvalidOperationException($"FFmpeg exited with code {process.ExitCode}: {error}");
+            }
+        }
+
+        return $"/uploads/thumbnails/{thumbnailName}";
         }
     }
 

@@ -54,7 +54,7 @@ services:
       dockerfile: Dockerfile
     container_name: mom_site_frontend_prod
     environment:
-      - NEXT_PUBLIC_API_URL=https://angelamoiseenko.ru
+      - NEXT_PUBLIC_API_URL=/api
     expose:
       - "3000"
     healthcheck:

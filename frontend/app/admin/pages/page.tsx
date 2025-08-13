@@ -223,20 +223,20 @@ export default function PageContentManagement() {
   };
 
   if (loading) {
-    return (
+  return (
       <div className="min-h-screen bg-gray-50 p-8">
         <div className="max-w-4xl mx-auto">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
-            <div className="space-y-4">
+          <div className="space-y-4">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className="h-20 bg-gray-200 rounded"></div>
               ))}
-            </div>
           </div>
-        </div>
+          </div>
       </div>
-    );
+    </div>
+  );
   }
 
   return (
@@ -284,7 +284,7 @@ export default function PageContentManagement() {
               <Save className="w-4 h-4" />
               <span>{saving ? 'Сохранение...' : 'Сохранить'}</span>
             </button>
-          </div>
+        </div>
 
           <div className="space-y-6">
             {pageFields[selectedPage].map((field) => (
@@ -295,7 +295,7 @@ export default function PageContentManagement() {
                 </label>
                 
                 {field.type === 'textarea' ? (
-                  <textarea
+          <textarea
                     value={formData[field.key] || ''}
                     onChange={(e) => handleInputChange(field.key, e.target.value)}
                     rows={4}
@@ -304,7 +304,7 @@ export default function PageContentManagement() {
                   />
                 ) : field.type === 'image' ? (
                   <div className="space-y-2">
-                    <input
+          <input
                       type="file"
                       accept="image/*"
                       onChange={(e) => handleFileChange(field.key, e.target.files?.[0] || null)}
@@ -316,12 +316,12 @@ export default function PageContentManagement() {
                           src={formData[field.key]} 
                           alt={field.label}
                           className="w-32 h-32 object-cover rounded-lg border border-gray-300"
-                        />
-                      </div>
+          />
+        </div>
                     )}
-                  </div>
+        </div>
                 ) : (
-                  <input
+          <input
                     type={field.type === 'url' ? 'url' : 'text'}
                     value={formData[field.key] || ''}
                     onChange={(e) => handleInputChange(field.key, e.target.value)}
@@ -333,7 +333,7 @@ export default function PageContentManagement() {
             ))}
           </div>
         </div>
-      </div>
-    </div>
+        </div>
+        </div>
   );
 }
