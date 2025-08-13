@@ -2,6 +2,18 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, auth, API_BASE_URL, Artwork, Category, Video, VideoCategory, PageContent, HomeData, GalleryData, AboutData, ContactsData, VideosData, FooterData, ArtworkDto, CategoryDto, ArtworkAdminDto } from '../lib/api';
 import { ContactMessage } from '../lib/api';
 
+
+// Helper to get image URL
+export const getImageUrl = (path: string) => {
+  // If path is already a full URL (S3), return it as is
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+  // Otherwise, prepend API base URL for local files
+  return `${API_BASE_URL}${path}`;
+};
+
+
 // Public API Hooks
 export async function getHomeData(): Promise<HomeData> {
   const response = await api.get('/api/public/home');
