@@ -7,6 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: mom_site_api_prod
     environment:
+      - ASPNETCORE_URLS=http://+:5000
       - ASPNETCORE_ENVIRONMENT=Production
       - ConnectionStrings__DefaultConnection=Host=188.225.75.81;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
       - JWT__Secret=${JWT_SECRET}
