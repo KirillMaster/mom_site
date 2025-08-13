@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Save, Upload } from 'lucide-react';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://angelamoiseenko.ru/api';
 
 // Debug: проверим переменные окружения
 console.log('NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL);
