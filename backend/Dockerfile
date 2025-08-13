@@ -3,8 +3,12 @@ WORKDIR /app
 EXPOSE 5000
 EXPOSE 5001
 
-# Install FFmpeg for video processing
-RUN apt-get update && apt-get install -y ffmpeg
+# Install FFmpeg and curl for video processing and health checks
+RUN apt-get update && apt-get install -y ffmpeg curl
+
+# Create logs and uploads directories
+RUN mkdir -p /app/logs && chmod 755 /app/logs
+RUN mkdir -p /app/uploads && chmod 755 /app/uploads
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
@@ -22,4 +26,9 @@ RUN dotnet publish "MomSite.API.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+# Set proper permissions
+RUN chown -R 1001:1001 /app/logs
+RUN chown -R 1001:1001 /app/uploads
+
 ENTRYPOINT ["dotnet", "MomSite.API.dll"]

@@ -3,7 +3,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:latest
-    container_name: mom_site_postgres
+    container_name: mom_site_postgres_prod
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-mom_site_db}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -14,19 +14,26 @@ services:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-mom_site_db}"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - mom_site_network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
 
   api:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: mom_site_api
+    container_name: mom_site_api_prod
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Production
       - ConnectionStrings__DefaultConnection=Host=postgres;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
       - JWT__Secret=${JWT_SECRET}
       - JWT__Issuer=${JWT_ISSUER:-mom-site}
@@ -45,8 +52,8 @@ services:
       - S3_SERVICE_URL=${S3_SERVICE_URL:-https://s3.twcstorage.ru}
       - S3_BUCKET_NAME=${S3_BUCKET_NAME}
       - S3_BASE_URL=${S3_BASE_URL}
-    ports:
-      - "5000:5000"
+    expose:
+      - "5000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -59,16 +66,25 @@ services:
     command: ["dotnet", "ef", "database", "update"]
     networks:
       - mom_site_network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: mom_site_frontend
+    container_name: mom_site_frontend_prod
     environment:
       - NEXT_PUBLIC_API_URL=http://mom_site_api:5000
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 30s
@@ -77,9 +93,20 @@ services:
       start_period: 40s
     networks:
       - mom_site_network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.25'
 
 volumes:
   postgres_data:
+    driver: local
 
 networks:
   mom_site_network:
+    driver: bridge

@@ -2,9 +2,11 @@
 const nextConfig = {
   output: 'standalone',
   images: {
-    domains: ['localhost'],
-    unoptimized: true
+    domains: ['localhost', 's3.twcstorage.ru', 'cdn.angelamoiseenko.ru'],
+    unoptimized: false
   },
+  compress: true,
+  poweredByHeader: false,
   async rewrites() {
     return [
       {
