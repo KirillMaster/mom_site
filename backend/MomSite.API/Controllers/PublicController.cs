@@ -100,9 +100,9 @@ public class PublicController : ControllerBase
         return Ok(new HomeData
         {
             WelcomeMessage = welcomeMessage?.TextContent ?? "Добро пожаловать в мир искусства!",
-            BannerImage = bannerImage?.ImagePath ?? "/images/banner-default.jpg",
+            BannerImage = bannerImage?.ImagePath ?? null,
             BiographyText = biographyText?.TextContent ?? "Информация о художнике",
-            AuthorPhoto = authorPhoto?.ImagePath ?? "/images/artist-default.jpg",
+            AuthorPhoto = authorPhoto?.ImagePath ?? null,
             Artworks = artworks.Select(a => a.ToDto()).ToList(),
             Contacts = contactsData // Assign the populated contactsData
         });
@@ -178,7 +178,7 @@ public class PublicController : ControllerBase
         return Ok(new AboutData
         {
             Biography = biography?.TextContent ?? "Информация о художнике",
-            ArtistPhoto = artistPhoto?.ImagePath ?? "/images/artist-default.jpg",
+            ArtistPhoto = artistPhoto?.ImagePath ?? null,
             AdditionalBiography = additionalBiography?.TextContent ?? "Мое творчество основано на глубоком понимании классических техник живописи, которые я сочетаю с современным видением и индивидуальным подходом к каждому произведению. Каждая картина - это история, эмоция, момент времени, запечатленный на холсте.",
             Philosophy = philosophy?.TextContent ?? "Искусство - это способ передать красоту мира через призму собственного восприятия. Каждый мазок кисти - это эмоция, каждый цвет - это настроение, а каждая картина - это история, которую я хочу рассказать зрителю.",
             BannerTitle = bannerTitle?.TextContent ?? "Обо мне",

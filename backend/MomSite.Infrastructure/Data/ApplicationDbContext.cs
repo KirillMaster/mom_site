@@ -106,9 +106,9 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<PageContent>().HasData(
             // Home page content
             new PageContent { Id = 1, PageKey = "home", ContentKey = "welcome_message", TextContent = "Добро пожаловать в мир искусства! Здесь вы найдете уникальные работы в стиле импрессионизма, созданные с любовью и вдохновением.", DisplayOrder = 1 },
-            new PageContent { Id = 2, PageKey = "home", ContentKey = "banner_image", ImagePath = "/images/banner-default.jpg", DisplayOrder = 2 },
+            new PageContent { Id = 2, PageKey = "home", ContentKey = "banner_image", ImagePath = null, DisplayOrder = 2 },
             new PageContent { Id = 11, PageKey = "home", ContentKey = "home_biography_text", TextContent = "Это текст биографии автора для главной страницы.", DisplayOrder = 3 },
-            new PageContent { Id = 12, PageKey = "home", ContentKey = "home_author_photo", ImagePath = "/images/artist-default.jpg", DisplayOrder = 4 },
+            new PageContent { Id = 12, PageKey = "home", ContentKey = "home_author_photo", ImagePath = null, DisplayOrder = 4 },
             
             // Gallery page content
             new PageContent { Id = 13, PageKey = "gallery", ContentKey = "banner_title", TextContent = "Галерея работ", DisplayOrder = 1 },
@@ -116,7 +116,7 @@ public class ApplicationDbContext : DbContext
             
             // About page content
             new PageContent { Id = 3, PageKey = "about", ContentKey = "biography", TextContent = "Я художник-импрессионист, вдохновленный красотой окружающего мира. Мои работы отражают любовь к театральному искусству и классическим натюрмортам.", DisplayOrder = 1 },
-            new PageContent { Id = 4, PageKey = "about", ContentKey = "artist_photo", ImagePath = "/images/artist-default.jpg", DisplayOrder = 2 },
+            new PageContent { Id = 4, PageKey = "about", ContentKey = "artist_photo", ImagePath = null, DisplayOrder = 2 },
             new PageContent { Id = 15, PageKey = "about", ContentKey = "banner_title", TextContent = "Обо мне", DisplayOrder = 3 },
             new PageContent { Id = 16, PageKey = "about", ContentKey = "banner_description", TextContent = "Познакомьтесь с художником и узнайте больше о моем творческом пути", DisplayOrder = 4 },
             
