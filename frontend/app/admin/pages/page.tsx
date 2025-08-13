@@ -6,6 +6,11 @@ import { ArrowLeft, Save, Upload } from 'lucide-react';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
+// Debug: проверим переменные окружения
+console.log('NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL);
+console.log('API_BASE_URL:', API_BASE_URL);
+console.log('All env vars:', process.env);
+
 interface PageContent {
   id: number;
   pageKey: string;
