@@ -97,6 +97,34 @@
    - `EMAIL_FROM` - email отправителя (по умолчанию: noreply@angelamoiseenko.ru)
    - `EMAIL_TO` - email получателя (по умолчанию: karangela@narod.ru)
 
+### Настройка S3-совместимого хранилища (Timeweb S3)
+
+Для хранения медиа файлов (изображения, видео) в облачном хранилище:
+
+1. **Создайте S3 bucket в Timeweb:**
+   - Войдите в панель управления Timeweb
+   - Перейдите в раздел "Облачное хранилище"
+   - Создайте новый bucket
+   - Настройте публичный доступ для чтения файлов
+
+2. **Получите учетные данные:**
+   - Access Key ID
+   - Secret Access Key
+   - Endpoint URL (обычно https://s3.timeweb.com)
+
+3. **Переменные окружения для S3:**
+   - `S3_ACCESS_KEY` - ваш Access Key ID
+   - `S3_SECRET_KEY` - ваш Secret Access Key
+   - `S3_SERVICE_URL` - URL сервиса S3 (https://s3.timeweb.com)
+   - `S3_BUCKET_NAME` - имя вашего bucket
+   - `S3_BASE_URL` - базовый URL для доступа к файлам (https://your-bucket-name.s3.timeweb.com)
+
+4. **Преимущества использования S3:**
+   - Улучшенная производительность загрузки файлов
+   - Масштабируемость хранилища
+   - CDN для быстрой доставки контента
+   - Автоматическое резервное копирование
+
 4. **Запустите проект**
    ```bash
    docker compose up --build

@@ -198,7 +198,13 @@ const AdminArtworksPage = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{artwork.title}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{artwork.category?.name || 'Без категории'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{artwork.price ? `${artwork.price} ₽` : 'Не указана'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {artwork.isForSale ? (
+                      artwork.price && artwork.price > 0 ? `${artwork.price} ₽` : 'Цена: договорная'
+                    ) : (
+                      'Не продается'
+                    )}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {artwork.isForSale ? (
                       <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Да</span>
@@ -263,13 +269,14 @@ const AdminArtworksPage = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">Цена (₽)</label>
+                  <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">Цена (₽) <span className="text-gray-500 text-xs">(опционально)</span></label>
                   <input
                     type="number"
                     id="price"
                     name="price"
                     value={formState.price}
                     onChange={handleChange}
+                    placeholder="Оставьте пустым для 'Цена: договорная'"
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>

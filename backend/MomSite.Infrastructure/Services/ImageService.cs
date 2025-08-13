@@ -25,13 +25,26 @@ public class ImageService : IImageService
 {
     private readonly string _uploadPath;
     private readonly string _watermarkText;
+    private readonly IS3Service _s3Service;
+    private readonly bool _useS3;
 
-    public ImageService()
+    public ImageService(IS3Service s3Service)
     {
+        _s3Service = s3Service;
         _uploadPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "uploads");
         _watermarkText = "angelamoiseenko.ru";
+        _useS3 = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("S3_ACCESS_KEY"));
         
-        // Create upload directories if they don't exist
+        // Debug logging
+        Console.WriteLine($"ImageService initialized:");
+        Console.WriteLine($"S3_ACCESS_KEY set: {!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("S3_ACCESS_KEY"))}");
+        Console.WriteLine($"S3_SECRET_KEY set: {!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("S3_SECRET_KEY"))}");
+        Console.WriteLine($"S3_SERVICE_URL set: {!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("S3_SERVICE_URL"))}");
+        Console.WriteLine($"S3_BUCKET_NAME set: {!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("S3_BUCKET_NAME"))}");
+        Console.WriteLine($"S3_BASE_URL set: {!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("S3_BASE_URL"))}");
+        Console.WriteLine($"UseS3: {_useS3}");
+        
+        // Create upload directories if they don't exist (for local fallback)
         Directory.CreateDirectory(_uploadPath);
         Directory.CreateDirectory(System.IO.Path.Combine(_uploadPath, "artworks"));
         Directory.CreateDirectory(System.IO.Path.Combine(_uploadPath, "thumbnails"));
@@ -45,86 +58,134 @@ public class ImageService : IImageService
             throw new ArgumentException("File is empty");
 
         var fileName = $"{Guid.NewGuid()}{System.IO.Path.GetExtension(file.FileName)}";
-        var folderPath = System.IO.Path.Combine(_uploadPath, folder);
-        Directory.CreateDirectory(folderPath);
         
-        var filePath = System.IO.Path.Combine(folderPath, fileName);
-        
-        using (var stream = new FileStream(filePath, FileMode.Create))
-        {
-            await file.CopyToAsync(stream);
-        }
+        Console.WriteLine($"SaveImageAsync called:");
+        Console.WriteLine($"File: {file.FileName}, Size: {file.Length}, ContentType: {file.ContentType}");
+        Console.WriteLine($"Folder: {folder}, UseS3: {_useS3}");
 
-        return $"/uploads/{folder}/{fileName}";
+        if (_useS3)
+        {
+            // Upload to S3
+            Console.WriteLine("Attempting to upload to S3...");
+            using var stream = file.OpenReadStream();
+            var s3Path = $"{folder}/{fileName}";
+            var result = await _s3Service.UploadFileAsync(stream, s3Path, file.ContentType);
+            Console.WriteLine($"S3 upload successful: {result}");
+            return result;
+        }
+        else
+        {
+            // Local storage fallback
+            Console.WriteLine("Using local storage fallback...");
+            var folderPath = System.IO.Path.Combine(_uploadPath, folder);
+            Directory.CreateDirectory(folderPath);
+            
+            var filePath = System.IO.Path.Combine(folderPath, fileName);
+            
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var localPath = $"/uploads/{folder}/{fileName}";
+            Console.WriteLine($"Local storage path: {localPath}");
+            return localPath;
+        }
     }
 
     public async Task<string> CreateThumbnailAsync(string imagePath, int width, int height)
     {
-        var fullPath = System.IO.Path.Combine(_uploadPath, imagePath.TrimStart('/').Replace("uploads/", ""));
-        
-        if (!File.Exists(fullPath))
-            throw new FileNotFoundException("Image not found", fullPath);
-
-        var fileName = System.IO.Path.GetFileName(fullPath);
-        var thumbnailName = $"thumb_{fileName}";
-        var thumbnailPath = System.IO.Path.Combine(_uploadPath, "thumbnails", thumbnailName);
-        
-        Directory.CreateDirectory(System.IO.Path.GetDirectoryName(thumbnailPath)!);
-
-        // Create thumbnail with watermark
-        using (var originalImage = await Image.LoadAsync(fullPath))
+        if (_useS3)
         {
-            // Calculate aspect ratio to maintain proportions
-            var aspectRatio = (double)originalImage.Width / originalImage.Height;
-            var targetWidth = width;
-            var targetHeight = height;
-
-            if (aspectRatio > 1) // Landscape
-            {
-                targetHeight = (int)(width / aspectRatio);
-            }
-            else // Portrait or square
-            {
-                targetWidth = (int)(height * aspectRatio);
-            }
-
-            // Resize image
-            originalImage.Mutate(x => x.Resize(targetWidth, targetHeight));
-
-            // Add simple watermark - corner overlay
-            AddCornerWatermark(originalImage, targetWidth, targetHeight);
-
-            // Save the thumbnail
-            var format = GetImageFormat(System.IO.Path.GetExtension(fullPath));
-            await originalImage.SaveAsync(thumbnailPath, format);
+            // For S3, we need to download the image, process it, and upload back
+            // This is a simplified version - in production you might want to use S3 presigned URLs
+            var fileName = System.IO.Path.GetFileName(imagePath);
+            var thumbnailName = $"thumb_{fileName}";
+            var thumbnailPath = $"thumbnails/{thumbnailName}";
+            
+            // For now, return the original path for S3
+            // In a full implementation, you'd download, process, and re-upload
+            return imagePath;
         }
+        else
+        {
+            // Local storage implementation
+            var fullPath = System.IO.Path.Combine(_uploadPath, imagePath.TrimStart('/').Replace("uploads/", ""));
+            
+            if (!File.Exists(fullPath))
+                throw new FileNotFoundException("Image not found", fullPath);
 
-        return $"/uploads/thumbnails/{thumbnailName}";
+            var fileName = System.IO.Path.GetFileName(fullPath);
+            var thumbnailName = $"thumb_{fileName}";
+            var thumbnailPath = System.IO.Path.Combine(_uploadPath, "thumbnails", thumbnailName);
+            
+            Directory.CreateDirectory(System.IO.Path.GetDirectoryName(thumbnailPath)!);
+
+            // Create thumbnail with watermark
+            using (var originalImage = await Image.LoadAsync(fullPath))
+            {
+                // Calculate aspect ratio to maintain proportions
+                var aspectRatio = (double)originalImage.Width / originalImage.Height;
+                var targetWidth = width;
+                var targetHeight = height;
+
+                if (aspectRatio > 1) // Landscape
+                {
+                    targetHeight = (int)(width / aspectRatio);
+                }
+                else // Portrait or square
+                {
+                    targetWidth = (int)(height * aspectRatio);
+                }
+
+                // Resize image
+                originalImage.Mutate(x => x.Resize(targetWidth, targetHeight));
+
+                // Add simple watermark - corner overlay
+                AddCornerWatermark(originalImage, targetWidth, targetHeight);
+
+                // Save the thumbnail
+                var format = GetImageFormat(System.IO.Path.GetExtension(fullPath));
+                await originalImage.SaveAsync(thumbnailPath, format);
+            }
+
+            return $"/uploads/thumbnails/{thumbnailName}";
+        }
     }
 
     public async Task<string> AddWatermarkAsync(string imagePath, string watermarkText)
     {
-        var fullPath = System.IO.Path.Combine(_uploadPath, imagePath.TrimStart('/').Replace("uploads/", ""));
-        
-        if (!File.Exists(fullPath))
-            throw new FileNotFoundException("Image not found", fullPath);
-
-        var fileName = System.IO.Path.GetFileName(fullPath);
-        var watermarkedName = $"watermarked_{fileName}";
-        var watermarkedPath = System.IO.Path.Combine(_uploadPath, "artworks", watermarkedName);
-
-        // Create watermarked image
-        using (var originalImage = await Image.LoadAsync(fullPath))
+        if (_useS3)
         {
-            // Add corner watermark
-            AddCornerWatermark(originalImage, originalImage.Width, originalImage.Height);
-
-            // Save the watermarked image
-            var format = GetImageFormat(System.IO.Path.GetExtension(fullPath));
-            await originalImage.SaveAsync(watermarkedPath, format);
+            // For S3, return the original path for now
+            // In a full implementation, you'd download, process, and re-upload
+            return imagePath;
         }
+        else
+        {
+            // Local storage implementation
+            var fullPath = System.IO.Path.Combine(_uploadPath, imagePath.TrimStart('/').Replace("uploads/", ""));
+            
+            if (!File.Exists(fullPath))
+                throw new FileNotFoundException("Image not found", fullPath);
 
-        return $"/uploads/artworks/{watermarkedName}";
+            var fileName = System.IO.Path.GetFileName(fullPath);
+            var watermarkedName = $"watermarked_{fileName}";
+            var watermarkedPath = System.IO.Path.Combine(_uploadPath, "artworks", watermarkedName);
+
+            // Create watermarked image
+            using (var originalImage = await Image.LoadAsync(fullPath))
+            {
+                // Add corner watermark
+                AddCornerWatermark(originalImage, originalImage.Width, originalImage.Height);
+
+                // Save the watermarked image
+                var format = GetImageFormat(System.IO.Path.GetExtension(fullPath));
+                await originalImage.SaveAsync(watermarkedPath, format);
+            }
+
+            return $"/uploads/artworks/{watermarkedName}";
+        }
     }
 
     private void AddCornerWatermark(Image image, int width, int height)
@@ -250,11 +311,20 @@ public class ImageService : IImageService
         if (string.IsNullOrEmpty(imagePath))
             return;
 
-        var fullPath = System.IO.Path.Combine(_uploadPath, imagePath.TrimStart('/').Replace("uploads/", ""));
-        
-        if (File.Exists(fullPath))
+        if (_useS3)
         {
-            File.Delete(fullPath);
+            // Delete from S3
+            _ = _s3Service.DeleteFileAsync(imagePath);
+        }
+        else
+        {
+            // Local storage fallback
+            var fullPath = System.IO.Path.Combine(_uploadPath, imagePath.TrimStart('/').Replace("uploads/", ""));
+            
+            if (File.Exists(fullPath))
+            {
+                File.Delete(fullPath);
+            }
         }
     }
 

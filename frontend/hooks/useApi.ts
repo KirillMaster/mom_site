@@ -4,6 +4,11 @@ import { ContactMessage } from '../lib/api';
 
 // Helper to get image URL
 export const getImageUrl = (path: string) => {
+  // If path is already a full URL (S3), return it as is
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+  // Otherwise, prepend API base URL for local files
   return `${API_BASE_URL}${path}`;
 };
 
