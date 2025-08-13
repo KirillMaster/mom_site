@@ -1,32 +1,6 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:latest
-    container_name: mom_site_postgres_prod
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-mom_site_db}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    expose:
-      - "5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-mom_site_db}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - mom_site_network
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 1G
-        reservations:
-          memory: 512M
-
   api:
     build:
       context: ./backend
@@ -34,7 +8,7 @@ services:
     container_name: mom_site_api_prod
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DefaultConnection=Host=postgres;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      - ConnectionStrings__DefaultConnection=Host=188.225.75.81;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
       - JWT__Secret=${JWT_SECRET}
       - JWT__Issuer=${JWT_ISSUER:-mom-site}
       - JWT__Audience=${JWT_AUDIENCE:-mom-site}
@@ -54,9 +28,6 @@ services:
       - S3_BASE_URL=${S3_BASE_URL}
     expose:
       - "5000"
-    depends_on:
-      postgres:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
       interval: 30s
@@ -134,10 +105,6 @@ services:
         reservations:
           memory: 256M
           cpus: '0.1'
-
-volumes:
-  postgres_data:
-    driver: local
 
 networks:
   mom_site_network:

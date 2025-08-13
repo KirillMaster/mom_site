@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Save, Upload } from 'lucide-react';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
 interface PageContent {
   id: number;
   pageKey: string;
@@ -91,7 +93,7 @@ export default function PageContentManagement() {
   const fetchPageContent = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:5000/api/admin/page-content-by-key?pageKey=${selectedPage}`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/page-content-by-key?pageKey=${selectedPage}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -161,7 +163,7 @@ export default function PageContentManagement() {
           formDataToSend.append('isActive', 'true');
           formDataToSend.append('displayOrder', item.displayOrder.toString());
 
-          await fetch(`http://localhost:5000/api/admin/page-content/${item.id}`, {
+          await fetch(`${API_BASE_URL}/api/admin/page-content/${item.id}`, {
             method: 'PUT',
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -195,7 +197,7 @@ export default function PageContentManagement() {
             formDataToSend.append('textContent', formData[field.key]);
           }
 
-          await fetch('http://localhost:5000/api/admin/page-content', {
+          await fetch(`${API_BASE_URL}/api/admin/page-content`, {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('token')}`
