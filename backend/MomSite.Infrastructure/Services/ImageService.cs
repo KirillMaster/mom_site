@@ -100,15 +100,99 @@ public class ImageService : IImageService
     {
         if (_useS3)
         {
-            // For S3, we need to download the image, process it, and upload back
-            // This is a simplified version - in production you might want to use S3 presigned URLs
-            var fileName = System.IO.Path.GetFileName(imagePath);
-            var thumbnailName = $"thumb_{fileName}";
-            var thumbnailPath = $"thumbnails/{thumbnailName}";
+            // For S3: download, process, and re-upload
+            Console.WriteLine($"Creating thumbnail for S3 image: {imagePath}");
             
-            // For now, return the original path for S3
-            // In a full implementation, you'd download, process, and re-upload
-            return imagePath;
+            try
+            {
+                // Create temp directory
+                var tempDir = System.IO.Path.Combine(_uploadPath, "temp");
+                Directory.CreateDirectory(tempDir);
+                
+                // Generate unique filenames
+                var tempImagePath = System.IO.Path.Combine(tempDir, $"temp_image_{Guid.NewGuid()}{System.IO.Path.GetExtension(imagePath)}");
+                var tempThumbnailPath = System.IO.Path.Combine(tempDir, $"temp_thumb_{Guid.NewGuid()}{System.IO.Path.GetExtension(imagePath)}");
+                
+                try
+                {
+                    // Download image from S3
+                    Console.WriteLine($"Downloading image from S3: {imagePath}");
+                    
+                    // Extract key from URL
+                    var uri = new Uri(imagePath);
+                    var key = uri.AbsolutePath.TrimStart('/');
+                    if (key.StartsWith(_bucketName + "/"))
+                    {
+                        key = key.Substring(_bucketName.Length + 1);
+                    }
+                    
+                    Console.WriteLine($"Extracted S3 key: {key}");
+                    
+                    // Download file from S3
+                    using (var response = await _s3Service.GetObjectAsync(key))
+                    using (var fileStream = File.Create(tempImagePath))
+                    {
+                        await response.ResponseStream.CopyToAsync(fileStream);
+                    }
+                    
+                    Console.WriteLine($"Image downloaded to: {tempImagePath}");
+                    
+                    // Create thumbnail with watermark
+                    using (var originalImage = await Image.LoadAsync(tempImagePath))
+                    {
+                        // Calculate aspect ratio to maintain proportions
+                        var aspectRatio = (double)originalImage.Width / originalImage.Height;
+                        var targetWidth = width;
+                        var targetHeight = height;
+
+                        if (aspectRatio > 1) // Landscape
+                        {
+                            targetHeight = (int)(width / aspectRatio);
+                        }
+                        else // Portrait or square
+                        {
+                            targetWidth = (int)(height * aspectRatio);
+                        }
+
+                        // Resize image
+                        originalImage.Mutate(x => x.Resize(targetWidth, targetHeight));
+
+                        // Add simple watermark - corner overlay
+                        AddCornerWatermark(originalImage, targetWidth, targetHeight);
+
+                        // Save the thumbnail
+                        var format = GetImageFormat(System.IO.Path.GetExtension(tempImagePath));
+                        await originalImage.SaveAsync(tempThumbnailPath, format);
+                    }
+                    
+                    Console.WriteLine($"Thumbnail created: {tempThumbnailPath}");
+                    
+                    // Upload thumbnail back to S3
+                    using (var thumbnailStream = File.OpenRead(tempThumbnailPath))
+                    {
+                        var thumbnailName = $"thumbnails/thumb_{Guid.NewGuid()}{System.IO.Path.GetExtension(imagePath)}";
+                        var thumbnailUrl = await _s3Service.UploadFileAsync(thumbnailStream, thumbnailName, "image/jpeg");
+                        
+                        Console.WriteLine($"Thumbnail uploaded to S3: {thumbnailUrl}");
+                        return thumbnailUrl;
+                    }
+                }
+                finally
+                {
+                    // Clean up temp files
+                    if (File.Exists(tempImagePath))
+                        File.Delete(tempImagePath);
+                    if (File.Exists(tempThumbnailPath))
+                        File.Delete(tempThumbnailPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating thumbnail for S3: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                // Fallback to original image if thumbnail creation fails
+                return imagePath;
+            }
         }
         else
         {
@@ -160,9 +244,82 @@ public class ImageService : IImageService
     {
         if (_useS3)
         {
-            // For S3, return the original path for now
-            // In a full implementation, you'd download, process, and re-upload
-            return imagePath;
+            // For S3: download, process, and re-upload
+            Console.WriteLine($"Adding watermark to S3 image: {imagePath}");
+            
+            try
+            {
+                // Create temp directory
+                var tempDir = System.IO.Path.Combine(_uploadPath, "temp");
+                Directory.CreateDirectory(tempDir);
+                
+                // Generate unique filenames
+                var tempImagePath = System.IO.Path.Combine(tempDir, $"temp_image_{Guid.NewGuid()}{System.IO.Path.GetExtension(imagePath)}");
+                var tempWatermarkedPath = System.IO.Path.Combine(tempDir, $"temp_watermarked_{Guid.NewGuid()}{System.IO.Path.GetExtension(imagePath)}");
+                
+                try
+                {
+                    // Download image from S3
+                    Console.WriteLine($"Downloading image from S3: {imagePath}");
+                    
+                    // Extract key from URL
+                    var uri = new Uri(imagePath);
+                    var key = uri.AbsolutePath.TrimStart('/');
+                    if (key.StartsWith(_bucketName + "/"))
+                    {
+                        key = key.Substring(_bucketName.Length + 1);
+                    }
+                    
+                    Console.WriteLine($"Extracted S3 key: {key}");
+                    
+                    // Download file from S3
+                    using (var response = await _s3Service.GetObjectAsync(key))
+                    using (var fileStream = File.Create(tempImagePath))
+                    {
+                        await response.ResponseStream.CopyToAsync(fileStream);
+                    }
+                    
+                    Console.WriteLine($"Image downloaded to: {tempImagePath}");
+                    
+                    // Create watermarked image
+                    using (var originalImage = await Image.LoadAsync(tempImagePath))
+                    {
+                        // Add corner watermark
+                        AddCornerWatermark(originalImage, originalImage.Width, originalImage.Height);
+
+                        // Save the watermarked image
+                        var format = GetImageFormat(System.IO.Path.GetExtension(tempImagePath));
+                        await originalImage.SaveAsync(tempWatermarkedPath, format);
+                    }
+                    
+                    Console.WriteLine($"Watermarked image created: {tempWatermarkedPath}");
+                    
+                    // Upload watermarked image back to S3
+                    using (var watermarkedStream = File.OpenRead(tempWatermarkedPath))
+                    {
+                        var watermarkedName = $"artworks/watermarked_{Guid.NewGuid()}{System.IO.Path.GetExtension(imagePath)}";
+                        var watermarkedUrl = await _s3Service.UploadFileAsync(watermarkedStream, watermarkedName, "image/jpeg");
+                        
+                        Console.WriteLine($"Watermarked image uploaded to S3: {watermarkedUrl}");
+                        return watermarkedUrl;
+                    }
+                }
+                finally
+                {
+                    // Clean up temp files
+                    if (File.Exists(tempImagePath))
+                        File.Delete(tempImagePath);
+                    if (File.Exists(tempWatermarkedPath))
+                        File.Delete(tempWatermarkedPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error adding watermark to S3 image: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                // Fallback to original image if watermarking fails
+                return imagePath;
+            }
         }
         else
         {
