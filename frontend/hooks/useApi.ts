@@ -14,7 +14,7 @@ export const getImageUrl = (path: string) => {
 
 // Public API Hooks
 export async function getHomeData(): Promise<HomeData> {
-  const response = await api.get('/api/public/home');
+  const response = await api.get('/public/home');
   return response.data;
 }
 
@@ -26,7 +26,7 @@ export function useHomeData() {
 }
 
 export async function getGalleryData(): Promise<GalleryData> {
-  const response = await api.get('/api/public/gallery');
+  const response = await api.get('/public/gallery');
   console.log('Raw Gallery API Response:', response.data);
   return {
     ...response.data,
@@ -43,7 +43,7 @@ export function useGalleryData() {
 }
 
 export async function getAboutData(): Promise<AboutData> {
-  const response = await api.get('/api/public/about');
+  const response = await api.get('/public/about');
   return {
     ...response.data,
     specialties: response.data.specialties?.$values || response.data.specialties || [],
@@ -58,7 +58,7 @@ export function useAboutData() {
 }
 
 export async function getContactsData(): Promise<ContactsData> {
-  const response = await api.get('/api/public/contacts');
+  const response = await api.get('/public/contacts');
   return response.data;
 }
 
@@ -70,7 +70,7 @@ export function useContactsData() {
 }
 
 export async function getFooterData(): Promise<FooterData> {
-  const response = await api.get('/api/public/footer');
+  const response = await api.get('/public/footer');
   return response.data;
 }
 
@@ -82,7 +82,7 @@ export const useFooterData = () => {
 };
 
 export async function getVideosData(): Promise<VideosData> {
-  const response = await api.get('/api/public/videos');
+  const response = await api.get('/public/videos');
   return {
     ...response.data,
     categories: response.data.categories || [],
@@ -98,7 +98,7 @@ export function useVideosData() {
 }
 
 export const sendContactMessage = async (message: ContactMessage) => {
-  const response = await api.post('/api/public/contact-message', message);
+  const response = await api.post('/public/contact-message', message);
   return response.data;
 };
 
@@ -109,7 +109,7 @@ export function useLogin() {
     token: string;
   }, Error, { username: string; password: string }>({
     mutationFn: async ({ username, password }) => {
-      const response = await api.post('/api/admin/login', { username, password });
+      const response = await api.post('/admin/login', { username, password });
       return response.data;
     },
     onSuccess: (data) => {
@@ -123,7 +123,7 @@ export function useCategories() {
   return useQuery<Category[], Error>({
     queryKey: ['categories'],
     queryFn: async () => {
-      const response = await api.get('/api/admin/categories');
+      const response = await api.get('/admin/categories');
       return response.data;
     },
   });
@@ -133,7 +133,7 @@ export function useCreateCategory() {
   const queryClient = useQueryClient();
   return useMutation<Category, Error, { name: string; description?: string; displayOrder?: number }>({
     mutationFn: async (data) => {
-      const response = await api.post('/api/admin/categories', data);
+      const response = await api.post('/admin/categories', data);
       return response.data;
     },
     onSuccess: () => {
@@ -146,7 +146,7 @@ export function useUpdateCategory() {
   const queryClient = useQueryClient();
   return useMutation<Category, Error, { id: number; data: { name?: string; description?: string; displayOrder?: number; isActive?: boolean } }>({
     mutationFn: async ({ id, data }) => {
-      const response = await api.put(`/api/admin/categories/${id}`, data);
+      const response = await api.put(`/admin/categories/${id}`, data);
       return response.data;
     },
     onSuccess: () => {
@@ -159,7 +159,7 @@ export function useDeleteCategory() {
   const queryClient = useQueryClient();
   return useMutation<void, Error, number>({
     mutationFn: async (id) => {
-      await api.delete(`/api/admin/categories/${id}`);
+      await api.delete(`/admin/categories/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
@@ -173,7 +173,7 @@ export function useArtworks() {
     queryFn: async () => {
       console.log('Fetching artworks...');
       console.log('Request headers for artworks:', api.defaults.headers.common);
-      const response = await api.get('/api/admin/artworks');
+      const response = await api.get('/admin/artworks');
       // Проверяем, является ли response.data массивом, если нет, то пытаемся получить $values
       return Array.isArray(response.data) ? response.data : response.data.$values || [];
     },
@@ -184,7 +184,7 @@ export function useCreateArtwork() {
   const queryClient = useQueryClient();
   return useMutation<Artwork, Error, FormData>({
     mutationFn: async (data) => {
-      const response = await api.post('/api/admin/artworks/create', data, { // Изменено: добавлен "/create"
+      const response = await api.post('/admin/artworks/create', data, { // Изменено: добавлен "/create"
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -202,7 +202,7 @@ export function useUpdateArtwork() {
   const queryClient = useQueryClient();
   return useMutation<Artwork, Error, { id: number; data: FormData }>({
     mutationFn: async ({ id, data }) => {
-      const response = await api.put(`/api/admin/artworks/${id}`, data, {
+      const response = await api.put(`/admin/artworks/${id}`, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -220,7 +220,7 @@ export function useDeleteArtwork() {
   const queryClient = useQueryClient();
   return useMutation<void, Error, number>({
     mutationFn: async (id) => {
-      await api.delete(`/api/admin/artworks/${id}`);
+      await api.delete(`/admin/artworks/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['artworks'] });
@@ -241,7 +241,7 @@ export function usePageContent(pageKey: string) {
   return useQuery<PageContent[], Error>({
     queryKey: ['pageContent', pageKey],
     queryFn: async () => {
-      const response = await api.get(`/api/admin/page-content-by-key?pageKey=${pageKey}`);
+      const response = await api.get(`/admin/page-content-by-key?pageKey=${pageKey}`);
       return response.data;
     },
   });
@@ -251,7 +251,7 @@ export function useUpdatePageContent() {
   const queryClient = useQueryClient();
   return useMutation<PageContent, Error, { id: number; data: FormData }>({
     mutationFn: async ({ id, data }) => {
-      const response = await api.put(`/api/admin/page-content/${id}`, data, {
+      const response = await api.put(`/admin/page-content/${id}`, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -269,7 +269,7 @@ export function useCreatePageContent() {
   const queryClient = useQueryClient();
   return useMutation<PageContent, Error, FormData>({
     mutationFn: async (data) => {
-      const response = await api.post('/api/admin/page-content', data, {
+      const response = await api.post('/admin/page-content', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -286,7 +286,7 @@ export function useVideos() {
   return useQuery<Video[], Error>({
     queryKey: ['videos'],
     queryFn: async () => {
-      const response = await api.get('/api/admin/videos');
+      const response = await api.get('/admin/videos');
       return response.data;
     },
   });
@@ -296,7 +296,7 @@ export function useCreateVideo() {
   const queryClient = useQueryClient();
   return useMutation<Video, Error, FormData>({
     mutationFn: async (data) => {
-      const response = await api.post('/api/admin/videos', data, {
+      const response = await api.post('/admin/videos', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -314,7 +314,7 @@ export function useUpdateVideo() {
   const queryClient = useQueryClient();
   return useMutation<Video, Error, { id: number; data: FormData }>({
     mutationFn: async ({ id, data }) => {
-      const response = await api.put(`/api/admin/videos/${id}`, data, {
+      const response = await api.put(`/admin/videos/${id}`, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -332,7 +332,7 @@ export function useDeleteVideo() {
   const queryClient = useQueryClient();
   return useMutation<void, Error, number>({
     mutationFn: async (id) => {
-      await api.delete(`/api/admin/videos/${id}`);
+      await api.delete(`/admin/videos/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['videos'] });
@@ -345,7 +345,7 @@ export function useVideoCategories() {
   return useQuery<VideoCategory[], Error>({
     queryKey: ['videoCategories'],
     queryFn: async () => {
-      const response = await api.get('/api/admin/video-categories');
+      const response = await api.get('/admin/video-categories');
       return response.data.$values || response.data;
     },
   });
@@ -355,7 +355,7 @@ export function useCreateVideoCategory() {
   const queryClient = useQueryClient();
   return useMutation<VideoCategory, Error, { name: string; description?: string; displayOrder?: number }>({
     mutationFn: async (data) => {
-      const response = await api.post('/api/admin/video-categories', data);
+      const response = await api.post('/admin/video-categories', data);
       return response.data;
     },
     onSuccess: () => {
@@ -370,7 +370,7 @@ export function useUpdateVideoCategory() {
   const queryClient = useQueryClient();
   return useMutation<VideoCategory, Error, { id: number; data: { name?: string; description?: string; displayOrder?: number; isActive?: boolean } }>({
     mutationFn: async ({ id, data }) => {
-      const response = await api.put(`/api/admin/video-categories/${id}`, data);
+      const response = await api.put(`/admin/video-categories/${id}`, data);
       return response.data;
     },
     onSuccess: () => {
@@ -385,7 +385,7 @@ export function useUpdateVideoCategory() {
   const queryClient = useQueryClient();
   return useMutation<void, Error, number>({
     mutationFn: async (id) => {
-      await api.delete(`/api/admin/video-categories/${id}`);
+      await api.delete(`/admin/video-categories/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['videoCategories'] });
