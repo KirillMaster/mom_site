@@ -27,6 +27,7 @@ public class ImageService : IImageService
     private readonly string _watermarkText;
     private readonly IS3Service _s3Service;
     private readonly bool _useS3;
+    private readonly string _bucketName;
 
     public ImageService(IS3Service s3Service)
     {
@@ -34,6 +35,7 @@ public class ImageService : IImageService
         _uploadPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "uploads");
         _watermarkText = "angelamoiseenko.ru";
         _useS3 = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("S3_ACCESS_KEY"));
+        _bucketName = Environment.GetEnvironmentVariable("S3_BUCKET_NAME") ?? "";
         
         // Debug logging
         Console.WriteLine($"ImageService initialized:");
@@ -43,6 +45,7 @@ public class ImageService : IImageService
         Console.WriteLine($"S3_BUCKET_NAME set: {!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("S3_BUCKET_NAME"))}");
         Console.WriteLine($"S3_BASE_URL set: {!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("S3_BASE_URL"))}");
         Console.WriteLine($"UseS3: {_useS3}");
+        Console.WriteLine($"BucketName: {_bucketName}");
         
         // Create upload directories if they don't exist (for local fallback)
         Directory.CreateDirectory(_uploadPath);
@@ -330,45 +333,144 @@ public class ImageService : IImageService
 
     public async Task<string> CreateVideoThumbnailAsync(string videoPath, int width, int height)
     {
-        var fullVideoPath = System.IO.Path.Combine(_uploadPath, videoPath.TrimStart('/').Replace("uploads/", ""));
-        
-        if (!File.Exists(fullVideoPath))
-            throw new FileNotFoundException("Video not found", fullVideoPath);
-
-        var fileNameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(fullVideoPath);
-        var thumbnailName = $"{fileNameWithoutExtension}.jpg";
-        var thumbnailPath = System.IO.Path.Combine(_uploadPath, "thumbnails", thumbnailName);
-        
-        Directory.CreateDirectory(System.IO.Path.GetDirectoryName(thumbnailPath)!);
-
-        var command = $"-i \"{fullVideoPath}\" -ss 00:00:01 -vframes 1 -s {width}x{height} -f image2 \"{thumbnailPath}\" ";
-        
-        var startInfo = new System.Diagnostics.ProcessStartInfo
+        if (_useS3)
         {
-            FileName = "ffmpeg",
-            Arguments = command,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-        };
-
-        using (var process = System.Diagnostics.Process.Start(startInfo))
-        {
-            if (process == null)
+            // Для S3: скачиваем видео, создаем thumbnail, загружаем обратно в S3
+            Console.WriteLine($"Creating video thumbnail for S3 video: {videoPath}");
+            
+            try
             {
-                throw new InvalidOperationException("Failed to start FFmpeg process.");
+                // Создаем временную папку для работы с файлами
+                var tempDir = System.IO.Path.Combine(_uploadPath, "temp");
+                Directory.CreateDirectory(tempDir);
+                
+                // Генерируем уникальные имена файлов
+                var tempVideoPath = System.IO.Path.Combine(tempDir, $"temp_video_{Guid.NewGuid()}.mp4");
+                var tempThumbnailPath = System.IO.Path.Combine(tempDir, $"temp_thumb_{Guid.NewGuid()}.jpg");
+                
+                try
+                {
+                    // Скачиваем видео из S3
+                    Console.WriteLine($"Downloading video from S3: {videoPath}");
+                    
+                    // Извлекаем ключ из URL
+                    var uri = new Uri(videoPath);
+                    var key = uri.AbsolutePath.TrimStart('/');
+                    if (key.StartsWith(_bucketName + "/"))
+                    {
+                        key = key.Substring(_bucketName.Length + 1);
+                    }
+                    
+                    Console.WriteLine($"Extracted S3 key: {key}");
+                    
+                    // Скачиваем файл из S3
+                    using (var response = await _s3Service.GetObjectAsync(key))
+                    using (var fileStream = File.Create(tempVideoPath))
+                    {
+                        await response.ResponseStream.CopyToAsync(fileStream);
+                    }
+                    
+                    Console.WriteLine($"Video downloaded to: {tempVideoPath}");
+                    
+                    // Создаем thumbnail с помощью FFmpeg
+                    var command = $"-i \"{tempVideoPath}\" -ss 00:00:01 -vframes 1 -s {width}x{height} -f image2 \"{tempThumbnailPath}\"";
+                    
+                    var startInfo = new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = "ffmpeg",
+                        Arguments = command,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                    };
+
+                    using (var process = System.Diagnostics.Process.Start(startInfo))
+                    {
+                        if (process == null)
+                        {
+                            throw new InvalidOperationException("Failed to start FFmpeg process.");
+                        }
+                        await process.WaitForExitAsync();
+
+                        if (process.ExitCode != 0)
+                        {
+                            var error = await process.StandardError.ReadToEndAsync();
+                            throw new InvalidOperationException($"FFmpeg exited with code {process.ExitCode}: {error}");
+                        }
+                    }
+                    
+                    Console.WriteLine($"Thumbnail created: {tempThumbnailPath}");
+                    
+                    // Загружаем thumbnail обратно в S3
+                    using (var thumbnailStream = File.OpenRead(tempThumbnailPath))
+                    {
+                        var thumbnailName = $"thumbnails/{DateTime.UtcNow:yyyy/MM/dd}/thumb_{Guid.NewGuid()}.jpg";
+                        var thumbnailUrl = await _s3Service.UploadFileAsync(thumbnailStream, thumbnailName, "image/jpeg");
+                        
+                        Console.WriteLine($"Thumbnail uploaded to S3: {thumbnailUrl}");
+                        return thumbnailUrl;
+                    }
+                }
+                finally
+                {
+                    // Очищаем временные файлы
+                    if (File.Exists(tempVideoPath))
+                        File.Delete(tempVideoPath);
+                    if (File.Exists(tempThumbnailPath))
+                        File.Delete(tempThumbnailPath);
+                }
             }
-            await process.WaitForExitAsync();
-
-            if (process.ExitCode != 0)
+            catch (Exception ex)
             {
-                var error = await process.StandardError.ReadToEndAsync();
-                throw new InvalidOperationException($"FFmpeg exited with code {process.ExitCode}: {error}");
+                Console.WriteLine($"Error creating video thumbnail for S3: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                throw;
             }
         }
+        else
+        {
+            // Локальное хранилище
+            var fullVideoPath = System.IO.Path.Combine(_uploadPath, videoPath.TrimStart('/').Replace("uploads/", ""));
+            
+            if (!File.Exists(fullVideoPath))
+                throw new FileNotFoundException("Video not found", fullVideoPath);
 
-        return $"/uploads/thumbnails/{thumbnailName}";
+            var fileNameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(fullVideoPath);
+            var thumbnailName = $"{fileNameWithoutExtension}.jpg";
+            var thumbnailPath = System.IO.Path.Combine(_uploadPath, "thumbnails", thumbnailName);
+            
+            Directory.CreateDirectory(System.IO.Path.GetDirectoryName(thumbnailPath)!);
+
+            var command = $"-i \"{fullVideoPath}\" -ss 00:00:01 -vframes 1 -s {width}x{height} -f image2 \"{thumbnailPath}\" ";
+            
+            var startInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "ffmpeg",
+                Arguments = command,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+            };
+
+            using (var process = System.Diagnostics.Process.Start(startInfo))
+            {
+                if (process == null)
+                {
+                    throw new InvalidOperationException("Failed to start FFmpeg process.");
+                }
+                await process.WaitForExitAsync();
+
+                if (process.ExitCode != 0)
+                {
+                    var error = await process.StandardError.ReadToEndAsync();
+                    throw new InvalidOperationException($"FFmpeg exited with code {process.ExitCode}: {error}");
+                }
+            }
+
+            return $"/uploads/thumbnails/{thumbnailName}";
+        }
     }
 
     public string GetWatermarkText()

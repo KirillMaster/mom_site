@@ -13,6 +13,7 @@ namespace MomSite.Infrastructure.Services
         Task<string> GetFileUrlAsync(string fileName);
         Task<bool> FileExistsAsync(string fileName);
         Task<bool> TestConnectionAsync();
+        Task<GetObjectResponse> GetObjectAsync(string key);
     }
 
     public class S3Service : IS3Service
@@ -184,6 +185,31 @@ namespace MomSite.Infrastructure.Services
             catch
             {
                 return null;
+            }
+        }
+
+        public async Task<GetObjectResponse> GetObjectAsync(string key)
+        {
+            try
+            {
+                Console.WriteLine($"S3Service.GetObjectAsync called with key: {key}");
+                
+                var request = new GetObjectRequest
+                {
+                    BucketName = _bucketName,
+                    Key = key
+                };
+
+                var response = await _s3Client.GetObjectAsync(request);
+                Console.WriteLine($"File downloaded from S3 successfully. ContentLength: {response.ContentLength}");
+                
+                return response;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error downloading file from S3: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                throw;
             }
         }
     }
