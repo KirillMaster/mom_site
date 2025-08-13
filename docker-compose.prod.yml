@@ -106,14 +106,14 @@ services:
   nginx:
     build:
       context: .
-      dockerfile: nginx.Dockerfile
+      dockerfile: nginx.Dockerfile.simple
     container_name: mom_site_nginx_prod
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ${SSL_CERT_PATH}:/etc/ssl/certs/angelamoiseenko.ru.crt:ro
-      - ${SSL_KEY_PATH}:/etc/ssl/private/angelamoiseenko.ru.key:ro
+      - ${SSL_CERT_PATH}:/etc/ssl/certs/certificate.crt:ro
+      - ${SSL_KEY_PATH}:/etc/ssl/private/private.key:ro
     depends_on:
       - frontend
       - api

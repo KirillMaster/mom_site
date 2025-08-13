@@ -10,14 +10,14 @@ COPY nginx.conf /etc/nginx/nginx.conf
 RUN mkdir -p /etc/ssl/certs /etc/ssl/private
 
 # Create a script to check if SSL certificates exist
-RUN echo '#!/bin/sh\n\
-if [ ! -f /etc/ssl/certs/angelamoiseenko.ru.crt ] || [ ! -f /etc/ssl/private/angelamoiseenko.ru.key ]; then\n\
-    echo "SSL certificates not found. Please mount them as volumes:"\n\
-    echo "- /path/to/your/certificate.crt:/etc/ssl/certs/angelamoiseenko.ru.crt"\n\
-    echo "- /path/to/your/private.key:/etc/ssl/private/angelamoiseenko.ru.key"\n\
-    exit 1\n\
-fi\n\
-nginx -g "daemon off;"' > /docker-entrypoint.sh
+RUN echo '#!/bin/sh' > /docker-entrypoint.sh && \
+    echo 'if [ ! -f /etc/ssl/certs/certificate.crt ] || [ ! -f /etc/ssl/private/private.key ]; then' >> /docker-entrypoint.sh && \
+    echo '    echo "SSL certificates not found. Please mount them as volumes:"' >> /docker-entrypoint.sh && \
+    echo '    echo "- /path/to/your/certificate.crt:/etc/ssl/certs/certificate.crt"' >> /docker-entrypoint.sh && \
+    echo '    echo "- /path/to/your/private.key:/etc/ssl/private/private.key"' >> /docker-entrypoint.sh && \
+    echo '    exit 1' >> /docker-entrypoint.sh && \
+    echo 'fi' >> /docker-entrypoint.sh && \
+    echo 'nginx -g "daemon off;"' >> /docker-entrypoint.sh
 
 RUN chmod +x /docker-entrypoint.sh
 
