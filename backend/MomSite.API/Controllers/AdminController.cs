@@ -9,6 +9,7 @@ using MomSite.API.DTOs; // Added
 using MomSite.Core.Models;
 using MomSite.Infrastructure.Data;
 using MomSite.Infrastructure.Services;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace MomSite.API.Controllers;
 
@@ -114,6 +115,7 @@ public class AdminController : ControllerBase
     }
 
         [HttpPut("page-content/{id}")]
+    [RequestFormLimits(MultipartBodyLengthLimit = 104857600)] // 100MB
     public async Task<IActionResult> UpdatePageContent(int id, [FromForm] UpdatePageContentDto dto)
     {
         var content = await _context.PageContents.FindAsync(id);
@@ -139,6 +141,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpPost("page-content")]
+    [RequestFormLimits(MultipartBodyLengthLimit = 104857600)] // 100MB
     public async Task<ActionResult<PageContent>> CreatePageContent([FromForm] CreatePageContentDto dto)
     {
         var pageContent = new PageContent
@@ -176,6 +179,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpPost("videos")]
+    [RequestFormLimits(MultipartBodyLengthLimit = 104857600)] // 100MB
     public async Task<ActionResult<Video>> CreateVideo([FromForm] CreateVideoDto dto)
     {
         var video = new Video
@@ -206,6 +210,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpPut("videos/{id}")]
+    [RequestFormLimits(MultipartBodyLengthLimit = 104857600)] // 100MB
     public async Task<IActionResult> UpdateVideo(int id, [FromForm] UpdateVideoDto dto)
     {
         var video = await _context.Videos.FindAsync(id);

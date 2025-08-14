@@ -5,6 +5,7 @@ using MomSite.Core.Models;
 using MomSite.Infrastructure.Data;
 using MomSite.Infrastructure.Services;
 using MomSite.API.DTOs; // Добавлено
+using Microsoft.AspNetCore.Http.Features;
 
 namespace MomSite.API.Controllers;
 
@@ -84,6 +85,7 @@ public class ArtworksController : ControllerBase
     }
 
     [HttpPost("create")] // Изменено: добавлен явный маршрут "create"
+    [RequestFormLimits(MultipartBodyLengthLimit = 104857600)] // 100MB
     public async Task<ActionResult<Artwork>> CreateArtwork([FromForm] CreateArtworkDto dto)
     {
         if (!ModelState.IsValid)
@@ -122,6 +124,7 @@ public class ArtworksController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [RequestFormLimits(MultipartBodyLengthLimit = 104857600)] // 100MB
     public async Task<IActionResult> UpdateArtwork(int id, [FromForm] UpdateArtworkDto dto)
     {
         var artwork = await _context.Artworks.FindAsync(id);
