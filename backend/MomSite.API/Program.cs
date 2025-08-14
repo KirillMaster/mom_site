@@ -23,7 +23,12 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 // Add services to the container.
-builder.Services.AddControllers().AddJsonOptions(options =>
+builder.Services.AddControllers(options =>
+{
+    // Global request form limits for all controllers
+    options.MaxModelBindingCollectionSize = int.MaxValue;
+    options.MaxModelBindingRecursionDepth = 64;
+}).AddJsonOptions(options =>
 {
     // options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
 });
@@ -34,6 +39,14 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(optio
     options.MultipartBodyLengthLimit = 104857600; // 100MB
     options.ValueLengthLimit = int.MaxValue;
     options.MemoryBufferThreshold = int.MaxValue;
+});
+
+// Configure Kestrel for large file uploads
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 104857600; // 100MB
+    options.Limits.MaxConcurrentConnections = 100;
+    options.Limits.MaxConcurrentUpgradedConnections = 100;
 });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -160,6 +173,13 @@ app.Use(async (context, next) =>
     context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
     context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
     context.Response.Headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()";
+    await next();
+});
+
+// Configure request size limits for file uploads
+app.Use(async (context, next) =>
+{
+    context.Features.Get<Microsoft.AspNetCore.Http.Features.IHttpMaxRequestBodySizeFeature>()?.MaxRequestBodySize = 104857600; // 100MB
     await next();
 });
 
