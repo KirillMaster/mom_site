@@ -5,16 +5,16 @@ import { Metadata } from 'next';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Галерея Работ | Имя Художника',
+  title: 'Галерея Работ | Анжела Моисеенко',
   description: 'Исследуйте коллекцию уникальных работ в стиле импрессионизма. Каждая картина создана с любовью и передает особую атмосферу.',
   openGraph: {
-    title: 'Галерея Работ',
+    title: 'Галерея Работ Анжелы Моисеенко',
     description: 'Коллекция работ в стиле импрессионизма.',
     type: 'website',
-    url: 'https://momsite.com/gallery', // Замените на реальный URL
+    url: 'https://angelamoiseenko.ru/gallery', // Замените на реальный URL
     images: [
       {
-        url: 'https://momsite.com/og-image.jpg', // Замените на реальный URL
+        url: 'https://s3.twcstorage.ru/577cc034-8ff38061-52e3-42ed-af0c-f06c744e4e66/2025/08/13/5279bafb-31d7-491a-b876-7a34738a402a_artworks/watermarked_2fa2a46d-f9a8-4793-8043-9e70aafb7b09.jpg', // Замените на реальный URL
         width: 1200,
         height: 630,
         alt: 'Галерея Работ',
@@ -42,7 +42,7 @@ const GalleryPage = async () => {
     '@type': 'CollectionPage',
     name: 'Галерея работ',
     description: 'Исследуйте коллекцию уникальных работ в стиле импрессионизма. Каждая картина создана с любовью и передает особую атмосферу.',
-    url: 'https://momsite.com/gallery', // Замените на реальный URL
+    url: 'https://angelamoiseenko.ru/gallery', // Замените на реальный URL
     mainEntity: {
       '@type': 'ItemList',
       itemListElement: galleryData.artworks.map((artwork, index) => ({

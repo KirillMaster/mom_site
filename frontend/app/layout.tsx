@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     siteName: 'Анжела Моисеенко - Художник-импрессионист',
     images: [
       {
-        url: '/images/og-image.jpg',
+        url: 'https://s3.twcstorage.ru/577cc034-8ff38061-52e3-42ed-af0c-f06c744e4e66/2025/08/13/54c8e902-28cf-40f4-a6d1-29fe7739ea7b_page-content/fd3b2327-6328-47ec-ad68-a058fddcb07c.jpg',
         width: 1200,
         height: 630,
         alt: 'Анжела Моисеенко - Художник-импрессионист',
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Анжела Моисеенко - Художник-импрессионист',
     description: 'Добро пожаловать в мир искусства! Уникальные работы в стиле импрессионизма.',
-    images: ['/images/og-image.jpg'],
+    images: ['https://s3.twcstorage.ru/577cc034-8ff38061-52e3-42ed-af0c-f06c744e4e66/2025/08/13/54c8e902-28cf-40f4-a6d1-29fe7739ea7b_page-content/fd3b2327-6328-47ec-ad68-a058fddcb07c.jpg'],
   },
   robots: {
     index: true,
@@ -56,8 +56,8 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'your-google-verification-code',
-    yandex: 'your-yandex-verification-code',
+    google: 'iUFRReYnB38EqymLybNGbe4grCcbL4yYi4MgZtJxIvI',
+    yandex: '0c3c665f720a33b6',
   },
 }
 
@@ -90,11 +90,11 @@ export default function RootLayout({
               "jobTitle": "Художник-импрессионист",
               "description": "Художник-импрессионист, специализирующийся на театральных работах и натюрмортах",
               "url": "https://angelamoiseenko.ru",
-              "image": "https://angelamoiseenko.ru/images/artist-photo.jpg",
+              "image": "https://s3.twcstorage.ru/577cc034-8ff38061-52e3-42ed-af0c-f06c744e4e66/2025/08/13/54c8e902-28cf-40f4-a6d1-29fe7739ea7b_page-content/fd3b2327-6328-47ec-ad68-a058fddcb07c.jpg",
               "sameAs": [
-                "https://instagram.com/angelamoiseenko",
-                "https://vk.com/angelamoiseenko",
-                "https://t.me/angelamoiseenko"
+                "https://instagram.com/anzhela.moiseenko",
+                "https://vk.com/daritenastoyashee",
+                "https://t.me/Angelamois"
               ],
               "worksFor": {
                 "@type": "Organization",
