@@ -179,7 +179,11 @@ app.Use(async (context, next) =>
 // Configure request size limits for file uploads
 app.Use(async (context, next) =>
 {
-    context.Features.Get<Microsoft.AspNetCore.Http.Features.IHttpMaxRequestBodySizeFeature>()?.MaxRequestBodySize = 104857600; // 100MB
+    var maxRequestBodySizeFeature = context.Features.Get<Microsoft.AspNetCore.Http.Features.IHttpMaxRequestBodySizeFeature>();
+    if (maxRequestBodySizeFeature != null)
+    {
+        maxRequestBodySizeFeature.MaxRequestBodySize = 104857600; // 100MB
+    }
     await next();
 });
 
