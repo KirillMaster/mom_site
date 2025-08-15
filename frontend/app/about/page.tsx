@@ -5,31 +5,58 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-  title: 'О себе | Анжела Моисеенко - Художник-импрессионист',
-  description: 'Познакомьтесь с художником-импрессионистом Анжелой Моисеенко. Узнайте о творческом пути, специализациях и философии искусства.',
-  keywords: 'художник, импрессионизм, биография, творческий путь, живопись, искусство, Анжела Моисеенко',
-  openGraph: {
-    title: 'О себе | Анжела Моисеенко - Художник-импрессионист',
-    description: 'Познакомьтесь с художником-импрессионистом Анжелой Моисеенко. Узнайте о творческом пути и философии искусства.',
-    type: 'website',
-    url: 'https://angelamoiseenko.ru/about',
-    images: [
-      {
-        url: '/images/artist-photo.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Анжела Моисеенко - Художник-импрессионист',
+// Generate dynamic metadata for SEO
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const aboutData = await getAboutData();
+    
+    if (!aboutData) {
+      return {
+        title: 'О себе | Анжела Моисеенко - Художник-импрессионист',
+        description: 'Познакомьтесь с художником-импрессионистом Анжелой Моисеенко.',
+      };
+    }
+
+    const title = 'О себе | Анжела Моисеенко - Художник-импрессионист';
+    const description = aboutData.biography 
+      ? `${aboutData.biography.substring(0, 160)}...`
+      : 'Познакомьтесь с художником-импрессионистом Анжелой Моисеенко. Узнайте о творческом пути, специализациях и философии искусства.';
+
+    const imageUrl = aboutData.artistPhoto || 'https://s3.twcstorage.ru/577cc034-8ff38061-52e3-42ed-af0c-f06c744e4e66/2025/08/13/54c8e902-28cf-40f4-a6d1-29fe7739ea7b_page-content/fd3b2327-6328-47ec-ad68-a058fddcb07c.jpg';
+
+    return {
+      title,
+      description,
+      keywords: 'художник, импрессионизм, биография, творческий путь, живопись, искусство, Анжела Моисеенко',
+      openGraph: {
+        title,
+        description,
+        type: 'website',
+        url: 'https://angelamoiseenko.ru/about',
+        images: [
+          {
+            url: imageUrl,
+            width: 1200,
+            height: 630,
+            alt: 'Анжела Моисеенко - Художник-импрессионист',
+          },
+        ],
       },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'О себе | Анжела Моисеенко - Художник-импрессионист',
-    description: 'Познакомьтесь с художником-импрессионистом Анжелой Моисеенко.',
-    images: ['/images/artist-photo.jpg'],
-  },
-};
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: [imageUrl],
+      },
+    };
+  } catch (error) {
+    console.error('Error generating metadata:', error);
+    return {
+      title: 'О себе | Анжела Моисеенко - Художник-импрессионист',
+      description: 'Познакомьтесь с художником-импрессионистом Анжелой Моисеенко.',
+    };
+  }
+}
 
 const AboutPage = async () => {
   const aboutData = await getAboutData();
@@ -50,14 +77,9 @@ const AboutPage = async () => {
     '@type': 'Person',
     name: 'Анжела Моисеенко',
     jobTitle: 'Художник-импрессионист',
-    description: 'Художник-импрессионист, специализирующийся на театральных работах и натюрмортах',
+    description: aboutData.biography || 'Художник-импрессионист, специализирующийся на театральных работах и натюрмортах',
     url: 'https://angelamoiseenko.ru/about',
-    image: 'https://angelamoiseenko.ru/images/artist-photo.jpg',
-    sameAs: [
-      'https://instagram.com/angelamoiseenko',
-      'https://vk.com/angelamoiseenko',
-      'https://t.me/angelamoiseenko'
-    ],
+    image: aboutData.artistPhoto || 'https://s3.twcstorage.ru/577cc034-8ff38061-52e3-42ed-af0c-f06c744e4e66/2025/08/13/54c8e902-28cf-40f4-a6d1-29fe7739ea7b_page-content/fd3b2327-6328-47ec-ad68-a058fddcb07c.jpg',
     knowsAbout: ['Импрессионизм', 'Театральное искусство', 'Натюрморты', 'Живопись'],
     hasOccupation: {
       '@type': 'Occupation',

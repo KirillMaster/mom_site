@@ -4,31 +4,54 @@ import ContactsClientPage from './ContactsClientPage';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-  title: 'Контакты | Анжела Моисеенко - Художник-импрессионист',
-  description: 'Свяжитесь с художником-импрессионистом Анжелой Моисеенко. Контактная информация, социальные сети и форма обратной связи.',
-  keywords: 'контакты, художник, связь, Анжела Моисеенко, импрессионизм, заказать картину',
-  openGraph: {
-    title: 'Контакты | Анжела Моисеенко - Художник-импрессионист',
-    description: 'Свяжитесь с художником-импрессионистом Анжелой Моисеенко. Контактная информация и форма обратной связи.',
-    type: 'website',
-    url: 'https://angelamoiseenko.ru/contacts',
-    images: [
-      {
-        url: '/images/contact-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Контакты - Анжела Моисеенко',
+// Generate dynamic metadata for SEO
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const contactsData = await getContactsData();
+    
+    if (!contactsData) {
+      return {
+        title: 'Контакты | Анжела Моисеенко - Художник-импрессионист',
+        description: 'Свяжитесь с художником-импрессионистом Анжелой Моисеенко.',
+      };
+    }
+
+    const title = 'Контакты | Анжела Моисеенко - Художник-импрессионист';
+    const description = 'Свяжитесь с художником-импрессионистом Анжелой Моисеенко. Контактная информация, социальные сети и форма обратной связи.';
+
+    return {
+      title,
+      description,
+      keywords: 'контакты, художник, связь, Анжела Моисеенко, импрессионизм, заказать картину',
+      openGraph: {
+        title,
+        description,
+        type: 'website',
+        url: 'https://angelamoiseenko.ru/contacts',
+        images: [
+          {
+            url: 'https://s3.twcstorage.ru/577cc034-8ff38061-52e3-42ed-af0c-f06c744e4e66/2025/08/13/54c8e902-28cf-40f4-a6d1-29fe7739ea7b_page-content/fd3b2327-6328-47ec-ad68-a058fddcb07c.jpg',
+            width: 1200,
+            height: 630,
+            alt: 'Контакты - Анжела Моисеенко',
+          },
+        ],
       },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Контакты | Анжела Моисеенко - Художник-импрессионист',
-    description: 'Свяжитесь с художником-импрессионистом Анжелой Моисеенко.',
-    images: ['/images/contact-image.jpg'],
-  },
-};
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: ['https://s3.twcstorage.ru/577cc034-8ff38061-52e3-42ed-af0c-f06c744e4e66/2025/08/13/54c8e902-28cf-40f4-a6d1-29fe7739ea7b_page-content/fd3b2327-6328-47ec-ad68-a058fddcb07c.jpg'],
+      },
+    };
+  } catch (error) {
+    console.error('Error generating metadata:', error);
+    return {
+      title: 'Контакты | Анжела Моисеенко - Художник-импрессионист',
+      description: 'Свяжитесь с художником-импрессионистом Анжелой Моисеенко.',
+    };
+  }
+}
 
 const ContactsPage = async () => {
   const contactsData = await getContactsData();
