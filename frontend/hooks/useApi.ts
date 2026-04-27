@@ -136,26 +136,28 @@ export function useCategories() {
 
 export function useCreateCategory() {
   const queryClient = useQueryClient();
-  return useMutation<Category, Error, { name: string; description?: string; displayOrder?: number }>({
+  return useMutation<Category, Error, { name: string; description?: string; displayOrder?: number; showOnHome?: boolean }>({
     mutationFn: async (data) => {
       const response = await api.post('/admin/categories', data);
       return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
+      queryClient.invalidateQueries({ queryKey: ['homeData'] });
     },
   });
 }
 
 export function useUpdateCategory() {
   const queryClient = useQueryClient();
-  return useMutation<Category, Error, { id: number; data: { name?: string; description?: string; displayOrder?: number; isActive?: boolean } }>({
+  return useMutation<Category, Error, { id: number; data: { name?: string; description?: string; displayOrder?: number; isActive?: boolean; showOnHome?: boolean } }>({
     mutationFn: async ({ id, data }) => {
       const response = await api.put(`/admin/categories/${id}`, data);
       return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
+      queryClient.invalidateQueries({ queryKey: ['homeData'] });
     },
   });
 }

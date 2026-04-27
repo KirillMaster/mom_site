@@ -33,6 +33,7 @@ public class PublicController : ControllerBase
 
         var artworks = await _context.Artworks
             .Include(a => a.Category) // Include category for display
+            .Where(a => a.Category.ShowOnHome) // Only categories opted in to home carousel
             .OrderByDescending(a => a.CreatedAt) // Latest first
             .Take(9) // Limit to 9 artworks for the carousel
             .ToListAsync();

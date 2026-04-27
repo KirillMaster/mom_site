@@ -68,6 +68,7 @@ const CategoriesManagementPage = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Описание</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Порядок</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Активно</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">На главной</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Действия</th>
               </tr>
             </thead>
@@ -80,6 +81,11 @@ const CategoriesManagementPage = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${category.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                       {category.isActive ? 'Да' : 'Нет'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${category.showOnHome ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-700'}`}>
+                      {category.showOnHome ? 'Да' : 'Нет'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -109,7 +115,8 @@ const CategoryModal = ({ category, onClose }: { category: Category | null, onClo
     name: category?.name || '',
     description: category?.description || '',
     displayOrder: category?.displayOrder || 0,
-    isActive: category?.isActive || false,
+    isActive: category?.isActive ?? true,
+    showOnHome: category?.showOnHome ?? true,
   });
 
   const createMutation = useCreateCategory();
@@ -148,6 +155,13 @@ const CategoryModal = ({ category, onClose }: { category: Category | null, onClo
               <label htmlFor="isActive" className="ml-2 block text-sm text-gray-900">Активно</label>
             </div>
           )}
+          <div className="flex items-center">
+            <input type="checkbox" name="showOnHome" id="showOnHome" checked={formData.showOnHome} onChange={e => setFormData({ ...formData, showOnHome: e.target.checked })} className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+            <label htmlFor="showOnHome" className="ml-2 block text-sm text-gray-900">
+              Показывать на главной карусели
+              <span className="block text-xs text-gray-500">Если выключено, картины этой категории не появляются в карусели на главной странице (но остаются в галерее)</span>
+            </label>
+          </div>
           <div className="flex justify-end pt-4">
             <button type="button" onClick={onClose} className="btn-secondary mr-4">
               Отмена

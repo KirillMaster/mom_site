@@ -61,6 +61,7 @@ public class AdminController : ControllerBase
             Name = dto.Name,
             Description = dto.Description,
             DisplayOrder = dto.DisplayOrder,
+            ShowOnHome = dto.ShowOnHome,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -84,6 +85,7 @@ public class AdminController : ControllerBase
         category.Description = dto.Description;
         category.DisplayOrder = dto.DisplayOrder;
         category.IsActive = dto.IsActive;
+        category.ShowOnHome = dto.ShowOnHome;
         category.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
@@ -371,6 +373,7 @@ public class CreateCategoryDto
     public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
     public int DisplayOrder { get; set; } = 0;
+    public bool ShowOnHome { get; set; } = true;
 }
 
 public class UpdateCategoryDto
@@ -379,6 +382,7 @@ public class UpdateCategoryDto
     public string? Description { get; set; }
     public int DisplayOrder { get; set; } = 0;
     public bool IsActive { get; set; } = true;
+    public bool ShowOnHome { get; set; } = true;
 }
 
 

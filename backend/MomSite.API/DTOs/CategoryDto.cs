@@ -7,5 +7,6 @@ namespace MomSite.API.DTOs
         public string? Description { get; set; }
         public int DisplayOrder { get; set; }
         public bool IsActive { get; set; }
+        public bool ShowOnHome { get; set; }
     }
 }

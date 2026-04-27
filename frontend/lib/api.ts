@@ -50,6 +50,7 @@ export interface Category {
   description?: string;
   displayOrder: number;
   isActive: boolean;
+  showOnHome: boolean;
   createdAt: string;
   updatedAt: string;
   artworks?: Artwork[]; // Original backend model might have this

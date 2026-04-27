@@ -30,7 +30,8 @@ namespace MomSite.API.DTOs
                 Name = category.Name,
                 Description = category.Description,
                 DisplayOrder = category.DisplayOrder,
-                IsActive = category.IsActive
+                IsActive = category.IsActive,
+                ShowOnHome = category.ShowOnHome
             };
         }
 

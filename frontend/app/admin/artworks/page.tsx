@@ -226,21 +226,24 @@ const AdminArtworksPage = () => {
           </table>
         </div>
 
-        {/* Modal for Add/Edit Artwork */}
+        {/* Modal for Add/Edit Artwork — overlay itself scrolls so the
+            submit button is always reachable, even on short viewports
+            with an image preview. */}
         {isModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <motion.div
-              initial={{ opacity: 0, y: -50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -50 }}
-              className="bg-white rounded-lg shadow-xl p-8 w-full max-w-2xl relative max-h-[90vh] overflow-y-auto"
-            >
-              <button onClick={closeModal} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
-                <XCircle className="w-6 h-6" />
-              </button>
-              <h2 className="text-2xl font-serif font-bold text-gray-900 mb-6">
-                {isEditMode ? 'Редактировать картину' : 'Добавить новую картину'}
-              </h2>
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto p-4">
+            <div className="min-h-full flex items-start justify-center">
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="bg-white rounded-lg shadow-xl p-8 w-full max-w-2xl relative my-8"
+              >
+                <button onClick={closeModal} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                  <XCircle className="w-6 h-6" />
+                </button>
+                <h2 className="text-2xl font-serif font-bold text-gray-900 mb-6">
+                  {isEditMode ? 'Редактировать картину' : 'Добавить новую картину'}
+                </h2>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
@@ -339,7 +342,8 @@ const AdminArtworksPage = () => {
                   {isEditMode ? 'Сохранить изменения' : 'Добавить картину'}
                 </button>
               </form>
-            </motion.div>
+              </motion.div>
+            </div>
           </div>
         )}
       </div>
