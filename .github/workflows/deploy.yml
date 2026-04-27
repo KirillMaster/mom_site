@@ -1,0 +1,64 @@
+name: Deploy to production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: "Commit SHA to deploy (defaults to triggering ref)"
+        required: false
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build & deploy on server
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve target commit SHA
+        id: sha
+        run: |
+          TARGET="${{ github.event.inputs.sha }}"
+          if [ -z "$TARGET" ]; then TARGET="${{ github.sha }}"; fi
+          echo "value=$TARGET" >> "$GITHUB_OUTPUT"
+          echo "Deploying $TARGET"
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Upload deploy script
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+        run: |
+          scp -i ~/.ssh/deploy_key -P "$DEPLOY_PORT" \
+            scripts/deploy_remote.sh \
+            "$DEPLOY_USER@$DEPLOY_HOST:/root/mom_site_deploy_remote.sh"
+
+      - name: Run deploy on server
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          TARGET_SHA: ${{ steps.sha.outputs.value }}
+        run: |
+          ssh -i ~/.ssh/deploy_key -p "$DEPLOY_PORT" \
+            "$DEPLOY_USER@$DEPLOY_HOST" \
+            "bash /root/mom_site_deploy_remote.sh '$TARGET_SHA'"
