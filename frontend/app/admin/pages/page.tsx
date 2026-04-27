@@ -135,20 +135,30 @@ export default function PageContentManagement() {
   };
 
   const saveContent = async () => {
+    setSaving(true);
+    const failures: string[] = [];
+
+    const checkResponse = async (response: Response, fieldLabel: string) => {
+      if (response.ok) return;
+      let detail = '';
+      try { detail = await response.text(); } catch {}
+      if (response.status === 401) {
+        failures.push(`${fieldLabel}: сессия истекла, войдите заново`);
+      } else {
+        failures.push(`${fieldLabel}: HTTP ${response.status}${detail ? ' — ' + detail.slice(0, 120) : ''}`);
+      }
+    };
+
     try {
-      setSaving(true);
-      
-      // Find existing content items
-      const existingItems = pageContent.filter(item => 
+      const existingItems = pageContent.filter(item =>
         pageFields[selectedPage].some(field => field.key === item.contentKey)
       );
 
-      // Update existing items
       for (const item of existingItems) {
         const field = pageFields[selectedPage].find(f => f.key === item.contentKey);
         if (field && formData[item.contentKey] !== undefined) {
           const formDataToSend = new FormData();
-          
+
           if (field.type === 'url') {
             formDataToSend.append('linkUrl', formData[item.contentKey]);
           } else if (field.type === 'image') {
@@ -164,17 +174,15 @@ export default function PageContentManagement() {
           formDataToSend.append('isActive', 'true');
           formDataToSend.append('displayOrder', item.displayOrder.toString());
 
-          await fetch(`${API_BASE_URL}/api/admin/page-content/${item.id}`, {
+          const r = await fetch(`${API_BASE_URL}/api/admin/page-content/${item.id}`, {
             method: 'PUT',
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
-            body: formDataToSend
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+            body: formDataToSend,
           });
+          await checkResponse(r, field.label);
         }
       }
 
-      // Create new items for missing fields
       const existingKeys = existingItems.map(item => item.contentKey);
       const missingFields = pageFields[selectedPage].filter(field => !existingKeys.includes(field.key));
 
@@ -198,21 +206,26 @@ export default function PageContentManagement() {
             formDataToSend.append('textContent', formData[field.key]);
           }
 
-          await fetch(`${API_BASE_URL}/api/admin/page-content`, {
+          const r = await fetch(`${API_BASE_URL}/api/admin/page-content`, {
             method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
-            body: formDataToSend
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+            body: formDataToSend,
           });
+          await checkResponse(r, field.label);
         }
       }
 
       await fetchPageContent();
-      alert('Контент успешно сохранен!');
+
+      if (failures.length === 0) {
+        alert('Контент успешно сохранен!');
+      } else {
+        alert('Не все поля сохранились:\n\n' + failures.join('\n'));
+      }
     } catch (error) {
       console.error('Error saving content:', error);
-      alert('Ошибка при сохранении контента');
+      const msg = error instanceof Error ? error.message : String(error);
+      alert(`Ошибка сети при сохранении контента: ${msg}`);
     } finally {
       setSaving(false);
     }

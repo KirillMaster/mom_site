@@ -27,7 +27,6 @@ export const auth = {
 if (typeof window !== 'undefined' && auth.getToken()) {
   const token = auth.getToken();
   auth.setToken(token!);
-  console.log('Token restored from localStorage:', token);
 }
 
 // Backend Models (for reference, not directly used in frontend data fetching)

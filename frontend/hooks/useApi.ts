@@ -33,7 +33,6 @@ export function useHomeData() {
 
 export async function getGalleryData(): Promise<GalleryData> {
   const response = await api.get('/public/gallery');
-  console.log('Raw Gallery API Response:', response.data);
   return {
     ...response.data,
     artworks: response.data.artworks?.$values || response.data.artworks || [],
@@ -177,10 +176,7 @@ export function useArtworks() {
   return useQuery<ArtworkAdminDto[], Error>({
     queryKey: ['artworks'],
     queryFn: async () => {
-      console.log('Fetching artworks...');
-      console.log('Request headers for artworks:', api.defaults.headers.common);
       const response = await api.get('/admin/artworks');
-      // Проверяем, является ли response.data массивом, если нет, то пытаемся получить $values
       return Array.isArray(response.data) ? response.data : response.data.$values || [];
     },
   });
