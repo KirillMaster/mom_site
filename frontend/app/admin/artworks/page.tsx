@@ -12,8 +12,6 @@ import { ArtworkAdminDto } from '@/lib/api'; // Добавлен импорт
 const AdminArtworksPage = () => {
   const { data: artworks, isLoading, isError, refetch: refetchArtworks } = useArtworks();
   const { data: categories, isLoading: isLoadingCategories } = useCategories();
-  console.log('Artworks data:', artworks);
-  console.log('Categories data (Artworks page):', categories);
   const createArtworkMutation = useCreateArtwork();
   const updateArtworkMutation = useUpdateArtwork();
   const deleteArtworkMutation = useDeleteArtwork();
@@ -120,7 +118,6 @@ const AdminArtworksPage = () => {
     } finally {
       refetchArtworks();
       closeModal();
-      console.log('Artworks after refetch:', artworks);
     }
   };
 

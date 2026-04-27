@@ -13,7 +13,6 @@ const CategoriesManagementPage = () => {
   const queryClient = useQueryClient();
 
   const { data: categories, isLoading, error: categoriesError } = useCategories();
-  console.log('Categories data:', categories);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
