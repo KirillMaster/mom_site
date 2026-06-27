@@ -146,6 +146,28 @@ public class AdminController : ControllerBase
     [RequestFormLimits(MultipartBodyLengthLimit = 104857600)] // 100MB
     public async Task<ActionResult<PageContent>> CreatePageContent([FromForm] CreatePageContentDto dto)
     {
+        // Upsert: if record with same PageKey+ContentKey exists, update it instead
+        var existing = await _context.PageContents
+            .FirstOrDefaultAsync(pc => pc.PageKey == dto.PageKey && pc.ContentKey == dto.ContentKey);
+
+        if (existing != null)
+        {
+            existing.TextContent = dto.TextContent;
+            existing.LinkUrl = dto.LinkUrl;
+            existing.DisplayOrder = dto.DisplayOrder;
+            existing.IsActive = dto.IsActive;
+            existing.UpdatedAt = DateTime.UtcNow;
+
+            if (dto.Image != null)
+            {
+                _imageService.DeleteImage(existing.ImagePath ?? "");
+                existing.ImagePath = await _imageService.SaveImageAsync(dto.Image, "page-content");
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok(existing);
+        }
+
         var pageContent = new PageContent
         {
             PageKey = dto.PageKey,

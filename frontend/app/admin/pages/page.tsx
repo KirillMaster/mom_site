@@ -104,12 +104,18 @@ export default function PageContentManagement() {
         const data = await response.json();
         setPageContent(data);
         
-        // Initialize form data
+        // Initialize form data based on field type
         const initialData: Record<string, string> = {};
+        const fields = pageFields[selectedPage] || [];
         data.forEach((item: PageContent) => {
-          if (item.textContent) initialData[item.contentKey] = item.textContent;
-          if (item.linkUrl) initialData[item.contentKey] = item.linkUrl;
-          if (item.imagePath) initialData[item.contentKey] = item.imagePath;
+          const field = fields.find(f => f.key === item.contentKey);
+          if (field?.type === 'url' && item.linkUrl) {
+            initialData[item.contentKey] = item.linkUrl;
+          } else if (field?.type === 'image' && item.imagePath) {
+            initialData[item.contentKey] = item.imagePath;
+          } else if (item.textContent) {
+            initialData[item.contentKey] = item.textContent;
+          }
         });
         setFormData(initialData);
       }
@@ -187,7 +193,7 @@ export default function PageContentManagement() {
       const missingFields = pageFields[selectedPage].filter(field => !existingKeys.includes(field.key));
 
       for (const field of missingFields) {
-        if (formData[field.key]) {
+        if (formData[field.key] !== undefined && formData[field.key] !== '') {
           const formDataToSend = new FormData();
           formDataToSend.append('pageKey', selectedPage);
           formDataToSend.append('contentKey', field.key);
