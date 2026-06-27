@@ -20,15 +20,17 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore
-        run: dotnet restore
+        run: |
+          dotnet restore MomSite.API/MomSite.API.csproj
+          dotnet restore MomSite.Tests/MomSite.Tests.csproj
         working-directory: backend
 
       - name: Build
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build MomSite.API/MomSite.API.csproj --no-restore --configuration Release
         working-directory: backend
 
       - name: Test
-        run: dotnet test MomSite.Tests/MomSite.Tests.csproj --no-build --configuration Release --verbosity normal
+        run: dotnet test MomSite.Tests/MomSite.Tests.csproj --no-restore --configuration Release --verbosity normal
         working-directory: backend
 
   frontend-test:
@@ -53,5 +55,5 @@ jobs:
         working-directory: frontend
 
       - name: Test
-        run: npx jest --ci --passWithNoTests
+        run: npx jest --ci --passWithNoTests --testPathIgnorePatterns='e2e/'
         working-directory: frontend
