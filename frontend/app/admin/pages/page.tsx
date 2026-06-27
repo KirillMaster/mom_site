@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import { ArrowLeft, Save, Upload } from 'lucide-react';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://angelamoiseenko.ru';
@@ -224,14 +225,14 @@ export default function PageContentManagement() {
       await fetchPageContent();
 
       if (failures.length === 0) {
-        alert('Контент успешно сохранен!');
+        toast.success('Контент успешно сохранен!');
       } else {
-        alert('Не все поля сохранились:\n\n' + failures.join('\n'));
+        toast.error('Не все поля сохранились:\n\n' + failures.join('\n'));
       }
     } catch (error) {
       console.error('Error saving content:', error);
       const msg = error instanceof Error ? error.message : String(error);
-      alert(`Ошибка сети при сохранении контента: ${msg}`);
+      toast.error(`Ошибка сети при сохранении контента: ${msg}`);
     } finally {
       setSaving(false);
     }

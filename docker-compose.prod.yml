@@ -53,6 +53,7 @@ services:
     container_name: mom_site_frontend_prod
     environment:
       - NEXT_PUBLIC_API_URL=https://angelamoiseenko.ru/api
+      - INTERNAL_API_URL=http://mom_site_api_prod:5000/api
     expose:
       - "3000"
     healthcheck:

@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://angelamoiseenko.ru/api';
+// Server-side uses internal docker network URL for faster/reliable SSR
+// Client-side uses public URL
+const isServer = typeof window === 'undefined';
+export const API_BASE_URL = isServer
+  ? (process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'https://angelamoiseenko.ru/api')
+  : (process.env.NEXT_PUBLIC_API_URL || 'https://angelamoiseenko.ru/api');
 
 export const api = axios.create({
   baseURL: API_BASE_URL,

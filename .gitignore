@@ -109,3 +109,5 @@ dist
 
 # Local Playwright MCP test artifacts (not part of repo)
 .playwright-mcp/
+f.key
+test-results/
