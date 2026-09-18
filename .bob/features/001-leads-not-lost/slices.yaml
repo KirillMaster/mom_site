@@ -1,0 +1,14 @@
+feature: 001-leads-not-lost
+slices:
+  - id: S1
+    title: "Persistence + notifiers: контактная заявка сохраняется в БД до отправки уведомлений; сбой email/Telegram не даёт 500"
+    depends_on: []
+    scenario_refs: [S1-AS1, S1-AS2, S1-AS3, S1-AS4, S1-AS5, S1-AS6, S1-AS7]
+  - id: S2
+    title: "Admin UI /admin/messages: список, бейдж непрочитанных, просмотр (mark read), архивирование"
+    depends_on: [S1]
+    scenario_refs: [S2-AS1, S2-AS2, S2-AS3, S2-AS4, S2-AS5]
+  - id: S3
+    title: "Anti-spam: honeypot-поле + серверный rate-limit по IP на публичном эндпоинте"
+    depends_on: [S1]
+    scenario_refs: [S3-AS1, S3-AS2, S3-AS3, S3-AS4]
