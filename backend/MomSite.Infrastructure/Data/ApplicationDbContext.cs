@@ -16,6 +16,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Video> Videos { get; set; }
     public DbSet<VideoCategory> VideoCategories { get; set; }
     public DbSet<PageContent> PageContents { get; set; }
+    public DbSet<ContactMessage> ContactMessages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -80,6 +81,24 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.ImagePath).HasMaxLength(500);
             entity.Property(e => e.LinkUrl).HasMaxLength(500);
             entity.HasIndex(e => new { e.PageKey, e.ContentKey }).IsUnique();
+        });
+
+        // ContactMessage configuration
+        modelBuilder.Entity<ContactMessage>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Email).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Subject).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Message).IsRequired().HasMaxLength(5000);
+            entity.Property(e => e.IpAddress).HasMaxLength(64);
+            entity.Property(e => e.UserAgent).HasMaxLength(512);
+            entity.Property(e => e.UtmSource).HasMaxLength(200);
+            entity.Property(e => e.UtmMedium).HasMaxLength(200);
+            entity.Property(e => e.UtmCampaign).HasMaxLength(200);
+            entity.Property(e => e.Status).HasConversion<string>().HasMaxLength(20);
+            entity.HasIndex(e => e.CreatedAt);
+            entity.HasIndex(e => e.Status);
         });
 
         // Seed data was removed in migration 20260427120500_RemoveSeedData.

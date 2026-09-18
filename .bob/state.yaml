@@ -1,0 +1,10 @@
+run_id: 001-leads-not-lost
+mode: night
+feature: 001-leads-not-lost
+current_slice: S1
+current_role: coder
+slices:
+  S1: {status: running, return_count: 0}
+  S2: {status: pending, return_count: 0}
+  S3: {status: pending, return_count: 0}
+approval: auto-approved-night

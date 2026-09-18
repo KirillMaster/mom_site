@@ -3,9 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using MomSite.Core.Interfaces;
 using MomSite.Infrastructure.Data;
+using MomSite.Infrastructure.Notifications;
 using MomSite.Infrastructure.Services;
-using MomSite.API.Services;
 using Microsoft.Extensions.FileProviders;
 using Serilog;
 using Serilog.Events;
@@ -148,7 +149,9 @@ builder.Services.AddAuthorization();
 // Add custom services
 builder.Services.AddScoped<IS3Service, S3Service>();
 builder.Services.AddScoped<IImageService, ImageService>();
-builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IFeedbackNotifier, EmailNotifier>();
+builder.Services.AddScoped<IFeedbackNotifier, TelegramNotifier>();
 
 var app = builder.Build();
 

@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MomSite.Core.Interfaces;
 using MomSite.Core.Models;
 using MomSite.Infrastructure.Data;
-using MomSite.API.Services;
 using MomSite.API.DTOs; // Добавлено
 
 namespace MomSite.API.Controllers;
@@ -12,12 +12,17 @@ namespace MomSite.API.Controllers;
 public class PublicController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
-    private readonly IEmailService _emailService;
+    private readonly IEnumerable<IFeedbackNotifier> _notifiers;
+    private readonly ILogger<PublicController> _logger;
 
-    public PublicController(ApplicationDbContext context, IEmailService emailService)
+    public PublicController(
+        ApplicationDbContext context,
+        IEnumerable<IFeedbackNotifier> notifiers,
+        ILogger<PublicController> logger)
     {
         _context = context;
-        _emailService = emailService;
+        _notifiers = notifiers;
+        _logger = logger;
     }
 
     [HttpGet("home")] // Явный маршрут для главной страницы
@@ -389,16 +394,52 @@ public class PublicController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var success = await _emailService.SendContactMessageAsync(message);
-        
-        if (success)
+        var entity = new ContactMessage
         {
-            return Ok(new { message = "Сообщение успешно отправлено!" });
+            Name = message.Name,
+            Email = message.Email,
+            Subject = message.Subject,
+            Message = message.Message,
+            UtmSource = message.UtmSource,
+            UtmMedium = message.UtmMedium,
+            UtmCampaign = message.UtmCampaign,
+            IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+            UserAgent = Request.Headers.UserAgent.ToString(),
+            CreatedAt = DateTime.UtcNow,
+            Status = ContactMessageStatus.New
+        };
+
+        try
+        {
+            _context.ContactMessages.Add(entity);
+            await _context.SaveChangesAsync();
         }
-        else
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to persist contact message from {FromEmail}", message.Email);
             return StatusCode(500, new { message = "Ошибка при отправке сообщения. Попробуйте позже." });
         }
+
+        // Persistence has already succeeded at this point, so the lead is
+        // never lost even if every notification channel below fails.
+        foreach (var notifier in _notifiers)
+        {
+            if (!notifier.IsEnabled)
+            {
+                continue;
+            }
+
+            try
+            {
+                await notifier.NotifyAsync(entity);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Notifier {Notifier} failed to deliver contact message {Id}", notifier.GetType().Name, entity.Id);
+            }
+        }
+
+        return Ok(new { message = "Сообщение успешно отправлено!" });
     }
 
     [HttpGet("health")]
