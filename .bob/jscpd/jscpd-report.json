@@ -2,18 +2,18 @@
   "duplicates": [
     {
       "firstFile": {
-        "end": 421,
+        "end": 492,
         "endLoc": {
           "column": 1,
-          "line": 421,
-          "position": 13563
+          "line": 492,
+          "position": 15673
         },
         "name": "MomSite.API\\Controllers\\AdminController.cs",
-        "start": 416,
+        "start": 487,
         "startLoc": {
           "column": 4,
-          "line": 416,
-          "position": 13344
+          "line": 487,
+          "position": 15454
         }
       },
       "format": "csharp",
@@ -22,18 +22,18 @@
       "kind": "exact",
       "lines": 6,
       "secondFile": {
-        "end": 468,
+        "end": 539,
         "endLoc": {
           "column": 1,
-          "line": 468,
-          "position": 14994
+          "line": 539,
+          "position": 17104
         },
         "name": "MomSite.API\\Controllers\\AdminController.cs",
-        "start": 463,
+        "start": 534,
         "startLoc": {
           "column": 4,
-          "line": 463,
-          "position": 14775
+          "line": 534,
+          "position": 16885
         }
       },
       "tokens": 55
@@ -762,6 +762,82 @@
     },
     {
       "firstFile": {
+        "end": 80,
+        "endLoc": {
+          "column": 23,
+          "line": 80,
+          "position": 3707
+        },
+        "name": "MomSite.Tests\\AdminMessagesControllerTests.cs",
+        "start": 73,
+        "startLoc": {
+          "column": 16,
+          "line": 73,
+          "position": 3382
+        }
+      },
+      "format": "csharp",
+      "fragment": "                var controller = new AdminController(context, imageServiceMock.Object, configMock.Object);\n\n                var result = await controller.GetMessages();\n\n                var ok = Assert.IsType<OkObjectResult>(result.Result);\n                var page = Assert.IsType<ContactMessagesPageDto>(ok.Value);\n\n                Assert.Equal(3, page.Items.Count);",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 8,
+      "secondFile": {
+        "end": 184,
+        "endLoc": {
+          "column": 19,
+          "line": 184,
+          "position": 8325
+        },
+        "name": "MomSite.Tests\\AdminMessagesControllerTests.cs",
+        "start": 177,
+        "startLoc": {
+          "column": 12,
+          "line": 177,
+          "position": 8016
+        }
+      },
+      "tokens": 59
+    },
+    {
+      "firstFile": {
+        "end": 98,
+        "endLoc": {
+          "column": 50,
+          "line": 98,
+          "position": 4528
+        },
+        "name": "MomSite.Tests\\AdminMessagesControllerTests.cs",
+        "start": 90,
+        "startLoc": {
+          "column": 99,
+          "line": 90,
+          "position": 4149
+        }
+      },
+      "format": "csharp",
+      "fragment": "            var options = CreateDbOptions(nameof(GetMessage_MarksNewAsRead_AndDecrementsUnreadCount));\n            var (imageServiceMock, configMock) = CreateMocks();\n\n            using (var context = new ApplicationDbContext(options))\n            {\n                context.ContactMessages.Add(new ContactMessage\n                {\n                    Name = \"Иван\", Email = \"ivan@example.com\", Subject = \"S\", Message = \"M\",\n                    Status = ContactMessageStatus.New, CreatedAt = DateTime.UtcNow",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 9,
+      "secondFile": {
+        "end": 138,
+        "endLoc": {
+          "column": 50,
+          "line": 138,
+          "position": 6273
+        },
+        "name": "MomSite.Tests\\AdminMessagesControllerTests.cs",
+        "start": 130,
+        "startLoc": {
+          "column": 115,
+          "line": 130,
+          "position": 5894
+        }
+      },
+      "tokens": 55
+    },
+    {
+      "firstFile": {
         "end": 141,
         "endLoc": {
           "column": 50,
@@ -797,6 +873,234 @@
         }
       },
       "tokens": 50
+    },
+    {
+      "firstFile": {
+        "end": 221,
+        "endLoc": {
+          "column": 26,
+          "line": 221,
+          "position": 9249
+        },
+        "name": "MomSite.Tests\\PublicControllerTests.cs",
+        "start": 211,
+        "startLoc": {
+          "column": 85,
+          "line": 211,
+          "position": 8944
+        }
+      },
+      "format": "csharp",
+      "fragment": "            controller.ModelState.AddModelError(\"Email\", \"Email обязателен\");\n\n            var result = await controller.SendContactMessage(dto);\n\n            var badRequest = Assert.IsType<BadRequestObjectResult>(result);\n            Assert.Equal(400, badRequest.StatusCode);\n            Assert.Empty(context.ContactMessages);\n        }\n\n        [Fact]\n        [Trait(\"Scenario\", \"S1-AS7\")]",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 11,
+      "secondFile": {
+        "end": 269,
+        "endLoc": {
+          "column": 26,
+          "line": 269,
+          "position": 11361
+        },
+        "name": "MomSite.Tests\\PublicControllerTests.cs",
+        "start": 259,
+        "startLoc": {
+          "column": 83,
+          "line": 259,
+          "position": 11056
+        }
+      },
+      "tokens": 55
+    },
+    {
+      "firstFile": {
+        "end": 221,
+        "endLoc": {
+          "column": 26,
+          "line": 221,
+          "position": 9249
+        },
+        "name": "MomSite.Tests\\PublicControllerTests.cs",
+        "start": 211,
+        "startLoc": {
+          "column": 85,
+          "line": 211,
+          "position": 8944
+        }
+      },
+      "format": "csharp",
+      "fragment": "            controller.ModelState.AddModelError(\"Email\", \"Email обязателен\");\n\n            var result = await controller.SendContactMessage(dto);\n\n            var badRequest = Assert.IsType<BadRequestObjectResult>(result);\n            Assert.Equal(400, badRequest.StatusCode);\n            Assert.Empty(context.ContactMessages);\n        }\n\n        [Fact]\n        [Trait(\"Scenario\", \"S1-AS7\")]",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 11,
+      "secondFile": {
+        "end": 287,
+        "endLoc": {
+          "column": 26,
+          "line": 287,
+          "position": 12156
+        },
+        "name": "MomSite.Tests\\PublicControllerTests.cs",
+        "start": 277,
+        "startLoc": {
+          "column": 89,
+          "line": 277,
+          "position": 11851
+        }
+      },
+      "tokens": 55
+    },
+    {
+      "firstFile": {
+        "end": 221,
+        "endLoc": {
+          "column": 26,
+          "line": 221,
+          "position": 9249
+        },
+        "name": "MomSite.Tests\\PublicControllerTests.cs",
+        "start": 211,
+        "startLoc": {
+          "column": 85,
+          "line": 211,
+          "position": 8944
+        }
+      },
+      "format": "csharp",
+      "fragment": "            controller.ModelState.AddModelError(\"Email\", \"Email обязателен\");\n\n            var result = await controller.SendContactMessage(dto);\n\n            var badRequest = Assert.IsType<BadRequestObjectResult>(result);\n            Assert.Equal(400, badRequest.StatusCode);\n            Assert.Empty(context.ContactMessages);\n        }\n\n        [Fact]\n        [Trait(\"Scenario\", \"S1-AS7\")]",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 11,
+      "secondFile": {
+        "end": 305,
+        "endLoc": {
+          "column": 26,
+          "line": 305,
+          "position": 12951
+        },
+        "name": "MomSite.Tests\\PublicControllerTests.cs",
+        "start": 295,
+        "startLoc": {
+          "column": 89,
+          "line": 295,
+          "position": 12646
+        }
+      },
+      "tokens": 55
+    },
+    {
+      "firstFile": {
+        "end": 270,
+        "endLoc": {
+          "column": 25,
+          "line": 270,
+          "position": 11398
+        },
+        "name": "MomSite.Tests\\PublicControllerTests.cs",
+        "start": 259,
+        "startLoc": {
+          "column": 12,
+          "line": 259,
+          "position": 10985
+        }
+      },
+      "format": "csharp",
+      "fragment": "            controller.ModelState.AddModelError(\"Name\", \"Name обязателен\");\n\n            var result = await controller.SendContactMessage(dto);\n\n            var badRequest = Assert.IsType<BadRequestObjectResult>(result);\n            Assert.Equal(400, badRequest.StatusCode);\n            Assert.Empty(context.ContactMessages);\n        }\n\n        [Fact]\n        [Trait(\"Scenario\", \"S1-AS1\")]\n        public async Task SendContactMessage_MissingSubject_Returns400AndDoesNotPersist()",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 12,
+      "secondFile": {
+        "end": 544,
+        "endLoc": {
+          "column": 25,
+          "line": 544,
+          "position": 23533
+        },
+        "name": "MomSite.Tests\\PublicControllerTests.cs",
+        "start": 533,
+        "startLoc": {
+          "column": 12,
+          "line": 533,
+          "position": 23120
+        }
+      },
+      "tokens": 70
+    },
+    {
+      "firstFile": {
+        "end": 270,
+        "endLoc": {
+          "column": 25,
+          "line": 270,
+          "position": 11398
+        },
+        "name": "MomSite.Tests\\PublicControllerTests.cs",
+        "start": 261,
+        "startLoc": {
+          "column": 31,
+          "line": 261,
+          "position": 11091
+        }
+      },
+      "format": "csharp",
+      "fragment": "            var result = await controller.SendContactMessage(dto);\n\n            var badRequest = Assert.IsType<BadRequestObjectResult>(result);\n            Assert.Equal(400, badRequest.StatusCode);\n            Assert.Empty(context.ContactMessages);\n        }\n\n        [Fact]\n        [Trait(\"Scenario\", \"S1-AS1\")]\n        public async Task SendContactMessage_MissingSubject_Returns400AndDoesNotPersist()",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 10,
+      "secondFile": {
+        "end": 288,
+        "endLoc": {
+          "column": 25,
+          "line": 288,
+          "position": 12193
+        },
+        "name": "MomSite.Tests\\PublicControllerTests.cs",
+        "start": 279,
+        "startLoc": {
+          "column": 31,
+          "line": 279,
+          "position": 11886
+        }
+      },
+      "tokens": 55
+    },
+    {
+      "firstFile": {
+        "end": 321,
+        "endLoc": {
+          "column": 26,
+          "line": 321,
+          "position": 13779
+        },
+        "name": "MomSite.Tests\\PublicControllerTests.cs",
+        "start": 310,
+        "startLoc": {
+          "column": 41,
+          "line": 310,
+          "position": 13263
+        }
+      },
+      "format": "csharp",
+      "fragment": "            var second = EnabledNotifier();\n            var controller = CreateController(context, new[] { first.Object, second.Object });\n\n            var result = await controller.SendContactMessage(ValidMessage());\n\n            AssertOkAndPersisted(result, context);\n            first.Verify(n => n.NotifyAsync(It.IsAny<ContactMessage>(), It.IsAny<CancellationToken>()), Times.Once);\n            second.Verify(n => n.NotifyAsync(It.IsAny<ContactMessage>(), It.IsAny<CancellationToken>()), Times.Once);\n        }\n\n        [Fact]\n        [Trait(\"Scenario\", \"S1-AS3\")]",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 12,
+      "secondFile": {
+        "end": 337,
+        "endLoc": {
+          "column": 26,
+          "line": 337,
+          "position": 14611
+        },
+        "name": "MomSite.Tests\\PublicControllerTests.cs",
+        "start": 326,
+        "startLoc": {
+          "column": 53,
+          "line": 326,
+          "position": 14095
+        }
+      },
+      "tokens": 122
     },
     {
       "firstFile": {
@@ -1332,18 +1636,94 @@
     },
     {
       "firstFile": {
+        "end": 53,
+        "endLoc": {
+          "column": 9,
+          "line": 53,
+          "position": 1602
+        },
+        "name": "app\\admin\\messages\\page.tsx",
+        "start": 44,
+        "startLoc": {
+          "column": 99,
+          "line": 44,
+          "position": 1379
+        }
+      },
+      "format": "tsx",
+      "fragment": "  if (isError) return <div className=\"text-red-500 p-8\">Ошибка загрузки заявок.</div>;\n\n  return (\n    <div className=\"min-h-screen bg-gray-50 p-8\">\n      <motion.div\n        initial={{ opacity: 0, y: 30 }}\n        animate={{ opacity: 1, y: 0 }}\n        transition={{ duration: 0.8 }}\n      >\n        <div className=\"card p-6\">",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 10,
+      "secondFile": {
+        "end": 69,
+        "endLoc": {
+          "column": 9,
+          "line": 69,
+          "position": 2526
+        },
+        "name": "app\\admin\\video-categories\\page.tsx",
+        "start": 60,
+        "startLoc": {
+          "column": 112,
+          "line": 60,
+          "position": 2303
+        }
+      },
+      "tokens": 56
+    },
+    {
+      "firstFile": {
+        "end": 53,
+        "endLoc": {
+          "column": 9,
+          "line": 53,
+          "position": 1602
+        },
+        "name": "app\\admin\\messages\\page.tsx",
+        "start": 44,
+        "startLoc": {
+          "column": 99,
+          "line": 44,
+          "position": 1379
+        }
+      },
+      "format": "tsx",
+      "fragment": "  if (isError) return <div className=\"text-red-500 p-8\">Ошибка загрузки заявок.</div>;\n\n  return (\n    <div className=\"min-h-screen bg-gray-50 p-8\">\n      <motion.div\n        initial={{ opacity: 0, y: 30 }}\n        animate={{ opacity: 1, y: 0 }}\n        transition={{ duration: 0.8 }}\n      >\n        <div className=\"card p-6\">",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 10,
+      "secondFile": {
+        "end": 94,
+        "endLoc": {
+          "column": 9,
+          "line": 94,
+          "position": 3810
+        },
+        "name": "app\\admin\\videos\\page.tsx",
+        "start": 85,
+        "startLoc": {
+          "column": 146,
+          "line": 85,
+          "position": 3587
+        }
+      },
+      "tokens": 56
+    },
+    {
+      "firstFile": {
         "end": 190,
         "endLoc": {
           "column": 49,
           "line": 190,
-          "position": 7412
+          "position": 7505
         },
         "name": "app\\admin\\page.tsx",
         "start": 181,
         "startLoc": {
           "column": 43,
           "line": 181,
-          "position": 7076
+          "position": 7169
         }
       },
       "format": "tsx",
@@ -1356,14 +1736,14 @@
         "endLoc": {
           "column": 49,
           "line": 211,
-          "position": 8507
+          "position": 8600
         },
         "name": "app\\admin\\page.tsx",
         "start": 202,
         "startLoc": {
           "column": 40,
           "line": 202,
-          "position": 8177
+          "position": 8270
         }
       },
       "tokens": 60
@@ -1374,14 +1754,14 @@
         "endLoc": {
           "column": 49,
           "line": 190,
-          "position": 7412
+          "position": 7505
         },
         "name": "app\\admin\\page.tsx",
         "start": 181,
         "startLoc": {
           "column": 43,
           "line": 181,
-          "position": 7076
+          "position": 7169
         }
       },
       "format": "tsx",
@@ -1394,14 +1774,90 @@
         "endLoc": {
           "column": 49,
           "line": 232,
-          "position": 9578
+          "position": 9671
         },
         "name": "app\\admin\\page.tsx",
         "start": 223,
         "startLoc": {
           "column": 41,
           "line": 223,
-          "position": 9238
+          "position": 9331
+        }
+      },
+      "tokens": 60
+    },
+    {
+      "firstFile": {
+        "end": 190,
+        "endLoc": {
+          "column": 49,
+          "line": 190,
+          "position": 7505
+        },
+        "name": "app\\admin\\page.tsx",
+        "start": 181,
+        "startLoc": {
+          "column": 43,
+          "line": 181,
+          "position": 7169
+        }
+      },
+      "format": "tsx",
+      "fragment": "              <Link href=\"/admin/artworks\" className=\"btn-primary w-full text-center\">\n                Управлять\n              </Link>\n            </motion.div>\n\n            {/* Page Content Management */}\n            <motion.div\n              initial={{ opacity: 0, y: 30 }}\n              animate={{ opacity: 1, y: 0 }}\n              transition={{ duration: 0.8, delay: 0.2 }}",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 10,
+      "secondFile": {
+        "end": 253,
+        "endLoc": {
+          "column": 49,
+          "line": 253,
+          "position": 10758
+        },
+        "name": "app\\admin\\page.tsx",
+        "start": 244,
+        "startLoc": {
+          "column": 51,
+          "line": 244,
+          "position": 10426
+        }
+      },
+      "tokens": 60
+    },
+    {
+      "firstFile": {
+        "end": 190,
+        "endLoc": {
+          "column": 49,
+          "line": 190,
+          "position": 7505
+        },
+        "name": "app\\admin\\page.tsx",
+        "start": 181,
+        "startLoc": {
+          "column": 43,
+          "line": 181,
+          "position": 7169
+        }
+      },
+      "format": "tsx",
+      "fragment": "              <Link href=\"/admin/artworks\" className=\"btn-primary w-full text-center\">\n                Управлять\n              </Link>\n            </motion.div>\n\n            {/* Page Content Management */}\n            <motion.div\n              initial={{ opacity: 0, y: 30 }}\n              animate={{ opacity: 1, y: 0 }}\n              transition={{ duration: 0.8, delay: 0.2 }}",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 10,
+      "secondFile": {
+        "end": 281,
+        "endLoc": {
+          "column": 49,
+          "line": 281,
+          "position": 12136
+        },
+        "name": "app\\admin\\page.tsx",
+        "start": 272,
+        "startLoc": {
+          "column": 43,
+          "line": 272,
+          "position": 11802
         }
       },
       "tokens": 60
@@ -1415,18 +1871,18 @@
           "position": 2590
         },
         "name": "app\\admin\\video-categories\\page.tsx",
-        "start": 60,
+        "start": 63,
         "startLoc": {
-          "column": 112,
-          "line": 60,
-          "position": 2303
+          "column": 4,
+          "line": 63,
+          "position": 2327
         }
       },
       "format": "tsx",
-      "fragment": "  if (isError) return <div className=\"text-red-500\">Ошибка загрузки категорий видео.</div>;\n\n  return (\n    <div className=\"min-h-screen bg-gray-50 p-8\">\n      <motion.div\n        initial={{ opacity: 0, y: 30 }}\n        animate={{ opacity: 1, y: 0 }}\n        transition={{ duration: 0.8 }}\n      >\n        <h1 className=\"text-3xl font-serif font-bold mb-8 text-gray-900\">Управление категориями видео</h1>",
+      "fragment": "    <div className=\"min-h-screen bg-gray-50 p-8\">\n      <motion.div\n        initial={{ opacity: 0, y: 30 }}\n        animate={{ opacity: 1, y: 0 }}\n        transition={{ duration: 0.8 }}\n      >\n        <h1 className=\"text-3xl font-serif font-bold mb-8 text-gray-900\">Управление категориями видео</h1>",
       "isNew": false,
       "kind": "exact",
-      "lines": 10,
+      "lines": 7,
       "secondFile": {
         "end": 94,
         "endLoc": {
@@ -1435,14 +1891,14 @@
           "position": 3874
         },
         "name": "app\\admin\\videos\\page.tsx",
-        "start": 85,
+        "start": 88,
         "startLoc": {
-          "column": 146,
-          "line": 85,
-          "position": 3587
+          "column": 4,
+          "line": 88,
+          "position": 3611
         }
       },
-      "tokens": 61
+      "tokens": 54
     },
     {
       "firstFile": {
@@ -1754,14 +2210,14 @@
         "endLoc": {
           "column": 15,
           "line": 151,
-          "position": 4275
+          "position": 4317
         },
         "name": "hooks\\useApi.ts",
         "start": 141,
         "startLoc": {
           "column": 57,
           "line": 141,
-          "position": 4045
+          "position": 4087
         }
       },
       "format": "typescript",
@@ -1774,14 +2230,14 @@
         "endLoc": {
           "column": 15,
           "line": 165,
-          "position": 4840
+          "position": 4882
         },
         "name": "hooks\\useApi.ts",
         "start": 155,
         "startLoc": {
           "column": 62,
           "line": 155,
-          "position": 4610
+          "position": 4652
         }
       },
       "tokens": 51
@@ -1792,14 +2248,14 @@
         "endLoc": {
           "column": 15,
           "line": 205,
-          "position": 6024
+          "position": 6066
         },
         "name": "hooks\\useApi.ts",
         "start": 191,
         "startLoc": {
           "column": 62,
           "line": 191,
-          "position": 5660
+          "position": 5702
         }
       },
       "format": "typescript",
@@ -1812,14 +2268,14 @@
         "endLoc": {
           "column": 15,
           "line": 223,
-          "position": 6575
+          "position": 6617
         },
         "name": "hooks\\useApi.ts",
         "start": 209,
         "startLoc": {
           "column": 60,
           "line": 209,
-          "position": 6259
+          "position": 6301
         }
       },
       "tokens": 63
@@ -1830,14 +2286,14 @@
         "endLoc": {
           "column": 15,
           "line": 317,
-          "position": 9071
+          "position": 9113
         },
         "name": "hooks\\useApi.ts",
         "start": 303,
         "startLoc": {
           "column": 53,
           "line": 303,
-          "position": 8753
+          "position": 8795
         }
       },
       "format": "typescript",
@@ -1850,14 +2306,14 @@
         "endLoc": {
           "column": 15,
           "line": 335,
-          "position": 9618
+          "position": 9660
         },
         "name": "hooks\\useApi.ts",
         "start": 321,
         "startLoc": {
           "column": 58,
           "line": 321,
-          "position": 9300
+          "position": 9342
         }
       },
       "tokens": 63
@@ -2092,19 +2548,19 @@
     }
   ],
   "statistics": {
-    "detectionDate": "2026-09-18T17:10:33.161Z",
+    "detectionDate": "2026-09-18T18:29:31.831Z",
     "formats": {
       "csharp": {
-        "clones": 21,
-        "duplicatedLines": 253,
-        "duplicatedTokens": 1575,
-        "lines": 3561,
+        "clones": 29,
+        "duplicatedLines": 329,
+        "duplicatedTokens": 2101,
+        "lines": 4209,
         "newClones": 0,
         "newDuplicatedLines": 0,
-        "percentage": 7.104745857905083,
-        "percentageTokens": 7.9565546855266485,
-        "sources": 28,
-        "tokens": 19795
+        "percentage": 7.816583511522928,
+        "percentageTokens": 8.709169291991378,
+        "sources": 31,
+        "tokens": 24124
       },
       "css": {
         "clones": 0,
@@ -2155,41 +2611,41 @@
         "tokens": 943
       },
       "tsx": {
-        "clones": 25,
-        "duplicatedLines": 283,
-        "duplicatedTokens": 1774,
-        "lines": 4117,
+        "clones": 29,
+        "duplicatedLines": 316,
+        "duplicatedTokens": 1999,
+        "lines": 4453,
         "newClones": 0,
         "newDuplicatedLines": 0,
-        "percentage": 6.873937333009474,
-        "percentageTokens": 7.5089947089947096,
-        "sources": 25,
-        "tokens": 23625
+        "percentage": 7.0963395463732315,
+        "percentageTokens": 7.812255744880413,
+        "sources": 28,
+        "tokens": 25588
       },
       "typescript": {
         "clones": 4,
         "duplicatedLines": 52,
         "duplicatedTokens": 228,
-        "lines": 816,
+        "lines": 885,
         "newClones": 0,
         "newDuplicatedLines": 0,
-        "percentage": 6.372549019607843,
-        "percentageTokens": 5.578664056765353,
+        "percentage": 5.875706214689266,
+        "percentageTokens": 5.120143723332585,
         "sources": 6,
-        "tokens": 4087
+        "tokens": 4453
       }
     },
     "total": {
-      "clones": 55,
-      "duplicatedLines": 701,
-      "duplicatedTokens": 3968,
-      "lines": 19539,
+      "clones": 67,
+      "duplicatedLines": 810,
+      "duplicatedTokens": 4719,
+      "lines": 20592,
       "newClones": 0,
       "newDuplicatedLines": 0,
-      "percentage": 3.58769640206766,
-      "percentageTokens": 4.748626751714316,
-      "sources": 70,
-      "tokens": 83561
+      "percentage": 3.9335664335664338,
+      "percentageTokens": 5.230605526552057,
+      "sources": 76,
+      "tokens": 90219
     }
   }
 }

@@ -377,8 +377,7 @@ public class AdminController : ControllerBase
             .OrderByDescending(m => m.CreatedAt)
             .ToListAsync();
 
-        var unreadCount = await _context.ContactMessages
-            .CountAsync(m => m.Status == ContactMessageStatus.New);
+        var unreadCount = await CountUnreadMessagesAsync();
 
         return Ok(new ContactMessagesPageDto
         {
@@ -391,9 +390,13 @@ public class AdminController : ControllerBase
     [HttpGet("messages/unread-count")]
     public async Task<ActionResult<int>> GetUnreadMessagesCount()
     {
-        var count = await _context.ContactMessages
+        return await CountUnreadMessagesAsync();
+    }
+
+    private Task<int> CountUnreadMessagesAsync()
+    {
+        return _context.ContactMessages
             .CountAsync(m => m.Status == ContactMessageStatus.New);
-        return count;
     }
 
     [HttpGet("messages/{id}")]

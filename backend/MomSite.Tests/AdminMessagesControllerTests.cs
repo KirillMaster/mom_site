@@ -18,21 +18,11 @@ namespace MomSite.Tests
 {
     public class AdminMessagesControllerTests
     {
-        private static DbContextOptions<ApplicationDbContext> CreateDbOptions(string dbName)
-        {
-            return new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: dbName)
-                .Options;
-        }
+        private static DbContextOptions<ApplicationDbContext> CreateDbOptions(string dbName) =>
+            AdminTestHelpers.CreateDbOptions(dbName);
 
-        private static (Mock<IImageService>, Mock<IConfiguration>) CreateMocks()
-        {
-            var imageServiceMock = new Mock<IImageService>();
-            var configurationMock = new Mock<IConfiguration>();
-            configurationMock.Setup(c => c["AdminPassword"]).Returns("password");
-            configurationMock.Setup(c => c["JWT:Secret"]).Returns("your-super-secret-key-that-is-long-enough-for-hs256");
-            return (imageServiceMock, configurationMock);
-        }
+        private static (Mock<IImageService>, Mock<IConfiguration>) CreateMocks() =>
+            AdminTestHelpers.CreateMocks();
 
         // @S2-AS1: unauthenticated access must be rejected. The project has
         // no HTTP-pipeline integration test harness (existing tests always
