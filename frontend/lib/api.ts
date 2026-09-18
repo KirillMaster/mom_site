@@ -233,6 +233,11 @@ export interface ContactMessage {
   // submission is silently discarded server-side. Optional so existing
   // callers that omit it keep working unchanged.
   website?: string;
+  // First-touch attribution captured from the landing URL; snake_case because
+  // that is the wire contract the API binds (ContactMessageDto).
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
 }
 
 export type ContactMessageStatus = 'New' | 'Read' | 'Archived';
