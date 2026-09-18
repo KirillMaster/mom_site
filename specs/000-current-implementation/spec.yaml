@@ -1,0 +1,198 @@
+feature: Портфолио художницы Анжелы Моисеенко — текущая (baseline) реализация
+branch: 000-current-implementation
+created: '2026-06-27'
+status: Complete
+status_note: 'Baseline (as-is), обновлено 2026-06-28. URL: https://angelamoiseenko.ru'
+input: Задокументировать текущую (as-is) реализацию сайта-портфолио художницы —
+  публичную часть (галерея, видео, биография, контакты) и админку (CRUD-управление
+  контентом) — с фиксацией известных багов, сделанных фиксов и открытых проблем.
+
+user_stories:
+  - id: US1
+    title: Посетитель просматривает публичный сайт
+    priority: P1
+    description: Посетитель просматривает главную страницу с каруселью работ по
+      категориям и приветственным блоком, галерею картин с фильтрацией по категориям,
+      детали картины в lightbox, биографию художницы, видео по категориям, страницу
+      контактов с формой обратной связи; публичные страницы оптимизированы под SEO
+      (sitemap, robots.txt, Schema.org, Open Graph).
+    motivation:
+      problem: Посетителям нужен удобный способ ознакомиться с работами и биографией
+        художницы и связаться с ней.
+      value: Публичная витрина работ и рабочая форма обратной связи с хорошим SEO
+        приводят и удерживают посетителей.
+      consequence_if_skipped: Без витрины и SEO сайт не выполняет функцию портфолио
+        и не находится в поисковой выдаче.
+    why_priority: Публичная часть — основная функция сайта-портфолио, без неё сайт
+      не имеет смысла.
+    independent_test: Открыть каждую публичную страницу (главная, галерея, картина,
+      биография, видео, контакты) без авторизации и убедиться, что контент отображается
+      и форма обратной связи отправляет email.
+    acceptance_scenarios:
+      - id: AS-1
+        given: посетитель находится на главной странице
+        when: он просматривает карусель работ по категориям
+        then: отображается приветственный блок и работы, сгруппированные по категориям
+      - id: AS-2
+        given: посетитель находится в галерее картин
+        when: он выбирает категорию для фильтрации
+        then: отображаются только картины выбранной категории
+      - id: AS-3
+        given: посетитель открыл картину
+        when: он кликает на изображение
+        then: картина открывается в lightbox с деталями
+      - id: AS-4
+        given: посетитель находится на странице контактов
+        when: он заполняет и отправляет форму обратной связи
+        then: сообщение отправляется на email художницы через backend (POST /api/public/contact-message)
+    acceptance_criteria:
+      - id: AC-1
+        description: Все публичные страницы (главная, галерея, картина, биография,
+          видео, контакты) открываются без авторизации и отображают контент.
+        done: true
+      - id: AC-2
+        description: Форма обратной связи отправляет email через SMTP (Gmail).
+        done: true
+    test_scenarios:
+      - id: TS-1
+        given: ['посетитель на странице контактов']
+        when: он отправляет форму обратной связи с корректными данными
+        then: ['email отправляется через EmailService', 'пользователь видит подтверждение отправки']
+        verification: [manual]
+        level: e2e
+
+  - id: US2
+    title: Администратор управляет контентом сайта
+    priority: P1
+    description: Администратор авторизуется по логину/паролю, получает JWT и выполняет
+      CRUD для картин (загрузка, редактирование, удаление, watermark), категорий
+      картин, видео и видео-категорий, редактирует контент страниц (биография,
+      контакты, футер, соцсети) и управляет порядком отображения.
+    motivation:
+      problem: Владелице сайта нужно самостоятельно обновлять контент без участия
+        разработчиков.
+      value: Полноценная CMS-админка позволяет управлять всем публичным контентом
+        через веб-интерфейс.
+      consequence_if_skipped: Без админки любое обновление контента требует вмешательства
+        разработчика.
+    why_priority: Админка — второе по важности требование, обеспечивающее самостоятельность
+      владелицы сайта.
+    independent_test: Авторизоваться в админке, создать/отредактировать/удалить
+      картину, категорию, видео и контент страницы и убедиться, что изменения
+      отражаются на публичной части.
+    acceptance_scenarios:
+      - id: AS-1
+        given: администратор вводит верные логин и пароль
+        when: выполняется запрос POST /api/admin/login
+        then: возвращается JWT токен для последующей авторизации
+      - id: AS-2
+        given: администратор авторизован
+        when: он создаёт, редактирует или удаляет картину через /api/admin/artworks
+        then: изменение сохраняется и отражается в публичной галерее
+      - id: AS-3
+        given: администратор авторизован
+        when: он обновляет контент страницы (например, биографию) через /api/admin/page-content
+        then: обновлённый текст отображается на соответствующей публичной странице
+    acceptance_criteria:
+      - id: AC-1
+        description: Все эндпоинты /api/admin/* требуют валидный JWT.
+        done: true
+      - id: AC-2
+        description: CRUD-операции над artworks, categories, videos, video-categories
+          и page-content выполняются успешно и отражаются на публичной части.
+        done: true
+    test_scenarios:
+      - id: TS-1
+        given: ['администратор авторизован через POST /api/admin/login']
+        when: он выполняет CRUD-операцию над artwork или page-content
+        then: ['изменение сохраняется в БД', 'изменение видно на соответствующей публичной странице']
+        verification: [manual, automated]
+        level: e2e
+
+edge_cases: []
+
+functional_requirements:
+  - id: FR-001
+    text: Backend SHALL быть структурирован по Clean Architecture на проекты MomSite.API,
+      MomSite.Core, MomSite.Infrastructure и MomSite.Tests.
+  - id: FR-002
+    text: Система SHALL предоставлять публичные (без авторизации) read-эндпоинты
+      под /api/public/ — home, gallery, about, contacts, videos, footer, contact-message.
+  - id: FR-003
+    text: Система SHALL требовать JWT-авторизацию для всех эндпоинтов /api/admin/*.
+  - id: FR-004
+    text: Администратор SHALL иметь возможность выполнять CRUD (create/read/update/delete)
+      над artworks, categories, videos и video-categories через /api/admin/*.
+  - id: FR-005
+    text: Система WHEN получен POST /api/admin/page-content SHALL выполнять upsert
+      — создавать запись, если её нет, и обновлять существующую без создания дублей.
+  - id: FR-006
+    text: Медиаконтент (изображения, видео) SHALL храниться в S3 (Timeweb), а не
+      в базе данных.
+  - id: FR-007
+    text: Публичные страницы SHALL включать SEO-разметку — sitemap.ts, robots.ts,
+      Schema.org и Open Graph мета-теги.
+  - id: FR-008
+    text: Nginx SHALL обеспечивать reverse proxy, SSL с HTTP→HTTPS редиректом,
+      security headers, gzip-сжатие и rate limiting.
+  - id: FR-009
+    text: Деплой SHALL выполняться через GitHub Actions — CI (build+test), затем
+      deploy по SSH на VPS через scripts/deploy_remote.sh.
+    category: non_functional
+
+key_entities:
+  - id: artwork
+    name: Artwork
+    description: 'Картина: Title, Description, ImagePath (S3), Category, Year,
+      Technique, Size, IsAvailable.'
+  - id: category
+    name: Category
+    description: 'Категория картин: Name, Description, DisplayOrder, ShowOnHome.'
+  - id: video
+    name: Video
+    description: 'Видео: Title, Description, VideoPath (S3), VideoCategory.'
+  - id: video_category
+    name: VideoCategory
+    description: 'Категория видео: Name, Description, DisplayOrder.'
+  - id: page_content
+    name: PageContent
+    description: 'CMS-контент страницы: PageKey, ContentKey, TextContent, ImagePath,
+      LinkUrl, IsActive, DisplayOrder.'
+
+success_criteria:
+  - id: SC-1
+    description: Сохранение биографии в админке работает корректно, без перезаписи
+      textContent полем imagePath.
+    measurable_via: 'Мануальная проверка: отредактировать поле биографии в админке,
+      сохранить, перезагрузить страницу и убедиться, что текст сохранён.'
+  - id: SC-2
+    description: Записи additional_biography и philosophy создаются в БД при первом
+      сохранении вместо того, чтобы теряться из-за falsy-проверки.
+    measurable_via: Проверка через GET /api/admin/page-content-by-key после сохранения
+      новых ключей контента.
+  - id: SC-3
+    description: POST /api/admin/page-content не создаёт дублирующиеся записи при
+      повторном сохранении одного и того же ключа.
+    measurable_via: Повторный вызов POST с тем же ключом и проверка отсутствия
+      дублей в БД.
+  - id: SC-4
+    description: CI выполняет автоматические тесты перед деплоем.
+    measurable_via: Просмотр GitHub Actions workflow — job test выполняется и
+      блокирует деплой при провале.
+  - id: SC-5
+    description: Frontend-контейнер стартует после готовности API при пересборке,
+      без race condition.
+    measurable_via: Проверка docker-compose healthcheck/depends_on и логов деплоя
+      на отсутствие ошибок соединения при старте.
+
+assumptions:
+  - id: A-1
+    description: 'Известное ограничение (не исправлено в рамках baseline): frontend
+      SSR обращается к API через внешний URL (NEXT_PUBLIC_API_URL=https://angelamoiseenko.ru/api)
+      вместо docker-network, что создаёт race condition при деплое.'
+  - id: A-2
+    description: 'Известный риск на момент baseline: зависимость MailKit 4.3.0
+      имеет уязвимость средней критичности (GHSA-9j88-vvj5-vhgr).'
+  - id: A-3
+    description: 'Известный риск на момент baseline: зависимость SixLabors.ImageSharp
+      3.1.4 имеет уязвимости высокой критичности.'

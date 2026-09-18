@@ -26,6 +26,17 @@ $paths = Get-FeaturePathsEnv
 # Ensure the feature directory exists
 New-Item -ItemType Directory -Path $paths.FEATURE_DIR -Force | Out-Null
 
+# Gate (hard abort): spec.yaml must exist and pass its schema before planning starts
+if (-not (Test-Path $paths.FEATURE_SPEC -PathType Leaf)) {
+    [Console]::Error.WriteLine("ERROR: spec.yaml not found in $($paths.FEATURE_DIR)")
+    [Console]::Error.WriteLine("Run /speckit-specify first to create the feature specification.")
+    exit 1
+}
+if (-not (Invoke-ValidationGate -SchemaName 'spec' -YamlPath $paths.FEATURE_SPEC -RepoRoot $paths.REPO_ROOT)) {
+    [Console]::Error.WriteLine("ERROR: $($paths.FEATURE_SPEC) failed schema validation. Fix the violations above before proceeding to planning.")
+    exit 1
+}
+
 # Copy plan template if plan doesn't already exist
 if (Test-Path $paths.IMPL_PLAN -PathType Leaf) {
     if ($Json) {
@@ -40,8 +51,22 @@ if (Test-Path $paths.IMPL_PLAN -PathType Leaf) {
         $content = [System.IO.File]::ReadAllText($template)
         $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
         [System.IO.File]::WriteAllText($paths.IMPL_PLAN, $content, $utf8NoBom)
+        # Emit the copy status like the bash twin (setup-plan.sh); route to stderr
+        # in -Json mode so stdout stays pure JSON, matching the sibling messages.
+        if ($Json) {
+            [Console]::Error.WriteLine("Copied plan template to $($paths.IMPL_PLAN)")
+        } else {
+            Write-Output "Copied plan template to $($paths.IMPL_PLAN)"
+        }
     } else {
-        Write-Warning "Plan template not found"
+        # Match the bash twin's wording and stream routing (stderr in -Json so
+        # stdout stays pure JSON, stdout otherwise), consistent with the sibling
+        # "Copied plan template" message above.
+        if ($Json) {
+            [Console]::Error.WriteLine("Warning: Plan template not found")
+        } else {
+            Write-Output "Warning: Plan template not found"
+        }
         # Create a basic plan file if template doesn't exist
         New-Item -ItemType File -Path $paths.IMPL_PLAN -Force | Out-Null
     }
@@ -49,7 +74,7 @@ if (Test-Path $paths.IMPL_PLAN -PathType Leaf) {
 
 # Output results
 if ($Json) {
-    $result = [PSCustomObject]@{ 
+    $result = [PSCustomObject]@{
         FEATURE_SPEC = $paths.FEATURE_SPEC
         IMPL_PLAN = $paths.IMPL_PLAN
         SPECS_DIR = $paths.FEATURE_DIR

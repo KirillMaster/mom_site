@@ -51,9 +51,14 @@ function Resolve-SpecifyInitDir {
     }
     # Resolve-Path echoes back any trailing separator from the input; trim it so
     # the returned root matches the bash resolver, whose `cd && pwd` never yields
-    # one. TrimEndingDirectorySeparator is a no-op on a bare root and on a path
-    # that already has no trailing separator.
-    $initRoot = [System.IO.Path]::TrimEndingDirectorySeparator($resolved.Path)
+    # one. [System.IO.Path]::TrimEndingDirectorySeparator is .NET Core-only and
+    # missing on Windows PowerShell 5.1's .NET Framework, so trim manually --
+    # but leave a bare drive root (e.g. "C:\") alone, since trimming that
+    # changes its meaning to a drive-relative path.
+    $initRoot = $resolved.Path
+    if ($initRoot -notmatch '^[A-Za-z]:\\?$' -and $initRoot.Length -gt 1) {
+        $initRoot = $initRoot.TrimEnd('\', '/')
+    }
     if (-not (Test-Path -LiteralPath (Join-Path $initRoot '.specify') -PathType Container)) {
         [Console]::Error.WriteLine("ERROR: SPECIFY_INIT_DIR is not a Spec Kit project (no .specify/ directory): $initRoot")
         exit 1
@@ -143,6 +148,13 @@ function Save-FeatureJson {
 }
 
 function Get-FeaturePathsEnv {
+    # Read-only callers (e.g. check-prerequisites.ps1 -PathsOnly) pass -NoPersist
+    # so pure path resolution never writes .specify/feature.json, which would
+    # dirty the working tree or overwrite a pinned value (issue #3025).
+    param(
+        [switch]$NoPersist
+    )
+
     $repoRoot = Get-RepoRoot
     $currentBranch = Get-CurrentBranch
 
@@ -157,8 +169,11 @@ function Get-FeaturePathsEnv {
         if (-not [System.IO.Path]::IsPathRooted($featureDir)) {
             $featureDir = Join-Path $repoRoot $featureDir
         }
-        # Persist to feature.json so future sessions without the env var still work
-        Save-FeatureJson -RepoRoot $repoRoot -FeatureDirectory $env:SPECIFY_FEATURE_DIRECTORY
+        # Persist to feature.json so future sessions without the env var still
+        # work - unless the caller opted out for read-only resolution (#3025).
+        if (-not $NoPersist) {
+            Save-FeatureJson -RepoRoot $repoRoot -FeatureDirectory $env:SPECIFY_FEATURE_DIRECTORY
+        }
     } elseif (Test-Path $featureJson) {
         $featureJsonRaw = Get-Content -LiteralPath $featureJson -Raw
         try {
@@ -181,14 +196,25 @@ function Get-FeaturePathsEnv {
         [Console]::Error.WriteLine("ERROR: Feature directory not found. Set SPECIFY_FEATURE_DIRECTORY or run the specify command to create .specify/feature.json.")
         exit 1
     }
-    
+
+    # When no branch context exists (no SPECIFY_FEATURE, feature resolved via
+    # SPECIFY_FEATURE_DIRECTORY or feature.json), fall back to the feature
+    # directory basename so CURRENT_BRANCH is a usable identifier rather than
+    # an empty, misleading value (issue #3026).
+    if (-not $currentBranch) {
+        # TrimEnd (not [Path]::TrimEndingDirectorySeparator, which is .NET Core
+        # only) keeps this working on Windows PowerShell 5.1 / .NET Framework.
+        $featureDirTrimmed = $featureDir.TrimEnd('/', '\')
+        $currentBranch = Split-Path -Leaf $featureDirTrimmed
+    }
+
     [PSCustomObject]@{
         REPO_ROOT     = $repoRoot
         CURRENT_BRANCH = $currentBranch
         FEATURE_DIR   = $featureDir
-        FEATURE_SPEC  = Join-Path $featureDir 'spec.md'
-        IMPL_PLAN     = Join-Path $featureDir 'plan.md'
-        TASKS         = Join-Path $featureDir 'tasks.md'
+        FEATURE_SPEC  = Join-Path $featureDir 'spec.yaml'
+        IMPL_PLAN     = Join-Path $featureDir 'plan.yaml'
+        TASKS         = Join-Path $featureDir 'tasks.yaml'
         RESEARCH      = Join-Path $featureDir 'research.md'
         DATA_MODEL    = Join-Path $featureDir 'data-model.md'
         QUICKSTART    = Join-Path $featureDir 'quickstart.md'
@@ -209,7 +235,13 @@ function Test-FileExists {
 
 function Test-DirHasFiles {
     param([string]$Path, [string]$Description)
-    if ((Test-Path -Path $Path -PathType Container) -and (Get-ChildItem -Path $Path -ErrorAction SilentlyContinue | Where-Object { -not $_.PSIsContainer } | Select-Object -First 1)) {
+    # A directory counts as non-empty when Get-ChildItem returns any entry
+    # (files or subdirectories) -- matching the JSON contracts checks in
+    # check-prerequisites.ps1 / setup-tasks.ps1, and treating a directory whose
+    # only contents are subdirectories (e.g. contracts/v1/openapi.yaml) as
+    # non-empty like bash check_dir. Filtering out subdirectories would
+    # mis-report such a directory as empty.
+    if ((Test-Path -Path $Path -PathType Container) -and (Get-ChildItem -Path $Path -ErrorAction SilentlyContinue | Select-Object -First 1)) {
         Write-Output "  [OK] $Description"
         return $true
     } else {
@@ -298,9 +330,12 @@ function Resolve-Template {
 
     $base = Join-Path $RepoRoot '.specify/templates'
 
-    # Priority 1: Project overrides
-    $override = Join-Path $base "overrides/$TemplateName.md"
-    if (Test-Path $override) { return $override }
+    # Priority 1: Project overrides (.yaml preferred, .md for legacy templates
+    # not yet converted, e.g. research/quickstart process docs)
+    foreach ($ext in @('yaml', 'md')) {
+        $override = Join-Path $base "overrides/$TemplateName.$ext"
+        if (Test-Path $override) { return $override }
+    }
 
     # Priority 2: Installed presets (sorted by priority from .registry)
     $presetsDir = Join-Path $RepoRoot '.specify/presets'
@@ -346,11 +381,38 @@ function Resolve-Template {
         }
     }
 
-    # Priority 4: Core templates
-    $core = Join-Path $base "$TemplateName.md"
-    if (Test-Path $core) { return $core }
+    # Priority 4: Core templates (.yaml preferred, .md for legacy templates)
+    foreach ($ext in @('yaml', 'md')) {
+        $core = Join-Path $base "$TemplateName.$ext"
+        if (Test-Path $core) { return $core }
+    }
 
     return $null
+}
+
+# Run the JSON Schema validation gate against a YAML artifact. Returns $true on
+# success. On failure, prints the structured violations to stderr and returns
+# $false -- callers treat this as a hard abort (per US3: no progression on a
+# schema violation or dangling reference).
+function Invoke-ValidationGate {
+    param(
+        [Parameter(Mandatory = $true)][string]$SchemaName,
+        [Parameter(Mandatory = $true)][string]$YamlPath,
+        [Parameter(Mandatory = $true)][string]$RepoRoot
+    )
+
+    $schemaPath = Join-Path $RepoRoot ".specify/schemas/$SchemaName.schema.json"
+    $validatePy = Join-Path $RepoRoot '.specify/scripts/validate.py'
+    $pyCmd = Get-Python3Command
+    if (-not $pyCmd) {
+        [Console]::Error.WriteLine("ERROR: no Python 3 interpreter found; cannot run the validation gate for $YamlPath")
+        return $false
+    }
+
+    $pyCmd = @($pyCmd)
+    $pyArgs = if ($pyCmd.Count -gt 1) { $pyCmd[1..($pyCmd.Count - 1)] } else { @() }
+    & $pyCmd[0] @pyArgs $validatePy $schemaPath $YamlPath
+    return ($LASTEXITCODE -eq 0)
 }
 
 # Resolve a template name to composed content using composition strategies.

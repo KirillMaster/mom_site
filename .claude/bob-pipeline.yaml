@@ -1,0 +1,91 @@
+# bob-pipeline configuration — instantiated by /bob-init
+# Двухстековый проект: бэк csharp (.NET 8, Clean Architecture), фронт typescript (Next.js App Router).
+# Верхнеуровневый stack — метка; фактический выбор инструментов per-slice по tools[].stack.
+# Mutation-тесты отключены (Stryker не установлен в проекте; hardener работает эвристически).
+version: "1"
+project_name: "mom_site"
+stack: "csharp+typescript"
+
+roles:
+  - name: specifier
+    model: sonnet
+    enabled: true
+    gates: [gherkin-traceability]
+  - name: coder
+    model: sonnet
+    enabled: true
+    gates: [tests-green]
+  - name: cleaner
+    model: sonnet
+    enabled: true
+    gates: [tests-green, complexity-baseline, duplication-baseline]
+  - name: architect
+    model: sonnet
+    enabled: true
+    gates: [tests-green]
+  - name: hardener
+    model: haiku
+    enabled: true
+    gates: [tests-green]
+    degradation: "mutation отключён в конфиге: только эвристическое усиление тестов (граничные значения, ветки ошибок, null/empty); фиксируется как deviation"
+  - name: qa
+    model: haiku
+    enabled: true
+    gates: [tests-green, gherkin-traceability]
+
+tools:
+  - stack: csharp
+    category: coverage
+    tool: coverlet
+    run_command: "dotnet test backend/MomSite.Tests/MomSite.Tests.csproj --collect:\"XPlat Code Coverage\""
+    report_parser: cobertura
+    enabled: true
+  - stack: typescript
+    category: coverage
+    tool: runner-coverage
+    run_command: "npx jest --coverage --coverageReporters=lcov --testPathIgnorePatterns=e2e/"
+    report_parser: lcov
+    enabled: true
+  - stack: any
+    category: complexity
+    tool: lizard
+    run_command: "python -m lizard --csv ."
+    report_parser: lizard
+    enabled: true
+  - stack: any
+    category: duplication
+    tool: jscpd
+    run_command: "npx jscpd --reporters json --output .bob/reports ."
+    report_parser: jscpd
+    enabled: true
+  - stack: csharp
+    category: mutation
+    tool: Stryker.NET
+    run_command: "dotnet stryker --reporter json"
+    report_parser: stryker
+    enabled: false
+  - stack: typescript
+    category: mutation
+    tool: StrykerJS
+    run_command: "npx stryker run --reporters json"
+    report_parser: stryker
+    enabled: false
+
+human_gates:
+  gherkin_approval: false
+  final_qa_report: false
+
+thresholds:
+  mutation_score_min: 80
+  coverage_policy: informational
+  complexity_policy: not-worse-than-baseline
+  duplication_policy: not-worse-than-baseline
+
+send_back_routes:
+  qa: coder
+  architect: [cleaner, coder]
+
+return_limit: 3
+parallel_limit: 3
+
+night_mode_default: false

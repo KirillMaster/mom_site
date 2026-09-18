@@ -35,8 +35,9 @@ frontend/
 
 ## Правила разработки
 
-### Spec-Driven Development (SpecKit)
-Конституция и все правила: `.specify/memory/constitution.md`
+### Spec-Driven Development (yamlkit)
+Конституция и все правила: `.specify/memory/constitution.yaml`
+Команды: `/yamlkit-specify`, `/yamlkit-plan`, `/yamlkit-tasks`, `/yamlkit-implement`
 
 ### Git
 - Ветки: `feature/`, `fix/`, `chore/`

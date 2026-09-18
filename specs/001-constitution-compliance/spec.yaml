@@ -1,0 +1,143 @@
+feature: Приведение кода в соответствие с конституцией
+branch: 001-constitution-compliance
+created: '2026-06-28'
+status: InProgress
+status_note: 'Priority: Critical'
+input: Исправить все нарушения конституции, выявленные при валидации spec-000
+  (тестирование, качество кода, безопасность, git workflow, производительность,
+  админ-панель).
+
+user_stories:
+  - id: US1
+    title: Команда устраняет нарушения конституции, выявленные в baseline
+    priority: P1
+    description: Разработчик последовательно устраняет 12 нарушений конституции,
+      сгруппированных по принципам V (Тестирование), III (Качество кода), IV
+      (Безопасность), VI (Git Workflow), VIII (Производительность) и IX (Админ-панель),
+      выявленные при валидации spec-000.
+    motivation:
+      problem: Реализация spec-000 нарушает несколько принципов конституции проекта.
+      value: Устранение нарушений приводит кодовую базу в соответствие с конституцией
+        и снижает технический долг и риски безопасности.
+      consequence_if_skipped: Нарушения накапливаются, снижая качество, безопасность
+        и производительность продакшен-сайта.
+    why_priority: Critical — нарушения затрагивают безопасность (уязвимые зависимости)
+      и надёжность процесса (git workflow, тесты), что блокирует дальнейшую разработку
+      по конституции.
+    independent_test: Прогнать CI (тесты + Lighthouse + audit зависимостей) и убедиться,
+      что все 12 пунктов из списка нарушений закрыты и success criteria выполнены.
+    acceptance_scenarios:
+      - id: AS-1
+        given: AdminController превышает 400 строк и содержит DTOs внутри себя
+        when: контроллер разбивается на несколько файлов, а DTOs выносятся отдельно
+        then: каждый файл контроллера не превышает 200 строк (принцип III)
+      - id: AS-2
+        given: зависимости MailKit 4.3.0 и SixLabors.ImageSharp 3.1.4 содержат
+          известные уязвимости
+        when: зависимости обновляются до версий без известных уязвимостей
+        then: audit зависимостей (dotnet list package --vulnerable) не показывает
+          уязвимостей (принцип IV)
+      - id: AS-3
+        given: фикс биографии (upsert, formData init) не покрыт тестами
+        when: добавляются unit/integration-тесты и Playwright E2E тест на сохранение
+          page-content
+        then: тесты проходят в CI и покрывают сценарий сохранения биографии (принцип V)
+      - id: AS-4
+        given: коммиты ранее пушились напрямую в main без PR
+        when: процесс меняется на PR-based workflow с обязательным CI
+        then: изменения в main попадают только через PR с пройденным CI (принцип VI)
+    acceptance_criteria:
+      - id: AC-1
+        description: Все 12 пунктов из списка нарушений конституции (Issues to
+          Fix) закрыты.
+        done: false
+      - id: AC-2
+        description: Все пункты Success Criteria (тесты, Lighthouse 90+, отсутствие
+          известных уязвимостей, AdminController <200 строк, toast+confirm в админке)
+          выполнены.
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['все 12 нарушений конституции устранены']
+        when: прогоняется CI (build, tests, Lighthouse, dependency audit)
+        then: ['все тесты проходят', 'Lighthouse Performance >= 90', 'dependency audit не находит known vulnerabilities']
+        verification: [automated]
+        level: integration
+
+edge_cases: []
+
+functional_requirements:
+  - id: FR-001
+    text: Фикс биографии (upsert, formData init) SHALL быть покрыт unit- и/или
+      integration-тестами.
+    story_refs: [US1]
+  - id: FR-002
+    text: Сохранение page-content в админке SHALL быть покрыто E2E-тестом (Playwright).
+    story_refs: [US1]
+  - id: FR-003
+    text: Перед закрытием задачи по фиксу биографии пользователь SHALL явно подтвердить
+      ручную проверку.
+    story_refs: [US1]
+  - id: FR-004
+    text: AdminController SHALL быть разбит на несколько файлов размером не более
+      200 строк каждый.
+    story_refs: [US1]
+  - id: FR-005
+    text: DTOs, определённые внутри AdminController, SHALL быть вынесены в отдельные
+      файлы.
+    story_refs: [US1]
+  - id: FR-006
+    text: Зависимость MailKit SHALL быть обновлена до версии без известной уязвимости
+      средней критичности.
+    story_refs: [US1]
+  - id: FR-007
+    text: Зависимость SixLabors.ImageSharp SHALL быть обновлена до версии без известных
+      уязвимостей высокой критичности.
+    story_refs: [US1]
+  - id: FR-008
+    text: Коммиты в main SHALL проходить через PR с пройденным CI; прямые пуши
+      в main SHALL быть запрещены процессом.
+    story_refs: [US1]
+  - id: FR-009
+    text: Frontend SSR SHALL обращаться к API через docker-network, а не через
+      внешний URL (устраняет race condition при деплое).
+    story_refs: [US1]
+  - id: FR-010
+    text: Lighthouse Performance score SHALL быть измерен и подтверждён (≥ 90).
+    story_refs: [US1]
+  - id: FR-011
+    text: Админка SHALL использовать toast-уведомления вместо alert().
+    story_refs: [US1]
+  - id: FR-012
+    text: Все операции удаления в админке SHALL требовать подтверждения (confirm)
+      перед выполнением.
+    story_refs: [US1]
+
+key_entities: []
+
+success_criteria:
+  - id: SC-1
+    description: Все автоматические тесты написаны и проходят в CI.
+    measurable_via: CI pipeline (GitHub Actions) job test проходит успешно на PR.
+  - id: SC-2
+    description: Lighthouse Performance 90+.
+    measurable_via: Lighthouse-отчёт (CI или ручной прогон) показывает Performance
+      >= 90.
+  - id: SC-3
+    description: Все зависимости без known vulnerabilities.
+    measurable_via: dotnet list package --vulnerable и npm audit не показывают
+      известных уязвимостей.
+  - id: SC-4
+    description: AdminController разбит на файлы менее 200 строк каждый.
+    measurable_via: wc -l по каждому файлу контроллера admin <= 200 строк.
+  - id: SC-5
+    description: Админка использует toast-уведомления, все операции удаления
+      требуют подтверждения.
+    measurable_via: 'Ручная/E2E проверка: удаление вызывает confirm-диалог, уведомления
+      отображаются как toast, а не alert().'
+
+assumptions:
+  - id: A-1
+    description: Нарушения выявлены в ходе валидации соответствия конституции
+      для spec-000 (baseline implementation) и являются исходным списком объёма
+      этой задачи.
