@@ -1,12 +1,16 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using MomSite.Core.Models;
 using MomSite.Infrastructure.Data;
 using Xunit;
@@ -51,18 +55,104 @@ namespace MomSite.Tests
 
         [Theory]
         [Trait("Scenario", "S2-AS1")]
-        [MemberData(nameof(ProtectedMessageRequests))]
-        public async Task MessageEndpoint_WithValidToken_IsNotRejected(HttpMethod method, string url)
+        [InlineData("GET", "/api/admin/messages", 200)]
+        [InlineData("GET", "/api/admin/messages/unread-count", 200)]
+        [InlineData("GET", "/api/admin/messages/1", 200)]
+        [InlineData("PATCH", "/api/admin/messages/1/archive", 200)]
+        public async Task MessageEndpoint_WithValidToken_ReturnsSuccess(string methodStr, string url, int expectedStatusCode)
         {
             await _factory.SeedMessageAsync();
             var client = _factory.CreateClient();
             var token = await _factory.GetAdminTokenAsync(client);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
+            var method = methodStr == "PATCH" ? new HttpMethod("PATCH") : new HttpMethod(methodStr);
             var response = await client.SendAsync(new HttpRequestMessage(method, url));
 
-            Assert.NotEqual(HttpStatusCode.Unauthorized, response.StatusCode);
-            Assert.NotEqual(HttpStatusCode.Forbidden, response.StatusCode);
+            Assert.Equal((HttpStatusCode)expectedStatusCode, response.StatusCode);
+        }
+
+        [Theory]
+        [Trait("Scenario", "S2-AS1")]
+        [MemberData(nameof(ProtectedMessageRequests))]
+        public async Task MessageEndpoint_WithEmptyBearerToken_Returns401(HttpMethod method, string url)
+        {
+            var client = _factory.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "");
+
+            var response = await client.SendAsync(new HttpRequestMessage(method, url));
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Theory]
+        [Trait("Scenario", "S2-AS1")]
+        [MemberData(nameof(ProtectedMessageRequests))]
+        public async Task MessageEndpoint_WithMalformedToken_Returns401(HttpMethod method, string url)
+        {
+            var client = _factory.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "not.a.valid.jwt");
+
+            var response = await client.SendAsync(new HttpRequestMessage(method, url));
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Theory]
+        [Trait("Scenario", "S2-AS1")]
+        [MemberData(nameof(ProtectedMessageRequests))]
+        public async Task MessageEndpoint_WithWronglySignedToken_Returns401(HttpMethod method, string url)
+        {
+            var client = _factory.CreateClient();
+            var wrongKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("wrong-secret-key-wrong-secret-ke"));
+            var wrongToken = _factory.GenerateTokenWithKey(wrongKey);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", wrongToken);
+
+            var response = await client.SendAsync(new HttpRequestMessage(method, url));
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Theory]
+        [Trait("Scenario", "S2-AS1")]
+        [MemberData(nameof(ProtectedMessageRequests))]
+        public async Task MessageEndpoint_WithWrongIssuer_Returns401(HttpMethod method, string url)
+        {
+            var client = _factory.CreateClient();
+            var token = _factory.GenerateTokenWithCustomIssuer("wrong-issuer");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.SendAsync(new HttpRequestMessage(method, url));
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Theory]
+        [Trait("Scenario", "S2-AS1")]
+        [MemberData(nameof(ProtectedMessageRequests))]
+        public async Task MessageEndpoint_WithWrongAudience_Returns401(HttpMethod method, string url)
+        {
+            var client = _factory.CreateClient();
+            var token = _factory.GenerateTokenWithCustomAudience("wrong-audience");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.SendAsync(new HttpRequestMessage(method, url));
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Theory]
+        [Trait("Scenario", "S2-AS1")]
+        [MemberData(nameof(ProtectedMessageRequests))]
+        public async Task MessageEndpoint_WithExpiredToken_Returns401(HttpMethod method, string url)
+        {
+            var client = _factory.CreateClient();
+            var token = _factory.GenerateExpiredToken();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.SendAsync(new HttpRequestMessage(method, url));
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
     }
 
@@ -126,6 +216,89 @@ namespace MomSite.Tests
             response.EnsureSuccessStatusCode();
             var payload = await response.Content.ReadFromJsonAsync<LoginResponse>();
             return payload!.Token;
+        }
+
+        public string GenerateTokenWithKey(SymmetricSecurityKey key)
+        {
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, "admin"),
+                new Claim(ClaimTypes.Role, "Admin")
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: "mom-site",
+                audience: "mom-site-client",
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(24),
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public string GenerateTokenWithCustomIssuer(string issuer)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TestJwtSecret));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, "admin"),
+                new Claim(ClaimTypes.Role, "Admin")
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: issuer,
+                audience: "mom-site-client",
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(24),
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public string GenerateTokenWithCustomAudience(string audience)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TestJwtSecret));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, "admin"),
+                new Claim(ClaimTypes.Role, "Admin")
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: "mom-site",
+                audience: audience,
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(24),
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public string GenerateExpiredToken()
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TestJwtSecret));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, "admin"),
+                new Claim(ClaimTypes.Role, "Admin")
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: "mom-site",
+                audience: "mom-site-client",
+                claims: claims,
+                expires: DateTime.UtcNow.AddSeconds(-10),  // Expired 10 seconds ago
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         public async Task SeedMessageAsync()
