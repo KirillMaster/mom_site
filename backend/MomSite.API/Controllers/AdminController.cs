@@ -402,13 +402,13 @@ public class AdminController : ControllerBase
     [HttpGet("messages/{id}")]
     public async Task<ActionResult<ContactMessageAdminDto>> GetMessage(int id)
     {
-        var message = await _context.ContactMessages.FindAsync(id);
-        if (message == null)
+        var (message, notFound) = await FindMessageOrNotFoundAsync(id);
+        if (notFound != null)
         {
-            return NotFound();
+            return notFound;
         }
 
-        if (message.Status == ContactMessageStatus.New)
+        if (message!.Status == ContactMessageStatus.New)
         {
             message.Status = ContactMessageStatus.Read;
             await _context.SaveChangesAsync();
@@ -420,16 +420,22 @@ public class AdminController : ControllerBase
     [HttpPatch("messages/{id}/archive")]
     public async Task<ActionResult<ContactMessageAdminDto>> ArchiveMessage(int id)
     {
-        var message = await _context.ContactMessages.FindAsync(id);
-        if (message == null)
+        var (message, notFound) = await FindMessageOrNotFoundAsync(id);
+        if (notFound != null)
         {
-            return NotFound();
+            return notFound;
         }
 
-        message.Status = ContactMessageStatus.Archived;
+        message!.Status = ContactMessageStatus.Archived;
         await _context.SaveChangesAsync();
 
         return Ok(message.ToAdminDto());
+    }
+
+    private async Task<(ContactMessage? message, ActionResult? notFound)> FindMessageOrNotFoundAsync(int id)
+    {
+        var message = await _context.ContactMessages.FindAsync(id);
+        return message == null ? (null, NotFound()) : (message, null);
     }
 
     private string GenerateJwtToken()

@@ -24,6 +24,34 @@ namespace MomSite.Tests
         private static (Mock<IImageService>, Mock<IConfiguration>) CreateMocks() =>
             AdminTestHelpers.CreateMocks();
 
+        private static async Task<DbContextOptions<ApplicationDbContext>> SeedSingleMessageAsync(
+            string dbName, ContactMessageStatus status)
+        {
+            var options = CreateDbOptions(dbName);
+
+            using (var context = new ApplicationDbContext(options))
+            {
+                context.ContactMessages.Add(new ContactMessage
+                {
+                    Name = "Иван", Email = "ivan@example.com", Subject = "S", Message = "M",
+                    Status = status, CreatedAt = DateTime.UtcNow
+                });
+                await context.SaveChangesAsync();
+            }
+
+            return options;
+        }
+
+        private static async Task<ContactMessagesPageDto> GetMessagesPageAsync(
+            ApplicationDbContext context, Mock<IImageService> imageServiceMock, Mock<IConfiguration> configMock,
+            string? filter = null)
+        {
+            var controller = new AdminController(context, imageServiceMock.Object, configMock.Object);
+            var result = filter == null ? await controller.GetMessages() : await controller.GetMessages(filter);
+            var ok = Assert.IsType<OkObjectResult>(result.Result);
+            return Assert.IsType<ContactMessagesPageDto>(ok.Value);
+        }
+
         // @S2-AS1: unauthenticated access must be rejected. The project has
         // no HTTP-pipeline integration test harness (existing tests always
         // instantiate controllers directly), so the authorization contract
@@ -70,12 +98,7 @@ namespace MomSite.Tests
 
             using (var context = new ApplicationDbContext(options))
             {
-                var controller = new AdminController(context, imageServiceMock.Object, configMock.Object);
-
-                var result = await controller.GetMessages();
-
-                var ok = Assert.IsType<OkObjectResult>(result.Result);
-                var page = Assert.IsType<ContactMessagesPageDto>(ok.Value);
+                var page = await GetMessagesPageAsync(context, imageServiceMock, configMock);
 
                 Assert.Equal(3, page.Items.Count);
                 Assert.Equal(new[] { "B", "C", "A" }, page.Items.Select(i => i.Name).ToArray());
@@ -87,18 +110,9 @@ namespace MomSite.Tests
         [Trait("Scenario", "S2-AS3")]
         public async Task GetMessage_MarksNewAsRead_AndDecrementsUnreadCount()
         {
-            var options = CreateDbOptions(nameof(GetMessage_MarksNewAsRead_AndDecrementsUnreadCount));
+            var options = await SeedSingleMessageAsync(
+                nameof(GetMessage_MarksNewAsRead_AndDecrementsUnreadCount), ContactMessageStatus.New);
             var (imageServiceMock, configMock) = CreateMocks();
-
-            using (var context = new ApplicationDbContext(options))
-            {
-                context.ContactMessages.Add(new ContactMessage
-                {
-                    Name = "Иван", Email = "ivan@example.com", Subject = "S", Message = "M",
-                    Status = ContactMessageStatus.New, CreatedAt = DateTime.UtcNow
-                });
-                await context.SaveChangesAsync();
-            }
 
             using (var context = new ApplicationDbContext(options))
             {
@@ -127,18 +141,9 @@ namespace MomSite.Tests
         [Trait("Scenario", "S2-AS4")]
         public async Task ArchiveMessage_SetsArchivedStatus_ExcludedFromUnreadButStillListed()
         {
-            var options = CreateDbOptions(nameof(ArchiveMessage_SetsArchivedStatus_ExcludedFromUnreadButStillListed));
+            var options = await SeedSingleMessageAsync(
+                nameof(ArchiveMessage_SetsArchivedStatus_ExcludedFromUnreadButStillListed), ContactMessageStatus.Read);
             var (imageServiceMock, configMock) = CreateMocks();
-
-            using (var context = new ApplicationDbContext(options))
-            {
-                context.ContactMessages.Add(new ContactMessage
-                {
-                    Name = "Иван", Email = "ivan@example.com", Subject = "S", Message = "M",
-                    Status = ContactMessageStatus.Read, CreatedAt = DateTime.UtcNow
-                });
-                await context.SaveChangesAsync();
-            }
 
             using (var context = new ApplicationDbContext(options))
             {
@@ -152,9 +157,7 @@ namespace MomSite.Tests
                 var unread = (await controller.GetUnreadMessagesCount()).Value;
                 Assert.Equal(0, unread);
 
-                var archivedList = await controller.GetMessages("archived");
-                var archivedOk = Assert.IsType<OkObjectResult>(archivedList.Result);
-                var archivedPage = Assert.IsType<ContactMessagesPageDto>(archivedOk.Value);
+                var archivedPage = await GetMessagesPageAsync(context, imageServiceMock, configMock, "archived");
                 Assert.Single(archivedPage.Items);
                 Assert.Equal("Archived", archivedPage.Items[0].Status);
             }
@@ -174,12 +177,7 @@ namespace MomSite.Tests
             var (imageServiceMock, configMock) = CreateMocks();
 
             using var context = new ApplicationDbContext(options);
-            var controller = new AdminController(context, imageServiceMock.Object, configMock.Object);
-
-            var result = await controller.GetMessages();
-
-            var ok = Assert.IsType<OkObjectResult>(result.Result);
-            var page = Assert.IsType<ContactMessagesPageDto>(ok.Value);
+            var page = await GetMessagesPageAsync(context, imageServiceMock, configMock);
 
             Assert.Empty(page.Items);
             Assert.Equal(0, page.UnreadCount);

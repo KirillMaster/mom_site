@@ -2,18 +2,18 @@
   "duplicates": [
     {
       "firstFile": {
-        "end": 492,
+        "end": 498,
         "endLoc": {
           "column": 1,
-          "line": 492,
-          "position": 15673
+          "line": 498,
+          "position": 15942
         },
         "name": "MomSite.API\\Controllers\\AdminController.cs",
-        "start": 487,
+        "start": 493,
         "startLoc": {
           "column": 4,
-          "line": 487,
-          "position": 15454
+          "line": 493,
+          "position": 15723
         }
       },
       "format": "csharp",
@@ -22,18 +22,18 @@
       "kind": "exact",
       "lines": 6,
       "secondFile": {
-        "end": 539,
+        "end": 545,
         "endLoc": {
           "column": 1,
-          "line": 539,
-          "position": 17104
+          "line": 545,
+          "position": 17373
         },
         "name": "MomSite.API\\Controllers\\AdminController.cs",
-        "start": 534,
+        "start": 540,
         "startLoc": {
           "column": 4,
-          "line": 534,
-          "position": 16885
+          "line": 540,
+          "position": 17154
         }
       },
       "tokens": 55
@@ -759,82 +759,6 @@
         }
       },
       "tokens": 109
-    },
-    {
-      "firstFile": {
-        "end": 80,
-        "endLoc": {
-          "column": 23,
-          "line": 80,
-          "position": 3707
-        },
-        "name": "MomSite.Tests\\AdminMessagesControllerTests.cs",
-        "start": 73,
-        "startLoc": {
-          "column": 16,
-          "line": 73,
-          "position": 3382
-        }
-      },
-      "format": "csharp",
-      "fragment": "                var controller = new AdminController(context, imageServiceMock.Object, configMock.Object);\n\n                var result = await controller.GetMessages();\n\n                var ok = Assert.IsType<OkObjectResult>(result.Result);\n                var page = Assert.IsType<ContactMessagesPageDto>(ok.Value);\n\n                Assert.Equal(3, page.Items.Count);",
-      "isNew": false,
-      "kind": "exact",
-      "lines": 8,
-      "secondFile": {
-        "end": 184,
-        "endLoc": {
-          "column": 19,
-          "line": 184,
-          "position": 8325
-        },
-        "name": "MomSite.Tests\\AdminMessagesControllerTests.cs",
-        "start": 177,
-        "startLoc": {
-          "column": 12,
-          "line": 177,
-          "position": 8016
-        }
-      },
-      "tokens": 59
-    },
-    {
-      "firstFile": {
-        "end": 98,
-        "endLoc": {
-          "column": 50,
-          "line": 98,
-          "position": 4528
-        },
-        "name": "MomSite.Tests\\AdminMessagesControllerTests.cs",
-        "start": 90,
-        "startLoc": {
-          "column": 99,
-          "line": 90,
-          "position": 4149
-        }
-      },
-      "format": "csharp",
-      "fragment": "            var options = CreateDbOptions(nameof(GetMessage_MarksNewAsRead_AndDecrementsUnreadCount));\n            var (imageServiceMock, configMock) = CreateMocks();\n\n            using (var context = new ApplicationDbContext(options))\n            {\n                context.ContactMessages.Add(new ContactMessage\n                {\n                    Name = \"Иван\", Email = \"ivan@example.com\", Subject = \"S\", Message = \"M\",\n                    Status = ContactMessageStatus.New, CreatedAt = DateTime.UtcNow",
-      "isNew": false,
-      "kind": "exact",
-      "lines": 9,
-      "secondFile": {
-        "end": 138,
-        "endLoc": {
-          "column": 50,
-          "line": 138,
-          "position": 6273
-        },
-        "name": "MomSite.Tests\\AdminMessagesControllerTests.cs",
-        "start": 130,
-        "startLoc": {
-          "column": 115,
-          "line": 130,
-          "position": 5894
-        }
-      },
-      "tokens": 55
     },
     {
       "firstFile": {
@@ -1636,82 +1560,6 @@
     },
     {
       "firstFile": {
-        "end": 53,
-        "endLoc": {
-          "column": 9,
-          "line": 53,
-          "position": 1602
-        },
-        "name": "app\\admin\\messages\\page.tsx",
-        "start": 44,
-        "startLoc": {
-          "column": 99,
-          "line": 44,
-          "position": 1379
-        }
-      },
-      "format": "tsx",
-      "fragment": "  if (isError) return <div className=\"text-red-500 p-8\">Ошибка загрузки заявок.</div>;\n\n  return (\n    <div className=\"min-h-screen bg-gray-50 p-8\">\n      <motion.div\n        initial={{ opacity: 0, y: 30 }}\n        animate={{ opacity: 1, y: 0 }}\n        transition={{ duration: 0.8 }}\n      >\n        <div className=\"card p-6\">",
-      "isNew": false,
-      "kind": "exact",
-      "lines": 10,
-      "secondFile": {
-        "end": 69,
-        "endLoc": {
-          "column": 9,
-          "line": 69,
-          "position": 2526
-        },
-        "name": "app\\admin\\video-categories\\page.tsx",
-        "start": 60,
-        "startLoc": {
-          "column": 112,
-          "line": 60,
-          "position": 2303
-        }
-      },
-      "tokens": 56
-    },
-    {
-      "firstFile": {
-        "end": 53,
-        "endLoc": {
-          "column": 9,
-          "line": 53,
-          "position": 1602
-        },
-        "name": "app\\admin\\messages\\page.tsx",
-        "start": 44,
-        "startLoc": {
-          "column": 99,
-          "line": 44,
-          "position": 1379
-        }
-      },
-      "format": "tsx",
-      "fragment": "  if (isError) return <div className=\"text-red-500 p-8\">Ошибка загрузки заявок.</div>;\n\n  return (\n    <div className=\"min-h-screen bg-gray-50 p-8\">\n      <motion.div\n        initial={{ opacity: 0, y: 30 }}\n        animate={{ opacity: 1, y: 0 }}\n        transition={{ duration: 0.8 }}\n      >\n        <div className=\"card p-6\">",
-      "isNew": false,
-      "kind": "exact",
-      "lines": 10,
-      "secondFile": {
-        "end": 94,
-        "endLoc": {
-          "column": 9,
-          "line": 94,
-          "position": 3810
-        },
-        "name": "app\\admin\\videos\\page.tsx",
-        "start": 85,
-        "startLoc": {
-          "column": 146,
-          "line": 85,
-          "position": 3587
-        }
-      },
-      "tokens": 56
-    },
-    {
-      "firstFile": {
         "end": 190,
         "endLoc": {
           "column": 49,
@@ -1871,18 +1719,18 @@
           "position": 2590
         },
         "name": "app\\admin\\video-categories\\page.tsx",
-        "start": 63,
+        "start": 60,
         "startLoc": {
-          "column": 4,
-          "line": 63,
-          "position": 2327
+          "column": 112,
+          "line": 60,
+          "position": 2303
         }
       },
       "format": "tsx",
-      "fragment": "    <div className=\"min-h-screen bg-gray-50 p-8\">\n      <motion.div\n        initial={{ opacity: 0, y: 30 }}\n        animate={{ opacity: 1, y: 0 }}\n        transition={{ duration: 0.8 }}\n      >\n        <h1 className=\"text-3xl font-serif font-bold mb-8 text-gray-900\">Управление категориями видео</h1>",
+      "fragment": "  if (isError) return <div className=\"text-red-500\">Ошибка загрузки категорий видео.</div>;\n\n  return (\n    <div className=\"min-h-screen bg-gray-50 p-8\">\n      <motion.div\n        initial={{ opacity: 0, y: 30 }}\n        animate={{ opacity: 1, y: 0 }}\n        transition={{ duration: 0.8 }}\n      >\n        <h1 className=\"text-3xl font-serif font-bold mb-8 text-gray-900\">Управление категориями видео</h1>",
       "isNew": false,
       "kind": "exact",
-      "lines": 7,
+      "lines": 10,
       "secondFile": {
         "end": 94,
         "endLoc": {
@@ -1891,14 +1739,14 @@
           "position": 3874
         },
         "name": "app\\admin\\videos\\page.tsx",
-        "start": 88,
+        "start": 85,
         "startLoc": {
-          "column": 4,
-          "line": 88,
-          "position": 3611
+          "column": 146,
+          "line": 85,
+          "position": 3587
         }
       },
-      "tokens": 54
+      "tokens": 61
     },
     {
       "firstFile": {
@@ -2548,19 +2396,19 @@
     }
   ],
   "statistics": {
-    "detectionDate": "2026-09-18T18:29:31.831Z",
+    "detectionDate": "2026-09-18T18:43:58.980Z",
     "formats": {
       "csharp": {
-        "clones": 29,
-        "duplicatedLines": 329,
-        "duplicatedTokens": 2101,
-        "lines": 4209,
+        "clones": 27,
+        "duplicatedLines": 314,
+        "duplicatedTokens": 1987,
+        "lines": 4213,
         "newClones": 0,
         "newDuplicatedLines": 0,
-        "percentage": 7.816583511522928,
-        "percentageTokens": 8.709169291991378,
+        "percentage": 7.453121291241397,
+        "percentageTokens": 8.23046972081849,
         "sources": 31,
-        "tokens": 24124
+        "tokens": 24142
       },
       "css": {
         "clones": 0,
@@ -2611,16 +2459,16 @@
         "tokens": 943
       },
       "tsx": {
-        "clones": 29,
-        "duplicatedLines": 316,
-        "duplicatedTokens": 1999,
-        "lines": 4453,
+        "clones": 27,
+        "duplicatedLines": 301,
+        "duplicatedTokens": 1894,
+        "lines": 4475,
         "newClones": 0,
         "newDuplicatedLines": 0,
-        "percentage": 7.0963395463732315,
-        "percentageTokens": 7.812255744880413,
-        "sources": 28,
-        "tokens": 25588
+        "percentage": 6.726256983240224,
+        "percentageTokens": 7.381425620639931,
+        "sources": 29,
+        "tokens": 25659
       },
       "typescript": {
         "clones": 4,
@@ -2636,16 +2484,16 @@
       }
     },
     "total": {
-      "clones": 67,
-      "duplicatedLines": 810,
-      "duplicatedTokens": 4719,
-      "lines": 20592,
+      "clones": 63,
+      "duplicatedLines": 780,
+      "duplicatedTokens": 4500,
+      "lines": 20618,
       "newClones": 0,
       "newDuplicatedLines": 0,
-      "percentage": 3.9335664335664338,
-      "percentageTokens": 5.230605526552057,
-      "sources": 76,
-      "tokens": 90219
+      "percentage": 3.783102143757881,
+      "percentageTokens": 4.982947247198476,
+      "sources": 77,
+      "tokens": 90308
     }
   }
 }

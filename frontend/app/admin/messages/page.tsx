@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import AdminPageShell from '@/components/AdminPageShell';
 import MessagesList from '@/components/MessagesList';
 import {
   useContactMessages,
@@ -44,51 +45,47 @@ const MessagesPageContent = () => {
   if (isError) return <div className="text-red-500 p-8">Ошибка загрузки заявок.</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <div className="card p-6">
-          <MessagesList
-            messages={data?.items ?? []}
-            unreadCount={data?.unreadCount ?? 0}
-            filter={filter}
-            onFilterChange={setFilter}
-            onOpen={handleOpen}
-            onArchive={handleArchive}
-          />
-        </div>
-      </motion.div>
+    <AdminPageShell
+      overlay={
+        selected && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="card p-6 w-full max-w-lg bg-white"
+            >
+              <h2 className="text-xl font-semibold mb-2">{selected.subject}</h2>
+              <p className="text-sm text-gray-500 mb-4">
+                {selected.name} · {selected.email} · {formatDate(selected.createdAt)}
+              </p>
+              <p className="whitespace-pre-wrap text-gray-800 mb-6">{selected.message}</p>
 
-      {selected && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="card p-6 w-full max-w-lg bg-white"
-          >
-            <h2 className="text-xl font-semibold mb-2">{selected.subject}</h2>
-            <p className="text-sm text-gray-500 mb-4">
-              {selected.name} · {selected.email} · {formatDate(selected.createdAt)}
-            </p>
-            <p className="whitespace-pre-wrap text-gray-800 mb-6">{selected.message}</p>
-
-            <div className="flex justify-end space-x-3">
-              {selected.status !== 'Archived' && (
-                <button onClick={() => handleArchive(selected.id)} className="btn-secondary">
-                  Архивировать
+              <div className="flex justify-end space-x-3">
+                {selected.status !== 'Archived' && (
+                  <button onClick={() => handleArchive(selected.id)} className="btn-secondary">
+                    Архивировать
+                  </button>
+                )}
+                <button onClick={() => setSelected(null)} className="btn-primary">
+                  Закрыть
                 </button>
-              )}
-              <button onClick={() => setSelected(null)} className="btn-primary">
-                Закрыть
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
-    </div>
+              </div>
+            </motion.div>
+          </div>
+        )
+      }
+    >
+      <div className="card p-6">
+        <MessagesList
+          messages={data?.items ?? []}
+          unreadCount={data?.unreadCount ?? 0}
+          filter={filter}
+          onFilterChange={setFilter}
+          onOpen={handleOpen}
+          onArchive={handleArchive}
+        />
+      </div>
+    </AdminPageShell>
   );
 };
 
