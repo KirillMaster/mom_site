@@ -111,3 +111,4 @@ dist
 .playwright-mcp/
 f.key
 test-results/
+.worktrees/

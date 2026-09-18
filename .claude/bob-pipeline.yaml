@@ -55,7 +55,7 @@ tools:
   - stack: any
     category: duplication
     tool: jscpd
-    run_command: "npx jscpd --reporters json --output .bob/reports ."
+    run_command: "npx jscpd backend frontend --ignore \"**/node_modules/**,**/bin/**,**/obj/**,**/.next/**,**/Migrations/**\" --reporters json --output .bob/jscpd -s"
     report_parser: jscpd
     enabled: true
   - stack: csharp
