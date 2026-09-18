@@ -90,6 +90,25 @@ namespace MomSite.API.DTOs
             };
         }
 
+        public static ContactMessageAdminDto ToAdminDto(this ContactMessage message)
+        {
+            return new ContactMessageAdminDto
+            {
+                Id = message.Id,
+                Name = message.Name,
+                Email = message.Email,
+                Subject = message.Subject,
+                Message = message.Message,
+                IpAddress = message.IpAddress,
+                UserAgent = message.UserAgent,
+                UtmSource = message.UtmSource,
+                UtmMedium = message.UtmMedium,
+                UtmCampaign = message.UtmCampaign,
+                CreatedAt = message.CreatedAt,
+                Status = message.Status.ToString()
+            };
+        }
+
         public static VideoCategoryPublicDto ToPublicDto(this VideoCategory videoCategory)
         {
             return new VideoCategoryPublicDto

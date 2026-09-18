@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, auth, API_BASE_URL, Artwork, Category, Video, VideoCategory, PageContent, HomeData, GalleryData, AboutData, ContactsData, VideosData, FooterData, ArtworkDto, CategoryDto, ArtworkAdminDto } from '../lib/api';
-import { ContactMessage } from '../lib/api';
+import { ContactMessage, ContactMessageAdmin, ContactMessagesPage } from '../lib/api';
 
 
 // Helper to get image URL
@@ -394,6 +394,52 @@ export function useUpdateVideoCategory() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['videoCategories'] });
       queryClient.invalidateQueries({ queryKey: ['videosData'] });
+    },
+  });
+}
+// Admin: Contact Messages (заявки с сайта)
+export function useContactMessages(filter: 'active' | 'archived' = 'active') {
+  return useQuery<ContactMessagesPage, Error>({
+    queryKey: ['contactMessages', filter],
+    queryFn: async () => {
+      const response = await api.get('/admin/messages', { params: { status: filter } });
+      return response.data;
+    },
+  });
+}
+
+export function useUnreadMessagesCount() {
+  return useQuery<number, Error>({
+    queryKey: ['contactMessages', 'unread-count'],
+    queryFn: async () => {
+      const response = await api.get('/admin/messages/unread-count');
+      return response.data;
+    },
+  });
+}
+
+export function useOpenContactMessage() {
+  const queryClient = useQueryClient();
+  return useMutation<ContactMessageAdmin, Error, number>({
+    mutationFn: async (id) => {
+      const response = await api.get(`/admin/messages/${id}`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contactMessages'] });
+    },
+  });
+}
+
+export function useArchiveContactMessage() {
+  const queryClient = useQueryClient();
+  return useMutation<ContactMessageAdmin, Error, number>({
+    mutationFn: async (id) => {
+      const response = await api.patch(`/admin/messages/${id}/archive`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contactMessages'] });
     },
   });
 }

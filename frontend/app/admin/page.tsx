@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Lock, Eye, EyeOff, Palette, FileText, Video, Users, Settings, Tag } from 'lucide-react';
+import { Lock, Eye, EyeOff, Palette, FileText, Video, Users, Settings, Tag, Mail } from 'lucide-react';
 import { auth } from '@/lib/api';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import { useLogin, useArtworks, useCategories, useVideos } from '@/hooks/useApi';
+import { useLogin, useArtworks, useCategories, useVideos, useUnreadMessagesCount } from '@/hooks/useApi';
 import Link from 'next/link';
 
 const AdminPage = () => {
@@ -21,7 +21,7 @@ const AdminPage = () => {
   const { data: artworks, isLoading: isLoadingArtworks } = useArtworks();
   const { data: categories, isLoading: isLoadingCategories } = useCategories();
   const { data: videos, isLoading: isLoadingVideos } = useVideos();
-  
+  const { data: unreadMessagesCount } = useUnreadMessagesCount();
 
   const artworksCount = artworks?.length || 0;
   const categoriesCount = categories?.length || 0;
@@ -246,8 +246,33 @@ const AdminPage = () => {
               </Link>
             </motion.div>
 
-            {/* Reviews Management */}
-            
+            {/* Messages Management */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="card p-6 hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+            >
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-rose-600 rounded-lg flex items-center justify-center">
+                  <Mail className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                  Заявки
+                  {!!unreadMessagesCount && (
+                    <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-500 text-white">
+                      {unreadMessagesCount}
+                    </span>
+                  )}
+                </h3>
+              </div>
+              <p className="text-gray-600 text-sm mb-4">
+                Заявки с контактной формы сайта
+              </p>
+              <Link href="/admin/messages" className="btn-primary w-full text-center">
+                Управлять
+              </Link>
+            </motion.div>
 
             {/* Categories Management */}
             <motion.div

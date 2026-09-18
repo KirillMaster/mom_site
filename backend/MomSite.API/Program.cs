@@ -254,7 +254,22 @@ app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = Dat
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    dbContext.Database.Migrate();
+    if (app.Environment.IsEnvironment("Testing"))
+    {
+        // Integration tests (WebApplicationFactory<Program>) run against a
+        // lightweight relational provider, not Postgres. The checked-in
+        // migrations contain Npgsql-specific column types, so replaying them
+        // fails outside Postgres; create the schema straight from the model.
+        dbContext.Database.EnsureCreated();
+    }
+    else
+    {
+        dbContext.Database.Migrate();
+    }
 }
 
-app.Run(); 
+app.Run();
+
+// Exposed so WebApplicationFactory<Program> (integration tests) can bootstrap
+// the app in-process for real HTTP pipeline testing.
+public partial class Program { } 

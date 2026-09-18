@@ -361,6 +361,83 @@ public class AdminController : ControllerBase
         return NoContent();
     }
 
+    [HttpGet("messages")]
+    public async Task<ActionResult<ContactMessagesPageDto>> GetMessages([FromQuery] string status = "active")
+    {
+        var query = _context.ContactMessages.AsQueryable();
+
+        query = status?.ToLowerInvariant() switch
+        {
+            "archived" => query.Where(m => m.Status == ContactMessageStatus.Archived),
+            "all" => query,
+            _ => query.Where(m => m.Status != ContactMessageStatus.Archived),
+        };
+
+        var items = await query
+            .OrderByDescending(m => m.CreatedAt)
+            .ToListAsync();
+
+        var unreadCount = await CountUnreadMessagesAsync();
+
+        return Ok(new ContactMessagesPageDto
+        {
+            Items = items.Select(m => m.ToAdminDto()).ToList(),
+            TotalCount = items.Count,
+            UnreadCount = unreadCount
+        });
+    }
+
+    [HttpGet("messages/unread-count")]
+    public async Task<ActionResult<int>> GetUnreadMessagesCount()
+    {
+        return await CountUnreadMessagesAsync();
+    }
+
+    private Task<int> CountUnreadMessagesAsync()
+    {
+        return _context.ContactMessages
+            .CountAsync(m => m.Status == ContactMessageStatus.New);
+    }
+
+    [HttpGet("messages/{id}")]
+    public async Task<ActionResult<ContactMessageAdminDto>> GetMessage(int id)
+    {
+        var (message, notFound) = await FindMessageOrNotFoundAsync(id);
+        if (notFound != null)
+        {
+            return notFound;
+        }
+
+        if (message!.Status == ContactMessageStatus.New)
+        {
+            message.Status = ContactMessageStatus.Read;
+            await _context.SaveChangesAsync();
+        }
+
+        return Ok(message.ToAdminDto());
+    }
+
+    [HttpPatch("messages/{id}/archive")]
+    public async Task<ActionResult<ContactMessageAdminDto>> ArchiveMessage(int id)
+    {
+        var (message, notFound) = await FindMessageOrNotFoundAsync(id);
+        if (notFound != null)
+        {
+            return notFound;
+        }
+
+        message!.Status = ContactMessageStatus.Archived;
+        await _context.SaveChangesAsync();
+
+        return Ok(message.ToAdminDto());
+    }
+
+    private async Task<(ContactMessage? message, ActionResult? notFound)> FindMessageOrNotFoundAsync(int id)
+    {
+        var message = await _context.ContactMessages.FindAsync(id);
+        return message == null ? (null, NotFound()) : (message, null);
+    }
+
     private string GenerateJwtToken()
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"] ?? "default-secret"));

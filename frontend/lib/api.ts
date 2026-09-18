@@ -234,3 +234,26 @@ export interface ContactMessage {
   // callers that omit it keep working unchanged.
   website?: string;
 }
+
+export type ContactMessageStatus = 'New' | 'Read' | 'Archived';
+
+export interface ContactMessageAdmin {
+  id: number;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  ipAddress?: string;
+  userAgent?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  createdAt: string;
+  status: ContactMessageStatus;
+}
+
+export interface ContactMessagesPage {
+  items: ContactMessageAdmin[];
+  totalCount: number;
+  unreadCount: number;
+}
