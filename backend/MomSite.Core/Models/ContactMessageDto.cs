@@ -33,5 +33,14 @@ namespace MomSite.Core.Models
         [JsonPropertyName("utm_campaign")]
         [StringLength(200)]
         public string? UtmCampaign { get; set; }
+
+        /// <summary>
+        /// Honeypot anti-spam field. Legitimate human visitors never see or
+        /// fill this field (hidden off-screen in the form), so any non-empty
+        /// value marks the submission as a bot and it is silently discarded
+        /// by the server (200 response, no persistence, no notifications).
+        /// </summary>
+        [JsonPropertyName("website")]
+        public string? Website { get; set; }
     }
 }
