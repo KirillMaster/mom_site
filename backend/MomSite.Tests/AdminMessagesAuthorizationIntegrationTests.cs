@@ -115,7 +115,9 @@ namespace MomSite.Tests
                 key: new SymmetricSecurityKey(Encoding.UTF8.GetBytes("wrong-secret-key-wrong-secret-ke"))),
             RejectedToken.WrongIssuer => _factory.GenerateToken(issuer: "wrong-issuer"),
             RejectedToken.WrongAudience => _factory.GenerateToken(audience: "wrong-audience"),
-            RejectedToken.Expired => _factory.GenerateToken(lifetime: TimeSpan.FromSeconds(-10)),
+            // Well past the default 5-minute ClockSkew that JwtBearer allows;
+            // a token only seconds past expiry is still accepted by design.
+            RejectedToken.Expired => _factory.GenerateToken(lifetime: TimeSpan.FromMinutes(-10)),
             _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null)
         };
 
@@ -184,7 +186,7 @@ namespace MomSite.Tests
         }
 
         private const string DefaultIssuer = "mom-site";
-        private const string DefaultAudience = "mom-site-client";
+        private const string DefaultAudience = "mom-site";
 
         // One builder for every token the tests need. Each rejection scenario
         // differs from a good token in exactly one dimension, so they are
