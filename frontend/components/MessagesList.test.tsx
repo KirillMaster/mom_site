@@ -1,3 +1,4 @@
+import { ComponentProps } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import MessagesList from './MessagesList';
 import { ContactMessageAdmin } from '@/lib/api';
@@ -13,6 +14,24 @@ const makeMessage = (overrides: Partial<ContactMessageAdmin>): ContactMessageAdm
   ...overrides,
 });
 
+// Every scenario renders the same component with the same six props; only a
+// couple of them vary per test. Centralising the defaults here keeps each test
+// focused on the one thing it asserts and removes the repeated prop block.
+type MessagesListProps = ComponentProps<typeof MessagesList>;
+
+const renderList = (props: Partial<MessagesListProps> = {}) =>
+  render(
+    <MessagesList
+      messages={[]}
+      unreadCount={0}
+      onOpen={jest.fn()}
+      onArchive={jest.fn()}
+      filter="active"
+      onFilterChange={jest.fn()}
+      {...props}
+    />
+  );
+
 describe('MessagesList', () => {
   // @S2-AS2: newest-first ordering (as delivered by the backend) is rendered
   // in the same order, and the unread badge shows the count of Status=New.
@@ -23,16 +42,7 @@ describe('MessagesList', () => {
       makeMessage({ id: 1, name: 'Первый', status: 'New' }),
     ];
 
-    render(
-      <MessagesList
-        messages={messages}
-        unreadCount={2}
-        onOpen={jest.fn()}
-        onArchive={jest.fn()}
-        filter="active"
-        onFilterChange={jest.fn()}
-      />
-    );
+    renderList({ messages, unreadCount: 2 });
 
     const rows = screen.getAllByRole('row').slice(1); // skip header row
     expect(rows[0]).toHaveTextContent('Второй');
@@ -48,16 +58,7 @@ describe('MessagesList', () => {
     const onOpen = jest.fn();
     const messages = [makeMessage({ id: 42, status: 'New' })];
 
-    render(
-      <MessagesList
-        messages={messages}
-        unreadCount={1}
-        onOpen={onOpen}
-        onArchive={jest.fn()}
-        filter="active"
-        onFilterChange={jest.fn()}
-      />
-    );
+    renderList({ messages, unreadCount: 1, onOpen });
 
     fireEvent.click(screen.getByText('Открыть'));
     expect(onOpen).toHaveBeenCalledWith(42);
@@ -68,16 +69,7 @@ describe('MessagesList', () => {
     const onArchive = jest.fn();
     const messages = [makeMessage({ id: 7, status: 'Read' })];
 
-    render(
-      <MessagesList
-        messages={messages}
-        unreadCount={0}
-        onOpen={jest.fn()}
-        onArchive={onArchive}
-        filter="active"
-        onFilterChange={jest.fn()}
-      />
-    );
+    renderList({ messages, onArchive });
 
     fireEvent.click(screen.getByText('Архивировать'));
     expect(onArchive).toHaveBeenCalledWith(7);
@@ -86,16 +78,7 @@ describe('MessagesList', () => {
   // @S2-AS5: empty list renders an empty state without error, and no badge
   // is shown when there are no unread messages.
   it('@S2-AS5 renders an empty state and hides the badge when there are no messages', () => {
-    render(
-      <MessagesList
-        messages={[]}
-        unreadCount={0}
-        onOpen={jest.fn()}
-        onArchive={jest.fn()}
-        filter="active"
-        onFilterChange={jest.fn()}
-      />
-    );
+    renderList();
 
     expect(screen.getByTestId('empty-state')).toBeInTheDocument();
     expect(screen.queryByTestId('unread-badge')).not.toBeInTheDocument();
@@ -109,16 +92,7 @@ describe('MessagesList', () => {
       makeMessage({ id: 2, name: 'AnotherRead', status: 'Read' }),
     ];
 
-    render(
-      <MessagesList
-        messages={messages}
-        unreadCount={0}
-        onOpen={jest.fn()}
-        onArchive={jest.fn()}
-        filter="active"
-        onFilterChange={jest.fn()}
-      />
-    );
+    renderList({ messages });
 
     // Messages should be rendered
     expect(screen.getByText('ReadMessage')).toBeInTheDocument();
@@ -136,16 +110,7 @@ describe('MessagesList', () => {
       makeMessage({ id: 3, name: 'ThirdNew', status: 'New' }),
     ];
 
-    render(
-      <MessagesList
-        messages={messages}
-        unreadCount={2}
-        onOpen={jest.fn()}
-        onArchive={jest.fn()}
-        filter="active"
-        onFilterChange={jest.fn()}
-      />
-    );
+    renderList({ messages, unreadCount: 2 });
 
     const badge = screen.getByTestId('unread-badge');
     expect(badge).toBeInTheDocument();
@@ -154,16 +119,7 @@ describe('MessagesList', () => {
 
   // @S2-AS5-EXT: empty state for archived filter when no archived messages exist.
   it('@S2-AS5-EXT renders empty state for archived filter with no archived messages', () => {
-    render(
-      <MessagesList
-        messages={[]}
-        unreadCount={0}
-        onOpen={jest.fn()}
-        onArchive={jest.fn()}
-        filter="archived"
-        onFilterChange={jest.fn()}
-      />
-    );
+    renderList({ filter: 'archived' });
 
     expect(screen.getByTestId('empty-state')).toBeInTheDocument();
   });
@@ -173,16 +129,7 @@ describe('MessagesList', () => {
     const onOpen = jest.fn();
     const messages = [makeMessage({ id: 5, status: 'Read', name: 'ReadMsg' })];
 
-    render(
-      <MessagesList
-        messages={messages}
-        unreadCount={0}
-        onOpen={onOpen}
-        onArchive={jest.fn()}
-        filter="active"
-        onFilterChange={jest.fn()}
-      />
-    );
+    renderList({ messages, onOpen });
 
     fireEvent.click(screen.getByText('Открыть'));
     expect(onOpen).toHaveBeenCalledWith(5);
@@ -196,16 +143,7 @@ describe('MessagesList', () => {
       makeMessage({ id: 2, status: 'Archived' }),
     ];
 
-    render(
-      <MessagesList
-        messages={messages}
-        unreadCount={1}
-        onOpen={jest.fn()}
-        onArchive={jest.fn()}
-        filter="active"
-        onFilterChange={jest.fn()}
-      />
-    );
+    renderList({ messages, unreadCount: 1 });
 
     // Both messages should have "Открыть" button
     const openButtons = screen.getAllByText('Открыть');
@@ -224,16 +162,7 @@ describe('MessagesList', () => {
       makeMessage({ id: 2, name: 'ReadMsg', status: 'Read' }),
     ];
 
-    const { container } = render(
-      <MessagesList
-        messages={messages}
-        unreadCount={1}
-        onOpen={jest.fn()}
-        onArchive={jest.fn()}
-        filter="active"
-        onFilterChange={jest.fn()}
-      />
-    );
+    renderList({ messages, unreadCount: 1 });
 
     // Find the rows
     const rows = screen.getAllByRole('row').slice(1); // skip header
@@ -262,16 +191,7 @@ describe('MessagesList', () => {
       }),
     ];
 
-    render(
-      <MessagesList
-        messages={messages}
-        unreadCount={0}
-        onOpen={jest.fn()}
-        onArchive={jest.fn()}
-        filter="active"
-        onFilterChange={jest.fn()}
-      />
-    );
+    renderList({ messages });
 
     // Should render without crashing and content should be in the document
     expect(screen.getByText(longName)).toBeInTheDocument();
