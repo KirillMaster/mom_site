@@ -1,0 +1,305 @@
+6,1,25,3,6,"AdminController::AdminController@25-30@backend/MomSite.API\Controllers\AdminController.cs","backend/MomSite.API\Controllers\AdminController.cs","AdminController::AdminController","AdminController::AdminController( ApplicationDbContext context , IImageService imageService , IConfiguration configuration)",25,30
+10,4,79,1,12,"AdminController::Login@34-45@backend/MomSite.API\Controllers\AdminController.cs","backend/MomSite.API\Controllers\AdminController.cs","AdminController::Login","AdminController::Login( [ FromBody ] LoginDto loginDto)",34,45
+7,1,32,0,7,"AdminController::GetCategories@48-54@backend/MomSite.API\Controllers\AdminController.cs","backend/MomSite.API\Controllers\AdminController.cs","AdminController::GetCategories","AdminController::GetCategories()",48,54
+15,1,89,1,17,"AdminController::CreateCategory@57-73@backend/MomSite.API\Controllers\AdminController.cs","backend/MomSite.API\Controllers\AdminController.cs","AdminController::CreateCategory","AdminController::CreateCategory( [ FromBody ] CreateCategoryDto dto)",57,73
+16,2,99,2,18,"AdminController::UpdateCategory@76-93@backend/MomSite.API\Controllers\AdminController.cs","backend/MomSite.API\Controllers\AdminController.cs","AdminController::UpdateCategory","AdminController::UpdateCategory( int id , [ FromBody ] UpdateCategoryDto dto)",76,93
+13,2,85,1,16,"AdminController::GetPageContent@102-117@backend/MomSite.API\Controllers\AdminController.cs","backend/MomSite.API\Controllers\AdminController.cs","AdminController::GetPageContent","AdminController::GetPageContent( [ FromQuery ] string ? pageKey = null)",102,117
+20,4,128,2,23,"AdminController::UpdatePageContent@121-143@backend/MomSite.API\Controllers\AdminController.cs","backend/MomSite.API\Controllers\AdminController.cs","AdminController::UpdatePageContent","AdminController::UpdatePageContent( int id , [ FromForm ] UpdatePageContentDto dto)",121,143
+38,6,254,1,46,"AdminController::CreatePageContent@147-192@backend/MomSite.API\Controllers\AdminController.cs","backend/MomSite.API\Controllers\AdminController.cs","AdminController::CreatePageContent","AdminController::CreatePageContent( [ FromForm ] CreatePageContentDto dto)",147,192
+9,1,63,0,9,"AdminController::GetVideos@195-203@backend/MomSite.API\Controllers\AdminController.cs","backend/MomSite.API\Controllers\AdminController.cs","AdminController::GetVideos","AdminController::GetVideos()",195,203
+24,2,150,1,28,"AdminController::CreateVideo@207-234@backend/MomSite.API\Controllers\AdminController.cs","backend/MomSite.API\Controllers\AdminController.cs","AdminController::CreateVideo","AdminController::CreateVideo( [ FromForm ] CreateVideoDto dto)",207,234
+27,10,209,2,32,"AdminController::UpdateVideo@238-269@backend/MomSite.API\Controllers\AdminController.cs","backend/MomSite.API\Controllers\AdminController.cs","AdminController::UpdateVideo","AdminController::UpdateVideo( int id , [ FromForm ] UpdateVideoDto dto)",238,269
+13,3,74,1,15,"AdminController::DeleteVideo@272-286@backend/MomSite.API\Controllers\AdminController.cs","backend/MomSite.API\Controllers\AdminController.cs","AdminController::DeleteVideo","AdminController::DeleteVideo( int id)",272,286
+7,1,32,0,7,"AdminController::GetVideoCategories@289-295@backend/MomSite.API\Controllers\AdminController.cs","backend/MomSite.API\Controllers\AdminController.cs","AdminController::GetVideoCategories","AdminController::GetVideoCategories()",289,295
+14,1,83,1,16,"AdminController::CreateVideoCategory@298-313@backend/MomSite.API\Controllers\AdminController.cs","backend/MomSite.API\Controllers\AdminController.cs","AdminController::CreateVideoCategory","AdminController::CreateVideoCategory( [ FromBody ] CreateVideoCategoryDto dto)",298,313
+15,6,107,2,17,"AdminController::UpdateVideoCategory@316-332@backend/MomSite.API\Controllers\AdminController.cs","backend/MomSite.API\Controllers\AdminController.cs","AdminController::UpdateVideoCategory","AdminController::UpdateVideoCategory( int id , [ FromBody ] UpdateVideoCategoryDto dto)",316,332
+11,2,54,1,13,"AdminController::DeleteVideoCategory@335-347@backend/MomSite.API\Controllers\AdminController.cs","backend/MomSite.API\Controllers\AdminController.cs","AdminController::DeleteVideoCategory","AdminController::DeleteVideoCategory( int id)",335,347
+11,2,54,1,13,"AdminController::DeleteCategory@350-362@backend/MomSite.API\Controllers\AdminController.cs","backend/MomSite.API\Controllers\AdminController.cs","AdminController::DeleteCategory","AdminController::DeleteCategory( int id)",350,362
+18,2,118,0,21,"AdminController::GenerateJwtToken@364-384@backend/MomSite.API\Controllers\AdminController.cs","backend/MomSite.API\Controllers\AdminController.cs","AdminController::GenerateJwtToken","AdminController::GenerateJwtToken()",364,384
+5,1,18,2,5,"ArtworksController::ArtworksController@20-24@backend/MomSite.API\Controllers\ArtworksController.cs","backend/MomSite.API\Controllers\ArtworksController.cs","ArtworksController::ArtworksController","ArtworksController::ArtworksController( ApplicationDbContext context , IImageService imageService)",20,24
+39,2,215,1,44,"ArtworksController::GetArtworks@27-70@backend/MomSite.API\Controllers\ArtworksController.cs","backend/MomSite.API\Controllers\ArtworksController.cs","ArtworksController::GetArtworks","ArtworksController::GetArtworks( [ FromQuery ] int ? categoryId = null)",27,70
+11,2,54,1,13,"ArtworksController::GetArtwork@73-85@backend/MomSite.API\Controllers\ArtworksController.cs","backend/MomSite.API\Controllers\ArtworksController.cs","ArtworksController::GetArtwork","ArtworksController::GetArtwork( int id)",73,85
+26,2,174,1,36,"ArtworksController::CreateArtwork@89-124@backend/MomSite.API\Controllers\ArtworksController.cs","backend/MomSite.API\Controllers\ArtworksController.cs","ArtworksController::CreateArtwork","ArtworksController::CreateArtwork( [ FromForm ] CreateArtworkDto dto)",89,124
+27,3,194,2,35,"ArtworksController::UpdateArtwork@128-162@backend/MomSite.API\Controllers\ArtworksController.cs","backend/MomSite.API\Controllers\ArtworksController.cs","ArtworksController::UpdateArtwork","ArtworksController::UpdateArtwork( int id , [ FromForm ] UpdateArtworkDto dto)",128,162
+13,2,72,1,16,"ArtworksController::DeleteArtwork@165-180@backend/MomSite.API\Controllers\ArtworksController.cs","backend/MomSite.API\Controllers\ArtworksController.cs","ArtworksController::DeleteArtwork","ArtworksController::DeleteArtwork( int id)",165,180
+5,1,18,2,5,"PublicController::PublicController@17-21@backend/MomSite.API\Controllers\PublicController.cs","backend/MomSite.API\Controllers\PublicController.cs","PublicController::PublicController","PublicController::PublicController( ApplicationDbContext context , IEmailService emailService)",17,21
+75,27,478,0,87,"PublicController::GetHomeData@24-110@backend/MomSite.API\Controllers\PublicController.cs","backend/MomSite.API\Controllers\PublicController.cs","PublicController::GetHomeData","PublicController::GetHomeData()",24,110
+30,10,237,1,37,"PublicController::GetGalleryData@113-149@backend/MomSite.API\Controllers\PublicController.cs","backend/MomSite.API\Controllers\PublicController.cs","PublicController::GetGalleryData","PublicController::GetGalleryData( [ FromQuery ] int ? categoryId = null)",113,149
+30,25,265,0,37,"PublicController::GetAboutData@152-188@backend/MomSite.API\Controllers\PublicController.cs","backend/MomSite.API\Controllers\PublicController.cs","PublicController::GetAboutData","PublicController::GetAboutData()",152,188
+76,28,467,0,92,"PublicController::GetContactsData@191-282@backend/MomSite.API\Controllers\PublicController.cs","backend/MomSite.API\Controllers\PublicController.cs","PublicController::GetContactsData","PublicController::GetContactsData()",191,282
+23,2,169,1,27,"PublicController::GetVideosData@285-311@backend/MomSite.API\Controllers\PublicController.cs","backend/MomSite.API\Controllers\PublicController.cs","PublicController::GetVideosData","PublicController::GetVideosData( [ FromQuery ] int ? categoryId = null)",285,311
+59,12,292,0,69,"PublicController::GetFooterData@314-382@backend/MomSite.API\Controllers\PublicController.cs","backend/MomSite.API\Controllers\PublicController.cs","PublicController::GetFooterData","PublicController::GetFooterData()",314,382
+16,3,69,1,18,"PublicController::SendContactMessage@385-402@backend/MomSite.API\Controllers\PublicController.cs","backend/MomSite.API\Controllers\PublicController.cs","PublicController::SendContactMessage","PublicController::SendContactMessage( [ FromBody ] ContactMessageDto message)",385,402
+4,1,10,0,4,"PublicController::HealthCheck@405-408@backend/MomSite.API\Controllers\PublicController.cs","backend/MomSite.API\Controllers\PublicController.cs","PublicController::HealthCheck","PublicController::HealthCheck()",405,408
+4,1,11,1,4,"TestController::TestController@12-15@backend/MomSite.API\Controllers\TestController.cs","backend/MomSite.API\Controllers\TestController.cs","TestController::TestController","MomSite.API.Controllers::TestController::TestController( IS3Service s3Service)",12,15
+20,2,132,0,21,"TestController::GetS3Status@18-38@backend/MomSite.API\Controllers\TestController.cs","backend/MomSite.API\Controllers\TestController.cs","TestController::GetS3Status","MomSite.API.Controllers::TestController::GetS3Status()",18,38
+12,2,51,0,12,"TestController::TestS3Connection@41-52@backend/MomSite.API\Controllers\TestController.cs","backend/MomSite.API\Controllers\TestController.cs","TestController::TestS3Connection","MomSite.API.Controllers::TestController::TestS3Connection()",41,52
+17,2,84,1,17,"MappingExtensions::ToDto@7-23@backend/MomSite.API\DTOs\MappingExtensions.cs","backend/MomSite.API\DTOs\MappingExtensions.cs","MappingExtensions::ToDto","MomSite.API.DTOs::MappingExtensions::ToDto( this Artwork artwork)",7,23
+12,1,49,1,12,"MappingExtensions::ToDto@25-36@backend/MomSite.API\DTOs\MappingExtensions.cs","backend/MomSite.API\DTOs\MappingExtensions.cs","MappingExtensions::ToDto","MomSite.API.DTOs::MappingExtensions::ToDto( this Category category)",25,36
+12,1,50,1,12,"MappingExtensions::ToDto@40-51@backend/MomSite.API\DTOs\MappingExtensions.cs","backend/MomSite.API\DTOs\MappingExtensions.cs","MappingExtensions::ToDto","MomSite.API.DTOs::MappingExtensions::ToDto( this Video video)",40,51
+10,1,37,1,10,"MappingExtensions::ToDto@53-62@backend/MomSite.API\DTOs\MappingExtensions.cs","backend/MomSite.API\DTOs\MappingExtensions.cs","MappingExtensions::ToDto","MomSite.API.DTOs::MappingExtensions::ToDto( this VideoCategory videoCategory)",53,62
+12,1,49,1,12,"MappingExtensions::ToPublicDto@64-75@backend/MomSite.API\DTOs\MappingExtensions.cs","backend/MomSite.API\DTOs\MappingExtensions.cs","MappingExtensions::ToPublicDto","MomSite.API.DTOs::MappingExtensions::ToPublicDto( this Video video)",64,75
+15,2,70,1,15,"MappingExtensions::ToAdminDto@77-91@backend/MomSite.API\DTOs\MappingExtensions.cs","backend/MomSite.API\DTOs\MappingExtensions.cs","MappingExtensions::ToAdminDto","MomSite.API.DTOs::MappingExtensions::ToAdminDto( this Video video)",77,91
+11,1,58,1,11,"MappingExtensions::ToPublicDto@93-103@backend/MomSite.API\DTOs\MappingExtensions.cs","backend/MomSite.API\DTOs\MappingExtensions.cs","MappingExtensions::ToPublicDto","MomSite.API.DTOs::MappingExtensions::ToPublicDto( this VideoCategory videoCategory)",93,103
+5,1,21,2,5,"EmailService::EmailService@19-23@backend/MomSite.API\Services\EmailService.cs","backend/MomSite.API\Services\EmailService.cs","EmailService::EmailService","MomSite.API.Services::EmailService::EmailService( IConfiguration configuration , ILogger<EmailService> logger)",19,23
+49,9,275,1,61,"EmailService::SendContactMessageAsync@25-85@backend/MomSite.API\Services\EmailService.cs","backend/MomSite.API\Services\EmailService.cs","EmailService::SendContactMessageAsync","MomSite.API.Services::EmailService::SendContactMessageAsync( ContactMessageDto message)",25,85
+29,1,116,1,31,"if@56-86@backend/MomSite.API\Program.cs","backend/MomSite.API\Program.cs","if","if( builder . Environment . IsDevelopment())",56,86
+4,1,18,1,4,"if@125-128@backend/MomSite.API\Program.cs","backend/MomSite.API\Program.cs","if","if( string . IsNullOrEmpty(jwtSecret))",125,128
+5,1,24,1,5,"if@156-160@backend/MomSite.API\Program.cs","backend/MomSite.API\Program.cs","if","if( app . Environment . IsDevelopment())",156,160
+4,1,19,1,4,"if@163-166@backend/MomSite.API\Program.cs","backend/MomSite.API\Program.cs","if","if( ! app . Environment . IsDevelopment())",163,166
+4,1,19,1,4,"if@191-194@backend/MomSite.API\Program.cs","backend/MomSite.API\Program.cs","if","if( app . Environment . IsDevelopment())",191,194
+9,1,44,1,9,"if@204-212@backend/MomSite.API\Program.cs","backend/MomSite.API\Program.cs","if","if( app . Environment . IsDevelopment())",204,212
+5,1,37,1,5,"using@223-227@backend/MomSite.API\Program.cs","backend/MomSite.API\Program.cs","using","using( var scope = app . Services . CreateScope())",223,227
+192,1,2917,1,206,"InitialCreate::Up@15-220@backend/MomSite.Infrastructure\Data\Migrations\20250808130107_InitialCreate.cs","backend/MomSite.Infrastructure\Data\Migrations\20250808130107_InitialCreate.cs","InitialCreate::Up","MomSite.Infrastructure.Data.Migrations::InitialCreate::Up( MigrationBuilder migrationBuilder)",15,220
+15,1,61,1,20,"InitialCreate::Down@223-242@backend/MomSite.Infrastructure\Data\Migrations\20250808130107_InitialCreate.cs","backend/MomSite.Infrastructure\Data\Migrations\20250808130107_InitialCreate.cs","InitialCreate::Down","MomSite.Infrastructure.Data.Migrations::InitialCreate::Down( MigrationBuilder migrationBuilder)",223,242
+421,1,2995,1,508,"InitialCreate::BuildTargetModel@19-526@backend/MomSite.Infrastructure\Data\Migrations\20250808130107_InitialCreate.Designer.cs","backend/MomSite.Infrastructure\Data\Migrations\20250808130107_InitialCreate.Designer.cs","InitialCreate::BuildTargetModel","MomSite.Infrastructure.Data.Migrations::InitialCreate::BuildTargetModel( ModelBuilder modelBuilder)",19,526
+121,1,1734,1,140,"AddVideoPathToVideo::Up@12-151@backend/MomSite.Infrastructure\Data\Migrations\20250808205512_AddVideoPathToVideo.cs","backend/MomSite.Infrastructure\Data\Migrations\20250808205512_AddVideoPathToVideo.cs","AddVideoPathToVideo::Up","MomSite.Infrastructure.Data.Migrations::AddVideoPathToVideo::Up( MigrationBuilder migrationBuilder)",12,151
+121,1,1734,1,140,"AddVideoPathToVideo::Down@154-293@backend/MomSite.Infrastructure\Data\Migrations\20250808205512_AddVideoPathToVideo.cs","backend/MomSite.Infrastructure\Data\Migrations\20250808205512_AddVideoPathToVideo.cs","AddVideoPathToVideo::Down","MomSite.Infrastructure.Data.Migrations::AddVideoPathToVideo::Down( MigrationBuilder migrationBuilder)",154,293
+421,1,2995,1,508,"AddVideoPathToVideo::BuildTargetModel@19-526@backend/MomSite.Infrastructure\Data\Migrations\20250808205512_AddVideoPathToVideo.Designer.cs","backend/MomSite.Infrastructure\Data\Migrations\20250808205512_AddVideoPathToVideo.Designer.cs","AddVideoPathToVideo::BuildTargetModel","MomSite.Infrastructure.Data.Migrations::AddVideoPathToVideo::BuildTargetModel( ModelBuilder modelBuilder)",19,526
+101,1,1456,1,117,"RemoveReviewsTable::Up@15-131@backend/MomSite.Infrastructure\Data\Migrations\20250810154240_RemoveReviewsTable.cs","backend/MomSite.Infrastructure\Data\Migrations\20250810154240_RemoveReviewsTable.cs","RemoveReviewsTable::Up","MomSite.Infrastructure.Data.Migrations::RemoveReviewsTable::Up( MigrationBuilder migrationBuilder)",15,131
+125,1,1867,1,142,"RemoveReviewsTable::Down@134-275@backend/MomSite.Infrastructure\Data\Migrations\20250810154240_RemoveReviewsTable.cs","backend/MomSite.Infrastructure\Data\Migrations\20250810154240_RemoveReviewsTable.cs","RemoveReviewsTable::Down","MomSite.Infrastructure.Data.Migrations::RemoveReviewsTable::Down( MigrationBuilder migrationBuilder)",134,275
+363,1,2570,1,439,"RemoveReviewsTable::BuildTargetModel@19-457@backend/MomSite.Infrastructure\Data\Migrations\20250810154240_RemoveReviewsTable.Designer.cs","backend/MomSite.Infrastructure\Data\Migrations\20250810154240_RemoveReviewsTable.Designer.cs","RemoveReviewsTable::BuildTargetModel","MomSite.Infrastructure.Data.Migrations::RemoveReviewsTable::BuildTargetModel( ModelBuilder modelBuilder)",19,457
+107,1,1636,1,123,"AddHomeBiographyAndAuthorPhoto_NewIds::Up@14-136@backend/MomSite.Infrastructure\Data\Migrations\20250810174739_AddHomeBiographyAndAuthorPhoto_NewIds.cs","backend/MomSite.Infrastructure\Data\Migrations\20250810174739_AddHomeBiographyAndAuthorPhoto_NewIds.cs","AddHomeBiographyAndAuthorPhoto_NewIds::Up","MomSite.Infrastructure.Data.Migrations::AddHomeBiographyAndAuthorPhoto_NewIds::Up( MigrationBuilder migrationBuilder)",14,136
+107,1,1481,1,124,"AddHomeBiographyAndAuthorPhoto_NewIds::Down@139-262@backend/MomSite.Infrastructure\Data\Migrations\20250810174739_AddHomeBiographyAndAuthorPhoto_NewIds.cs","backend/MomSite.Infrastructure\Data\Migrations\20250810174739_AddHomeBiographyAndAuthorPhoto_NewIds.cs","AddHomeBiographyAndAuthorPhoto_NewIds::Down","MomSite.Infrastructure.Data.Migrations::AddHomeBiographyAndAuthorPhoto_NewIds::Down( MigrationBuilder migrationBuilder)",139,262
+385,1,2740,1,461,"AddHomeBiographyAndAuthorPhoto_NewIds::BuildTargetModel@19-479@backend/MomSite.Infrastructure\Data\Migrations\20250810174739_AddHomeBiographyAndAuthorPhoto_NewIds.Designer.cs","backend/MomSite.Infrastructure\Data\Migrations\20250810174739_AddHomeBiographyAndAuthorPhoto_NewIds.Designer.cs","AddHomeBiographyAndAuthorPhoto_NewIds::BuildTargetModel","MomSite.Infrastructure.Data.Migrations::AddHomeBiographyAndAuthorPhoto_NewIds::BuildTargetModel( ModelBuilder modelBuilder)",19,479
+132,1,2752,1,150,"AddFooterContent::Up@14-163@backend/MomSite.Infrastructure\Data\Migrations\20250811161941_AddFooterContent.cs","backend/MomSite.Infrastructure\Data\Migrations\20250811161941_AddFooterContent.cs","AddFooterContent::Up","MomSite.Infrastructure.Data.Migrations::AddFooterContent::Up( MigrationBuilder migrationBuilder)",14,163
+171,1,1882,1,203,"AddFooterContent::Down@166-368@backend/MomSite.Infrastructure\Data\Migrations\20250811161941_AddFooterContent.cs","backend/MomSite.Infrastructure\Data\Migrations\20250811161941_AddFooterContent.cs","AddFooterContent::Down","MomSite.Infrastructure.Data.Migrations::AddFooterContent::Down( MigrationBuilder migrationBuilder)",166,368
+550,1,4015,1,626,"AddFooterContent::BuildTargetModel@19-644@backend/MomSite.Infrastructure\Data\Migrations\20250811161941_AddFooterContent.Designer.cs","backend/MomSite.Infrastructure\Data\Migrations\20250811161941_AddFooterContent.Designer.cs","AddFooterContent::BuildTargetModel","MomSite.Infrastructure.Data.Migrations::AddFooterContent::BuildTargetModel( ModelBuilder modelBuilder)",19,644
+9,1,35,1,13,"AddShowOnHomeToCategory::Up@11-23@backend/MomSite.Infrastructure\Data\Migrations\20260427114540_AddShowOnHomeToCategory.cs","backend/MomSite.Infrastructure\Data\Migrations\20260427114540_AddShowOnHomeToCategory.cs","AddShowOnHomeToCategory::Up","MomSite.Infrastructure.Data.Migrations::AddShowOnHomeToCategory::Up( MigrationBuilder migrationBuilder)",11,23
+6,1,20,1,6,"AddShowOnHomeToCategory::Down@26-31@backend/MomSite.Infrastructure\Data\Migrations\20260427114540_AddShowOnHomeToCategory.cs","backend/MomSite.Infrastructure\Data\Migrations\20260427114540_AddShowOnHomeToCategory.cs","AddShowOnHomeToCategory::Down","MomSite.Infrastructure.Data.Migrations::AddShowOnHomeToCategory::Down( MigrationBuilder migrationBuilder)",26,31
+552,1,4030,1,629,"AddShowOnHomeToCategory::BuildTargetModel@19-647@backend/MomSite.Infrastructure\Data\Migrations\20260427114540_AddShowOnHomeToCategory.Designer.cs","backend/MomSite.Infrastructure\Data\Migrations\20260427114540_AddShowOnHomeToCategory.Designer.cs","AddShowOnHomeToCategory::BuildTargetModel","MomSite.Infrastructure.Data.Migrations::AddShowOnHomeToCategory::BuildTargetModel( ModelBuilder modelBuilder)",19,647
+3,1,7,1,11,"RemoveSeedData::Up@11-21@backend/MomSite.Infrastructure\Data\Migrations\20260427120500_RemoveSeedData.cs","backend/MomSite.Infrastructure\Data\Migrations\20260427120500_RemoveSeedData.cs","RemoveSeedData::Up","MomSite.Infrastructure.Data.Migrations::RemoveSeedData::Up( MigrationBuilder migrationBuilder)",11,21
+3,1,7,1,6,"RemoveSeedData::Down@24-29@backend/MomSite.Infrastructure\Data\Migrations\20260427120500_RemoveSeedData.cs","backend/MomSite.Infrastructure\Data\Migrations\20260427120500_RemoveSeedData.cs","RemoveSeedData::Down","MomSite.Infrastructure.Data.Migrations::RemoveSeedData::Down( MigrationBuilder migrationBuilder)",24,29
+192,1,1234,1,269,"RemoveSeedData::BuildTargetModel@19-287@backend/MomSite.Infrastructure\Data\Migrations\20260427120500_RemoveSeedData.Designer.cs","backend/MomSite.Infrastructure\Data\Migrations\20260427120500_RemoveSeedData.Designer.cs","RemoveSeedData::BuildTargetModel","MomSite.Infrastructure.Data.Migrations::RemoveSeedData::BuildTargetModel( ModelBuilder modelBuilder)",19,287
+192,1,1234,1,269,"ApplicationDbContextModelSnapshot::BuildModel@16-284@backend/MomSite.Infrastructure\Data\Migrations\ApplicationDbContextModelSnapshot.cs","backend/MomSite.Infrastructure\Data\Migrations\ApplicationDbContextModelSnapshot.cs","ApplicationDbContextModelSnapshot::BuildModel","MomSite.Infrastructure.Data.Migrations::ApplicationDbContextModelSnapshot::BuildModel( ModelBuilder modelBuilder)",16,284
+3,1,15,1,3,"ApplicationDbContext::ApplicationDbContext@9-11@backend/MomSite.Infrastructure\Data\ApplicationDbContext.cs","backend/MomSite.Infrastructure\Data\ApplicationDbContext.cs","ApplicationDbContext::ApplicationDbContext","ApplicationDbContext::ApplicationDbContext( DbContextOptions<ApplicationDbContext> options)",9,11
+53,1,578,1,71,"ApplicationDbContext::OnModelCreating@20-90@backend/MomSite.Infrastructure\Data\ApplicationDbContext.cs","backend/MomSite.Infrastructure\Data\ApplicationDbContext.cs","ApplicationDbContext::OnModelCreating","ApplicationDbContext::OnModelCreating( ModelBuilder modelBuilder)",20,90
+5,1,16,0,5,"ApplicationDbContext::SaveChanges@92-96@backend/MomSite.Infrastructure\Data\ApplicationDbContext.cs","backend/MomSite.Infrastructure\Data\ApplicationDbContext.cs","ApplicationDbContext::SaveChanges","ApplicationDbContext::SaveChanges()",92,96
+5,1,22,1,5,"ApplicationDbContext::SaveChangesAsync@98-102@backend/MomSite.Infrastructure\Data\ApplicationDbContext.cs","backend/MomSite.Infrastructure\Data\ApplicationDbContext.cs","ApplicationDbContext::SaveChangesAsync","ApplicationDbContext::SaveChangesAsync( CancellationToken cancellationToken = default)",98,102
+14,3,65,0,14,"ApplicationDbContext::LogChanges@104-117@backend/MomSite.Infrastructure\Data\ApplicationDbContext.cs","backend/MomSite.Infrastructure\Data\ApplicationDbContext.cs","ApplicationDbContext::LogChanges","ApplicationDbContext::LogChanges()",104,117
+21,2,213,1,25,"ImageService::ImageService@32-56@backend/MomSite.Infrastructure\Services\ImageService.cs","backend/MomSite.Infrastructure\Services\ImageService.cs","ImageService::ImageService","ImageService::ImageService( IS3Service s3Service)",32,56
+32,4,207,2,40,"ImageService::SaveImageAsync@58-97@backend/MomSite.Infrastructure\Services\ImageService.cs","backend/MomSite.Infrastructure\Services\ImageService.cs","ImageService::SaveImageAsync","ImageService::SaveImageAsync( IFormFile file , string folder)",58,97
+99,9,670,3,143,"ImageService::CreateThumbnailAsync@99-241@backend/MomSite.Infrastructure\Services\ImageService.cs","backend/MomSite.Infrastructure\Services\ImageService.cs","ImageService::CreateThumbnailAsync","ImageService::CreateThumbnailAsync( string imagePath , int width , int height)",99,241
+74,7,512,2,107,"ImageService::AddWatermarkAsync@243-349@backend/MomSite.Infrastructure\Services\ImageService.cs","backend/MomSite.Infrastructure\Services\ImageService.cs","ImageService::AddWatermarkAsync","ImageService::AddWatermarkAsync( string imagePath , string watermarkText)",243,349
+58,6,410,3,79,"ImageService::AddCornerWatermark@351-429@backend/MomSite.Infrastructure\Services\ImageService.cs","backend/MomSite.Infrastructure\Services\ImageService.cs","ImageService::AddCornerWatermark","ImageService::AddCornerWatermark( Image image , int width , int height)",351,429
+18,1,156,6,25,"ImageService::CreateFallbackWatermark@431-455@backend/MomSite.Infrastructure\Services\ImageService.cs","backend/MomSite.Infrastructure\Services\ImageService.cs","ImageService::CreateFallbackWatermark","ImageService::CreateFallbackWatermark( Image image , int width , int height , string watermarkText , float fontSize , float padding)",431,455
+11,1,53,1,11,"ImageService::GetImageFormat@457-467@backend/MomSite.Infrastructure\Services\ImageService.cs","backend/MomSite.Infrastructure\Services\ImageService.cs","ImageService::GetImageFormat","ImageService::GetImageFormat( string extension)",457,467
+17,4,82,1,21,"ImageService::DeleteImage@469-489@backend/MomSite.Infrastructure\Services\ImageService.cs","backend/MomSite.Infrastructure\Services\ImageService.cs","ImageService::DeleteImage","ImageService::DeleteImage( string imagePath)",469,489
+109,11,645,3,141,"ImageService::CreateVideoThumbnailAsync@491-631@backend/MomSite.Infrastructure\Services\ImageService.cs","backend/MomSite.Infrastructure\Services\ImageService.cs","ImageService::CreateVideoThumbnailAsync","ImageService::CreateVideoThumbnailAsync( string videoPath , int width , int height)",491,631
+4,1,8,0,4,"ImageService::GetWatermarkText@633-636@backend/MomSite.Infrastructure\Services\ImageService.cs","backend/MomSite.Infrastructure\Services\ImageService.cs","ImageService::GetWatermarkText","ImageService::GetWatermarkText()",633,636
+27,6,217,1,32,"S3Service::S3Service@25-56@backend/MomSite.Infrastructure\Services\S3Service.cs","backend/MomSite.Infrastructure\Services\S3Service.cs","S3Service::S3Service","MomSite.Infrastructure.Services::S3Service::S3Service( IConfiguration configuration)",25,56
+20,2,70,0,23,"S3Service::TestConnectionAsync@58-80@backend/MomSite.Infrastructure\Services\S3Service.cs","backend/MomSite.Infrastructure\Services\S3Service.cs","S3Service::TestConnectionAsync","MomSite.Infrastructure.Services::S3Service::TestConnectionAsync()",58,80
+27,2,122,3,34,"S3Service::UploadFileAsync@82-115@backend/MomSite.Infrastructure\Services\S3Service.cs","backend/MomSite.Infrastructure\Services\S3Service.cs","S3Service::UploadFileAsync","MomSite.Infrastructure.Services::S3Service::UploadFileAsync( Stream fileStream , string fileName , string contentType)",82,115
+21,3,74,1,24,"S3Service::DeleteFileAsync@117-140@backend/MomSite.Infrastructure\Services\S3Service.cs","backend/MomSite.Infrastructure\Services\S3Service.cs","S3Service::DeleteFileAsync","MomSite.Infrastructure.Services::S3Service::DeleteFileAsync( string fileUrl)",117,140
+4,1,11,1,5,"S3Service::GetFileUrlAsync@142-146@backend/MomSite.Infrastructure\Services\S3Service.cs","backend/MomSite.Infrastructure\Services\S3Service.cs","S3Service::GetFileUrlAsync","MomSite.Infrastructure.Services::S3Service::GetFileUrlAsync( string fileName)",142,146
+22,3,78,1,23,"S3Service::FileExistsAsync@148-170@backend/MomSite.Infrastructure\Services\S3Service.cs","backend/MomSite.Infrastructure\Services\S3Service.cs","S3Service::FileExistsAsync","MomSite.Infrastructure.Services::S3Service::FileExistsAsync( string fileName)",148,170
+15,3,53,1,18,"S3Service::ExtractKeyFromUrl@172-189@backend/MomSite.Infrastructure\Services\S3Service.cs","backend/MomSite.Infrastructure\Services\S3Service.cs","S3Service::ExtractKeyFromUrl","MomSite.Infrastructure.Services::S3Service::ExtractKeyFromUrl( string fileUrl)",172,189
+21,2,80,1,24,"S3Service::GetObjectAsync@191-214@backend/MomSite.Infrastructure\Services\S3Service.cs","backend/MomSite.Infrastructure\Services\S3Service.cs","S3Service::GetObjectAsync","MomSite.Infrastructure.Services::S3Service::GetObjectAsync( string key)",191,214
+129,3,353,1,138,"AboutClientPage@10-147@frontend/app\about\AboutClientPage.tsx","frontend/app\about\AboutClientPage.tsx","AboutClientPage","AboutClientPage ( aboutData aboutData AboutData )",10,147
+48,5,162,0,53,"generateMetadata@9-61@frontend/app\about\page.tsx","frontend/app\about\page.tsx","generateMetadata","generateMetadata ( )",9,61
+40,4,135,0,43,"AboutPage@61-103@frontend/app\about\page.tsx","frontend/app\about\page.tsx","AboutPage","AboutPage ( )",61,103
+28,5,142,1,28,"openModal@32-59@frontend/app\admin\artworks\page.tsx","frontend/app\admin\artworks\page.tsx","openModal","openModal ( artwork )",32,59
+12,1,45,0,12,"closeModal@61-72@frontend/app\admin\artworks\page.tsx","frontend/app\admin\artworks\page.tsx","closeModal","closeModal ( )",61,72
+8,2,70,1,8,"handleChange@74-81@frontend/app\admin\artworks\page.tsx","frontend/app\admin\artworks\page.tsx","handleChange","handleChange ( e React ChangeEvent )",74,81
+10,3,84,1,10,"handleImageChange@83-92@frontend/app\admin\artworks\page.tsx","frontend/app\admin\artworks\page.tsx","handleImageChange","handleImageChange ( e React ChangeEvent )",83,92
+26,5,171,1,29,"handleSubmit@94-122@frontend/app\admin\artworks\page.tsx","frontend/app\admin\artworks\page.tsx","handleSubmit","handleSubmit ( e React FormEvent )",94,122
+10,3,47,1,11,"handleDelete@124-134@frontend/app\admin\artworks\page.tsx","frontend/app\admin\artworks\page.tsx","handleDelete","handleDelete ( id )",124,134
+1,1,4,0,1,"(anonymous)@148-148@frontend/app\admin\artworks\page.tsx","frontend/app\admin\artworks\page.tsx","(anonymous)","(anonymous)",148,148
+1,1,4,0,1,"(anonymous)@165-165@frontend/app\admin\artworks\page.tsx","frontend/app\admin\artworks\page.tsx","(anonymous)","(anonymous)",165,165
+1,1,5,0,1,"(anonymous)@195-195@frontend/app\admin\artworks\page.tsx","frontend/app\admin\artworks\page.tsx","(anonymous)","(anonymous)",195,195
+1,1,7,0,1,"(anonymous)@197-197@frontend/app\admin\artworks\page.tsx","frontend/app\admin\artworks\page.tsx","(anonymous)","(anonymous)",197,197
+25,7,92,0,25,"(anonymous)@178-202@frontend/app\admin\artworks\page.tsx","frontend/app\admin\artworks\page.tsx","(anonymous)","(anonymous)",178,202
+184,15,580,0,319,"AdminArtworksPage@12-330@frontend/app\admin\artworks\page.tsx","frontend/app\admin\artworks\page.tsx","AdminArtworksPage","AdminArtworksPage ( )",12,330
+4,1,22,1,4,"handleOpenModal@20-23@frontend/app\admin\categories\page.tsx","frontend/app\admin\categories\page.tsx","handleOpenModal","handleOpenModal ( category Category null null )",20,23
+4,1,15,0,4,"handleCloseModal@25-28@frontend/app\admin\categories\page.tsx","frontend/app\admin\categories\page.tsx","handleCloseModal","handleCloseModal ( )",25,28
+5,2,26,1,5,"handleDelete@32-36@frontend/app\admin\categories\page.tsx","frontend/app\admin\categories\page.tsx","handleDelete","handleDelete ( id )",32,36
+1,1,4,0,1,"(anonymous)@54-54@frontend/app\admin\categories\page.tsx","frontend/app\admin\categories\page.tsx","(anonymous)","(anonymous)",54,54
+1,1,5,0,1,"(anonymous)@78-78@frontend/app\admin\categories\page.tsx","frontend/app\admin\categories\page.tsx","(anonymous)","(anonymous)",78,78
+1,1,7,0,1,"(anonymous)@78-78@frontend/app\admin\categories\page.tsx","frontend/app\admin\categories\page.tsx","(anonymous)","(anonymous)",78,78
+15,4,68,0,15,"(anonymous)@67-81@frontend/app\admin\categories\page.tsx","frontend/app\admin\categories\page.tsx","(anonymous)","(anonymous)",67,81
+44,8,207,0,84,"CategoriesManagementPage@12-95@frontend/app\admin\categories\page.tsx","frontend/app\admin\categories\page.tsx","CategoriesManagementPage","CategoriesManagementPage ( )",12,95
+1,1,21,3,1,"CategoryModal@97-97@frontend/app\admin\categories\page.tsx","frontend/app\admin\categories\page.tsx","CategoryModal","CategoryModal ( category , onClose category Category null , onClose ( )",97,97
+9,2,53,1,9,"handleSubmit@110-118@frontend/app\admin\categories\page.tsx","frontend/app\admin\categories\page.tsx","handleSubmit","handleSubmit ( e React FormEvent )",110,118
+1,1,16,0,1,"(anonymous)@125-125@frontend/app\admin\categories\page.tsx","frontend/app\admin\categories\page.tsx","(anonymous)","(anonymous)",125,125
+1,1,16,0,1,"(anonymous)@139-139@frontend/app\admin\categories\page.tsx","frontend/app\admin\categories\page.tsx","(anonymous)","(anonymous)",139,139
+45,18,237,0,58,"(anonymous)@97-154@frontend/app\admin\categories\page.tsx","frontend/app\admin\categories\page.tsx","(anonymous)","(anonymous)",97,154
+3,1,6,0,3,"(anonymous)@91-93@frontend/app\admin\pages\page.tsx","frontend/app\admin\pages\page.tsx","(anonymous)","(anonymous)",91,93
+1,1,8,0,1,"(anonymous)@112-112@frontend/app\admin\pages\page.tsx","frontend/app\admin\pages\page.tsx","(anonymous)","(anonymous)",112,112
+10,8,86,0,10,"(anonymous)@111-120@frontend/app\admin\pages\page.tsx","frontend/app\admin\pages\page.tsx","(anonymous)","(anonymous)",111,120
+22,4,117,0,34,"fetchPageContent@95-128@frontend/app\admin\pages\page.tsx","frontend/app\admin\pages\page.tsx","fetchPageContent","fetchPageContent ( )",95,128
+4,1,13,0,4,"(anonymous)@131-134@frontend/app\admin\pages\page.tsx","frontend/app\admin\pages\page.tsx","(anonymous)","(anonymous)",131,134
+3,1,18,2,6,"handleInputChange@130-135@frontend/app\admin\pages\page.tsx","frontend/app\admin\pages\page.tsx","handleInputChange","handleInputChange ( key , value )",130,135
+4,1,13,0,4,"(anonymous)@138-141@frontend/app\admin\pages\page.tsx","frontend/app\admin\pages\page.tsx","(anonymous)","(anonymous)",138,141
+3,1,20,2,6,"handleFileChange@137-142@frontend/app\admin\pages\page.tsx","frontend/app\admin\pages\page.tsx","handleFileChange","handleFileChange ( key , file File null )",137,142
+10,4,67,2,10,"checkResponse@148-157@frontend/app\admin\pages\page.tsx","frontend/app\admin\pages\page.tsx","checkResponse","checkResponse ( response Response , fieldLabel )",148,157
+1,1,1,0,1,"(anonymous)@161-161@frontend/app\admin\pages\page.tsx","frontend/app\admin\pages\page.tsx","(anonymous)","(anonymous)",161,161
+1,1,8,0,1,"(anonymous)@161-161@frontend/app\admin\pages\page.tsx","frontend/app\admin\pages\page.tsx","(anonymous)","(anonymous)",161,161
+1,1,8,0,1,"(anonymous)@165-165@frontend/app\admin\pages\page.tsx","frontend/app\admin\pages\page.tsx","(anonymous)","(anonymous)",165,165
+1,1,4,0,1,"(anonymous)@193-193@frontend/app\admin\pages\page.tsx","frontend/app\admin\pages\page.tsx","(anonymous)","(anonymous)",193,193
+1,1,10,0,1,"(anonymous)@194-194@frontend/app\admin\pages\page.tsx","frontend/app\admin\pages\page.tsx","(anonymous)","(anonymous)",194,194
+1,1,8,0,1,"(anonymous)@201-201@frontend/app\admin\pages\page.tsx","frontend/app\admin\pages\page.tsx","(anonymous)","(anonymous)",201,201
+75,18,605,0,96,"saveContent@144-239@frontend/app\admin\pages\page.tsx","frontend/app\admin\pages\page.tsx","saveContent","saveContent ( )",144,239
+3,1,6,0,3,"(anonymous)@247-249@frontend/app\admin\pages\page.tsx","frontend/app\admin\pages\page.tsx","(anonymous)","(anonymous)",247,249
+1,1,5,0,1,"(anonymous)@271-271@frontend/app\admin\pages\page.tsx","frontend/app\admin\pages\page.tsx","(anonymous)","(anonymous)",271,271
+13,1,14,0,13,"(anonymous)@270-282@frontend/app\admin\pages\page.tsx","frontend/app\admin\pages\page.tsx","(anonymous)","(anonymous)",270,282
+104,13,418,0,265,"PageContentManagement@83-347@frontend/app\admin\pages\page.tsx","frontend/app\admin\pages\page.tsx","PageContentManagement","PageContentManagement ( )",83,347
+1,2,22,0,1,"(anonymous)@28-28@frontend/app\admin\video-categories\page.tsx","frontend/app\admin\video-categories\page.tsx","(anonymous)","(anonymous)",28,28
+4,1,32,1,4,"handleInputChange@26-29@frontend/app\admin\video-categories\page.tsx","frontend/app\admin\video-categories\page.tsx","handleInputChange","handleInputChange ( e React ChangeEvent )",26,29
+11,2,78,1,11,"handleAddEditCategory@31-41@frontend/app\admin\video-categories\page.tsx","frontend/app\admin\video-categories\page.tsx","handleAddEditCategory","handleAddEditCategory ( e React FormEvent )",31,41
+9,3,46,1,9,"openEditModal@43-51@frontend/app\admin\video-categories\page.tsx","frontend/app\admin\video-categories\page.tsx","openEditModal","openEditModal ( category )",43,51
+5,2,25,1,5,"handleDeleteCategory@53-57@frontend/app\admin\video-categories\page.tsx","frontend/app\admin\video-categories\page.tsx","handleDeleteCategory","handleDeleteCategory ( id )",53,57
+1,1,29,0,1,"(anonymous)@71-71@frontend/app\admin\video-categories\page.tsx","frontend/app\admin\video-categories\page.tsx","(anonymous)","(anonymous)",71,71
+81,12,316,0,157,"VideoCategoryManagementPageContent@12-168@frontend/app\admin\video-categories\page.tsx","frontend/app\admin\video-categories\page.tsx","VideoCategoryManagementPageContent","VideoCategoryManagementPageContent ( )",12,168
+5,1,11,0,5,"VideoCategoryManagementPage@171-175@frontend/app\admin\video-categories\page.tsx","frontend/app\admin\video-categories\page.tsx","VideoCategoryManagementPage","VideoCategoryManagementPage ( )",171,175
+1,1,11,0,1,"(anonymous)@36-36@frontend/app\admin\videos\page.tsx","frontend/app\admin\videos\page.tsx","(anonymous)","(anonymous)",36,36
+1,3,26,0,1,"(anonymous)@38-38@frontend/app\admin\videos\page.tsx","frontend/app\admin\videos\page.tsx","(anonymous)","(anonymous)",38,38
+1,3,26,0,1,"(anonymous)@41-41@frontend/app\admin\videos\page.tsx","frontend/app\admin\videos\page.tsx","(anonymous)","(anonymous)",41,41
+14,5,103,1,14,"handleInputChange@30-43@frontend/app\admin\videos\page.tsx","frontend/app\admin\videos\page.tsx","handleInputChange","handleInputChange ( e React ChangeEvent )",30,43
+19,3,165,1,20,"handleAddEditVideo@45-64@frontend/app\admin\videos\page.tsx","frontend/app\admin\videos\page.tsx","handleAddEditVideo","handleAddEditVideo ( e React FormEvent )",45,64
+11,3,56,1,11,"openEditModal@66-76@frontend/app\admin\videos\page.tsx","frontend/app\admin\videos\page.tsx","openEditModal","openEditModal ( video )",66,76
+5,2,25,1,5,"handleDeleteVideo@78-82@frontend/app\admin\videos\page.tsx","frontend/app\admin\videos\page.tsx","handleDeleteVideo","handleDeleteVideo ( id )",78,82
+1,1,37,0,1,"(anonymous)@96-96@frontend/app\admin\videos\page.tsx","frontend/app\admin\videos\page.tsx","(anonymous)","(anonymous)",96,96
+3,1,16,0,3,"(anonymous)@194-196@frontend/app\admin\videos\page.tsx","frontend/app\admin\videos\page.tsx","(anonymous)","(anonymous)",194,196
+127,19,489,0,217,"VideoManagementPageContent@13-229@frontend/app\admin\videos\page.tsx","frontend/app\admin\videos\page.tsx","VideoManagementPageContent","VideoManagementPageContent ( )",13,229
+5,1,11,0,5,"VideoManagementPage@232-236@frontend/app\admin\videos\page.tsx","frontend/app\admin\videos\page.tsx","VideoManagementPage","VideoManagementPage ( )",232,236
+3,1,10,0,3,"onSuccess@34-36@frontend/app\admin\page.tsx","frontend/app\admin\page.tsx","onSuccess","onSuccess ( )",34,36
+6,1,28,1,8,"handleLogin@31-38@frontend/app\admin\page.tsx","frontend/app\admin\page.tsx","handleLogin","handleLogin ( e React FormEvent )",31,38
+5,1,29,0,5,"handleLogout@40-44@frontend/app\admin\page.tsx","frontend/app\admin\page.tsx","handleLogout","handleLogout ( )",40,44
+5,2,19,0,5,"(anonymous)@46-50@frontend/app\admin\page.tsx","frontend/app\admin\page.tsx","(anonymous)","(anonymous)",46,50
+1,1,16,0,1,"(anonymous)@74-74@frontend/app\admin\page.tsx","frontend/app\admin\page.tsx","(anonymous)","(anonymous)",74,74
+234,14,750,0,270,"AdminPage@11-280@frontend/app\admin\page.tsx","frontend/app\admin\page.tsx","AdminPage","AdminPage ( )",11,280
+1,1,13,0,1,"(anonymous)@28-28@frontend/app\contacts\ContactsClientPage.tsx","frontend/app\contacts\ContactsClientPage.tsx","(anonymous)","(anonymous)",28,28
+4,1,32,1,4,"handleInputChange@26-29@frontend/app\contacts\ContactsClientPage.tsx","frontend/app\contacts\ContactsClientPage.tsx","handleInputChange","handleInputChange ( e React ChangeEvent )",26,29
+17,2,94,1,18,"handleSubmit@31-48@frontend/app\contacts\ContactsClientPage.tsx","frontend/app\contacts\ContactsClientPage.tsx","handleSubmit","handleSubmit ( e React FormEvent )",31,48
+17,1,81,0,17,"(anonymous)@318-334@frontend/app\contacts\ContactsClientPage.tsx","frontend/app\contacts\ContactsClientPage.tsx","(anonymous)","(anonymous)",318,334
+272,11,1040,1,329,"ContactsClientPage@16-344@frontend/app\contacts\ContactsClientPage.tsx","frontend/app\contacts\ContactsClientPage.tsx","ContactsClientPage","ContactsClientPage ( contactsData contactsData ContactsData )",16,344
+45,3,147,0,49,"generateMetadata@8-56@frontend/app\contacts\page.tsx","frontend/app\contacts\page.tsx","generateMetadata","generateMetadata ( )",8,56
+54,2,188,0,57,"ContactsPage@56-112@frontend/app\contacts\page.tsx","frontend/app\contacts\page.tsx","ContactsPage","ContactsPage ( )",56,112
+1,1,6,0,1,"(anonymous)@20-20@frontend/app\gallery\GalleryClientPage.tsx","frontend/app\gallery\GalleryClientPage.tsx","(anonymous)","(anonymous)",20,20
+7,1,36,1,7,"formatPrice@23-29@frontend/app\gallery\GalleryClientPage.tsx","frontend/app\gallery\GalleryClientPage.tsx","formatPrice","formatPrice ( price )",23,29
+7,5,50,1,7,"getPriceDisplay@31-37@frontend/app\gallery\GalleryClientPage.tsx","frontend/app\gallery\GalleryClientPage.tsx","getPriceDisplay","getPriceDisplay ( artwork )",31,37
+3,1,21,1,3,"openLightbox@39-41@frontend/app\gallery\GalleryClientPage.tsx","frontend/app\gallery\GalleryClientPage.tsx","openLightbox","openLightbox ( index )",39,41
+1,1,7,0,1,"(anonymous)@82-82@frontend/app\gallery\GalleryClientPage.tsx","frontend/app\gallery\GalleryClientPage.tsx","(anonymous)","(anonymous)",82,82
+13,1,18,0,13,"(anonymous)@81-93@frontend/app\gallery\GalleryClientPage.tsx","frontend/app\gallery\GalleryClientPage.tsx","(anonymous)","(anonymous)",81,93
+1,1,5,0,1,"(anonymous)@126-126@frontend/app\gallery\GalleryClientPage.tsx","frontend/app\gallery\GalleryClientPage.tsx","(anonymous)","(anonymous)",126,126
+42,4,125,0,43,"(anonymous)@110-152@frontend/app\gallery\GalleryClientPage.tsx","frontend/app\gallery\GalleryClientPage.tsx","(anonymous)","(anonymous)",110,152
+5,1,25,0,5,"(anonymous)@171-175@frontend/app\gallery\GalleryClientPage.tsx","frontend/app\gallery\GalleryClientPage.tsx","(anonymous)","(anonymous)",171,175
+93,9,362,1,176,"GalleryClientPage@11-186@frontend/app\gallery\GalleryClientPage.tsx","frontend/app\gallery\GalleryClientPage.tsx","GalleryClientPage","GalleryClientPage ( galleryData galleryData GalleryData )",11,186
+20,2,92,0,27,"(anonymous)@47-73@frontend/app\gallery\page.tsx","frontend/app\gallery\page.tsx","(anonymous)","(anonymous)",47,73
+32,2,105,0,61,"GalleryPage@26-86@frontend/app\gallery\page.tsx","frontend/app\gallery\page.tsx","GalleryPage","GalleryPage ( )",26,86
+1,1,5,0,1,"(anonymous)@13-13@frontend/app\test-lightbox\page.tsx","frontend/app\test-lightbox\page.tsx","(anonymous)","(anonymous)",13,13
+1,1,5,0,1,"(anonymous)@14-14@frontend/app\test-lightbox\page.tsx","frontend/app\test-lightbox\page.tsx","(anonymous)","(anonymous)",14,14
+17,1,54,0,18,"TestLightboxPage@7-24@frontend/app\test-lightbox\page.tsx","frontend/app\test-lightbox\page.tsx","TestLightboxPage","TestLightboxPage ( )",7,24
+45,3,147,0,49,"generateMetadata@8-56@frontend/app\videos\page.tsx","frontend/app\videos\page.tsx","generateMetadata","generateMetadata ( )",8,56
+22,4,121,0,22,"(anonymous)@77-98@frontend/app\videos\page.tsx","frontend/app\videos\page.tsx","(anonymous)","(anonymous)",77,98
+32,2,105,0,56,"VideosPage@56-111@frontend/app\videos\page.tsx","frontend/app\videos\page.tsx","VideosPage","VideosPage ( )",56,111
+1,1,8,0,1,"(anonymous)@21-21@frontend/app\videos\VideosClientPage.tsx","frontend/app\videos\VideosClientPage.tsx","(anonymous)","(anonymous)",21,21
+4,1,19,0,4,"(anonymous)@19-22@frontend/app\videos\VideosClientPage.tsx","frontend/app\videos\VideosClientPage.tsx","(anonymous)","(anonymous)",19,22
+1,1,6,0,1,"(anonymous)@25-25@frontend/app\videos\VideosClientPage.tsx","frontend/app\videos\VideosClientPage.tsx","(anonymous)","(anonymous)",25,25
+12,5,73,0,16,"(anonymous)@17-32@frontend/app\videos\VideosClientPage.tsx","frontend/app\videos\VideosClientPage.tsx","(anonymous)","(anonymous)",17,32
+3,1,13,1,3,"openVideo@34-36@frontend/app\videos\VideosClientPage.tsx","frontend/app\videos\VideosClientPage.tsx","openVideo","openVideo ( video )",34,36
+3,1,10,0,3,"closeVideo@38-40@frontend/app\videos\VideosClientPage.tsx","frontend/app\videos\VideosClientPage.tsx","closeVideo","closeVideo ( )",38,40
+1,1,7,0,1,"(anonymous)@82-82@frontend/app\videos\VideosClientPage.tsx","frontend/app\videos\VideosClientPage.tsx","(anonymous)","(anonymous)",82,82
+13,1,18,0,13,"(anonymous)@81-93@frontend/app\videos\VideosClientPage.tsx","frontend/app\videos\VideosClientPage.tsx","(anonymous)","(anonymous)",81,93
+41,6,132,0,42,"(anonymous)@110-151@frontend/app\videos\VideosClientPage.tsx","frontend/app\videos\VideosClientPage.tsx","(anonymous)","(anonymous)",110,151
+15,1,115,0,15,"(anonymous)@171-185@frontend/app\videos\VideosClientPage.tsx","frontend/app\videos\VideosClientPage.tsx","(anonymous)","(anonymous) ( ( )",171,185
+155,9,531,1,254,"VideosClientPage@12-265@frontend/app\videos\VideosClientPage.tsx","frontend/app\videos\VideosClientPage.tsx","VideosClientPage","VideosClientPage ( videosData videosData VideosData )",12,265
+22,2,94,0,22,"(anonymous)@112-133@frontend/app\HomeClientPage.tsx","frontend/app\HomeClientPage.tsx","(anonymous)","(anonymous)",112,133
+246,11,1165,1,283,"HomeClientPage@13-295@frontend/app\HomeClientPage.tsx","frontend/app\HomeClientPage.tsx","HomeClientPage","HomeClientPage ( homeData homeData HomeData )",13,295
+66,1,158,2,66,"RootLayout@67-132@frontend/app\layout.tsx","frontend/app\layout.tsx","RootLayout","RootLayout ( children , children React ReactNode )",67,132
+70,7,255,0,76,"generateMetadata@10-85@frontend/app\page.tsx","frontend/app\page.tsx","generateMetadata","generateMetadata ( )",10,85
+18,2,45,0,20,"HomePage@85-104@frontend/app\page.tsx","frontend/app\page.tsx","HomePage","HomePage ( )",85,104
+10,1,37,0,10,"robots@3-12@frontend/app\robots.ts","frontend/app\robots.ts","robots","robots ( )",3,12
+6,2,43,0,6,"(anonymous)@44-49@frontend/app\sitemap.ts","frontend/app\sitemap.ts","(anonymous)","(anonymous)",44,49
+6,1,36,0,6,"(anonymous)@53-58@frontend/app\sitemap.ts","frontend/app\sitemap.ts","(anonymous)","(anonymous)",53,58
+45,4,255,0,62,"sitemap@4-65@frontend/app\sitemap.ts","frontend/app\sitemap.ts","sitemap","sitemap ( )",4,65
+148,24,241,0,151,"Footer@6-156@frontend/components\Footer.tsx","frontend/components\Footer.tsx","Footer","Footer ( )",6,156
+13,3,56,1,14,"LayoutContent@7-20@frontend/components\LayoutContent.tsx","frontend/components\LayoutContent.tsx","LayoutContent","LayoutContent ( children children React ReactNode )",7,20
+6,1,36,0,6,"(anonymous)@5-10@frontend/components\LoadingSpinner.test.tsx","frontend/components\LoadingSpinner.test.tsx","(anonymous)","(anonymous)",5,10
+6,1,36,0,6,"(anonymous)@12-17@frontend/components\LoadingSpinner.test.tsx","frontend/components\LoadingSpinner.test.tsx","(anonymous)","(anonymous)",12,17
+6,1,36,0,6,"(anonymous)@19-24@frontend/components\LoadingSpinner.test.tsx","frontend/components\LoadingSpinner.test.tsx","(anonymous)","(anonymous)",19,24
+7,1,48,0,7,"(anonymous)@26-32@frontend/components\LoadingSpinner.test.tsx","frontend/components\LoadingSpinner.test.tsx","(anonymous)","(anonymous)",26,32
+6,1,42,0,30,"(anonymous)@4-33@frontend/components\LoadingSpinner.test.tsx","frontend/components\LoadingSpinner.test.tsx","(anonymous)","(anonymous)",4,33
+17,1,82,2,18,"LoadingSpinner@8-25@frontend/components\LoadingSpinner.tsx","frontend/components\LoadingSpinner.tsx","LoadingSpinner","LoadingSpinner ( size , className LoadingSpinnerProps )",8,25
+3,1,14,0,3,"handleScroll@15-17@frontend/components\Navigation.tsx","frontend/components\Navigation.tsx","handleScroll","handleScroll ( )",15,17
+1,1,9,0,1,"(anonymous)@20-20@frontend/components\Navigation.tsx","frontend/components\Navigation.tsx","(anonymous)","(anonymous)",20,20
+5,1,21,0,8,"(anonymous)@14-21@frontend/components\Navigation.tsx","frontend/components\Navigation.tsx","(anonymous)","(anonymous)",14,21
+6,2,29,1,6,"isActive@31-36@frontend/components\Navigation.tsx","frontend/components\Navigation.tsx","isActive","isActive ( href )",31,36
+21,2,62,0,21,"(anonymous)@57-77@frontend/components\Navigation.tsx","frontend/components\Navigation.tsx","(anonymous)","(anonymous)",57,77
+1,1,6,0,1,"(anonymous)@80-80@frontend/components\Navigation.tsx","frontend/components\Navigation.tsx","(anonymous)","(anonymous)",80,80
+76,3,252,0,112,"Navigation@9-120@frontend/components\Navigation.tsx","frontend/components\Navigation.tsx","Navigation","Navigation ( )",9,120
+7,1,23,1,7,"Providers@6-12@frontend/components\Providers.tsx","frontend/components\Providers.tsx","Providers","Providers ( children children React ReactNode )",6,12
+16,1,62,0,16,"(anonymous)@87-102@frontend/components\StructuredData.tsx","frontend/components\StructuredData.tsx","(anonymous)","(anonymous)",87,102
+103,39,483,1,126,"StructuredData@7-132@frontend/components\StructuredData.tsx","frontend/components\StructuredData.tsx","StructuredData","StructuredData ( homeData StructuredDataProps )",7,132
+9,4,60,1,12,"getImageUrl@7-18@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","getImageUrl","getImageUrl ( path )",7,18
+4,1,25,0,4,"getHomeData@22-25@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","getHomeData","getHomeData ( )",22,25
+6,1,26,0,6,"useHomeData@27-32@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useHomeData","useHomeData ( )",27,32
+8,5,67,0,8,"getGalleryData@34-41@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","getGalleryData","getGalleryData ( )",34,41
+6,1,26,0,6,"useGalleryData@43-48@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useGalleryData","useGalleryData ( )",43,48
+7,3,48,0,7,"getAboutData@50-56@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","getAboutData","getAboutData ( )",50,56
+6,1,26,0,6,"useAboutData@58-63@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useAboutData","useAboutData ( )",58,63
+4,1,25,0,4,"getContactsData@65-68@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","getContactsData","getContactsData ( )",65,68
+6,1,26,0,6,"useContactsData@70-75@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useContactsData","useContactsData ( )",70,75
+4,1,25,0,4,"getFooterData@77-80@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","getFooterData","getFooterData ( )",77,80
+6,1,22,0,6,"useFooterData@82-87@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useFooterData","useFooterData ( )",82,87
+8,3,51,0,8,"getVideosData@89-96@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","getVideosData","getVideosData ( )",89,96
+6,1,26,0,6,"useVideosData@98-103@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useVideosData","useVideosData ( )",98,103
+4,1,26,1,4,"sendContactMessage@105-108@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","sendContactMessage","sendContactMessage ( message ContactMessage )",105,108
+4,1,32,2,4,"mutationFn@116-119@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","mutationFn","mutationFn ( username , password )",116,119
+4,1,21,1,4,"onSuccess@120-123@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","onSuccess","onSuccess ( data )",120,123
+9,1,47,0,15,"useLogin@111-125@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useLogin","useLogin ( )",111,125
+4,1,21,0,4,"queryFn@130-133@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","queryFn","queryFn ( )",130,133
+6,1,29,0,9,"useCategories@127-135@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useCategories","useCategories ( )",127,135
+4,1,24,1,4,"mutationFn@140-143@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","mutationFn","mutationFn ( data )",140,143
+4,1,31,0,4,"onSuccess@144-147@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","onSuccess","onSuccess ( )",144,147
+7,1,50,0,13,"useCreateCategory@137-149@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useCreateCategory","useCreateCategory ( )",137,149
+4,1,33,2,4,"mutationFn@154-157@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","mutationFn","mutationFn ( id , data )",154,157
+4,1,31,0,4,"onSuccess@158-161@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","onSuccess","onSuccess ( )",158,161
+7,1,62,0,13,"useUpdateCategory@151-163@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useUpdateCategory","useUpdateCategory ( )",151,163
+3,1,19,1,3,"mutationFn@168-170@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","mutationFn","mutationFn ( id )",168,170
+3,1,18,0,3,"onSuccess@171-173@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","onSuccess","onSuccess ( )",171,173
+7,1,34,0,11,"useDeleteCategory@165-175@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useDeleteCategory","useDeleteCategory ( )",165,175
+4,3,39,0,4,"queryFn@180-183@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","queryFn","queryFn ( )",180,183
+6,1,29,0,9,"useArtworks@177-185@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useArtworks","useArtworks ( )",177,185
+8,1,36,1,8,"mutationFn@190-197@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","mutationFn","mutationFn ( data )",190,197
+4,1,31,0,4,"onSuccess@198-201@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","onSuccess","onSuccess ( )",198,201
+7,1,34,0,17,"useCreateArtwork@187-203@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useCreateArtwork","useCreateArtwork ( )",187,203
+8,1,45,2,8,"mutationFn@208-215@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","mutationFn","mutationFn ( id , data )",208,215
+4,1,31,0,4,"onSuccess@216-219@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","onSuccess","onSuccess ( )",216,219
+7,1,42,0,17,"useUpdateArtwork@205-221@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useUpdateArtwork","useUpdateArtwork ( )",205,221
+3,1,19,1,3,"mutationFn@226-228@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","mutationFn","mutationFn ( id )",226,228
+4,1,31,0,4,"onSuccess@229-232@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","onSuccess","onSuccess ( )",229,232
+7,1,34,0,12,"useDeleteArtwork@223-234@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useDeleteArtwork","useDeleteArtwork ( )",223,234
+4,1,26,0,4,"queryFn@247-250@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","queryFn","queryFn ( )",247,250
+6,1,34,1,9,"usePageContent@244-252@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","usePageContent","usePageContent ( pageKey )",244,252
+8,1,45,2,8,"mutationFn@257-264@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","mutationFn","mutationFn ( id , data )",257,264
+3,1,21,1,4,"onSuccess@265-268@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","onSuccess","onSuccess ( , variables )",265,268
+7,1,42,0,17,"useUpdatePageContent@254-270@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useUpdatePageContent","useUpdatePageContent ( )",254,270
+8,1,36,1,8,"mutationFn@275-282@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","mutationFn","mutationFn ( data )",275,282
+3,1,18,0,3,"onSuccess@283-285@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","onSuccess","onSuccess ( )",283,285
+7,1,34,0,16,"useCreatePageContent@272-287@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useCreatePageContent","useCreatePageContent ( )",272,287
+4,1,21,0,4,"queryFn@292-295@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","queryFn","queryFn ( )",292,295
+6,1,29,0,9,"useVideos@289-297@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useVideos","useVideos ( )",289,297
+8,1,36,1,8,"mutationFn@302-309@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","mutationFn","mutationFn ( data )",302,309
+4,1,31,0,4,"onSuccess@310-313@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","onSuccess","onSuccess ( )",310,313
+7,1,34,0,17,"useCreateVideo@299-315@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useCreateVideo","useCreateVideo ( )",299,315
+8,1,45,2,8,"mutationFn@320-327@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","mutationFn","mutationFn ( id , data )",320,327
+4,1,31,0,4,"onSuccess@328-331@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","onSuccess","onSuccess ( )",328,331
+7,1,42,0,17,"useUpdateVideo@317-333@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useUpdateVideo","useUpdateVideo ( )",317,333
+3,1,19,1,3,"mutationFn@338-340@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","mutationFn","mutationFn ( id )",338,340
+4,1,31,0,4,"onSuccess@341-344@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","onSuccess","onSuccess ( )",341,344
+7,1,34,0,12,"useDeleteVideo@335-346@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useDeleteVideo","useDeleteVideo ( )",335,346
+4,2,27,0,4,"queryFn@351-354@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","queryFn","queryFn ( )",351,354
+6,1,29,0,9,"useVideoCategories@348-356@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useVideoCategories","useVideoCategories ( )",348,356
+4,1,24,1,4,"mutationFn@361-364@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","mutationFn","mutationFn ( data )",361,364
+5,1,44,0,5,"onSuccess@365-369@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","onSuccess","onSuccess ( )",365,369
+7,1,46,0,14,"useCreateVideoCategory@358-371@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useCreateVideoCategory","useCreateVideoCategory ( )",358,371
+4,1,33,2,4,"mutationFn@376-379@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","mutationFn","mutationFn ( id , data )",376,379
+4,1,31,0,4,"onSuccess@380-383@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","onSuccess","onSuccess ( )",380,383
+7,1,58,0,13,"useUpdateVideoCategory@373-385@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useUpdateVideoCategory","useUpdateVideoCategory ( )",373,385
+3,1,19,1,3,"mutationFn@391-393@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","mutationFn","mutationFn ( id )",391,393
+4,1,31,0,4,"onSuccess@394-397@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","onSuccess","onSuccess ( )",394,397
+7,1,34,0,12,"useDeleteVideoCategory@388-399@frontend/hooks\useApi.ts","frontend/hooks\useApi.ts","useDeleteVideoCategory","useDeleteVideoCategory ( )",388,399
+4,1,35,1,4,"setToken@15-18@frontend/lib\api.ts","frontend/lib\api.ts","setToken","setToken ( token )",15,18
+6,2,25,0,6,"getToken@19-24@frontend/lib\api.ts","frontend/lib\api.ts","getToken","getToken ( )",19,24
+4,1,24,0,4,"removeToken@25-28@frontend/lib\api.ts","frontend/lib\api.ts","removeToken","removeToken ( )",25,28

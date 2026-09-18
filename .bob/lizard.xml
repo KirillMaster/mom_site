@@ -1,0 +1,2177 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="https://raw.githubusercontent.com/terryyin/lizard/master/lizard.xsl"?>
+<cppncss>
+	<measure type="Function">
+		<labels>
+			<label>Nr.</label>
+			<label>NCSS</label>
+			<label>CCN</label>
+		</labels>
+		<item name="AdminController::AdminController(...) at backend/MomSite.API\Controllers\AdminController.cs:25">
+			<value>1</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="AdminController::Login(...) at backend/MomSite.API\Controllers\AdminController.cs:34">
+			<value>2</value>
+			<value>10</value>
+			<value>4</value>
+		</item>
+		<item name="AdminController::GetCategories(...) at backend/MomSite.API\Controllers\AdminController.cs:48">
+			<value>3</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<item name="AdminController::CreateCategory(...) at backend/MomSite.API\Controllers\AdminController.cs:57">
+			<value>4</value>
+			<value>15</value>
+			<value>1</value>
+		</item>
+		<item name="AdminController::UpdateCategory(...) at backend/MomSite.API\Controllers\AdminController.cs:76">
+			<value>5</value>
+			<value>16</value>
+			<value>2</value>
+		</item>
+		<item name="AdminController::GetPageContent(...) at backend/MomSite.API\Controllers\AdminController.cs:102">
+			<value>6</value>
+			<value>13</value>
+			<value>2</value>
+		</item>
+		<item name="AdminController::UpdatePageContent(...) at backend/MomSite.API\Controllers\AdminController.cs:121">
+			<value>7</value>
+			<value>20</value>
+			<value>4</value>
+		</item>
+		<item name="AdminController::CreatePageContent(...) at backend/MomSite.API\Controllers\AdminController.cs:147">
+			<value>8</value>
+			<value>38</value>
+			<value>6</value>
+		</item>
+		<item name="AdminController::GetVideos(...) at backend/MomSite.API\Controllers\AdminController.cs:195">
+			<value>9</value>
+			<value>9</value>
+			<value>1</value>
+		</item>
+		<item name="AdminController::CreateVideo(...) at backend/MomSite.API\Controllers\AdminController.cs:207">
+			<value>10</value>
+			<value>24</value>
+			<value>2</value>
+		</item>
+		<item name="AdminController::UpdateVideo(...) at backend/MomSite.API\Controllers\AdminController.cs:238">
+			<value>11</value>
+			<value>27</value>
+			<value>10</value>
+		</item>
+		<item name="AdminController::DeleteVideo(...) at backend/MomSite.API\Controllers\AdminController.cs:272">
+			<value>12</value>
+			<value>13</value>
+			<value>3</value>
+		</item>
+		<item name="AdminController::GetVideoCategories(...) at backend/MomSite.API\Controllers\AdminController.cs:289">
+			<value>13</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<item name="AdminController::CreateVideoCategory(...) at backend/MomSite.API\Controllers\AdminController.cs:298">
+			<value>14</value>
+			<value>14</value>
+			<value>1</value>
+		</item>
+		<item name="AdminController::UpdateVideoCategory(...) at backend/MomSite.API\Controllers\AdminController.cs:316">
+			<value>15</value>
+			<value>15</value>
+			<value>6</value>
+		</item>
+		<item name="AdminController::DeleteVideoCategory(...) at backend/MomSite.API\Controllers\AdminController.cs:335">
+			<value>16</value>
+			<value>11</value>
+			<value>2</value>
+		</item>
+		<item name="AdminController::DeleteCategory(...) at backend/MomSite.API\Controllers\AdminController.cs:350">
+			<value>17</value>
+			<value>11</value>
+			<value>2</value>
+		</item>
+		<item name="AdminController::GenerateJwtToken(...) at backend/MomSite.API\Controllers\AdminController.cs:364">
+			<value>18</value>
+			<value>18</value>
+			<value>2</value>
+		</item>
+		<average label="NCSS" value="15.222222222222221"/>
+		<average label="CCN" value="2.8333333333333335"/>
+		<item name="ArtworksController::ArtworksController(...) at backend/MomSite.API\Controllers\ArtworksController.cs:20">
+			<value>19</value>
+			<value>5</value>
+			<value>1</value>
+		</item>
+		<item name="ArtworksController::GetArtworks(...) at backend/MomSite.API\Controllers\ArtworksController.cs:27">
+			<value>20</value>
+			<value>39</value>
+			<value>2</value>
+		</item>
+		<item name="ArtworksController::GetArtwork(...) at backend/MomSite.API\Controllers\ArtworksController.cs:73">
+			<value>21</value>
+			<value>11</value>
+			<value>2</value>
+		</item>
+		<item name="ArtworksController::CreateArtwork(...) at backend/MomSite.API\Controllers\ArtworksController.cs:89">
+			<value>22</value>
+			<value>26</value>
+			<value>2</value>
+		</item>
+		<item name="ArtworksController::UpdateArtwork(...) at backend/MomSite.API\Controllers\ArtworksController.cs:128">
+			<value>23</value>
+			<value>27</value>
+			<value>3</value>
+		</item>
+		<item name="ArtworksController::DeleteArtwork(...) at backend/MomSite.API\Controllers\ArtworksController.cs:165">
+			<value>24</value>
+			<value>13</value>
+			<value>2</value>
+		</item>
+		<average label="NCSS" value="16.458333333333332"/>
+		<average label="CCN" value="2.625"/>
+		<item name="PublicController::PublicController(...) at backend/MomSite.API\Controllers\PublicController.cs:17">
+			<value>25</value>
+			<value>5</value>
+			<value>1</value>
+		</item>
+		<item name="PublicController::GetHomeData(...) at backend/MomSite.API\Controllers\PublicController.cs:24">
+			<value>26</value>
+			<value>75</value>
+			<value>27</value>
+		</item>
+		<item name="PublicController::GetGalleryData(...) at backend/MomSite.API\Controllers\PublicController.cs:113">
+			<value>27</value>
+			<value>30</value>
+			<value>10</value>
+		</item>
+		<item name="PublicController::GetAboutData(...) at backend/MomSite.API\Controllers\PublicController.cs:152">
+			<value>28</value>
+			<value>30</value>
+			<value>25</value>
+		</item>
+		<item name="PublicController::GetContactsData(...) at backend/MomSite.API\Controllers\PublicController.cs:191">
+			<value>29</value>
+			<value>76</value>
+			<value>28</value>
+		</item>
+		<item name="PublicController::GetVideosData(...) at backend/MomSite.API\Controllers\PublicController.cs:285">
+			<value>30</value>
+			<value>23</value>
+			<value>2</value>
+		</item>
+		<item name="PublicController::GetFooterData(...) at backend/MomSite.API\Controllers\PublicController.cs:314">
+			<value>31</value>
+			<value>59</value>
+			<value>12</value>
+		</item>
+		<item name="PublicController::SendContactMessage(...) at backend/MomSite.API\Controllers\PublicController.cs:385">
+			<value>32</value>
+			<value>16</value>
+			<value>3</value>
+		</item>
+		<item name="PublicController::HealthCheck(...) at backend/MomSite.API\Controllers\PublicController.cs:405">
+			<value>33</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="21.606060606060606"/>
+		<average label="CCN" value="5.212121212121212"/>
+		<item name="TestController::TestController(...) at backend/MomSite.API\Controllers\TestController.cs:12">
+			<value>34</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="TestController::GetS3Status(...) at backend/MomSite.API\Controllers\TestController.cs:18">
+			<value>35</value>
+			<value>20</value>
+			<value>2</value>
+		</item>
+		<item name="TestController::TestS3Connection(...) at backend/MomSite.API\Controllers\TestController.cs:41">
+			<value>36</value>
+			<value>12</value>
+			<value>2</value>
+		</item>
+		<average label="NCSS" value="20.805555555555557"/>
+		<average label="CCN" value="4.916666666666667"/>
+		<average label="NCSS" value="20.805555555555557"/>
+		<average label="CCN" value="4.916666666666667"/>
+		<average label="NCSS" value="20.805555555555557"/>
+		<average label="CCN" value="4.916666666666667"/>
+		<average label="NCSS" value="20.805555555555557"/>
+		<average label="CCN" value="4.916666666666667"/>
+		<item name="MappingExtensions::ToDto(...) at backend/MomSite.API\DTOs\MappingExtensions.cs:7">
+			<value>37</value>
+			<value>17</value>
+			<value>2</value>
+		</item>
+		<item name="MappingExtensions::ToDto(...) at backend/MomSite.API\DTOs\MappingExtensions.cs:25">
+			<value>38</value>
+			<value>12</value>
+			<value>1</value>
+		</item>
+		<item name="MappingExtensions::ToDto(...) at backend/MomSite.API\DTOs\MappingExtensions.cs:40">
+			<value>39</value>
+			<value>12</value>
+			<value>1</value>
+		</item>
+		<item name="MappingExtensions::ToDto(...) at backend/MomSite.API\DTOs\MappingExtensions.cs:53">
+			<value>40</value>
+			<value>10</value>
+			<value>1</value>
+		</item>
+		<item name="MappingExtensions::ToPublicDto(...) at backend/MomSite.API\DTOs\MappingExtensions.cs:64">
+			<value>41</value>
+			<value>12</value>
+			<value>1</value>
+		</item>
+		<item name="MappingExtensions::ToAdminDto(...) at backend/MomSite.API\DTOs\MappingExtensions.cs:77">
+			<value>42</value>
+			<value>15</value>
+			<value>2</value>
+		</item>
+		<item name="MappingExtensions::ToPublicDto(...) at backend/MomSite.API\DTOs\MappingExtensions.cs:93">
+			<value>43</value>
+			<value>11</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="19.488372093023255"/>
+		<average label="CCN" value="4.325581395348837"/>
+		<average label="NCSS" value="19.488372093023255"/>
+		<average label="CCN" value="4.325581395348837"/>
+		<average label="NCSS" value="19.488372093023255"/>
+		<average label="CCN" value="4.325581395348837"/>
+		<average label="NCSS" value="19.488372093023255"/>
+		<average label="CCN" value="4.325581395348837"/>
+		<average label="NCSS" value="19.488372093023255"/>
+		<average label="CCN" value="4.325581395348837"/>
+		<average label="NCSS" value="19.488372093023255"/>
+		<average label="CCN" value="4.325581395348837"/>
+		<average label="NCSS" value="19.488372093023255"/>
+		<average label="CCN" value="4.325581395348837"/>
+		<average label="NCSS" value="19.488372093023255"/>
+		<average label="CCN" value="4.325581395348837"/>
+		<average label="NCSS" value="19.488372093023255"/>
+		<average label="CCN" value="4.325581395348837"/>
+		<average label="NCSS" value="19.488372093023255"/>
+		<average label="CCN" value="4.325581395348837"/>
+		<item name="EmailService::EmailService(...) at backend/MomSite.API\Services\EmailService.cs:19">
+			<value>44</value>
+			<value>5</value>
+			<value>1</value>
+		</item>
+		<item name="EmailService::SendContactMessageAsync(...) at backend/MomSite.API\Services\EmailService.cs:25">
+			<value>45</value>
+			<value>49</value>
+			<value>9</value>
+		</item>
+		<average label="NCSS" value="19.822222222222223"/>
+		<average label="CCN" value="4.355555555555555"/>
+		<item name="if(...) at backend/MomSite.API\Program.cs:56">
+			<value>46</value>
+			<value>29</value>
+			<value>1</value>
+		</item>
+		<item name="if(...) at backend/MomSite.API\Program.cs:125">
+			<value>47</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="if(...) at backend/MomSite.API\Program.cs:156">
+			<value>48</value>
+			<value>5</value>
+			<value>1</value>
+		</item>
+		<item name="if(...) at backend/MomSite.API\Program.cs:163">
+			<value>49</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="if(...) at backend/MomSite.API\Program.cs:191">
+			<value>50</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="if(...) at backend/MomSite.API\Program.cs:204">
+			<value>51</value>
+			<value>9</value>
+			<value>1</value>
+		</item>
+		<item name="using(...) at backend/MomSite.API\Program.cs:223">
+			<value>52</value>
+			<value>5</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="18.307692307692307"/>
+		<average label="CCN" value="3.9038461538461537"/>
+		<average label="NCSS" value="18.307692307692307"/>
+		<average label="CCN" value="3.9038461538461537"/>
+		<average label="NCSS" value="18.307692307692307"/>
+		<average label="CCN" value="3.9038461538461537"/>
+		<average label="NCSS" value="18.307692307692307"/>
+		<average label="CCN" value="3.9038461538461537"/>
+		<average label="NCSS" value="18.307692307692307"/>
+		<average label="CCN" value="3.9038461538461537"/>
+		<average label="NCSS" value="18.307692307692307"/>
+		<average label="CCN" value="3.9038461538461537"/>
+		<average label="NCSS" value="18.307692307692307"/>
+		<average label="CCN" value="3.9038461538461537"/>
+		<average label="NCSS" value="18.307692307692307"/>
+		<average label="CCN" value="3.9038461538461537"/>
+		<average label="NCSS" value="18.307692307692307"/>
+		<average label="CCN" value="3.9038461538461537"/>
+		<average label="NCSS" value="18.307692307692307"/>
+		<average label="CCN" value="3.9038461538461537"/>
+		<item name="InitialCreate::Up(...) at backend/MomSite.Infrastructure\Data\Migrations\20250808130107_InitialCreate.cs:15">
+			<value>53</value>
+			<value>192</value>
+			<value>1</value>
+		</item>
+		<item name="InitialCreate::Down(...) at backend/MomSite.Infrastructure\Data\Migrations\20250808130107_InitialCreate.cs:223">
+			<value>54</value>
+			<value>15</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="21.462962962962962"/>
+		<average label="CCN" value="3.7962962962962963"/>
+		<item name="InitialCreate::BuildTargetModel(...) at backend/MomSite.Infrastructure\Data\Migrations\20250808130107_InitialCreate.Designer.cs:19">
+			<value>55</value>
+			<value>421</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="28.727272727272727"/>
+		<average label="CCN" value="3.7454545454545456"/>
+		<item name="AddVideoPathToVideo::Up(...) at backend/MomSite.Infrastructure\Data\Migrations\20250808205512_AddVideoPathToVideo.cs:12">
+			<value>56</value>
+			<value>121</value>
+			<value>1</value>
+		</item>
+		<item name="AddVideoPathToVideo::Down(...) at backend/MomSite.Infrastructure\Data\Migrations\20250808205512_AddVideoPathToVideo.cs:154">
+			<value>57</value>
+			<value>121</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="31.964912280701753"/>
+		<average label="CCN" value="3.6491228070175437"/>
+		<item name="AddVideoPathToVideo::BuildTargetModel(...) at backend/MomSite.Infrastructure\Data\Migrations\20250808205512_AddVideoPathToVideo.Designer.cs:19">
+			<value>58</value>
+			<value>421</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="38.672413793103445"/>
+		<average label="CCN" value="3.603448275862069"/>
+		<item name="RemoveReviewsTable::Up(...) at backend/MomSite.Infrastructure\Data\Migrations\20250810154240_RemoveReviewsTable.cs:15">
+			<value>59</value>
+			<value>101</value>
+			<value>1</value>
+		</item>
+		<item name="RemoveReviewsTable::Down(...) at backend/MomSite.Infrastructure\Data\Migrations\20250810154240_RemoveReviewsTable.cs:134">
+			<value>60</value>
+			<value>125</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="41.15"/>
+		<average label="CCN" value="3.5166666666666666"/>
+		<item name="RemoveReviewsTable::BuildTargetModel(...) at backend/MomSite.Infrastructure\Data\Migrations\20250810154240_RemoveReviewsTable.Designer.cs:19">
+			<value>61</value>
+			<value>363</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="46.42622950819672"/>
+		<average label="CCN" value="3.4754098360655736"/>
+		<item name="AddHomeBiographyAndAuthorPhoto_NewIds::Up(...) at backend/MomSite.Infrastructure\Data\Migrations\20250810174739_AddHomeBiographyAndAuthorPhoto_NewIds.cs:14">
+			<value>62</value>
+			<value>107</value>
+			<value>1</value>
+		</item>
+		<item name="AddHomeBiographyAndAuthorPhoto_NewIds::Down(...) at backend/MomSite.Infrastructure\Data\Migrations\20250810174739_AddHomeBiographyAndAuthorPhoto_NewIds.cs:139">
+			<value>63</value>
+			<value>107</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="48.34920634920635"/>
+		<average label="CCN" value="3.3968253968253967"/>
+		<item name="AddHomeBiographyAndAuthorPhoto_NewIds::BuildTargetModel(...) at backend/MomSite.Infrastructure\Data\Migrations\20250810174739_AddHomeBiographyAndAuthorPhoto_NewIds.Designer.cs:19">
+			<value>64</value>
+			<value>385</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="53.609375"/>
+		<average label="CCN" value="3.359375"/>
+		<item name="AddFooterContent::Up(...) at backend/MomSite.Infrastructure\Data\Migrations\20250811161941_AddFooterContent.cs:14">
+			<value>65</value>
+			<value>132</value>
+			<value>1</value>
+		</item>
+		<item name="AddFooterContent::Down(...) at backend/MomSite.Infrastructure\Data\Migrations\20250811161941_AddFooterContent.cs:166">
+			<value>66</value>
+			<value>171</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="56.57575757575758"/>
+		<average label="CCN" value="3.287878787878788"/>
+		<item name="AddFooterContent::BuildTargetModel(...) at backend/MomSite.Infrastructure\Data\Migrations\20250811161941_AddFooterContent.Designer.cs:19">
+			<value>67</value>
+			<value>550</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="63.940298507462686"/>
+		<average label="CCN" value="3.253731343283582"/>
+		<item name="AddShowOnHomeToCategory::Up(...) at backend/MomSite.Infrastructure\Data\Migrations\20260427114540_AddShowOnHomeToCategory.cs:11">
+			<value>68</value>
+			<value>9</value>
+			<value>1</value>
+		</item>
+		<item name="AddShowOnHomeToCategory::Down(...) at backend/MomSite.Infrastructure\Data\Migrations\20260427114540_AddShowOnHomeToCategory.cs:26">
+			<value>69</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="62.30434782608695"/>
+		<average label="CCN" value="3.1884057971014492"/>
+		<item name="AddShowOnHomeToCategory::BuildTargetModel(...) at backend/MomSite.Infrastructure\Data\Migrations\20260427114540_AddShowOnHomeToCategory.Designer.cs:19">
+			<value>70</value>
+			<value>552</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="69.3"/>
+		<average label="CCN" value="3.157142857142857"/>
+		<item name="RemoveSeedData::Up(...) at backend/MomSite.Infrastructure\Data\Migrations\20260427120500_RemoveSeedData.cs:11">
+			<value>71</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="RemoveSeedData::Down(...) at backend/MomSite.Infrastructure\Data\Migrations\20260427120500_RemoveSeedData.cs:24">
+			<value>72</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="67.45833333333333"/>
+		<average label="CCN" value="3.0972222222222223"/>
+		<item name="RemoveSeedData::BuildTargetModel(...) at backend/MomSite.Infrastructure\Data\Migrations\20260427120500_RemoveSeedData.Designer.cs:19">
+			<value>73</value>
+			<value>192</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="69.16438356164383"/>
+		<average label="CCN" value="3.0684931506849313"/>
+		<item name="ApplicationDbContextModelSnapshot::BuildModel(...) at backend/MomSite.Infrastructure\Data\Migrations\ApplicationDbContextModelSnapshot.cs:16">
+			<value>74</value>
+			<value>192</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="70.82432432432432"/>
+		<average label="CCN" value="3.0405405405405403"/>
+		<item name="ApplicationDbContext::ApplicationDbContext(...) at backend/MomSite.Infrastructure\Data\ApplicationDbContext.cs:9">
+			<value>75</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="ApplicationDbContext::OnModelCreating(...) at backend/MomSite.Infrastructure\Data\ApplicationDbContext.cs:20">
+			<value>76</value>
+			<value>53</value>
+			<value>1</value>
+		</item>
+		<item name="ApplicationDbContext::SaveChanges(...) at backend/MomSite.Infrastructure\Data\ApplicationDbContext.cs:92">
+			<value>77</value>
+			<value>5</value>
+			<value>1</value>
+		</item>
+		<item name="ApplicationDbContext::SaveChangesAsync(...) at backend/MomSite.Infrastructure\Data\ApplicationDbContext.cs:98">
+			<value>78</value>
+			<value>5</value>
+			<value>1</value>
+		</item>
+		<item name="ApplicationDbContext::LogChanges(...) at backend/MomSite.Infrastructure\Data\ApplicationDbContext.cs:104">
+			<value>79</value>
+			<value>14</value>
+			<value>3</value>
+		</item>
+		<average label="NCSS" value="67.35443037974683"/>
+		<average label="CCN" value="2.9367088607594938"/>
+		<average label="NCSS" value="67.35443037974683"/>
+		<average label="CCN" value="2.9367088607594938"/>
+		<average label="NCSS" value="67.35443037974683"/>
+		<average label="CCN" value="2.9367088607594938"/>
+		<item name="ImageService::ImageService(...) at backend/MomSite.Infrastructure\Services\ImageService.cs:32">
+			<value>80</value>
+			<value>21</value>
+			<value>2</value>
+		</item>
+		<item name="ImageService::SaveImageAsync(...) at backend/MomSite.Infrastructure\Services\ImageService.cs:58">
+			<value>81</value>
+			<value>32</value>
+			<value>4</value>
+		</item>
+		<item name="ImageService::CreateThumbnailAsync(...) at backend/MomSite.Infrastructure\Services\ImageService.cs:99">
+			<value>82</value>
+			<value>99</value>
+			<value>9</value>
+		</item>
+		<item name="ImageService::AddWatermarkAsync(...) at backend/MomSite.Infrastructure\Services\ImageService.cs:243">
+			<value>83</value>
+			<value>74</value>
+			<value>7</value>
+		</item>
+		<item name="ImageService::AddCornerWatermark(...) at backend/MomSite.Infrastructure\Services\ImageService.cs:351">
+			<value>84</value>
+			<value>58</value>
+			<value>6</value>
+		</item>
+		<item name="ImageService::CreateFallbackWatermark(...) at backend/MomSite.Infrastructure\Services\ImageService.cs:431">
+			<value>85</value>
+			<value>18</value>
+			<value>1</value>
+		</item>
+		<item name="ImageService::GetImageFormat(...) at backend/MomSite.Infrastructure\Services\ImageService.cs:457">
+			<value>86</value>
+			<value>11</value>
+			<value>1</value>
+		</item>
+		<item name="ImageService::DeleteImage(...) at backend/MomSite.Infrastructure\Services\ImageService.cs:469">
+			<value>87</value>
+			<value>17</value>
+			<value>4</value>
+		</item>
+		<item name="ImageService::CreateVideoThumbnailAsync(...) at backend/MomSite.Infrastructure\Services\ImageService.cs:491">
+			<value>88</value>
+			<value>109</value>
+			<value>11</value>
+		</item>
+		<item name="ImageService::GetWatermarkText(...) at backend/MomSite.Infrastructure\Services\ImageService.cs:633">
+			<value>89</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="64.76404494382022"/>
+		<average label="CCN" value="3.1235955056179776"/>
+		<item name="S3Service::S3Service(...) at backend/MomSite.Infrastructure\Services\S3Service.cs:25">
+			<value>90</value>
+			<value>27</value>
+			<value>6</value>
+		</item>
+		<item name="S3Service::TestConnectionAsync(...) at backend/MomSite.Infrastructure\Services\S3Service.cs:58">
+			<value>91</value>
+			<value>20</value>
+			<value>2</value>
+		</item>
+		<item name="S3Service::UploadFileAsync(...) at backend/MomSite.Infrastructure\Services\S3Service.cs:82">
+			<value>92</value>
+			<value>27</value>
+			<value>2</value>
+		</item>
+		<item name="S3Service::DeleteFileAsync(...) at backend/MomSite.Infrastructure\Services\S3Service.cs:117">
+			<value>93</value>
+			<value>21</value>
+			<value>3</value>
+		</item>
+		<item name="S3Service::GetFileUrlAsync(...) at backend/MomSite.Infrastructure\Services\S3Service.cs:142">
+			<value>94</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="S3Service::FileExistsAsync(...) at backend/MomSite.Infrastructure\Services\S3Service.cs:148">
+			<value>95</value>
+			<value>22</value>
+			<value>3</value>
+		</item>
+		<item name="S3Service::ExtractKeyFromUrl(...) at backend/MomSite.Infrastructure\Services\S3Service.cs:172">
+			<value>96</value>
+			<value>15</value>
+			<value>3</value>
+		</item>
+		<item name="S3Service::GetObjectAsync(...) at backend/MomSite.Infrastructure\Services\S3Service.cs:191">
+			<value>97</value>
+			<value>21</value>
+			<value>2</value>
+		</item>
+		<average label="NCSS" value="61.04123711340206"/>
+		<average label="CCN" value="3.0927835051546393"/>
+		<item name="AboutClientPage(...) at frontend/app\about\AboutClientPage.tsx:10">
+			<value>98</value>
+			<value>129</value>
+			<value>3</value>
+		</item>
+		<average label="NCSS" value="61.734693877551024"/>
+		<average label="CCN" value="3.0918367346938775"/>
+		<item name="generateMetadata(...) at frontend/app\about\page.tsx:9">
+			<value>99</value>
+			<value>48</value>
+			<value>5</value>
+		</item>
+		<item name="AboutPage(...) at frontend/app\about\page.tsx:61">
+			<value>100</value>
+			<value>40</value>
+			<value>4</value>
+		</item>
+		<average label="NCSS" value="61.38"/>
+		<average label="CCN" value="3.12"/>
+		<item name="openModal(...) at frontend/app\admin\artworks\page.tsx:32">
+			<value>101</value>
+			<value>28</value>
+			<value>5</value>
+		</item>
+		<item name="closeModal(...) at frontend/app\admin\artworks\page.tsx:61">
+			<value>102</value>
+			<value>12</value>
+			<value>1</value>
+		</item>
+		<item name="handleChange(...) at frontend/app\admin\artworks\page.tsx:74">
+			<value>103</value>
+			<value>8</value>
+			<value>2</value>
+		</item>
+		<item name="handleImageChange(...) at frontend/app\admin\artworks\page.tsx:83">
+			<value>104</value>
+			<value>10</value>
+			<value>3</value>
+		</item>
+		<item name="handleSubmit(...) at frontend/app\admin\artworks\page.tsx:94">
+			<value>105</value>
+			<value>26</value>
+			<value>5</value>
+		</item>
+		<item name="handleDelete(...) at frontend/app\admin\artworks\page.tsx:124">
+			<value>106</value>
+			<value>10</value>
+			<value>3</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\artworks\page.tsx:148">
+			<value>107</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\artworks\page.tsx:165">
+			<value>108</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\artworks\page.tsx:195">
+			<value>109</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\artworks\page.tsx:197">
+			<value>110</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\artworks\page.tsx:178">
+			<value>111</value>
+			<value>25</value>
+			<value>7</value>
+		</item>
+		<item name="AdminArtworksPage(...) at frontend/app\admin\artworks\page.tsx:12">
+			<value>112</value>
+			<value>184</value>
+			<value>15</value>
+		</item>
+		<average label="NCSS" value="57.544642857142854"/>
+		<average label="CCN" value="3.1875"/>
+		<item name="handleOpenModal(...) at frontend/app\admin\categories\page.tsx:20">
+			<value>113</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="handleCloseModal(...) at frontend/app\admin\categories\page.tsx:25">
+			<value>114</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="handleDelete(...) at frontend/app\admin\categories\page.tsx:32">
+			<value>115</value>
+			<value>5</value>
+			<value>2</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\categories\page.tsx:54">
+			<value>116</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\categories\page.tsx:78">
+			<value>117</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\categories\page.tsx:78">
+			<value>118</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\categories\page.tsx:67">
+			<value>119</value>
+			<value>15</value>
+			<value>4</value>
+		</item>
+		<item name="CategoriesManagementPage(...) at frontend/app\admin\categories\page.tsx:12">
+			<value>120</value>
+			<value>44</value>
+			<value>8</value>
+		</item>
+		<item name="CategoryModal(...) at frontend/app\admin\categories\page.tsx:97">
+			<value>121</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="handleSubmit(...) at frontend/app\admin\categories\page.tsx:110">
+			<value>122</value>
+			<value>9</value>
+			<value>2</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\categories\page.tsx:125">
+			<value>123</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\categories\page.tsx:139">
+			<value>124</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\categories\page.tsx:97">
+			<value>125</value>
+			<value>45</value>
+			<value>18</value>
+		</item>
+		<average label="NCSS" value="52.616"/>
+		<average label="CCN" value="3.192"/>
+		<item name="(anonymous)(...) at frontend/app\admin\pages\page.tsx:91">
+			<value>126</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\pages\page.tsx:112">
+			<value>127</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\pages\page.tsx:111">
+			<value>128</value>
+			<value>10</value>
+			<value>8</value>
+		</item>
+		<item name="fetchPageContent(...) at frontend/app\admin\pages\page.tsx:95">
+			<value>129</value>
+			<value>22</value>
+			<value>4</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\pages\page.tsx:131">
+			<value>130</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="handleInputChange(...) at frontend/app\admin\pages\page.tsx:130">
+			<value>131</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\pages\page.tsx:138">
+			<value>132</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="handleFileChange(...) at frontend/app\admin\pages\page.tsx:137">
+			<value>133</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="checkResponse(...) at frontend/app\admin\pages\page.tsx:148">
+			<value>134</value>
+			<value>10</value>
+			<value>4</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\pages\page.tsx:161">
+			<value>135</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\pages\page.tsx:161">
+			<value>136</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\pages\page.tsx:165">
+			<value>137</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\pages\page.tsx:193">
+			<value>138</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\pages\page.tsx:194">
+			<value>139</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\pages\page.tsx:201">
+			<value>140</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="saveContent(...) at frontend/app\admin\pages\page.tsx:144">
+			<value>141</value>
+			<value>75</value>
+			<value>18</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\pages\page.tsx:247">
+			<value>142</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\pages\page.tsx:271">
+			<value>143</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\pages\page.tsx:270">
+			<value>144</value>
+			<value>13</value>
+			<value>1</value>
+		</item>
+		<item name="PageContentManagement(...) at frontend/app\admin\pages\page.tsx:83">
+			<value>145</value>
+			<value>104</value>
+			<value>13</value>
+		</item>
+		<average label="NCSS" value="47.16551724137931"/>
+		<average label="CCN" value="3.179310344827586"/>
+		<item name="(anonymous)(...) at frontend/app\admin\video-categories\page.tsx:28">
+			<value>146</value>
+			<value>1</value>
+			<value>2</value>
+		</item>
+		<item name="handleInputChange(...) at frontend/app\admin\video-categories\page.tsx:26">
+			<value>147</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="handleAddEditCategory(...) at frontend/app\admin\video-categories\page.tsx:31">
+			<value>148</value>
+			<value>11</value>
+			<value>2</value>
+		</item>
+		<item name="openEditModal(...) at frontend/app\admin\video-categories\page.tsx:43">
+			<value>149</value>
+			<value>9</value>
+			<value>3</value>
+		</item>
+		<item name="handleDeleteCategory(...) at frontend/app\admin\video-categories\page.tsx:53">
+			<value>150</value>
+			<value>5</value>
+			<value>2</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\video-categories\page.tsx:71">
+			<value>151</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="VideoCategoryManagementPageContent(...) at frontend/app\admin\video-categories\page.tsx:12">
+			<value>152</value>
+			<value>81</value>
+			<value>12</value>
+		</item>
+		<item name="VideoCategoryManagementPage(...) at frontend/app\admin\video-categories\page.tsx:171">
+			<value>153</value>
+			<value>5</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="45.4640522875817"/>
+		<average label="CCN" value="3.1699346405228757"/>
+		<item name="(anonymous)(...) at frontend/app\admin\videos\page.tsx:36">
+			<value>154</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\videos\page.tsx:38">
+			<value>155</value>
+			<value>1</value>
+			<value>3</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\videos\page.tsx:41">
+			<value>156</value>
+			<value>1</value>
+			<value>3</value>
+		</item>
+		<item name="handleInputChange(...) at frontend/app\admin\videos\page.tsx:30">
+			<value>157</value>
+			<value>14</value>
+			<value>5</value>
+		</item>
+		<item name="handleAddEditVideo(...) at frontend/app\admin\videos\page.tsx:45">
+			<value>158</value>
+			<value>19</value>
+			<value>3</value>
+		</item>
+		<item name="openEditModal(...) at frontend/app\admin\videos\page.tsx:66">
+			<value>159</value>
+			<value>11</value>
+			<value>3</value>
+		</item>
+		<item name="handleDeleteVideo(...) at frontend/app\admin\videos\page.tsx:78">
+			<value>160</value>
+			<value>5</value>
+			<value>2</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\videos\page.tsx:96">
+			<value>161</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\videos\page.tsx:194">
+			<value>162</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="VideoManagementPageContent(...) at frontend/app\admin\videos\page.tsx:13">
+			<value>163</value>
+			<value>127</value>
+			<value>19</value>
+		</item>
+		<item name="VideoManagementPage(...) at frontend/app\admin\videos\page.tsx:232">
+			<value>164</value>
+			<value>5</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="43.5609756097561"/>
+		<average label="CCN" value="3.2134146341463414"/>
+		<item name="onSuccess(...) at frontend/app\admin\page.tsx:34">
+			<value>165</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="handleLogin(...) at frontend/app\admin\page.tsx:31">
+			<value>166</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="handleLogout(...) at frontend/app\admin\page.tsx:40">
+			<value>167</value>
+			<value>5</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\page.tsx:46">
+			<value>168</value>
+			<value>5</value>
+			<value>2</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\admin\page.tsx:74">
+			<value>169</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="AdminPage(...) at frontend/app\admin\page.tsx:11">
+			<value>170</value>
+			<value>234</value>
+			<value>14</value>
+		</item>
+		<average label="NCSS" value="43.51764705882353"/>
+		<average label="CCN" value="3.2176470588235295"/>
+		<item name="(anonymous)(...) at frontend/app\contacts\ContactsClientPage.tsx:28">
+			<value>171</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="handleInputChange(...) at frontend/app\contacts\ContactsClientPage.tsx:26">
+			<value>172</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="handleSubmit(...) at frontend/app\contacts\ContactsClientPage.tsx:31">
+			<value>173</value>
+			<value>17</value>
+			<value>2</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\contacts\ContactsClientPage.tsx:318">
+			<value>174</value>
+			<value>17</value>
+			<value>1</value>
+		</item>
+		<item name="ContactsClientPage(...) at frontend/app\contacts\ContactsClientPage.tsx:16">
+			<value>175</value>
+			<value>272</value>
+			<value>11</value>
+		</item>
+		<average label="NCSS" value="44.05142857142857"/>
+		<average label="CCN" value="3.217142857142857"/>
+		<item name="generateMetadata(...) at frontend/app\contacts\page.tsx:8">
+			<value>176</value>
+			<value>45</value>
+			<value>3</value>
+		</item>
+		<item name="ContactsPage(...) at frontend/app\contacts\page.tsx:56">
+			<value>177</value>
+			<value>54</value>
+			<value>2</value>
+		</item>
+		<average label="NCSS" value="44.112994350282484"/>
+		<average label="CCN" value="3.209039548022599"/>
+		<item name="(anonymous)(...) at frontend/app\gallery\GalleryClientPage.tsx:20">
+			<value>178</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="formatPrice(...) at frontend/app\gallery\GalleryClientPage.tsx:23">
+			<value>179</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<item name="getPriceDisplay(...) at frontend/app\gallery\GalleryClientPage.tsx:31">
+			<value>180</value>
+			<value>7</value>
+			<value>5</value>
+		</item>
+		<item name="openLightbox(...) at frontend/app\gallery\GalleryClientPage.tsx:39">
+			<value>181</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\gallery\GalleryClientPage.tsx:82">
+			<value>182</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\gallery\GalleryClientPage.tsx:81">
+			<value>183</value>
+			<value>13</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\gallery\GalleryClientPage.tsx:126">
+			<value>184</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\gallery\GalleryClientPage.tsx:110">
+			<value>185</value>
+			<value>42</value>
+			<value>4</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\gallery\GalleryClientPage.tsx:171">
+			<value>186</value>
+			<value>5</value>
+			<value>1</value>
+		</item>
+		<item name="GalleryClientPage(...) at frontend/app\gallery\GalleryClientPage.tsx:11">
+			<value>187</value>
+			<value>93</value>
+			<value>9</value>
+		</item>
+		<average label="NCSS" value="42.67914438502674"/>
+		<average label="CCN" value="3.171122994652406"/>
+		<item name="(anonymous)(...) at frontend/app\gallery\page.tsx:47">
+			<value>188</value>
+			<value>20</value>
+			<value>2</value>
+		</item>
+		<item name="GalleryPage(...) at frontend/app\gallery\page.tsx:26">
+			<value>189</value>
+			<value>32</value>
+			<value>2</value>
+		</item>
+		<average label="NCSS" value="42.5026455026455"/>
+		<average label="CCN" value="3.1587301587301586"/>
+		<item name="(anonymous)(...) at frontend/app\test-lightbox\page.tsx:13">
+			<value>190</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\test-lightbox\page.tsx:14">
+			<value>191</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="TestLightboxPage(...) at frontend/app\test-lightbox\page.tsx:7">
+			<value>192</value>
+			<value>17</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="41.9375"/>
+		<average label="CCN" value="3.125"/>
+		<item name="generateMetadata(...) at frontend/app\videos\page.tsx:8">
+			<value>193</value>
+			<value>45</value>
+			<value>3</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\videos\page.tsx:77">
+			<value>194</value>
+			<value>22</value>
+			<value>4</value>
+		</item>
+		<item name="VideosPage(...) at frontend/app\videos\page.tsx:56">
+			<value>195</value>
+			<value>32</value>
+			<value>2</value>
+		</item>
+		<average label="NCSS" value="41.8"/>
+		<average label="CCN" value="3.123076923076923"/>
+		<item name="(anonymous)(...) at frontend/app\videos\VideosClientPage.tsx:21">
+			<value>196</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\videos\VideosClientPage.tsx:19">
+			<value>197</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\videos\VideosClientPage.tsx:25">
+			<value>198</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\videos\VideosClientPage.tsx:17">
+			<value>199</value>
+			<value>12</value>
+			<value>5</value>
+		</item>
+		<item name="openVideo(...) at frontend/app\videos\VideosClientPage.tsx:34">
+			<value>200</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="closeVideo(...) at frontend/app\videos\VideosClientPage.tsx:38">
+			<value>201</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\videos\VideosClientPage.tsx:82">
+			<value>202</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\videos\VideosClientPage.tsx:81">
+			<value>203</value>
+			<value>13</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\videos\VideosClientPage.tsx:110">
+			<value>204</value>
+			<value>41</value>
+			<value>6</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\videos\VideosClientPage.tsx:171">
+			<value>205</value>
+			<value>15</value>
+			<value>1</value>
+		</item>
+		<item name="VideosClientPage(...) at frontend/app\videos\VideosClientPage.tsx:12">
+			<value>206</value>
+			<value>155</value>
+			<value>9</value>
+		</item>
+		<average label="NCSS" value="40.77669902912621"/>
+		<average label="CCN" value="3.092233009708738"/>
+		<item name="(anonymous)(...) at frontend/app\HomeClientPage.tsx:112">
+			<value>207</value>
+			<value>22</value>
+			<value>2</value>
+		</item>
+		<item name="HomeClientPage(...) at frontend/app\HomeClientPage.tsx:13">
+			<value>208</value>
+			<value>246</value>
+			<value>11</value>
+		</item>
+		<average label="NCSS" value="41.67307692307692"/>
+		<average label="CCN" value="3.125"/>
+		<item name="RootLayout(...) at frontend/app\layout.tsx:67">
+			<value>209</value>
+			<value>66</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="41.78947368421053"/>
+		<average label="CCN" value="3.1148325358851676"/>
+		<item name="generateMetadata(...) at frontend/app\page.tsx:10">
+			<value>210</value>
+			<value>70</value>
+			<value>7</value>
+		</item>
+		<item name="HomePage(...) at frontend/app\page.tsx:85">
+			<value>211</value>
+			<value>18</value>
+			<value>2</value>
+		</item>
+		<average label="NCSS" value="41.81042654028436"/>
+		<average label="CCN" value="3.1279620853080567"/>
+		<item name="robots(...) at frontend/app\robots.ts:3">
+			<value>212</value>
+			<value>10</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="41.660377358490564"/>
+		<average label="CCN" value="3.1179245283018866"/>
+		<item name="(anonymous)(...) at frontend/app\sitemap.ts:44">
+			<value>213</value>
+			<value>6</value>
+			<value>2</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/app\sitemap.ts:53">
+			<value>214</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="sitemap(...) at frontend/app\sitemap.ts:4">
+			<value>215</value>
+			<value>45</value>
+			<value>4</value>
+		</item>
+		<average label="NCSS" value="41.34418604651163"/>
+		<average label="CCN" value="3.1069767441860465"/>
+		<item name="Footer(...) at frontend/components\Footer.tsx:6">
+			<value>216</value>
+			<value>148</value>
+			<value>24</value>
+		</item>
+		<average label="NCSS" value="41.83796296296296"/>
+		<average label="CCN" value="3.2037037037037037"/>
+		<item name="LayoutContent(...) at frontend/components\LayoutContent.tsx:7">
+			<value>217</value>
+			<value>13</value>
+			<value>3</value>
+		</item>
+		<average label="NCSS" value="41.705069124423964"/>
+		<average label="CCN" value="3.2027649769585254"/>
+		<item name="(anonymous)(...) at frontend/components\LoadingSpinner.test.tsx:5">
+			<value>218</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/components\LoadingSpinner.test.tsx:12">
+			<value>219</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/components\LoadingSpinner.test.tsx:19">
+			<value>220</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/components\LoadingSpinner.test.tsx:26">
+			<value>221</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/components\LoadingSpinner.test.tsx:4">
+			<value>222</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="40.9054054054054"/>
+		<average label="CCN" value="3.1531531531531534"/>
+		<item name="LoadingSpinner(...) at frontend/components\LoadingSpinner.tsx:8">
+			<value>223</value>
+			<value>17</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="40.7982062780269"/>
+		<average label="CCN" value="3.1434977578475336"/>
+		<item name="handleScroll(...) at frontend/components\Navigation.tsx:15">
+			<value>224</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/components\Navigation.tsx:20">
+			<value>225</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/components\Navigation.tsx:14">
+			<value>226</value>
+			<value>5</value>
+			<value>1</value>
+		</item>
+		<item name="isActive(...) at frontend/components\Navigation.tsx:31">
+			<value>227</value>
+			<value>6</value>
+			<value>2</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/components\Navigation.tsx:57">
+			<value>228</value>
+			<value>21</value>
+			<value>2</value>
+		</item>
+		<item name="(anonymous)(...) at frontend/components\Navigation.tsx:80">
+			<value>229</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="Navigation(...) at frontend/components\Navigation.tsx:9">
+			<value>230</value>
+			<value>76</value>
+			<value>3</value>
+		</item>
+		<average label="NCSS" value="40.04782608695652"/>
+		<average label="CCN" value="3.0956521739130434"/>
+		<item name="Providers(...) at frontend/components\Providers.tsx:6">
+			<value>231</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="39.904761904761905"/>
+		<average label="CCN" value="3.0865800865800868"/>
+		<item name="(anonymous)(...) at frontend/components\StructuredData.tsx:87">
+			<value>232</value>
+			<value>16</value>
+			<value>1</value>
+		</item>
+		<item name="StructuredData(...) at frontend/components\StructuredData.tsx:7">
+			<value>233</value>
+			<value>103</value>
+			<value>39</value>
+		</item>
+		<average label="NCSS" value="40.072961373390555"/>
+		<average label="CCN" value="3.2317596566523603"/>
+		<item name="getImageUrl(...) at frontend/hooks\useApi.ts:7">
+			<value>234</value>
+			<value>9</value>
+			<value>4</value>
+		</item>
+		<item name="getHomeData(...) at frontend/hooks\useApi.ts:22">
+			<value>235</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="useHomeData(...) at frontend/hooks\useApi.ts:27">
+			<value>236</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="getGalleryData(...) at frontend/hooks\useApi.ts:34">
+			<value>237</value>
+			<value>8</value>
+			<value>5</value>
+		</item>
+		<item name="useGalleryData(...) at frontend/hooks\useApi.ts:43">
+			<value>238</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="getAboutData(...) at frontend/hooks\useApi.ts:50">
+			<value>239</value>
+			<value>7</value>
+			<value>3</value>
+		</item>
+		<item name="useAboutData(...) at frontend/hooks\useApi.ts:58">
+			<value>240</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="getContactsData(...) at frontend/hooks\useApi.ts:65">
+			<value>241</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="useContactsData(...) at frontend/hooks\useApi.ts:70">
+			<value>242</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="getFooterData(...) at frontend/hooks\useApi.ts:77">
+			<value>243</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="useFooterData(...) at frontend/hooks\useApi.ts:82">
+			<value>244</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="getVideosData(...) at frontend/hooks\useApi.ts:89">
+			<value>245</value>
+			<value>8</value>
+			<value>3</value>
+		</item>
+		<item name="useVideosData(...) at frontend/hooks\useApi.ts:98">
+			<value>246</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="sendContactMessage(...) at frontend/hooks\useApi.ts:105">
+			<value>247</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="mutationFn(...) at frontend/hooks\useApi.ts:116">
+			<value>248</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="onSuccess(...) at frontend/hooks\useApi.ts:120">
+			<value>249</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="useLogin(...) at frontend/hooks\useApi.ts:111">
+			<value>250</value>
+			<value>9</value>
+			<value>1</value>
+		</item>
+		<item name="queryFn(...) at frontend/hooks\useApi.ts:130">
+			<value>251</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="useCategories(...) at frontend/hooks\useApi.ts:127">
+			<value>252</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="mutationFn(...) at frontend/hooks\useApi.ts:140">
+			<value>253</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="onSuccess(...) at frontend/hooks\useApi.ts:144">
+			<value>254</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="useCreateCategory(...) at frontend/hooks\useApi.ts:137">
+			<value>255</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<item name="mutationFn(...) at frontend/hooks\useApi.ts:154">
+			<value>256</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="onSuccess(...) at frontend/hooks\useApi.ts:158">
+			<value>257</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="useUpdateCategory(...) at frontend/hooks\useApi.ts:151">
+			<value>258</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<item name="mutationFn(...) at frontend/hooks\useApi.ts:168">
+			<value>259</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="onSuccess(...) at frontend/hooks\useApi.ts:171">
+			<value>260</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="useDeleteCategory(...) at frontend/hooks\useApi.ts:165">
+			<value>261</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<item name="queryFn(...) at frontend/hooks\useApi.ts:180">
+			<value>262</value>
+			<value>4</value>
+			<value>3</value>
+		</item>
+		<item name="useArtworks(...) at frontend/hooks\useApi.ts:177">
+			<value>263</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="mutationFn(...) at frontend/hooks\useApi.ts:190">
+			<value>264</value>
+			<value>8</value>
+			<value>1</value>
+		</item>
+		<item name="onSuccess(...) at frontend/hooks\useApi.ts:198">
+			<value>265</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="useCreateArtwork(...) at frontend/hooks\useApi.ts:187">
+			<value>266</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<item name="mutationFn(...) at frontend/hooks\useApi.ts:208">
+			<value>267</value>
+			<value>8</value>
+			<value>1</value>
+		</item>
+		<item name="onSuccess(...) at frontend/hooks\useApi.ts:216">
+			<value>268</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="useUpdateArtwork(...) at frontend/hooks\useApi.ts:205">
+			<value>269</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<item name="mutationFn(...) at frontend/hooks\useApi.ts:226">
+			<value>270</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="onSuccess(...) at frontend/hooks\useApi.ts:229">
+			<value>271</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="useDeleteArtwork(...) at frontend/hooks\useApi.ts:223">
+			<value>272</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<item name="queryFn(...) at frontend/hooks\useApi.ts:247">
+			<value>273</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="usePageContent(...) at frontend/hooks\useApi.ts:244">
+			<value>274</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="mutationFn(...) at frontend/hooks\useApi.ts:257">
+			<value>275</value>
+			<value>8</value>
+			<value>1</value>
+		</item>
+		<item name="onSuccess(...) at frontend/hooks\useApi.ts:265">
+			<value>276</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="useUpdatePageContent(...) at frontend/hooks\useApi.ts:254">
+			<value>277</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<item name="mutationFn(...) at frontend/hooks\useApi.ts:275">
+			<value>278</value>
+			<value>8</value>
+			<value>1</value>
+		</item>
+		<item name="onSuccess(...) at frontend/hooks\useApi.ts:283">
+			<value>279</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="useCreatePageContent(...) at frontend/hooks\useApi.ts:272">
+			<value>280</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<item name="queryFn(...) at frontend/hooks\useApi.ts:292">
+			<value>281</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="useVideos(...) at frontend/hooks\useApi.ts:289">
+			<value>282</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="mutationFn(...) at frontend/hooks\useApi.ts:302">
+			<value>283</value>
+			<value>8</value>
+			<value>1</value>
+		</item>
+		<item name="onSuccess(...) at frontend/hooks\useApi.ts:310">
+			<value>284</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="useCreateVideo(...) at frontend/hooks\useApi.ts:299">
+			<value>285</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<item name="mutationFn(...) at frontend/hooks\useApi.ts:320">
+			<value>286</value>
+			<value>8</value>
+			<value>1</value>
+		</item>
+		<item name="onSuccess(...) at frontend/hooks\useApi.ts:328">
+			<value>287</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="useUpdateVideo(...) at frontend/hooks\useApi.ts:317">
+			<value>288</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<item name="mutationFn(...) at frontend/hooks\useApi.ts:338">
+			<value>289</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="onSuccess(...) at frontend/hooks\useApi.ts:341">
+			<value>290</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="useDeleteVideo(...) at frontend/hooks\useApi.ts:335">
+			<value>291</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<item name="queryFn(...) at frontend/hooks\useApi.ts:351">
+			<value>292</value>
+			<value>4</value>
+			<value>2</value>
+		</item>
+		<item name="useVideoCategories(...) at frontend/hooks\useApi.ts:348">
+			<value>293</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="mutationFn(...) at frontend/hooks\useApi.ts:361">
+			<value>294</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="onSuccess(...) at frontend/hooks\useApi.ts:365">
+			<value>295</value>
+			<value>5</value>
+			<value>1</value>
+		</item>
+		<item name="useCreateVideoCategory(...) at frontend/hooks\useApi.ts:358">
+			<value>296</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<item name="mutationFn(...) at frontend/hooks\useApi.ts:376">
+			<value>297</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="onSuccess(...) at frontend/hooks\useApi.ts:380">
+			<value>298</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="useUpdateVideoCategory(...) at frontend/hooks\useApi.ts:373">
+			<value>299</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<item name="mutationFn(...) at frontend/hooks\useApi.ts:391">
+			<value>300</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="onSuccess(...) at frontend/hooks\useApi.ts:394">
+			<value>301</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="useDeleteVideoCategory(...) at frontend/hooks\useApi.ts:388">
+			<value>302</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="32.17218543046358"/>
+		<average label="CCN" value="2.7682119205298013"/>
+		<item name="setToken(...) at frontend/lib\api.ts:15">
+			<value>303</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="getToken(...) at frontend/lib\api.ts:19">
+			<value>304</value>
+			<value>6</value>
+			<value>2</value>
+		</item>
+		<item name="removeToken(...) at frontend/lib\api.ts:25">
+			<value>305</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="31.901639344262296"/>
+		<average label="CCN" value="2.7540983606557377"/>
+		<average label="NCSS" value="31.901639344262296"/>
+		<average label="CCN" value="2.7540983606557377"/>
+	</measure>
+	<measure type="File">
+		<labels>
+			<label>Nr.</label>
+			<label>NCSS</label>
+			<label>CCN</label>
+			<label>Functions</label>
+		</labels>
+		<item name="backend/MomSite.API\Controllers\AdminController.cs">
+			<value>1</value>
+			<value>387</value>
+			<value>51</value>
+			<value>18</value>
+		</item>
+		<item name="backend/MomSite.API\Controllers\ArtworksController.cs">
+			<value>2</value>
+			<value>163</value>
+			<value>12</value>
+			<value>6</value>
+		</item>
+		<item name="backend/MomSite.API\Controllers\PublicController.cs">
+			<value>3</value>
+			<value>340</value>
+			<value>109</value>
+			<value>9</value>
+		</item>
+		<item name="backend/MomSite.API\Controllers\TestController.cs">
+			<value>4</value>
+			<value>49</value>
+			<value>5</value>
+			<value>3</value>
+		</item>
+		<item name="backend/MomSite.API\DTOs\ArtworkAdminDto.cs">
+			<value>5</value>
+			<value>17</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.API\DTOs\ArtworkDto.cs">
+			<value>6</value>
+			<value>17</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.API\DTOs\CategoryDto.cs">
+			<value>7</value>
+			<value>12</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.API\DTOs\MappingExtensions.cs">
+			<value>8</value>
+			<value>96</value>
+			<value>9</value>
+			<value>7</value>
+		</item>
+		<item name="backend/MomSite.API\DTOs\PublicDtos.cs">
+			<value>9</value>
+			<value>87</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.API\DTOs\VideoAdminDto.cs">
+			<value>10</value>
+			<value>15</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.API\DTOs\VideoCategoryDto.cs">
+			<value>11</value>
+			<value>10</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.API\DTOs\VideoDto.cs">
+			<value>12</value>
+			<value>12</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.API\obj\Debug\net8.0\.NETCoreApp,Version=v8.0.AssemblyAttributes.cs">
+			<value>13</value>
+			<value>3</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.API\obj\Debug\net8.0\MomSite.API.AssemblyInfo.cs">
+			<value>14</value>
+			<value>9</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.API\obj\Debug\net8.0\MomSite.API.GlobalUsings.g.cs">
+			<value>15</value>
+			<value>16</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.API\obj\Debug\net8.0\MomSite.API.MvcApplicationPartsAssemblyInfo.cs">
+			<value>16</value>
+			<value>3</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.API\obj\Release\net8.0\MomSite.API.AssemblyInfo.cs">
+			<value>17</value>
+			<value>9</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.API\Services\EmailService.cs">
+			<value>18</value>
+			<value>71</value>
+			<value>10</value>
+			<value>2</value>
+		</item>
+		<item name="backend/MomSite.API\Program.cs">
+			<value>19</value>
+			<value>176</value>
+			<value>7</value>
+			<value>7</value>
+		</item>
+		<item name="backend/MomSite.Core\Models\Artwork.cs">
+			<value>20</value>
+			<value>23</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.Core\Models\Category.cs">
+			<value>21</value>
+			<value>17</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.Core\Models\ContactMessageDto.cs">
+			<value>22</value>
+			<value>20</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.Core\Models\PageContent.cs">
+			<value>23</value>
+			<value>22</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.Core\Models\Video.cs">
+			<value>24</value>
+			<value>21</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.Core\Models\VideoCategory.cs">
+			<value>25</value>
+			<value>16</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.Core\obj\Debug\net8.0\MomSite.Core.AssemblyInfo.cs">
+			<value>26</value>
+			<value>9</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.Core\obj\Debug\net8.0\MomSite.Core.GlobalUsings.g.cs">
+			<value>27</value>
+			<value>7</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.Core\obj\Release\net8.0\MomSite.Core.AssemblyInfo.cs">
+			<value>28</value>
+			<value>9</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.Infrastructure\Data\Migrations\20250808130107_InitialCreate.cs">
+			<value>29</value>
+			<value>216</value>
+			<value>2</value>
+			<value>2</value>
+		</item>
+		<item name="backend/MomSite.Infrastructure\Data\Migrations\20250808130107_InitialCreate.Designer.cs">
+			<value>30</value>
+			<value>436</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="backend/MomSite.Infrastructure\Data\Migrations\20250808205512_AddVideoPathToVideo.cs">
+			<value>31</value>
+			<value>250</value>
+			<value>2</value>
+			<value>2</value>
+		</item>
+		<item name="backend/MomSite.Infrastructure\Data\Migrations\20250808205512_AddVideoPathToVideo.Designer.cs">
+			<value>32</value>
+			<value>436</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="backend/MomSite.Infrastructure\Data\Migrations\20250810154240_RemoveReviewsTable.cs">
+			<value>33</value>
+			<value>235</value>
+			<value>2</value>
+			<value>2</value>
+		</item>
+		<item name="backend/MomSite.Infrastructure\Data\Migrations\20250810154240_RemoveReviewsTable.Designer.cs">
+			<value>34</value>
+			<value>378</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="backend/MomSite.Infrastructure\Data\Migrations\20250810174739_AddHomeBiographyAndAuthorPhoto_NewIds.cs">
+			<value>35</value>
+			<value>222</value>
+			<value>2</value>
+			<value>2</value>
+		</item>
+		<item name="backend/MomSite.Infrastructure\Data\Migrations\20250810174739_AddHomeBiographyAndAuthorPhoto_NewIds.Designer.cs">
+			<value>36</value>
+			<value>400</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="backend/MomSite.Infrastructure\Data\Migrations\20250811161941_AddFooterContent.cs">
+			<value>37</value>
+			<value>311</value>
+			<value>2</value>
+			<value>2</value>
+		</item>
+		<item name="backend/MomSite.Infrastructure\Data\Migrations\20250811161941_AddFooterContent.Designer.cs">
+			<value>38</value>
+			<value>565</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="backend/MomSite.Infrastructure\Data\Migrations\20260427114540_AddShowOnHomeToCategory.cs">
+			<value>39</value>
+			<value>22</value>
+			<value>2</value>
+			<value>2</value>
+		</item>
+		<item name="backend/MomSite.Infrastructure\Data\Migrations\20260427114540_AddShowOnHomeToCategory.Designer.cs">
+			<value>40</value>
+			<value>567</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="backend/MomSite.Infrastructure\Data\Migrations\20260427120500_RemoveSeedData.cs">
+			<value>41</value>
+			<value>13</value>
+			<value>2</value>
+			<value>2</value>
+		</item>
+		<item name="backend/MomSite.Infrastructure\Data\Migrations\20260427120500_RemoveSeedData.Designer.cs">
+			<value>42</value>
+			<value>207</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="backend/MomSite.Infrastructure\Data\Migrations\ApplicationDbContextModelSnapshot.cs">
+			<value>43</value>
+			<value>205</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="backend/MomSite.Infrastructure\Data\ApplicationDbContext.cs">
+			<value>44</value>
+			<value>92</value>
+			<value>7</value>
+			<value>5</value>
+		</item>
+		<item name="backend/MomSite.Infrastructure\obj\Debug\net8.0\MomSite.Infrastructure.AssemblyInfo.cs">
+			<value>45</value>
+			<value>9</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.Infrastructure\obj\Release\net8.0\MomSite.Infrastructure.AssemblyInfo.cs">
+			<value>46</value>
+			<value>9</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="backend/MomSite.Infrastructure\Services\ImageService.cs">
+			<value>47</value>
+			<value>471</value>
+			<value>46</value>
+			<value>10</value>
+		</item>
+		<item name="backend/MomSite.Infrastructure\Services\S3Service.cs">
+			<value>48</value>
+			<value>180</value>
+			<value>22</value>
+			<value>8</value>
+		</item>
+		<item name="frontend/app\about\AboutClientPage.tsx">
+			<value>49</value>
+			<value>136</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="frontend/app\about\page.tsx">
+			<value>50</value>
+			<value>93</value>
+			<value>9</value>
+			<value>2</value>
+		</item>
+		<item name="frontend/app\admin\artworks\page.tsx">
+			<value>51</value>
+			<value>305</value>
+			<value>45</value>
+			<value>12</value>
+		</item>
+		<item name="frontend/app\admin\categories\page.tsx">
+			<value>52</value>
+			<value>139</value>
+			<value>42</value>
+			<value>13</value>
+		</item>
+		<item name="frontend/app\admin\pages\page.tsx">
+			<value>53</value>
+			<value>317</value>
+			<value>62</value>
+			<value>20</value>
+		</item>
+		<item name="frontend/app\admin\video-categories\page.tsx">
+			<value>54</value>
+			<value>162</value>
+			<value>24</value>
+			<value>8</value>
+		</item>
+		<item name="frontend/app\admin\videos\page.tsx">
+			<value>55</value>
+			<value>221</value>
+			<value>42</value>
+			<value>11</value>
+		</item>
+		<item name="frontend/app\admin\page.tsx">
+			<value>56</value>
+			<value>257</value>
+			<value>20</value>
+			<value>6</value>
+		</item>
+		<item name="frontend/app\contacts\ContactsClientPage.tsx">
+			<value>57</value>
+			<value>324</value>
+			<value>16</value>
+			<value>5</value>
+		</item>
+		<item name="frontend/app\contacts\page.tsx">
+			<value>58</value>
+			<value>103</value>
+			<value>5</value>
+			<value>2</value>
+		</item>
+		<item name="frontend/app\gallery\GalleryClientPage.tsx">
+			<value>59</value>
+			<value>172</value>
+			<value>25</value>
+			<value>10</value>
+		</item>
+		<item name="frontend/app\gallery\page.tsx">
+			<value>60</value>
+			<value>81</value>
+			<value>4</value>
+			<value>2</value>
+		</item>
+		<item name="frontend/app\test-lightbox\page.tsx">
+			<value>61</value>
+			<value>22</value>
+			<value>3</value>
+			<value>3</value>
+		</item>
+		<item name="frontend/app\videos\page.tsx">
+			<value>62</value>
+			<value>102</value>
+			<value>9</value>
+			<value>3</value>
+		</item>
+		<item name="frontend/app\videos\VideosClientPage.tsx">
+			<value>63</value>
+			<value>248</value>
+			<value>28</value>
+			<value>11</value>
+		</item>
+		<item name="frontend/app\HomeClientPage.tsx">
+			<value>64</value>
+			<value>281</value>
+			<value>13</value>
+			<value>2</value>
+		</item>
+		<item name="frontend/app\layout.tsx">
+			<value>65</value>
+			<value>128</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="frontend/app\page.tsx">
+			<value>66</value>
+			<value>94</value>
+			<value>9</value>
+			<value>2</value>
+		</item>
+		<item name="frontend/app\robots.ts">
+			<value>67</value>
+			<value>11</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="frontend/app\sitemap.ts">
+			<value>68</value>
+			<value>57</value>
+			<value>7</value>
+			<value>3</value>
+		</item>
+		<item name="frontend/components\Footer.tsx">
+			<value>69</value>
+			<value>153</value>
+			<value>24</value>
+			<value>1</value>
+		</item>
+		<item name="frontend/components\LayoutContent.tsx">
+			<value>70</value>
+			<value>17</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="frontend/components\LoadingSpinner.test.tsx">
+			<value>71</value>
+			<value>29</value>
+			<value>5</value>
+			<value>5</value>
+		</item>
+		<item name="frontend/components\LoadingSpinner.tsx">
+			<value>72</value>
+			<value>23</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="frontend/components\Navigation.tsx">
+			<value>73</value>
+			<value>114</value>
+			<value>11</value>
+			<value>7</value>
+		</item>
+		<item name="frontend/components\Providers.tsx">
+			<value>74</value>
+			<value>10</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="frontend/components\StructuredData.tsx">
+			<value>75</value>
+			<value>128</value>
+			<value>40</value>
+			<value>2</value>
+		</item>
+		<item name="frontend/hooks\useApi.ts">
+			<value>76</value>
+			<value>347</value>
+			<value>83</value>
+			<value>69</value>
+		</item>
+		<item name="frontend/lib\api.ts">
+			<value>77</value>
+			<value>197</value>
+			<value>4</value>
+			<value>3</value>
+		</item>
+		<item name="frontend/lib\queryClient.ts">
+			<value>78</value>
+			<value>8</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<average label="NCSS" value="142.80769230769232"/>
+		<average label="CCN" value="10.76923076923077"/>
+		<average label="Functions" value="3.91025641025641"/>
+		<sum label="NCSS" value="11139"/>
+		<sum label="CCN" value="840"/>
+		<sum label="Functions" value="305"/>
+		<average label="NCSS" value="31.901639344262296"/>
+		<average label="CCN" value="2.7540983606557377"/>
+	</measure>
+</cppncss>
+
