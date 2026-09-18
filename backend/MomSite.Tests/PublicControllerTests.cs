@@ -246,5 +246,331 @@ namespace MomSite.Tests
             Assert.Null(secondSaved.UtmMedium);
             Assert.Null(secondSaved.UtmCampaign);
         }
+
+        [Fact]
+        [Trait("Scenario", "S1-AS1")]
+        public async Task SendContactMessage_MissingName_Returns400AndDoesNotPersist()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_MissingName_Returns400AndDoesNotPersist));
+            var controller = CreateController(context, Array.Empty<IFeedbackNotifier>());
+
+            var dto = ValidMessage();
+            dto.Name = string.Empty;
+            controller.ModelState.AddModelError("Name", "Name обязателен");
+
+            var result = await controller.SendContactMessage(dto);
+
+            var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequest.StatusCode);
+            Assert.Empty(context.ContactMessages);
+        }
+
+        [Fact]
+        [Trait("Scenario", "S1-AS1")]
+        public async Task SendContactMessage_MissingSubject_Returns400AndDoesNotPersist()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_MissingSubject_Returns400AndDoesNotPersist));
+            var controller = CreateController(context, Array.Empty<IFeedbackNotifier>());
+
+            var dto = ValidMessage();
+            dto.Subject = string.Empty;
+            controller.ModelState.AddModelError("Subject", "Subject обязателен");
+
+            var result = await controller.SendContactMessage(dto);
+
+            var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequest.StatusCode);
+            Assert.Empty(context.ContactMessages);
+        }
+
+        [Fact]
+        [Trait("Scenario", "S1-AS1")]
+        public async Task SendContactMessage_MissingMessage_Returns400AndDoesNotPersist()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_MissingMessage_Returns400AndDoesNotPersist));
+            var controller = CreateController(context, Array.Empty<IFeedbackNotifier>());
+
+            var dto = ValidMessage();
+            dto.Message = string.Empty;
+            controller.ModelState.AddModelError("Message", "Message обязателен");
+
+            var result = await controller.SendContactMessage(dto);
+
+            var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequest.StatusCode);
+            Assert.Empty(context.ContactMessages);
+        }
+
+        [Fact]
+        [Trait("Scenario", "S1-AS2")]
+        public async Task SendContactMessage_FirstChannelFailsSecondStillCalled()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_FirstChannelFailsSecondStillCalled));
+            var first = EnabledNotifier(throws: true);
+            var second = EnabledNotifier();
+            var controller = CreateController(context, new[] { first.Object, second.Object });
+
+            var result = await controller.SendContactMessage(ValidMessage());
+
+            AssertOkAndPersisted(result, context);
+            first.Verify(n => n.NotifyAsync(It.IsAny<ContactMessage>(), It.IsAny<CancellationToken>()), Times.Once);
+            second.Verify(n => n.NotifyAsync(It.IsAny<ContactMessage>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        [Trait("Scenario", "S1-AS3")]
+        public async Task SendContactMessage_BothChannelsFail_StillSaves200()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_BothChannelsFail_StillSaves200));
+            var first = EnabledNotifier(throws: true);
+            var second = EnabledNotifier(throws: true);
+            var controller = CreateController(context, new[] { first.Object, second.Object });
+
+            var result = await controller.SendContactMessage(ValidMessage());
+
+            AssertOkAndPersisted(result, context);
+            first.Verify(n => n.NotifyAsync(It.IsAny<ContactMessage>(), It.IsAny<CancellationToken>()), Times.Once);
+            second.Verify(n => n.NotifyAsync(It.IsAny<ContactMessage>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        [Trait("Scenario", "S1-AS4")]
+        public async Task SendContactMessage_NoNotifiersRegistered_SavesAndReturns200()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_NoNotifiersRegistered_SavesAndReturns200));
+            var controller = CreateController(context, Array.Empty<IFeedbackNotifier>());
+
+            var result = await controller.SendContactMessage(ValidMessage());
+
+            AssertOkAndPersisted(result, context);
+        }
+
+        [Fact]
+        [Trait("Scenario", "S1-AS1")]
+        public async Task SendContactMessage_NameAtMaxLength_Saves200()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_NameAtMaxLength_Saves200));
+            var controller = CreateController(context, Array.Empty<IFeedbackNotifier>());
+
+            var dto = ValidMessage();
+            dto.Name = new string('А', 200);  // Exactly 200 chars
+
+            var result = await controller.SendContactMessage(dto);
+
+            var saved = AssertOkAndPersisted(result, context);
+            Assert.Equal(200, saved.Name.Length);
+        }
+
+        [Fact]
+        [Trait("Scenario", "S1-AS1")]
+        public async Task SendContactMessage_SubjectAtMaxLength_Saves200()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_SubjectAtMaxLength_Saves200));
+            var controller = CreateController(context, Array.Empty<IFeedbackNotifier>());
+
+            var dto = ValidMessage();
+            dto.Subject = new string('А', 200);  // Exactly 200 chars
+
+            var result = await controller.SendContactMessage(dto);
+
+            var saved = AssertOkAndPersisted(result, context);
+            Assert.Equal(200, saved.Subject.Length);
+        }
+
+        [Fact]
+        [Trait("Scenario", "S1-AS1")]
+        public async Task SendContactMessage_MessageAtMaxLength_Saves200()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_MessageAtMaxLength_Saves200));
+            var controller = CreateController(context, Array.Empty<IFeedbackNotifier>());
+
+            var dto = ValidMessage();
+            dto.Message = new string('А', 5000);  // Exactly 5000 chars
+
+            var result = await controller.SendContactMessage(dto);
+
+            var saved = AssertOkAndPersisted(result, context);
+            Assert.Equal(5000, saved.Message.Length);
+        }
+
+        [Fact]
+        [Trait("Scenario", "S1-AS1")]
+        public async Task SendContactMessage_UtmFieldsAtMaxLength_Saves200()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_UtmFieldsAtMaxLength_Saves200));
+            var controller = CreateController(context, Array.Empty<IFeedbackNotifier>());
+
+            var dto = ValidMessage();
+            dto.UtmSource = new string('а', 200);
+            dto.UtmMedium = new string('б', 200);
+            dto.UtmCampaign = new string('в', 200);
+
+            var result = await controller.SendContactMessage(dto);
+
+            var saved = AssertOkAndPersisted(result, context);
+            Assert.Equal(200, saved.UtmSource.Length);
+            Assert.Equal(200, saved.UtmMedium.Length);
+            Assert.Equal(200, saved.UtmCampaign.Length);
+        }
+
+        [Fact]
+        [Trait("Scenario", "S1-AS1")]
+        public async Task SendContactMessage_StatusAlwaysNewWhenSaved()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_StatusAlwaysNewWhenSaved));
+            var controller = CreateController(context, Array.Empty<IFeedbackNotifier>());
+
+            var result = await controller.SendContactMessage(ValidMessage());
+
+            var saved = AssertOkAndPersisted(result, context);
+            Assert.Equal(ContactMessageStatus.New, saved.Status);
+        }
+
+        [Fact]
+        [Trait("Scenario", "S1-AS1")]
+        public async Task SendContactMessage_CreatedAtIsUtcNow()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_CreatedAtIsUtcNow));
+            var controller = CreateController(context, Array.Empty<IFeedbackNotifier>());
+
+            var beforeCall = DateTime.UtcNow;
+            var result = await controller.SendContactMessage(ValidMessage());
+            var afterCall = DateTime.UtcNow;
+
+            var saved = AssertOkAndPersisted(result, context);
+            Assert.True(saved.CreatedAt >= beforeCall && saved.CreatedAt <= afterCall,
+                $"CreatedAt {saved.CreatedAt} should be between {beforeCall} and {afterCall}");
+        }
+
+        [Fact]
+        [Trait("Scenario", "S1-AS1")]
+        public async Task SendContactMessage_IpAddressAndUserAgentCaptured()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_IpAddressAndUserAgentCaptured));
+            var controller = CreateController(context, Array.Empty<IFeedbackNotifier>());
+
+            var result = await controller.SendContactMessage(ValidMessage());
+
+            var saved = AssertOkAndPersisted(result, context);
+            Assert.NotNull(saved.IpAddress);
+            Assert.NotNull(saved.UserAgent);
+            Assert.Equal("203.0.113.42", saved.IpAddress);
+            Assert.Equal("MomSiteTests/1.0", saved.UserAgent);
+        }
+
+        [Fact]
+        [Trait("Scenario", "S1-AS1")]
+        public async Task SendContactMessage_PersistenceBeforeNotification()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_PersistenceBeforeNotification));
+
+            var notifier = new Mock<IFeedbackNotifier>();
+            notifier.SetupGet(n => n.IsEnabled).Returns(true);
+
+            var savedIdWhenNotified = 0;
+            notifier.Setup(n => n.NotifyAsync(It.IsAny<ContactMessage>(), It.IsAny<CancellationToken>()))
+                .Callback<ContactMessage, CancellationToken>((msg, ct) =>
+                {
+                    savedIdWhenNotified = msg.Id;
+                    var count = context.ContactMessages.Count();
+                    Assert.Equal(1, count);
+                    var record = context.ContactMessages.FirstOrDefault();
+                    Assert.NotNull(record);
+                    Assert.Equal(ContactMessageStatus.New, record.Status);
+                })
+                .Returns(Task.CompletedTask);
+
+            var controller = CreateController(context, new[] { notifier.Object });
+
+            var result = await controller.SendContactMessage(ValidMessage());
+
+            AssertOkAndPersisted(result, context);
+            Assert.True(savedIdWhenNotified > 0, "Notifier should have received a message with a valid ID");
+            var saved = context.ContactMessages.First();
+            Assert.Equal(savedIdWhenNotified, saved.Id);
+        }
+
+        [Fact]
+        [Trait("Scenario", "S1-AS1")]
+        public async Task SendContactMessage_NotifyDisabledChannelIsNeverCalled()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_NotifyDisabledChannelIsNeverCalled));
+            var disabled = DisabledNotifier();
+            var enabled = EnabledNotifier();
+            var controller = CreateController(context, new[] { disabled.Object, enabled.Object });
+
+            var result = await controller.SendContactMessage(ValidMessage());
+
+            AssertOkAndPersisted(result, context);
+            VerifyNeverNotified(disabled);
+            enabled.Verify(n => n.NotifyAsync(It.IsAny<ContactMessage>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        [Trait("Scenario", "S1-AS1")]
+        public async Task SendContactMessage_ChannelNotCalledIfNotEnabled()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_ChannelNotCalledIfNotEnabled));
+            var disabledNotifier = DisabledNotifier();
+            var controller = CreateController(context, new[] { disabledNotifier.Object });
+
+            var result = await controller.SendContactMessage(ValidMessage());
+
+            AssertOkAndPersisted(result, context);
+            VerifyNeverNotified(disabledNotifier);
+        }
+
+        [Fact]
+        [Trait("Scenario", "S1-AS6")]
+        public async Task SendContactMessage_WhitespaceNameTreatedAsEmpty()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_WhitespaceNameTreatedAsEmpty));
+            var controller = CreateController(context, Array.Empty<IFeedbackNotifier>());
+
+            var dto = ValidMessage();
+            dto.Name = "   ";
+            // Assuming validation treats whitespace as empty/required violation
+            controller.ModelState.AddModelError("Name", "Name обязателен");
+
+            var result = await controller.SendContactMessage(dto);
+
+            var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequest.StatusCode);
+            Assert.Empty(context.ContactMessages);
+        }
+
+        [Fact]
+        [Trait("Scenario", "S1-AS1")]
+        public async Task SendContactMessage_AllRequiredFieldsPresent()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_AllRequiredFieldsPresent));
+            var controller = CreateController(context, Array.Empty<IFeedbackNotifier>());
+
+            var dto = ValidMessage();
+
+            var result = await controller.SendContactMessage(dto);
+
+            var saved = AssertOkAndPersisted(result, context);
+            Assert.NotEmpty(saved.Name);
+            Assert.NotEmpty(saved.Email);
+            Assert.NotEmpty(saved.Subject);
+            Assert.NotEmpty(saved.Message);
+        }
+
+        [Fact]
+        [Trait("Scenario", "S1-AS1")]
+        public async Task SendContactMessage_EmailFieldIsCapture()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_EmailFieldIsCapture));
+            var controller = CreateController(context, Array.Empty<IFeedbackNotifier>());
+
+            var dto = ValidMessage();
+            dto.Email = "test@example.org";
+
+            var result = await controller.SendContactMessage(dto);
+
+            var saved = AssertOkAndPersisted(result, context);
+            Assert.Equal("test@example.org", saved.Email);
+        }
     }
 }
