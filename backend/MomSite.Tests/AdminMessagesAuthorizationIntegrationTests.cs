@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -72,88 +73,52 @@ namespace MomSite.Tests
             Assert.Equal((HttpStatusCode)expectedStatusCode, response.StatusCode);
         }
 
+        public enum RejectedToken
+        {
+            Empty,
+            Malformed,
+            SignedWithWrongKey,
+            WrongIssuer,
+            WrongAudience,
+            Expired
+        }
+
+        public static IEnumerable<object[]> RejectedTokensAgainstProtectedRequests() =>
+            from request in ProtectedMessageRequests()
+            from kind in Enum.GetValues<RejectedToken>()
+            select new[] { request[0], request[1], kind };
+
+        // Every way a token can fail validation must end in 401 on every
+        // protected endpoint. Keeping them in one theory means a newly
+        // protected endpoint added to ProtectedMessageRequests is automatically
+        // checked against all six rejection modes.
         [Theory]
         [Trait("Scenario", "S2-AS1")]
-        [MemberData(nameof(ProtectedMessageRequests))]
-        public async Task MessageEndpoint_WithEmptyBearerToken_Returns401(HttpMethod method, string url)
+        [MemberData(nameof(RejectedTokensAgainstProtectedRequests))]
+        public async Task MessageEndpoint_WithRejectedToken_Returns401(
+            HttpMethod method, string url, RejectedToken kind)
         {
             var client = _factory.CreateClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "");
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", TokenFor(kind));
 
             var response = await client.SendAsync(new HttpRequestMessage(method, url));
 
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
-        [Theory]
-        [Trait("Scenario", "S2-AS1")]
-        [MemberData(nameof(ProtectedMessageRequests))]
-        public async Task MessageEndpoint_WithMalformedToken_Returns401(HttpMethod method, string url)
+        private string TokenFor(RejectedToken kind) => kind switch
         {
-            var client = _factory.CreateClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "not.a.valid.jwt");
+            RejectedToken.Empty => string.Empty,
+            RejectedToken.Malformed => "not.a.valid.jwt",
+            RejectedToken.SignedWithWrongKey => _factory.GenerateToken(
+                key: new SymmetricSecurityKey(Encoding.UTF8.GetBytes("wrong-secret-key-wrong-secret-ke"))),
+            RejectedToken.WrongIssuer => _factory.GenerateToken(issuer: "wrong-issuer"),
+            RejectedToken.WrongAudience => _factory.GenerateToken(audience: "wrong-audience"),
+            RejectedToken.Expired => _factory.GenerateToken(lifetime: TimeSpan.FromSeconds(-10)),
+            _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null)
+        };
 
-            var response = await client.SendAsync(new HttpRequestMessage(method, url));
-
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-        }
-
-        [Theory]
-        [Trait("Scenario", "S2-AS1")]
-        [MemberData(nameof(ProtectedMessageRequests))]
-        public async Task MessageEndpoint_WithWronglySignedToken_Returns401(HttpMethod method, string url)
-        {
-            var client = _factory.CreateClient();
-            var wrongKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("wrong-secret-key-wrong-secret-ke"));
-            var wrongToken = _factory.GenerateTokenWithKey(wrongKey);
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", wrongToken);
-
-            var response = await client.SendAsync(new HttpRequestMessage(method, url));
-
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-        }
-
-        [Theory]
-        [Trait("Scenario", "S2-AS1")]
-        [MemberData(nameof(ProtectedMessageRequests))]
-        public async Task MessageEndpoint_WithWrongIssuer_Returns401(HttpMethod method, string url)
-        {
-            var client = _factory.CreateClient();
-            var token = _factory.GenerateTokenWithCustomIssuer("wrong-issuer");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-            var response = await client.SendAsync(new HttpRequestMessage(method, url));
-
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-        }
-
-        [Theory]
-        [Trait("Scenario", "S2-AS1")]
-        [MemberData(nameof(ProtectedMessageRequests))]
-        public async Task MessageEndpoint_WithWrongAudience_Returns401(HttpMethod method, string url)
-        {
-            var client = _factory.CreateClient();
-            var token = _factory.GenerateTokenWithCustomAudience("wrong-audience");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-            var response = await client.SendAsync(new HttpRequestMessage(method, url));
-
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-        }
-
-        [Theory]
-        [Trait("Scenario", "S2-AS1")]
-        [MemberData(nameof(ProtectedMessageRequests))]
-        public async Task MessageEndpoint_WithExpiredToken_Returns401(HttpMethod method, string url)
-        {
-            var client = _factory.CreateClient();
-            var token = _factory.GenerateExpiredToken();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-            var response = await client.SendAsync(new HttpRequestMessage(method, url));
-
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-        }
     }
 
     public class AdminMessagesWebApplicationFactory : WebApplicationFactory<Program>
@@ -218,84 +183,31 @@ namespace MomSite.Tests
             return payload!.Token;
         }
 
-        public string GenerateTokenWithKey(SymmetricSecurityKey key)
+        private const string DefaultIssuer = "mom-site";
+        private const string DefaultAudience = "mom-site-client";
+
+        // One builder for every token the tests need. Each rejection scenario
+        // differs from a good token in exactly one dimension, so they are
+        // expressed as single-argument overrides rather than as four
+        // near-identical copies of the same construction code.
+        public string GenerateToken(
+            SymmetricSecurityKey? key = null,
+            string issuer = DefaultIssuer,
+            string audience = DefaultAudience,
+            TimeSpan? lifetime = null)
         {
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Name, "admin"),
-                new Claim(ClaimTypes.Role, "Admin")
-            };
-
-            var token = new JwtSecurityToken(
-                issuer: "mom-site",
-                audience: "mom-site-client",
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(24),
-                signingCredentials: credentials
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        public string GenerateTokenWithCustomIssuer(string issuer)
-        {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TestJwtSecret));
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Name, "admin"),
-                new Claim(ClaimTypes.Role, "Admin")
-            };
+            key ??= new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TestJwtSecret));
 
             var token = new JwtSecurityToken(
                 issuer: issuer,
-                audience: "mom-site-client",
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(24),
-                signingCredentials: credentials
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        public string GenerateTokenWithCustomAudience(string audience)
-        {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TestJwtSecret));
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Name, "admin"),
-                new Claim(ClaimTypes.Role, "Admin")
-            };
-
-            var token = new JwtSecurityToken(
-                issuer: "mom-site",
                 audience: audience,
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(24),
-                signingCredentials: credentials
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        public string GenerateExpiredToken()
-        {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TestJwtSecret));
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Name, "admin"),
-                new Claim(ClaimTypes.Role, "Admin")
-            };
-
-            var token = new JwtSecurityToken(
-                issuer: "mom-site",
-                audience: "mom-site-client",
-                claims: claims,
-                expires: DateTime.UtcNow.AddSeconds(-10),  // Expired 10 seconds ago
-                signingCredentials: credentials
+                claims: new[]
+                {
+                    new Claim(ClaimTypes.Name, "admin"),
+                    new Claim(ClaimTypes.Role, "Admin")
+                },
+                expires: DateTime.UtcNow.Add(lifetime ?? TimeSpan.FromHours(24)),
+                signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
