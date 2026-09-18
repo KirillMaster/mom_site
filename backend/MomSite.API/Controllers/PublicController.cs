@@ -389,6 +389,8 @@ public class PublicController : ControllerBase
         return Ok(footerData);
     }
 
+    private static readonly object ContactMessageAccepted = new { message = "Сообщение успешно отправлено!" };
+
     [HttpPost("contact-message")]
     public async Task<IActionResult> SendContactMessage([FromBody] ContactMessageDto message)
     {
@@ -400,12 +402,12 @@ public class PublicController : ControllerBase
             return StatusCode(StatusCodes.Status429TooManyRequests, new { message = "Слишком много запросов. Попробуйте позже." });
         }
 
-        if (!string.IsNullOrWhiteSpace(message.Website))
+        if (IsHoneypotTripped(message))
         {
             // Honeypot tripped: respond as if the submission succeeded so the
             // bot cannot tell it was filtered, but never persist or notify.
             _logger.LogWarning("Honeypot field filled for contact-message from {ClientIp}; discarding as spam", clientIp);
-            return Ok(new { message = "Сообщение успешно отправлено!" });
+            return Ok(ContactMessageAccepted);
         }
 
         if (!ModelState.IsValid)
@@ -413,7 +415,25 @@ public class PublicController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var entity = new ContactMessage
+        var entity = BuildContactMessageEntity(message);
+
+        if (!await TryPersistContactMessageAsync(entity, message.Email))
+        {
+            return StatusCode(500, new { message = "Ошибка при отправке сообщения. Попробуйте позже." });
+        }
+
+        // Persistence has already succeeded at this point, so the lead is
+        // never lost even if every notification channel below fails.
+        await NotifyContactMessageAsync(entity);
+
+        return Ok(ContactMessageAccepted);
+    }
+
+    private static bool IsHoneypotTripped(ContactMessageDto message) =>
+        !string.IsNullOrWhiteSpace(message.Website);
+
+    private ContactMessage BuildContactMessageEntity(ContactMessageDto message) =>
+        new()
         {
             Name = message.Name,
             Email = message.Email,
@@ -428,19 +448,23 @@ public class PublicController : ControllerBase
             Status = ContactMessageStatus.New
         };
 
+    private async Task<bool> TryPersistContactMessageAsync(ContactMessage entity, string fromEmail)
+    {
         try
         {
             _context.ContactMessages.Add(entity);
             await _context.SaveChangesAsync();
+            return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to persist contact message from {FromEmail}", message.Email);
-            return StatusCode(500, new { message = "Ошибка при отправке сообщения. Попробуйте позже." });
+            _logger.LogError(ex, "Failed to persist contact message from {FromEmail}", fromEmail);
+            return false;
         }
+    }
 
-        // Persistence has already succeeded at this point, so the lead is
-        // never lost even if every notification channel below fails.
+    private async Task NotifyContactMessageAsync(ContactMessage entity)
+    {
         foreach (var notifier in _notifiers)
         {
             if (!notifier.IsEnabled)
@@ -457,8 +481,6 @@ public class PublicController : ControllerBase
                 _logger.LogError(ex, "Notifier {Notifier} failed to deliver contact message {Id}", notifier.GetType().Name, entity.Id);
             }
         }
-
-        return Ok(new { message = "Сообщение успешно отправлено!" });
     }
 
     [HttpGet("health")]
