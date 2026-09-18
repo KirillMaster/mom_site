@@ -2,6 +2,7 @@ using Xunit;
 using Moq;
 using MomSite.API.Controllers;
 using MomSite.Infrastructure.Data;
+using MomSite.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using MomSite.Core.Interfaces;
 using MomSite.Core.Models;
@@ -13,6 +14,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Time.Testing;
 
 namespace MomSite.Tests
 {
@@ -26,15 +28,27 @@ namespace MomSite.Tests
             return new ApplicationDbContext(options);
         }
 
+        // Always allows the request through; used by every test that isn't
+        // specifically exercising the rate-limit scenarios (S3-AS3/AS4).
+        private class AlwaysAllowRateLimiter : IContactRateLimiter
+        {
+            public bool TryAcquire(string clientKey) => true;
+        }
+
         private static PublicController CreateController(
             ApplicationDbContext context,
-            IEnumerable<IFeedbackNotifier> notifiers)
+            IEnumerable<IFeedbackNotifier> notifiers,
+            IContactRateLimiter? rateLimiter = null)
         {
             var httpContext = new DefaultHttpContext();
             httpContext.Connection.RemoteIpAddress = System.Net.IPAddress.Parse("203.0.113.42");
             httpContext.Request.Headers.UserAgent = "MomSiteTests/1.0";
 
-            var controller = new PublicController(context, notifiers, Mock.Of<ILogger<PublicController>>());
+            var controller = new PublicController(
+                context,
+                notifiers,
+                Mock.Of<ILogger<PublicController>>(),
+                rateLimiter ?? new AlwaysAllowRateLimiter());
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -571,6 +585,93 @@ namespace MomSite.Tests
 
             var saved = AssertOkAndPersisted(result, context);
             Assert.Equal("test@example.org", saved.Email);
+        }
+
+        // -----------------------------------------------------------------
+        // S3 — Anti-spam (honeypot + rate-limit)
+        // -----------------------------------------------------------------
+
+        [Fact]
+        [Trait("Scenario", "S3-AS1")]
+        public async Task SendContactMessage_HoneypotFilled_Returns200SilentlyWithoutPersistOrNotify()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_HoneypotFilled_Returns200SilentlyWithoutPersistOrNotify));
+            var email = EnabledNotifier();
+            var telegram = EnabledNotifier();
+            var controller = CreateController(context, new[] { email.Object, telegram.Object });
+
+            var dto = ValidMessage();
+            dto.Website = "http://spam.example";
+
+            var result = await controller.SendContactMessage(dto);
+
+            var ok = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal(200, ok.StatusCode);
+            Assert.Empty(context.ContactMessages);
+            VerifyNeverNotified(email);
+            VerifyNeverNotified(telegram);
+        }
+
+        [Fact]
+        [Trait("Scenario", "S3-AS2")]
+        public async Task SendContactMessage_HoneypotEmpty_SavesNormally()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_HoneypotEmpty_SavesNormally));
+            var controller = CreateController(context, Array.Empty<IFeedbackNotifier>());
+
+            var dto = ValidMessage();
+            dto.Website = "";
+
+            var result = await controller.SendContactMessage(dto);
+
+            AssertOkAndPersisted(result, context);
+        }
+
+        [Fact]
+        [Trait("Scenario", "S3-AS3")]
+        public async Task SendContactMessage_ExceedsRateLimit_Returns429AndDoesNotPersistExtra()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_ExceedsRateLimit_Returns429AndDoesNotPersistExtra));
+            var timeProvider = new FakeTimeProvider();
+            var options = new ContactRateLimiterOptions { PermitLimit = 5, WindowMinutes = 10 };
+            var limiter = new FixedWindowContactRateLimiter(options, timeProvider);
+            var controller = CreateController(context, Array.Empty<IFeedbackNotifier>(), limiter);
+
+            for (int i = 0; i < 5; i++)
+            {
+                var allowed = await controller.SendContactMessage(ValidMessage());
+                Assert.IsType<OkObjectResult>(allowed);
+            }
+
+            var blocked = await controller.SendContactMessage(ValidMessage());
+
+            var tooMany = Assert.IsType<ObjectResult>(blocked);
+            Assert.Equal(StatusCodes.Status429TooManyRequests, tooMany.StatusCode);
+            Assert.Equal(5, context.ContactMessages.Count());
+        }
+
+        [Fact]
+        [Trait("Scenario", "S3-AS4")]
+        public async Task SendContactMessage_AfterWindowExpires_RateLimitResetsAndSaves200()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_AfterWindowExpires_RateLimitResetsAndSaves200));
+            var timeProvider = new FakeTimeProvider();
+            var options = new ContactRateLimiterOptions { PermitLimit = 2, WindowMinutes = 10 };
+            var limiter = new FixedWindowContactRateLimiter(options, timeProvider);
+            var controller = CreateController(context, Array.Empty<IFeedbackNotifier>(), limiter);
+
+            Assert.IsType<OkObjectResult>(await controller.SendContactMessage(ValidMessage()));
+            Assert.IsType<OkObjectResult>(await controller.SendContactMessage(ValidMessage()));
+
+            var blocked = await controller.SendContactMessage(ValidMessage());
+            Assert.Equal(StatusCodes.Status429TooManyRequests, Assert.IsType<ObjectResult>(blocked).StatusCode);
+
+            timeProvider.Advance(TimeSpan.FromMinutes(11));
+
+            var afterReset = await controller.SendContactMessage(ValidMessage());
+
+            Assert.IsType<OkObjectResult>(afterReset);
+            Assert.Equal(3, context.ContactMessages.Count());
         }
     }
 }

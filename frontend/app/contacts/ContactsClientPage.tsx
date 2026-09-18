@@ -19,9 +19,11 @@ const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) =>
     email: '',
     subject: '',
     message: '',
+    website: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<'success' | 'error' | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string>('Произошла ошибка при отправке сообщения.');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
@@ -37,10 +39,15 @@ const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) =>
       await sendContactMessage(formData);
       setSubmissionResult('success');
       alert('Сообщение успешно отправлено!');
-      setFormData({ name: '', email: '', subject: '', message: '' });
-    } catch (error) {
+      setFormData({ name: '', email: '', subject: '', message: '', website: '' });
+    } catch (error: any) {
       setSubmissionResult('error');
-      alert('Произошла ошибка при отправке сообщения.');
+      const status = error?.response?.status;
+      const message = status === 429
+        ? 'Слишком много запросов. Пожалуйста, попробуйте немного позже.'
+        : 'Произошла ошибка при отправке сообщения.';
+      setErrorMessage(message);
+      alert(message);
       console.error(error);
     } finally {
       setIsSubmitting(false);
@@ -133,6 +140,31 @@ const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) =>
                 </h3>
                 
                 <form onSubmit={handleSubmit} className="space-y-6">
+                  {/*
+                    Honeypot anti-spam field (@S3-AS1/@S3-AS2). Kept in the
+                    accessibility tree removed and out of the tab order so
+                    screen-reader/keyboard users never encounter it, but not
+                    display:none/visibility:hidden, since some bots skip
+                    fields hidden that way. Left empty by humans; any bot
+                    that fills every input trips it and the server silently
+                    discards the submission.
+                  */}
+                  <div
+                    style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' }}
+                    aria-hidden="true"
+                  >
+                    <label htmlFor="website">Website</label>
+                    <input
+                      type="text"
+                      id="website"
+                      name="website"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={formData.website}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -200,7 +232,7 @@ const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) =>
                     <p className="text-green-600 text-center mt-4">Сообщение успешно отправлено!</p>
                   )}
                   {submissionResult === 'error' && (
-                    <p className="text-red-600 text-center mt-4">Произошла ошибка при отправке сообщения.</p>
+                    <p className="text-red-600 text-center mt-4">{errorMessage}</p>
                   )}
                 </form>
               </motion.div>

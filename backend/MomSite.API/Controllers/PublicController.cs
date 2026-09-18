@@ -14,15 +14,18 @@ public class PublicController : ControllerBase
     private readonly ApplicationDbContext _context;
     private readonly IEnumerable<IFeedbackNotifier> _notifiers;
     private readonly ILogger<PublicController> _logger;
+    private readonly IContactRateLimiter _rateLimiter;
 
     public PublicController(
         ApplicationDbContext context,
         IEnumerable<IFeedbackNotifier> notifiers,
-        ILogger<PublicController> logger)
+        ILogger<PublicController> logger,
+        IContactRateLimiter rateLimiter)
     {
         _context = context;
         _notifiers = notifiers;
         _logger = logger;
+        _rateLimiter = rateLimiter;
     }
 
     [HttpGet("home")] // Явный маршрут для главной страницы
@@ -389,6 +392,22 @@ public class PublicController : ControllerBase
     [HttpPost("contact-message")]
     public async Task<IActionResult> SendContactMessage([FromBody] ContactMessageDto message)
     {
+        var clientIp = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+        if (!_rateLimiter.TryAcquire(clientIp))
+        {
+            _logger.LogWarning("Rate limit exceeded for contact-message from {ClientIp}", clientIp);
+            return StatusCode(StatusCodes.Status429TooManyRequests, new { message = "Слишком много запросов. Попробуйте позже." });
+        }
+
+        if (!string.IsNullOrWhiteSpace(message.Website))
+        {
+            // Honeypot tripped: respond as if the submission succeeded so the
+            // bot cannot tell it was filtered, but never persist or notify.
+            _logger.LogWarning("Honeypot field filled for contact-message from {ClientIp}; discarding as spam", clientIp);
+            return Ok(new { message = "Сообщение успешно отправлено!" });
+        }
+
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);

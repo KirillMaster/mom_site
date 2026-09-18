@@ -228,4 +228,9 @@ export interface ContactMessage {
   email: string;
   subject: string;
   message: string;
+  // Honeypot anti-spam field. Left empty by real visitors (the input is
+  // hidden off-screen); bots that fill every field trip it and the
+  // submission is silently discarded server-side. Optional so existing
+  // callers that omit it keep working unchanged.
+  website?: string;
 }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -153,7 +154,34 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<IFeedbackNotifier, EmailNotifier>();
 builder.Services.AddScoped<IFeedbackNotifier, TelegramNotifier>();
 
+// Behind nginx, the app only ever sees the proxy's own address unless we
+// trust and apply X-Forwarded-For. Required so RemoteIpAddress (used both
+// for lead persistence and for the anti-spam rate limiter below) reflects
+// the real client IP rather than the reverse proxy's.
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    // The proxy topology (nginx on the same docker network) isn't known at
+    // startup in every environment, so we trust any proxy rather than an
+    // explicit allowlist. Nginx is the only thing that can reach this app.
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
+// Anti-spam rate limiting for the public contact form: at most N submissions
+// per IP per window, stricter than nginx's general-purpose `limit_req`.
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton(new ContactRateLimiterOptions
+{
+    PermitLimit = builder.Configuration.GetValue<int?>("ContactRateLimit:PermitLimit") ?? 5,
+    WindowMinutes = builder.Configuration.GetValue<int?>("ContactRateLimit:WindowMinutes") ?? 10
+});
+builder.Services.AddSingleton<IContactRateLimiter, FixedWindowContactRateLimiter>();
+
 var app = builder.Build();
+
+// Must run before anything that inspects the connection's remote IP.
+app.UseForwardedHeaders();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
