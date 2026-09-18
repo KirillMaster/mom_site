@@ -105,6 +105,25 @@ namespace MomSite.Tests
             notifier.Verify(n => n.NotifyAsync(It.IsAny<ContactMessage>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
+        // Asserts the controller rejected the submission with 400 and never
+        // touched the database; shared by every required-field scenario.
+        private static void AssertBadRequestAndNotPersisted(IActionResult result, ApplicationDbContext context)
+        {
+            var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequest.StatusCode);
+            Assert.Empty(context.ContactMessages);
+        }
+
+        // Builds a fixed-window rate limiter backed by a controllable clock,
+        // for scenarios that need to drive requests past the permit limit
+        // and/or advance past the window (@S3-AS3/AS4).
+        private static FixedWindowContactRateLimiter CreateRateLimiter(
+            FakeTimeProvider timeProvider, int permitLimit, int windowMinutes = 10)
+        {
+            var options = new ContactRateLimiterOptions { PermitLimit = permitLimit, WindowMinutes = windowMinutes };
+            return new FixedWindowContactRateLimiter(options, timeProvider);
+        }
+
         // A DbContext whose SaveChangesAsync always fails, to simulate a
         // PostgreSQL outage (@S1-AS5) without needing a real database.
         private class FailingSaveDbContext : ApplicationDbContext
@@ -226,9 +245,7 @@ namespace MomSite.Tests
 
             var result = await controller.SendContactMessage(dto);
 
-            var badRequest = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal(400, badRequest.StatusCode);
-            Assert.Empty(context.ContactMessages);
+            AssertBadRequestAndNotPersisted(result, context);
         }
 
         [Fact]
@@ -274,9 +291,7 @@ namespace MomSite.Tests
 
             var result = await controller.SendContactMessage(dto);
 
-            var badRequest = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal(400, badRequest.StatusCode);
-            Assert.Empty(context.ContactMessages);
+            AssertBadRequestAndNotPersisted(result, context);
         }
 
         [Fact]
@@ -292,9 +307,7 @@ namespace MomSite.Tests
 
             var result = await controller.SendContactMessage(dto);
 
-            var badRequest = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal(400, badRequest.StatusCode);
-            Assert.Empty(context.ContactMessages);
+            AssertBadRequestAndNotPersisted(result, context);
         }
 
         [Fact]
@@ -310,9 +323,7 @@ namespace MomSite.Tests
 
             var result = await controller.SendContactMessage(dto);
 
-            var badRequest = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal(400, badRequest.StatusCode);
-            Assert.Empty(context.ContactMessages);
+            AssertBadRequestAndNotPersisted(result, context);
         }
 
         [Fact]
@@ -548,9 +559,7 @@ namespace MomSite.Tests
 
             var result = await controller.SendContactMessage(dto);
 
-            var badRequest = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal(400, badRequest.StatusCode);
-            Assert.Empty(context.ContactMessages);
+            AssertBadRequestAndNotPersisted(result, context);
         }
 
         [Fact]
@@ -633,8 +642,7 @@ namespace MomSite.Tests
         {
             using var context = CreateDbContext(nameof(SendContactMessage_ExceedsRateLimit_Returns429AndDoesNotPersistExtra));
             var timeProvider = new FakeTimeProvider();
-            var options = new ContactRateLimiterOptions { PermitLimit = 5, WindowMinutes = 10 };
-            var limiter = new FixedWindowContactRateLimiter(options, timeProvider);
+            var limiter = CreateRateLimiter(timeProvider, permitLimit: 5);
             var controller = CreateController(context, Array.Empty<IFeedbackNotifier>(), limiter);
 
             for (int i = 0; i < 5; i++)
@@ -656,8 +664,7 @@ namespace MomSite.Tests
         {
             using var context = CreateDbContext(nameof(SendContactMessage_AfterWindowExpires_RateLimitResetsAndSaves200));
             var timeProvider = new FakeTimeProvider();
-            var options = new ContactRateLimiterOptions { PermitLimit = 2, WindowMinutes = 10 };
-            var limiter = new FixedWindowContactRateLimiter(options, timeProvider);
+            var limiter = CreateRateLimiter(timeProvider, permitLimit: 2);
             var controller = CreateController(context, Array.Empty<IFeedbackNotifier>(), limiter);
 
             Assert.IsType<OkObjectResult>(await controller.SendContactMessage(ValidMessage()));

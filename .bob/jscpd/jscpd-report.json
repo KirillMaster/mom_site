@@ -762,18 +762,18 @@
     },
     {
       "firstFile": {
-        "end": 155,
+        "end": 174,
         "endLoc": {
           "column": 50,
-          "line": 155,
-          "position": 6403
+          "line": 174,
+          "position": 7450
         },
         "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 149,
+        "start": 168,
         "startLoc": {
           "column": 52,
-          "line": 149,
-          "position": 6126
+          "line": 168,
+          "position": 7173
         }
       },
       "format": "csharp",
@@ -782,226 +782,36 @@
       "kind": "exact",
       "lines": 7,
       "secondFile": {
-        "end": 190,
+        "end": 209,
         "endLoc": {
           "column": 50,
-          "line": 190,
-          "position": 7904
+          "line": 209,
+          "position": 8951
         },
         "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 184,
+        "start": 203,
         "startLoc": {
           "column": 41,
-          "line": 184,
-          "position": 7627
+          "line": 203,
+          "position": 8674
         }
       },
       "tokens": 50
     },
     {
       "firstFile": {
-        "end": 235,
+        "end": 346,
         "endLoc": {
           "column": 26,
-          "line": 235,
-          "position": 9792
+          "line": 346,
+          "position": 14893
         },
         "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 225,
-        "startLoc": {
-          "column": 85,
-          "line": 225,
-          "position": 9487
-        }
-      },
-      "format": "csharp",
-      "fragment": "            controller.ModelState.AddModelError(\"Email\", \"Email обязателен\");\n\n            var result = await controller.SendContactMessage(dto);\n\n            var badRequest = Assert.IsType<BadRequestObjectResult>(result);\n            Assert.Equal(400, badRequest.StatusCode);\n            Assert.Empty(context.ContactMessages);\n        }\n\n        [Fact]\n        [Trait(\"Scenario\", \"S1-AS7\")]",
-      "isNew": false,
-      "kind": "exact",
-      "lines": 11,
-      "secondFile": {
-        "end": 283,
-        "endLoc": {
-          "column": 26,
-          "line": 283,
-          "position": 11904
-        },
-        "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 273,
-        "startLoc": {
-          "column": 83,
-          "line": 273,
-          "position": 11599
-        }
-      },
-      "tokens": 55
-    },
-    {
-      "firstFile": {
-        "end": 235,
-        "endLoc": {
-          "column": 26,
-          "line": 235,
-          "position": 9792
-        },
-        "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 225,
-        "startLoc": {
-          "column": 85,
-          "line": 225,
-          "position": 9487
-        }
-      },
-      "format": "csharp",
-      "fragment": "            controller.ModelState.AddModelError(\"Email\", \"Email обязателен\");\n\n            var result = await controller.SendContactMessage(dto);\n\n            var badRequest = Assert.IsType<BadRequestObjectResult>(result);\n            Assert.Equal(400, badRequest.StatusCode);\n            Assert.Empty(context.ContactMessages);\n        }\n\n        [Fact]\n        [Trait(\"Scenario\", \"S1-AS7\")]",
-      "isNew": false,
-      "kind": "exact",
-      "lines": 11,
-      "secondFile": {
-        "end": 301,
-        "endLoc": {
-          "column": 26,
-          "line": 301,
-          "position": 12699
-        },
-        "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 291,
-        "startLoc": {
-          "column": 89,
-          "line": 291,
-          "position": 12394
-        }
-      },
-      "tokens": 55
-    },
-    {
-      "firstFile": {
-        "end": 235,
-        "endLoc": {
-          "column": 26,
-          "line": 235,
-          "position": 9792
-        },
-        "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 225,
-        "startLoc": {
-          "column": 85,
-          "line": 225,
-          "position": 9487
-        }
-      },
-      "format": "csharp",
-      "fragment": "            controller.ModelState.AddModelError(\"Email\", \"Email обязателен\");\n\n            var result = await controller.SendContactMessage(dto);\n\n            var badRequest = Assert.IsType<BadRequestObjectResult>(result);\n            Assert.Equal(400, badRequest.StatusCode);\n            Assert.Empty(context.ContactMessages);\n        }\n\n        [Fact]\n        [Trait(\"Scenario\", \"S1-AS7\")]",
-      "isNew": false,
-      "kind": "exact",
-      "lines": 11,
-      "secondFile": {
-        "end": 319,
-        "endLoc": {
-          "column": 26,
-          "line": 319,
-          "position": 13494
-        },
-        "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 309,
-        "startLoc": {
-          "column": 89,
-          "line": 309,
-          "position": 13189
-        }
-      },
-      "tokens": 55
-    },
-    {
-      "firstFile": {
-        "end": 284,
-        "endLoc": {
-          "column": 25,
-          "line": 284,
-          "position": 11941
-        },
-        "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 273,
-        "startLoc": {
-          "column": 12,
-          "line": 273,
-          "position": 11528
-        }
-      },
-      "format": "csharp",
-      "fragment": "            controller.ModelState.AddModelError(\"Name\", \"Name обязателен\");\n\n            var result = await controller.SendContactMessage(dto);\n\n            var badRequest = Assert.IsType<BadRequestObjectResult>(result);\n            Assert.Equal(400, badRequest.StatusCode);\n            Assert.Empty(context.ContactMessages);\n        }\n\n        [Fact]\n        [Trait(\"Scenario\", \"S1-AS1\")]\n        public async Task SendContactMessage_MissingSubject_Returns400AndDoesNotPersist()",
-      "isNew": false,
-      "kind": "exact",
-      "lines": 12,
-      "secondFile": {
-        "end": 558,
-        "endLoc": {
-          "column": 25,
-          "line": 558,
-          "position": 24076
-        },
-        "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 547,
-        "startLoc": {
-          "column": 12,
-          "line": 547,
-          "position": 23663
-        }
-      },
-      "tokens": 70
-    },
-    {
-      "firstFile": {
-        "end": 284,
-        "endLoc": {
-          "column": 25,
-          "line": 284,
-          "position": 11941
-        },
-        "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 275,
-        "startLoc": {
-          "column": 31,
-          "line": 275,
-          "position": 11634
-        }
-      },
-      "format": "csharp",
-      "fragment": "            var result = await controller.SendContactMessage(dto);\n\n            var badRequest = Assert.IsType<BadRequestObjectResult>(result);\n            Assert.Equal(400, badRequest.StatusCode);\n            Assert.Empty(context.ContactMessages);\n        }\n\n        [Fact]\n        [Trait(\"Scenario\", \"S1-AS1\")]\n        public async Task SendContactMessage_MissingSubject_Returns400AndDoesNotPersist()",
-      "isNew": false,
-      "kind": "exact",
-      "lines": 10,
-      "secondFile": {
-        "end": 302,
-        "endLoc": {
-          "column": 25,
-          "line": 302,
-          "position": 12736
-        },
-        "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 293,
-        "startLoc": {
-          "column": 31,
-          "line": 293,
-          "position": 12429
-        }
-      },
-      "tokens": 55
-    },
-    {
-      "firstFile": {
-        "end": 335,
-        "endLoc": {
-          "column": 26,
-          "line": 335,
-          "position": 14322
-        },
-        "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 324,
+        "start": 335,
         "startLoc": {
           "column": 41,
-          "line": 324,
-          "position": 13806
+          "line": 335,
+          "position": 14377
         }
       },
       "format": "csharp",
@@ -1010,18 +820,18 @@
       "kind": "exact",
       "lines": 12,
       "secondFile": {
-        "end": 351,
+        "end": 362,
         "endLoc": {
           "column": 26,
-          "line": 351,
-          "position": 15154
+          "line": 362,
+          "position": 15725
         },
         "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 340,
+        "start": 351,
         "startLoc": {
           "column": 53,
-          "line": 340,
-          "position": 14638
+          "line": 351,
+          "position": 15209
         }
       },
       "tokens": 122
@@ -2320,19 +2130,19 @@
     }
   ],
   "statistics": {
-    "detectionDate": "2026-09-18T18:28:12.560Z",
+    "detectionDate": "2026-09-18T18:34:08.812Z",
     "formats": {
       "csharp": {
-        "clones": 27,
-        "duplicatedLines": 314,
-        "duplicatedTokens": 1987,
-        "lines": 4132,
+        "clones": 22,
+        "duplicatedLines": 264,
+        "duplicatedTokens": 1697,
+        "lines": 4139,
         "newClones": 0,
         "newDuplicatedLines": 0,
-        "percentage": 7.599225556631171,
-        "percentageTokens": 8.527165050210282,
+        "percentage": 6.378352258999759,
+        "percentageTokens": 7.303008133580066,
         "sources": 29,
-        "tokens": 23302
+        "tokens": 23237
       },
       "css": {
         "clones": 0,
@@ -2408,16 +2218,16 @@
       }
     },
     "total": {
-      "clones": 61,
-      "duplicatedLines": 762,
-      "duplicatedTokens": 4380,
-      "lines": 20253,
+      "clones": 56,
+      "duplicatedLines": 712,
+      "duplicatedTokens": 4090,
+      "lines": 20260,
       "newClones": 0,
       "newDuplicatedLines": 0,
-      "percentage": 3.7624055695452525,
-      "percentageTokens": 4.977612109916586,
+      "percentage": 3.51431391905232,
+      "percentageTokens": 4.6514801715020075,
       "sources": 72,
-      "tokens": 87994
+      "tokens": 87929
     }
   }
 }
