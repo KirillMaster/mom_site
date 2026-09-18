@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import AdminAuthGuard from '@/components/AdminAuthGuard';
 import AdminPageShell from '@/components/AdminPageShell';
 import MessagesList from '@/components/MessagesList';
 import {
@@ -90,9 +91,11 @@ const MessagesPageContent = () => {
 };
 
 const MessagesPage = () => (
-  <QueryClientProvider client={queryClient}>
-    <MessagesPageContent />
-  </QueryClientProvider>
+  <AdminAuthGuard>
+    <QueryClientProvider client={queryClient}>
+      <MessagesPageContent />
+    </QueryClientProvider>
+  </AdminAuthGuard>
 );
 
 export default MessagesPage;
