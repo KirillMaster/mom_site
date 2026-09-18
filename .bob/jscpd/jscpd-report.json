@@ -40,18 +40,18 @@
     },
     {
       "firstFile": {
-        "end": 66,
+        "end": 69,
         "endLoc": {
           "column": 29,
-          "line": 66,
-          "position": 2580
+          "line": 69,
+          "position": 2712
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 56,
+        "start": 59,
         "startLoc": {
           "column": 8,
-          "line": 56,
-          "position": 2202
+          "line": 59,
+          "position": 2334
         }
       },
       "format": "csharp",
@@ -60,36 +60,36 @@
       "kind": "exact",
       "lines": 11,
       "secondFile": {
-        "end": 349,
+        "end": 352,
         "endLoc": {
           "column": 29,
-          "line": 349,
-          "position": 14503
+          "line": 352,
+          "position": 14635
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 339,
+        "start": 342,
         "startLoc": {
           "column": 8,
-          "line": 339,
-          "position": 14125
+          "line": 342,
+          "position": 14257
         }
       },
       "tokens": 59
     },
     {
       "firstFile": {
-        "end": 66,
+        "end": 69,
         "endLoc": {
           "column": 20,
-          "line": 66,
-          "position": 2571
+          "line": 69,
+          "position": 2703
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 57,
+        "start": 60,
         "startLoc": {
           "column": 8,
-          "line": 57,
-          "position": 2249
+          "line": 60,
+          "position": 2381
         }
       },
       "format": "csharp",
@@ -98,36 +98,36 @@
       "kind": "exact",
       "lines": 10,
       "secondFile": {
-        "end": 210,
+        "end": 213,
         "endLoc": {
           "column": 20,
-          "line": 210,
-          "position": 9515
+          "line": 213,
+          "position": 9647
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 201,
+        "start": 204,
         "startLoc": {
           "column": 8,
-          "line": 201,
-          "position": 9193
+          "line": 204,
+          "position": 9325
         }
       },
       "tokens": 56
     },
     {
       "firstFile": {
-        "end": 67,
+        "end": 70,
         "endLoc": {
           "column": 32,
-          "line": 67,
-          "position": 2613
+          "line": 70,
+          "position": 2745
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 58,
+        "start": 61,
         "startLoc": {
           "column": 12,
-          "line": 58,
-          "position": 2311
+          "line": 61,
+          "position": 2443
         }
       },
       "format": "csharp",
@@ -136,36 +136,36 @@
       "kind": "exact",
       "lines": 10,
       "secondFile": {
-        "end": 350,
+        "end": 353,
         "endLoc": {
           "column": 30,
-          "line": 350,
-          "position": 14534
+          "line": 353,
+          "position": 14666
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 341,
+        "start": 344,
         "startLoc": {
           "column": 12,
-          "line": 341,
-          "position": 14234
+          "line": 344,
+          "position": 14366
         }
       },
       "tokens": 51
     },
     {
       "firstFile": {
-        "end": 104,
+        "end": 107,
         "endLoc": {
           "column": 9,
-          "line": 104,
-          "position": 3955
+          "line": 107,
+          "position": 4087
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 70,
+        "start": 73,
         "startLoc": {
           "column": 39,
-          "line": 70,
-          "position": 2739
+          "line": 73,
+          "position": 2871
         }
       },
       "format": "csharp",
@@ -174,36 +174,36 @@
       "kind": "exact",
       "lines": 35,
       "secondFile": {
-        "end": 248,
+        "end": 251,
         "endLoc": {
           "column": 9,
-          "line": 248,
-          "position": 10899
+          "line": 251,
+          "position": 11031
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 214,
+        "start": 217,
         "startLoc": {
           "column": 39,
-          "line": 214,
-          "position": 9683
+          "line": 217,
+          "position": 9815
         }
       },
       "tokens": 155
     },
     {
       "firstFile": {
-        "end": 88,
+        "end": 91,
         "endLoc": {
           "column": 33,
-          "line": 88,
-          "position": 3317
+          "line": 91,
+          "position": 3449
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 73,
+        "start": 76,
         "startLoc": {
           "column": 41,
-          "line": 73,
-          "position": 2862
+          "line": 76,
+          "position": 2994
         }
       },
       "format": "csharp",
@@ -212,18 +212,18 @@
       "kind": "exact",
       "lines": 16,
       "secondFile": {
-        "end": 368,
+        "end": 371,
         "endLoc": {
           "column": 33,
-          "line": 368,
-          "position": 15113
+          "line": 371,
+          "position": 15245
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 353,
+        "start": 356,
         "startLoc": {
           "column": 37,
-          "line": 353,
-          "position": 14658
+          "line": 356,
+          "position": 14790
         }
       },
       "tokens": 68
@@ -762,18 +762,56 @@
     },
     {
       "firstFile": {
-        "end": 141,
+        "end": 129,
+        "endLoc": {
+          "column": 19,
+          "line": 129,
+          "position": 5915
+        },
+        "name": "MomSite.Tests\\AdminMessagesControllerTests.cs",
+        "start": 122,
+        "startLoc": {
+          "column": 43,
+          "line": 122,
+          "position": 5634
+        }
+      },
+      "format": "csharp",
+      "fragment": "                Assert.Equal(1, beforeCount);\n\n                var result = await controller.GetMessage(1);\n                var ok = Assert.IsType<OkObjectResult>(result.Result);\n                var dto = Assert.IsType<ContactMessageAdminDto>(ok.Value);\n                Assert.Equal(\"Read\", dto.Status);\n\n                var afterCount = (await controller.GetUnreadMessagesCount()).Value;",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 8,
+      "secondFile": {
+        "end": 269,
+        "endLoc": {
+          "column": 19,
+          "line": 269,
+          "position": 13139
+        },
+        "name": "MomSite.Tests\\AdminMessagesControllerTests.cs",
+        "start": 262,
+        "startLoc": {
+          "column": 43,
+          "line": 262,
+          "position": 12858
+        }
+      },
+      "tokens": 55
+    },
+    {
+      "firstFile": {
+        "end": 174,
         "endLoc": {
           "column": 50,
-          "line": 141,
-          "position": 5860
+          "line": 174,
+          "position": 7450
         },
         "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 135,
+        "start": 168,
         "startLoc": {
           "column": 52,
-          "line": 135,
-          "position": 5583
+          "line": 168,
+          "position": 7173
         }
       },
       "format": "csharp",
@@ -782,226 +820,36 @@
       "kind": "exact",
       "lines": 7,
       "secondFile": {
-        "end": 176,
+        "end": 209,
         "endLoc": {
           "column": 50,
-          "line": 176,
-          "position": 7361
+          "line": 209,
+          "position": 8951
         },
         "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 170,
+        "start": 203,
         "startLoc": {
           "column": 41,
-          "line": 170,
-          "position": 7084
+          "line": 203,
+          "position": 8674
         }
       },
       "tokens": 50
     },
     {
       "firstFile": {
-        "end": 221,
+        "end": 346,
         "endLoc": {
           "column": 26,
-          "line": 221,
-          "position": 9249
+          "line": 346,
+          "position": 14893
         },
         "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 211,
-        "startLoc": {
-          "column": 85,
-          "line": 211,
-          "position": 8944
-        }
-      },
-      "format": "csharp",
-      "fragment": "            controller.ModelState.AddModelError(\"Email\", \"Email обязателен\");\n\n            var result = await controller.SendContactMessage(dto);\n\n            var badRequest = Assert.IsType<BadRequestObjectResult>(result);\n            Assert.Equal(400, badRequest.StatusCode);\n            Assert.Empty(context.ContactMessages);\n        }\n\n        [Fact]\n        [Trait(\"Scenario\", \"S1-AS7\")]",
-      "isNew": false,
-      "kind": "exact",
-      "lines": 11,
-      "secondFile": {
-        "end": 269,
-        "endLoc": {
-          "column": 26,
-          "line": 269,
-          "position": 11361
-        },
-        "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 259,
-        "startLoc": {
-          "column": 83,
-          "line": 259,
-          "position": 11056
-        }
-      },
-      "tokens": 55
-    },
-    {
-      "firstFile": {
-        "end": 221,
-        "endLoc": {
-          "column": 26,
-          "line": 221,
-          "position": 9249
-        },
-        "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 211,
-        "startLoc": {
-          "column": 85,
-          "line": 211,
-          "position": 8944
-        }
-      },
-      "format": "csharp",
-      "fragment": "            controller.ModelState.AddModelError(\"Email\", \"Email обязателен\");\n\n            var result = await controller.SendContactMessage(dto);\n\n            var badRequest = Assert.IsType<BadRequestObjectResult>(result);\n            Assert.Equal(400, badRequest.StatusCode);\n            Assert.Empty(context.ContactMessages);\n        }\n\n        [Fact]\n        [Trait(\"Scenario\", \"S1-AS7\")]",
-      "isNew": false,
-      "kind": "exact",
-      "lines": 11,
-      "secondFile": {
-        "end": 287,
-        "endLoc": {
-          "column": 26,
-          "line": 287,
-          "position": 12156
-        },
-        "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 277,
-        "startLoc": {
-          "column": 89,
-          "line": 277,
-          "position": 11851
-        }
-      },
-      "tokens": 55
-    },
-    {
-      "firstFile": {
-        "end": 221,
-        "endLoc": {
-          "column": 26,
-          "line": 221,
-          "position": 9249
-        },
-        "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 211,
-        "startLoc": {
-          "column": 85,
-          "line": 211,
-          "position": 8944
-        }
-      },
-      "format": "csharp",
-      "fragment": "            controller.ModelState.AddModelError(\"Email\", \"Email обязателен\");\n\n            var result = await controller.SendContactMessage(dto);\n\n            var badRequest = Assert.IsType<BadRequestObjectResult>(result);\n            Assert.Equal(400, badRequest.StatusCode);\n            Assert.Empty(context.ContactMessages);\n        }\n\n        [Fact]\n        [Trait(\"Scenario\", \"S1-AS7\")]",
-      "isNew": false,
-      "kind": "exact",
-      "lines": 11,
-      "secondFile": {
-        "end": 305,
-        "endLoc": {
-          "column": 26,
-          "line": 305,
-          "position": 12951
-        },
-        "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 295,
-        "startLoc": {
-          "column": 89,
-          "line": 295,
-          "position": 12646
-        }
-      },
-      "tokens": 55
-    },
-    {
-      "firstFile": {
-        "end": 270,
-        "endLoc": {
-          "column": 25,
-          "line": 270,
-          "position": 11398
-        },
-        "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 259,
-        "startLoc": {
-          "column": 12,
-          "line": 259,
-          "position": 10985
-        }
-      },
-      "format": "csharp",
-      "fragment": "            controller.ModelState.AddModelError(\"Name\", \"Name обязателен\");\n\n            var result = await controller.SendContactMessage(dto);\n\n            var badRequest = Assert.IsType<BadRequestObjectResult>(result);\n            Assert.Equal(400, badRequest.StatusCode);\n            Assert.Empty(context.ContactMessages);\n        }\n\n        [Fact]\n        [Trait(\"Scenario\", \"S1-AS1\")]\n        public async Task SendContactMessage_MissingSubject_Returns400AndDoesNotPersist()",
-      "isNew": false,
-      "kind": "exact",
-      "lines": 12,
-      "secondFile": {
-        "end": 544,
-        "endLoc": {
-          "column": 25,
-          "line": 544,
-          "position": 23533
-        },
-        "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 533,
-        "startLoc": {
-          "column": 12,
-          "line": 533,
-          "position": 23120
-        }
-      },
-      "tokens": 70
-    },
-    {
-      "firstFile": {
-        "end": 270,
-        "endLoc": {
-          "column": 25,
-          "line": 270,
-          "position": 11398
-        },
-        "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 261,
-        "startLoc": {
-          "column": 31,
-          "line": 261,
-          "position": 11091
-        }
-      },
-      "format": "csharp",
-      "fragment": "            var result = await controller.SendContactMessage(dto);\n\n            var badRequest = Assert.IsType<BadRequestObjectResult>(result);\n            Assert.Equal(400, badRequest.StatusCode);\n            Assert.Empty(context.ContactMessages);\n        }\n\n        [Fact]\n        [Trait(\"Scenario\", \"S1-AS1\")]\n        public async Task SendContactMessage_MissingSubject_Returns400AndDoesNotPersist()",
-      "isNew": false,
-      "kind": "exact",
-      "lines": 10,
-      "secondFile": {
-        "end": 288,
-        "endLoc": {
-          "column": 25,
-          "line": 288,
-          "position": 12193
-        },
-        "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 279,
-        "startLoc": {
-          "column": 31,
-          "line": 279,
-          "position": 11886
-        }
-      },
-      "tokens": 55
-    },
-    {
-      "firstFile": {
-        "end": 321,
-        "endLoc": {
-          "column": 26,
-          "line": 321,
-          "position": 13779
-        },
-        "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 310,
+        "start": 335,
         "startLoc": {
           "column": 41,
-          "line": 310,
-          "position": 13263
+          "line": 335,
+          "position": 14377
         }
       },
       "format": "csharp",
@@ -1010,18 +858,18 @@
       "kind": "exact",
       "lines": 12,
       "secondFile": {
-        "end": 337,
+        "end": 362,
         "endLoc": {
           "column": 26,
-          "line": 337,
-          "position": 14611
+          "line": 362,
+          "position": 15725
         },
         "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 326,
+        "start": 351,
         "startLoc": {
           "column": 53,
-          "line": 326,
-          "position": 14095
+          "line": 351,
+          "position": 15209
         }
       },
       "tokens": 122
@@ -1086,18 +934,18 @@
       "kind": "exact",
       "lines": 9,
       "secondFile": {
-        "end": 240,
+        "end": 272,
         "endLoc": {
           "column": 17,
-          "line": 240,
-          "position": 10667
+          "line": 272,
+          "position": 12199
         },
         "name": "app\\contacts\\ContactsClientPage.tsx",
-        "start": 232,
+        "start": 264,
         "startLoc": {
           "column": 36,
-          "line": 232,
-          "position": 10224
+          "line": 264,
+          "position": 11756
         }
       },
       "tokens": 59
@@ -1124,18 +972,18 @@
       "kind": "exact",
       "lines": 9,
       "secondFile": {
-        "end": 255,
+        "end": 287,
         "endLoc": {
           "column": 17,
-          "line": 255,
-          "position": 11400
+          "line": 287,
+          "position": 12932
         },
         "name": "app\\contacts\\ContactsClientPage.tsx",
-        "start": 247,
+        "start": 279,
         "startLoc": {
           "column": 36,
-          "line": 247,
-          "position": 10952
+          "line": 279,
+          "position": 12484
         }
       },
       "tokens": 63
@@ -1162,18 +1010,18 @@
       "kind": "exact",
       "lines": 9,
       "secondFile": {
-        "end": 270,
+        "end": 302,
         "endLoc": {
           "column": 17,
-          "line": 270,
-          "position": 12147
+          "line": 302,
+          "position": 13679
         },
         "name": "app\\contacts\\ContactsClientPage.tsx",
-        "start": 262,
+        "start": 294,
         "startLoc": {
           "column": 36,
-          "line": 262,
-          "position": 11693
+          "line": 294,
+          "position": 13225
         }
       },
       "tokens": 63
@@ -1200,18 +1048,18 @@
       "kind": "exact",
       "lines": 9,
       "secondFile": {
-        "end": 285,
+        "end": 317,
         "endLoc": {
           "column": 17,
-          "line": 285,
-          "position": 12891
+          "line": 317,
+          "position": 14423
         },
         "name": "app\\contacts\\ContactsClientPage.tsx",
-        "start": 277,
+        "start": 309,
         "startLoc": {
           "column": 36,
-          "line": 277,
-          "position": 12436
+          "line": 309,
+          "position": 13968
         }
       },
       "tokens": 63
@@ -1238,18 +1086,18 @@
       "kind": "exact",
       "lines": 9,
       "secondFile": {
-        "end": 300,
+        "end": 332,
         "endLoc": {
           "column": 17,
-          "line": 300,
-          "position": 13631
+          "line": 332,
+          "position": 15163
         },
         "name": "app\\contacts\\ContactsClientPage.tsx",
-        "start": 292,
+        "start": 324,
         "startLoc": {
           "column": 36,
-          "line": 292,
-          "position": 13179
+          "line": 324,
+          "position": 14711
         }
       },
       "tokens": 63
@@ -1864,18 +1712,18 @@
     },
     {
       "firstFile": {
-        "end": 221,
+        "end": 253,
         "endLoc": {
           "column": 91,
-          "line": 221,
-          "position": 9735
+          "line": 253,
+          "position": 11267
         },
         "name": "app\\contacts\\ContactsClientPage.tsx",
-        "start": 213,
+        "start": 245,
         "startLoc": {
           "column": 65,
-          "line": 213,
-          "position": 9367
+          "line": 245,
+          "position": 10899
         }
       },
       "format": "tsx",
@@ -1884,18 +1732,18 @@
       "kind": "exact",
       "lines": 9,
       "secondFile": {
-        "end": 319,
+        "end": 351,
         "endLoc": {
           "column": 91,
-          "line": 319,
-          "position": 14366
+          "line": 351,
+          "position": 15898
         },
         "name": "app\\contacts\\ContactsClientPage.tsx",
-        "start": 311,
+        "start": 343,
         "startLoc": {
           "column": 65,
-          "line": 311,
-          "position": 13998
+          "line": 343,
+          "position": 15530
         }
       },
       "tokens": 65
@@ -2396,19 +2244,19 @@
     }
   ],
   "statistics": {
-    "detectionDate": "2026-09-18T18:43:58.980Z",
+    "detectionDate": "2026-09-18T20:55:33.225Z",
     "formats": {
       "csharp": {
-        "clones": 27,
-        "duplicatedLines": 314,
-        "duplicatedTokens": 1987,
-        "lines": 4213,
+        "clones": 23,
+        "duplicatedLines": 271,
+        "duplicatedTokens": 1752,
+        "lines": 5161,
         "newClones": 0,
         "newDuplicatedLines": 0,
-        "percentage": 7.453121291241397,
-        "percentageTokens": 8.23046972081849,
-        "sources": 31,
-        "tokens": 24142
+        "percentage": 5.25092036427049,
+        "percentageTokens": 5.89006555723651,
+        "sources": 33,
+        "tokens": 29745
       },
       "css": {
         "clones": 0,
@@ -2438,13 +2286,13 @@
         "clones": 5,
         "duplicatedLines": 113,
         "duplicatedTokens": 391,
-        "lines": 10815,
+        "lines": 10819,
         "newClones": 0,
         "newDuplicatedLines": 0,
-        "percentage": 1.0448451225150253,
-        "percentageTokens": 1.138912353266727,
+        "percentage": 1.0444588224420002,
+        "percentageTokens": 1.1385143988585738,
         "sources": 5,
-        "tokens": 34331
+        "tokens": 34343
       },
       "markup": {
         "clones": 0,
@@ -2462,38 +2310,38 @@
         "clones": 27,
         "duplicatedLines": 301,
         "duplicatedTokens": 1894,
-        "lines": 4475,
+        "lines": 4833,
         "newClones": 0,
         "newDuplicatedLines": 0,
-        "percentage": 6.726256983240224,
-        "percentageTokens": 7.381425620639931,
-        "sources": 29,
-        "tokens": 25659
+        "percentage": 6.228015725222429,
+        "percentageTokens": 6.834584295612009,
+        "sources": 32,
+        "tokens": 27712
       },
       "typescript": {
         "clones": 4,
         "duplicatedLines": 52,
         "duplicatedTokens": 228,
-        "lines": 885,
+        "lines": 890,
         "newClones": 0,
         "newDuplicatedLines": 0,
-        "percentage": 5.875706214689266,
-        "percentageTokens": 5.120143723332585,
+        "percentage": 5.842696629213483,
+        "percentageTokens": 5.114401076716016,
         "sources": 6,
-        "tokens": 4453
+        "tokens": 4458
       }
     },
     "total": {
-      "clones": 63,
-      "duplicatedLines": 780,
-      "duplicatedTokens": 4500,
-      "lines": 20618,
+      "clones": 59,
+      "duplicatedLines": 737,
+      "duplicatedTokens": 4265,
+      "lines": 21933,
       "newClones": 0,
       "newDuplicatedLines": 0,
-      "percentage": 3.783102143757881,
-      "percentageTokens": 4.982947247198476,
-      "sources": 77,
-      "tokens": 90308
+      "percentage": 3.3602334381981485,
+      "percentageTokens": 4.352884742960369,
+      "sources": 82,
+      "tokens": 97981
     }
   }
 }
