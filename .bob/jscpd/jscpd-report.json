@@ -40,18 +40,18 @@
     },
     {
       "firstFile": {
-        "end": 61,
+        "end": 66,
         "endLoc": {
           "column": 29,
-          "line": 61,
-          "position": 2414
+          "line": 66,
+          "position": 2580
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 51,
+        "start": 56,
         "startLoc": {
           "column": 8,
-          "line": 51,
-          "position": 2036
+          "line": 56,
+          "position": 2202
         }
       },
       "format": "csharp",
@@ -60,36 +60,36 @@
       "kind": "exact",
       "lines": 11,
       "secondFile": {
-        "end": 344,
+        "end": 349,
         "endLoc": {
           "column": 29,
-          "line": 344,
-          "position": 14337
+          "line": 349,
+          "position": 14503
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 334,
+        "start": 339,
         "startLoc": {
           "column": 8,
-          "line": 334,
-          "position": 13959
+          "line": 339,
+          "position": 14125
         }
       },
       "tokens": 59
     },
     {
       "firstFile": {
-        "end": 61,
+        "end": 66,
         "endLoc": {
           "column": 20,
-          "line": 61,
-          "position": 2405
+          "line": 66,
+          "position": 2571
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 52,
+        "start": 57,
         "startLoc": {
           "column": 8,
-          "line": 52,
-          "position": 2083
+          "line": 57,
+          "position": 2249
         }
       },
       "format": "csharp",
@@ -98,36 +98,36 @@
       "kind": "exact",
       "lines": 10,
       "secondFile": {
-        "end": 205,
+        "end": 210,
         "endLoc": {
           "column": 20,
-          "line": 205,
-          "position": 9349
+          "line": 210,
+          "position": 9515
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 196,
+        "start": 201,
         "startLoc": {
           "column": 8,
-          "line": 196,
-          "position": 9027
+          "line": 201,
+          "position": 9193
         }
       },
       "tokens": 56
     },
     {
       "firstFile": {
-        "end": 62,
+        "end": 67,
         "endLoc": {
           "column": 32,
-          "line": 62,
-          "position": 2447
+          "line": 67,
+          "position": 2613
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 53,
+        "start": 58,
         "startLoc": {
           "column": 12,
-          "line": 53,
-          "position": 2145
+          "line": 58,
+          "position": 2311
         }
       },
       "format": "csharp",
@@ -136,36 +136,36 @@
       "kind": "exact",
       "lines": 10,
       "secondFile": {
-        "end": 345,
+        "end": 350,
         "endLoc": {
           "column": 30,
-          "line": 345,
-          "position": 14368
+          "line": 350,
+          "position": 14534
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 336,
+        "start": 341,
         "startLoc": {
           "column": 12,
-          "line": 336,
-          "position": 14068
+          "line": 341,
+          "position": 14234
         }
       },
       "tokens": 51
     },
     {
       "firstFile": {
-        "end": 99,
+        "end": 104,
         "endLoc": {
           "column": 9,
-          "line": 99,
-          "position": 3789
+          "line": 104,
+          "position": 3955
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 65,
+        "start": 70,
         "startLoc": {
           "column": 39,
-          "line": 65,
-          "position": 2573
+          "line": 70,
+          "position": 2739
         }
       },
       "format": "csharp",
@@ -174,36 +174,36 @@
       "kind": "exact",
       "lines": 35,
       "secondFile": {
-        "end": 243,
+        "end": 248,
         "endLoc": {
           "column": 9,
-          "line": 243,
-          "position": 10733
+          "line": 248,
+          "position": 10899
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 209,
+        "start": 214,
         "startLoc": {
           "column": 39,
-          "line": 209,
-          "position": 9517
+          "line": 214,
+          "position": 9683
         }
       },
       "tokens": 155
     },
     {
       "firstFile": {
-        "end": 83,
+        "end": 88,
         "endLoc": {
           "column": 33,
-          "line": 83,
-          "position": 3151
+          "line": 88,
+          "position": 3317
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 68,
+        "start": 73,
         "startLoc": {
           "column": 41,
-          "line": 68,
-          "position": 2696
+          "line": 73,
+          "position": 2862
         }
       },
       "format": "csharp",
@@ -212,18 +212,18 @@
       "kind": "exact",
       "lines": 16,
       "secondFile": {
-        "end": 363,
+        "end": 368,
         "endLoc": {
           "column": 33,
-          "line": 363,
-          "position": 14947
+          "line": 368,
+          "position": 15113
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 348,
+        "start": 353,
         "startLoc": {
           "column": 37,
-          "line": 348,
-          "position": 14492
+          "line": 353,
+          "position": 14658
         }
       },
       "tokens": 68
@@ -534,18 +534,18 @@
     },
     {
       "firstFile": {
-        "end": 30,
+        "end": 31,
         "endLoc": {
           "column": 35,
-          "line": 30,
-          "position": 986
+          "line": 31,
+          "position": 1049
         },
         "name": "MomSite.Infrastructure\\Data\\ApplicationDbContext.cs",
-        "start": 25,
+        "start": 26,
         "startLoc": {
           "column": 35,
-          "line": 25,
-          "position": 749
+          "line": 26,
+          "position": 812
         }
       },
       "format": "csharp",
@@ -554,36 +554,36 @@
       "kind": "exact",
       "lines": 6,
       "secondFile": {
-        "end": 56,
+        "end": 57,
         "endLoc": {
           "column": 35,
-          "line": 56,
-          "position": 2039
+          "line": 57,
+          "position": 2102
         },
         "name": "MomSite.Infrastructure\\Data\\ApplicationDbContext.cs",
-        "start": 51,
+        "start": 52,
         "startLoc": {
           "column": 33,
-          "line": 51,
-          "position": 1802
+          "line": 52,
+          "position": 1865
         }
       },
       "tokens": 65
     },
     {
       "firstFile": {
-        "end": 46,
+        "end": 47,
         "endLoc": {
           "column": 11,
-          "line": 46,
-          "position": 1726
+          "line": 47,
+          "position": 1789
         },
         "name": "MomSite.Infrastructure\\Data\\ApplicationDbContext.cs",
-        "start": 40,
+        "start": 41,
         "startLoc": {
           "column": 36,
-          "line": 40,
-          "position": 1462
+          "line": 41,
+          "position": 1525
         }
       },
       "format": "csharp",
@@ -592,18 +592,18 @@
       "kind": "exact",
       "lines": 7,
       "secondFile": {
-        "end": 71,
+        "end": 72,
         "endLoc": {
           "column": 11,
-          "line": 71,
-          "position": 2699
+          "line": 72,
+          "position": 2762
         },
         "name": "MomSite.Infrastructure\\Data\\ApplicationDbContext.cs",
-        "start": 65,
+        "start": 66,
         "startLoc": {
           "column": 41,
-          "line": 65,
-          "position": 2435
+          "line": 66,
+          "position": 2498
         }
       },
       "tokens": 75
@@ -827,6 +827,44 @@
           "position": 458
         },
         "name": "MomSite.Infrastructure\\Data\\Migrations\\20260427120500_RemoveSeedData.Designer.cs",
+        "start": 1,
+        "startLoc": {
+          "column": 0,
+          "line": 1,
+          "position": 0
+        }
+      },
+      "tokens": 73
+    },
+    {
+      "firstFile": {
+        "end": 15,
+        "endLoc": {
+          "column": 15,
+          "line": 15,
+          "position": 458
+        },
+        "name": "MomSite.Infrastructure\\Data\\Migrations\\20250808130107_InitialCreate.Designer.cs",
+        "start": 1,
+        "startLoc": {
+          "column": 0,
+          "line": 1,
+          "position": 0
+        }
+      },
+      "format": "csharp",
+      "fragment": "﻿// <auto-generated />\nusing System;\nusing Microsoft.EntityFrameworkCore;\nusing Microsoft.EntityFrameworkCore.Infrastructure;\nusing Microsoft.EntityFrameworkCore.Migrations;\nusing Microsoft.EntityFrameworkCore.Storage.ValueConversion;\nusing MomSite.Infrastructure.Data;\nusing Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;\n\n#nullable disable\n\nnamespace MomSite.Infrastructure.Data.Migrations\n{\n    [DbContext(typeof(ApplicationDbContext))]\n    [Migration(\"20250808130107_InitialCreate\")]",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 15,
+      "secondFile": {
+        "end": 15,
+        "endLoc": {
+          "column": 15,
+          "line": 15,
+          "position": 458
+        },
+        "name": "MomSite.Infrastructure\\Data\\Migrations\\20260918170134_AddContactMessages.Designer.cs",
         "start": 1,
         "startLoc": {
           "column": 0,
@@ -1073,6 +1111,44 @@
           "position": 3767
         },
         "name": "MomSite.Infrastructure\\Data\\Migrations\\20250808130107_InitialCreate.Designer.cs",
+        "start": 17,
+        "startLoc": {
+          "column": 4,
+          "line": 17,
+          "position": 527
+        }
+      },
+      "format": "csharp",
+      "fragment": "    {\n        /// <inheritdoc />\n        protected override void BuildTargetModel(ModelBuilder modelBuilder)\n        {\n#pragma warning disable 612, 618\n            modelBuilder\n                .HasAnnotation(\"ProductVersion\", \"8.0.0\")\n                .HasAnnotation(\"Relational:MaxIdentifierLength\", 63);\n\n            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);\n\n            modelBuilder.Entity(\"MomSite.Core.Models.Artwork\", b =>\n                {\n                    b.Property<int>(\"Id\")\n                        .ValueGeneratedOnAdd()\n                        .HasColumnType(\"integer\");\n\n                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>(\"Id\"));\n\n                    b.Property<int>(\"CategoryId\")\n                        .HasColumnType(\"integer\");\n\n                    b.Property<DateTime>(\"CreatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.Property<string>(\"Description\")\n                        .HasMaxLength(1000)\n                        .HasColumnType(\"character varying(1000)\");\n\n                    b.Property<string>(\"ImagePath\")\n                        .IsRequired()\n                        .HasMaxLength(500)\n                        .HasColumnType(\"character varying(500)\");\n\n                    b.Property<bool>(\"IsForSale\")\n                        .HasColumnType(\"boolean\");\n\n                    b.Property<decimal?>(\"Price\")\n                        .HasColumnType(\"decimal(18,2)\");\n\n                    b.Property<string>(\"ThumbnailPath\")\n                        .IsRequired()\n                        .HasMaxLength(500)\n                        .HasColumnType(\"character varying(500)\");\n\n                    b.Property<string>(\"Title\")\n                        .IsRequired()\n                        .HasMaxLength(200)\n                        .HasColumnType(\"character varying(200)\");\n\n                    b.Property<DateTime>(\"UpdatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.HasKey(\"Id\");\n\n                    b.HasIndex(\"CategoryId\");\n\n                    b.ToTable(\"Artworks\");\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.Category\", b =>\n                {\n                    b.Property<int>(\"Id\")\n                        .ValueGeneratedOnAdd()\n                        .HasColumnType(\"integer\");\n\n                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>(\"Id\"));\n\n                    b.Property<DateTime>(\"CreatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.Property<string>(\"Description\")\n                        .HasMaxLength(500)\n                        .HasColumnType(\"character varying(500)\");\n\n                    b.Property<int>(\"DisplayOrder\")\n                        .HasColumnType(\"integer\");\n\n                    b.Property<bool>(\"IsActive\")\n                        .HasColumnType(\"boolean\");\n\n                    b.Property<string>(\"Name\")\n                        .IsRequired()\n                        .HasMaxLength(100)\n                        .HasColumnType(\"character varying(100)\");\n\n                    b.Property<DateTime>(\"UpdatedAt\")",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 87,
+      "secondFile": {
+        "end": 103,
+        "endLoc": {
+          "column": 31,
+          "line": 103,
+          "position": 3777
+        },
+        "name": "MomSite.Infrastructure\\Data\\Migrations\\20260918170134_AddContactMessages.Designer.cs",
+        "start": 17,
+        "startLoc": {
+          "column": 4,
+          "line": 17,
+          "position": 537
+        }
+      },
+      "tokens": 414
+    },
+    {
+      "firstFile": {
+        "end": 103,
+        "endLoc": {
+          "column": 31,
+          "line": 103,
+          "position": 3767
+        },
+        "name": "MomSite.Infrastructure\\Data\\Migrations\\20250808130107_InitialCreate.Designer.cs",
         "start": 19,
         "startLoc": {
           "column": 48,
@@ -1215,6 +1291,44 @@
         }
       },
       "tokens": 165
+    },
+    {
+      "firstFile": {
+        "end": 88,
+        "endLoc": {
+          "column": 39,
+          "line": 88,
+          "position": 3211
+        },
+        "name": "MomSite.Infrastructure\\Data\\Migrations\\20250808130107_InitialCreate.Designer.cs",
+        "start": 77,
+        "startLoc": {
+          "column": 62,
+          "line": 77,
+          "position": 2779
+        }
+      },
+      "format": "csharp",
+      "fragment": "            modelBuilder.Entity(\"MomSite.Core.Models.Category\", b =>\n                {\n                    b.Property<int>(\"Id\")\n                        .ValueGeneratedOnAdd()\n                        .HasColumnType(\"integer\");\n\n                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>(\"Id\"));\n\n                    b.Property<DateTime>(\"CreatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.Property<string>(\"Description\")",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 12,
+      "secondFile": {
+        "end": 128,
+        "endLoc": {
+          "column": 39,
+          "line": 128,
+          "position": 4652
+        },
+        "name": "MomSite.Infrastructure\\Data\\Migrations\\20260918170134_AddContactMessages.Designer.cs",
+        "start": 117,
+        "startLoc": {
+          "column": 68,
+          "line": 117,
+          "position": 4220
+        }
+      },
+      "tokens": 61
     },
     {
       "firstFile": {
@@ -1440,6 +1554,44 @@
           "column": 42,
           "line": 114,
           "position": 4120
+        }
+      },
+      "tokens": 244
+    },
+    {
+      "firstFile": {
+        "end": 193,
+        "endLoc": {
+          "column": 46,
+          "line": 193,
+          "position": 7676
+        },
+        "name": "MomSite.Infrastructure\\Data\\Migrations\\20250808130107_InitialCreate.Designer.cs",
+        "start": 143,
+        "startLoc": {
+          "column": 25,
+          "line": 143,
+          "position": 5802
+        }
+      },
+      "format": "csharp",
+      "fragment": "                        });\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.PageContent\", b =>\n                {\n                    b.Property<int>(\"Id\")\n                        .ValueGeneratedOnAdd()\n                        .HasColumnType(\"integer\");\n\n                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>(\"Id\"));\n\n                    b.Property<string>(\"ContentKey\")\n                        .IsRequired()\n                        .HasMaxLength(100)\n                        .HasColumnType(\"character varying(100)\");\n\n                    b.Property<DateTime>(\"CreatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.Property<int>(\"DisplayOrder\")\n                        .HasColumnType(\"integer\");\n\n                    b.Property<string>(\"ImagePath\")\n                        .HasMaxLength(500)\n                        .HasColumnType(\"character varying(500)\");\n\n                    b.Property<bool>(\"IsActive\")\n                        .HasColumnType(\"boolean\");\n\n                    b.Property<string>(\"LinkUrl\")\n                        .HasMaxLength(500)\n                        .HasColumnType(\"character varying(500)\");\n\n                    b.Property<string>(\"PageKey\")\n                        .IsRequired()\n                        .HasMaxLength(100)\n                        .HasColumnType(\"character varying(100)\");\n\n                    b.Property<string>(\"TextContent\")\n                        .HasMaxLength(2000)\n                        .HasColumnType(\"character varying(2000)\");\n\n                    b.Property<DateTime>(\"UpdatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.HasKey(\"Id\");\n\n                    b.HasIndex(\"PageKey\", \"ContentKey\")\n                        .IsUnique();\n\n                    b.ToTable(\"PageContents\");",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 51,
+      "secondFile": {
+        "end": 229,
+        "endLoc": {
+          "column": 46,
+          "line": 229,
+          "position": 8454
+        },
+        "name": "MomSite.Infrastructure\\Data\\Migrations\\20260918170134_AddContactMessages.Designer.cs",
+        "start": 179,
+        "startLoc": {
+          "column": 47,
+          "line": 179,
+          "position": 6580
         }
       },
       "tokens": 244
@@ -2834,6 +2986,44 @@
       "kind": "exact",
       "lines": 22,
       "secondFile": {
+        "end": 114,
+        "endLoc": {
+          "column": 44,
+          "line": 114,
+          "position": 4130
+        },
+        "name": "MomSite.Infrastructure\\Data\\Migrations\\20260918170134_AddContactMessages.Designer.cs",
+        "start": 93,
+        "startLoc": {
+          "column": 24,
+          "line": 93,
+          "position": 3422
+        }
+      },
+      "tokens": 100
+    },
+    {
+      "firstFile": {
+        "end": 114,
+        "endLoc": {
+          "column": 44,
+          "line": 114,
+          "position": 4140
+        },
+        "name": "MomSite.Infrastructure\\Data\\Migrations\\20260427114540_AddShowOnHomeToCategory.Designer.cs",
+        "start": 93,
+        "startLoc": {
+          "column": 24,
+          "line": 93,
+          "position": 3432
+        }
+      },
+      "format": "csharp",
+      "fragment": "                        .HasColumnType(\"integer\");\n\n                    b.Property<bool>(\"IsActive\")\n                        .HasColumnType(\"boolean\");\n\n                    b.Property<string>(\"Name\")\n                        .IsRequired()\n                        .HasMaxLength(100)\n                        .HasColumnType(\"character varying(100)\");\n\n                    b.Property<bool>(\"ShowOnHome\")\n                        .HasColumnType(\"boolean\");\n\n                    b.Property<DateTime>(\"UpdatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.HasKey(\"Id\");\n\n                    b.HasIndex(\"Name\")\n                        .IsUnique();\n\n                    b.ToTable(\"Categories\");",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 22,
+      "secondFile": {
         "end": 111,
         "endLoc": {
           "column": 44,
@@ -2852,11 +3042,11 @@
     },
     {
       "firstFile": {
-        "end": 289,
+        "end": 118,
         "endLoc": {
-          "column": 1,
-          "line": 289,
-          "position": 10341
+          "column": 32,
+          "line": 118,
+          "position": 4177
         },
         "name": "MomSite.Infrastructure\\Data\\Migrations\\20260427120500_RemoveSeedData.Designer.cs",
         "start": 103,
@@ -2867,16 +3057,54 @@
         }
       },
       "format": "csharp",
-      "fragment": "                    b.Property<bool>(\"ShowOnHome\")\n                        .HasColumnType(\"boolean\");\n\n                    b.Property<DateTime>(\"UpdatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.HasKey(\"Id\");\n\n                    b.HasIndex(\"Name\")\n                        .IsUnique();\n\n                    b.ToTable(\"Categories\");\n\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.PageContent\", b =>\n                {\n                    b.Property<int>(\"Id\")\n                        .ValueGeneratedOnAdd()\n                        .HasColumnType(\"integer\");\n\n                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>(\"Id\"));\n\n                    b.Property<string>(\"ContentKey\")\n                        .IsRequired()\n                        .HasMaxLength(100)\n                        .HasColumnType(\"character varying(100)\");\n\n                    b.Property<DateTime>(\"CreatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.Property<int>(\"DisplayOrder\")\n                        .HasColumnType(\"integer\");\n\n                    b.Property<string>(\"ImagePath\")\n                        .HasMaxLength(500)\n                        .HasColumnType(\"character varying(500)\");\n\n                    b.Property<bool>(\"IsActive\")\n                        .HasColumnType(\"boolean\");\n\n                    b.Property<string>(\"LinkUrl\")\n                        .HasMaxLength(500)\n                        .HasColumnType(\"character varying(500)\");\n\n                    b.Property<string>(\"PageKey\")\n                        .IsRequired()\n                        .HasMaxLength(100)\n                        .HasColumnType(\"character varying(100)\");\n\n                    b.Property<string>(\"TextContent\")\n                        .HasMaxLength(2000)\n                        .HasColumnType(\"character varying(2000)\");\n\n                    b.Property<DateTime>(\"UpdatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.HasKey(\"Id\");\n\n                    b.HasIndex(\"PageKey\", \"ContentKey\")\n                        .IsUnique();\n\n                    b.ToTable(\"PageContents\");\n\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.Video\", b =>\n                {\n                    b.Property<int>(\"Id\")\n                        .ValueGeneratedOnAdd()\n                        .HasColumnType(\"integer\");\n\n                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>(\"Id\"));\n\n                    b.Property<DateTime>(\"CreatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.Property<string>(\"Description\")\n                        .HasMaxLength(1000)\n                        .HasColumnType(\"character varying(1000)\");\n\n                    b.Property<int>(\"DisplayOrder\")\n                        .HasColumnType(\"integer\");\n\n                    b.Property<bool>(\"IsActive\")\n                        .HasColumnType(\"boolean\");\n\n                    b.Property<string>(\"ThumbnailPath\")\n                        .HasMaxLength(500)\n                        .HasColumnType(\"character varying(500)\");\n\n                    b.Property<string>(\"Title\")\n                        .IsRequired()\n                        .HasMaxLength(200)\n                        .HasColumnType(\"character varying(200)\");\n\n                    b.Property<DateTime>(\"UpdatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.Property<int>(\"VideoCategoryId\")\n                        .HasColumnType(\"integer\");\n\n                    b.Property<string>(\"VideoPath\")\n                        .IsRequired()\n                        .HasMaxLength(500)\n                        .HasColumnType(\"character varying(500)\");\n\n                    b.HasKey(\"Id\");\n\n                    b.HasIndex(\"VideoCategoryId\");\n\n                    b.ToTable(\"Videos\");\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.VideoCategory\", b =>\n                {\n                    b.Property<int>(\"Id\")\n                        .ValueGeneratedOnAdd()\n                        .HasColumnType(\"integer\");\n\n                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>(\"Id\"));\n\n                    b.Property<DateTime>(\"CreatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.Property<string>(\"Description\")\n                        .HasMaxLength(500)\n                        .HasColumnType(\"character varying(500)\");\n\n                    b.Property<int>(\"DisplayOrder\")\n                        .HasColumnType(\"integer\");\n\n                    b.Property<bool>(\"IsActive\")\n                        .HasColumnType(\"boolean\");\n\n                    b.Property<string>(\"Name\")\n                        .IsRequired()\n                        .HasMaxLength(100)\n                        .HasColumnType(\"character varying(100)\");\n\n                    b.Property<DateTime>(\"UpdatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.HasKey(\"Id\");\n\n                    b.HasIndex(\"Name\")\n                        .IsUnique();\n\n                    b.ToTable(\"VideoCategories\");\n\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.Artwork\", b =>\n                {\n                    b.HasOne(\"MomSite.Core.Models.Category\", \"Category\")\n                        .WithMany(\"Artworks\")\n                        .HasForeignKey(\"CategoryId\")\n                        .OnDelete(DeleteBehavior.Restrict)\n                        .IsRequired();\n\n                    b.Navigation(\"Category\");\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.Video\", b =>\n                {\n                    b.HasOne(\"MomSite.Core.Models.VideoCategory\", \"VideoCategory\")\n                        .WithMany(\"Videos\")\n                        .HasForeignKey(\"VideoCategoryId\")\n                        .OnDelete(DeleteBehavior.Restrict)\n                        .IsRequired();\n\n                    b.Navigation(\"VideoCategory\");\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.Category\", b =>\n                {\n                    b.Navigation(\"Artworks\");\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.VideoCategory\", b =>\n                {\n                    b.Navigation(\"Videos\");\n                });\n#pragma warning restore 612, 618\n        }\n    }\n}",
+      "fragment": "                    b.Property<bool>(\"ShowOnHome\")\n                        .HasColumnType(\"boolean\");\n\n                    b.Property<DateTime>(\"UpdatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.HasKey(\"Id\");\n\n                    b.HasIndex(\"Name\")\n                        .IsUnique();\n\n                    b.ToTable(\"Categories\");\n\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.PageContent\", b =>",
       "isNew": false,
       "kind": "exact",
-      "lines": 187,
+      "lines": 16,
       "secondFile": {
-        "end": 286,
+        "end": 117,
         "endLoc": {
-          "column": 1,
-          "line": 286,
-          "position": 10246
+          "column": 32,
+          "line": 117,
+          "position": 4184
+        },
+        "name": "MomSite.Infrastructure\\Data\\Migrations\\20260918170134_AddContactMessages.Designer.cs",
+        "start": 103,
+        "startLoc": {
+          "column": 36,
+          "line": 103,
+          "position": 3782
+        }
+      },
+      "tokens": 56
+    },
+    {
+      "firstFile": {
+        "end": 118,
+        "endLoc": {
+          "column": 32,
+          "line": 118,
+          "position": 4177
+        },
+        "name": "MomSite.Infrastructure\\Data\\Migrations\\20260427120500_RemoveSeedData.Designer.cs",
+        "start": 103,
+        "startLoc": {
+          "column": 36,
+          "line": 103,
+          "position": 3774
+        }
+      },
+      "format": "csharp",
+      "fragment": "                    b.Property<bool>(\"ShowOnHome\")\n                        .HasColumnType(\"boolean\");\n\n                    b.Property<DateTime>(\"UpdatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.HasKey(\"Id\");\n\n                    b.HasIndex(\"Name\")\n                        .IsUnique();\n\n                    b.ToTable(\"Categories\");\n\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.PageContent\", b =>",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 16,
+      "secondFile": {
+        "end": 114,
+        "endLoc": {
+          "column": 32,
+          "line": 114,
+          "position": 4081
         },
         "name": "MomSite.Infrastructure\\Data\\Migrations\\ApplicationDbContextModelSnapshot.cs",
         "start": 100,
@@ -2886,7 +3114,83 @@
           "position": 3679
         }
       },
-      "tokens": 851
+      "tokens": 56
+    },
+    {
+      "firstFile": {
+        "end": 289,
+        "endLoc": {
+          "column": 1,
+          "line": 289,
+          "position": 10341
+        },
+        "name": "MomSite.Infrastructure\\Data\\Migrations\\20260427120500_RemoveSeedData.Designer.cs",
+        "start": 154,
+        "startLoc": {
+          "column": 42,
+          "line": 154,
+          "position": 5625
+        }
+      },
+      "format": "csharp",
+      "fragment": "                        .HasMaxLength(2000)\n                        .HasColumnType(\"character varying(2000)\");\n\n                    b.Property<DateTime>(\"UpdatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.HasKey(\"Id\");\n\n                    b.HasIndex(\"PageKey\", \"ContentKey\")\n                        .IsUnique();\n\n                    b.ToTable(\"PageContents\");\n\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.Video\", b =>\n                {\n                    b.Property<int>(\"Id\")\n                        .ValueGeneratedOnAdd()\n                        .HasColumnType(\"integer\");\n\n                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>(\"Id\"));\n\n                    b.Property<DateTime>(\"CreatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.Property<string>(\"Description\")\n                        .HasMaxLength(1000)\n                        .HasColumnType(\"character varying(1000)\");\n\n                    b.Property<int>(\"DisplayOrder\")\n                        .HasColumnType(\"integer\");\n\n                    b.Property<bool>(\"IsActive\")\n                        .HasColumnType(\"boolean\");\n\n                    b.Property<string>(\"ThumbnailPath\")\n                        .HasMaxLength(500)\n                        .HasColumnType(\"character varying(500)\");\n\n                    b.Property<string>(\"Title\")\n                        .IsRequired()\n                        .HasMaxLength(200)\n                        .HasColumnType(\"character varying(200)\");\n\n                    b.Property<DateTime>(\"UpdatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.Property<int>(\"VideoCategoryId\")\n                        .HasColumnType(\"integer\");\n\n                    b.Property<string>(\"VideoPath\")\n                        .IsRequired()\n                        .HasMaxLength(500)\n                        .HasColumnType(\"character varying(500)\");\n\n                    b.HasKey(\"Id\");\n\n                    b.HasIndex(\"VideoCategoryId\");\n\n                    b.ToTable(\"Videos\");\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.VideoCategory\", b =>\n                {\n                    b.Property<int>(\"Id\")\n                        .ValueGeneratedOnAdd()\n                        .HasColumnType(\"integer\");\n\n                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>(\"Id\"));\n\n                    b.Property<DateTime>(\"CreatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.Property<string>(\"Description\")\n                        .HasMaxLength(500)\n                        .HasColumnType(\"character varying(500)\");\n\n                    b.Property<int>(\"DisplayOrder\")\n                        .HasColumnType(\"integer\");\n\n                    b.Property<bool>(\"IsActive\")\n                        .HasColumnType(\"boolean\");\n\n                    b.Property<string>(\"Name\")\n                        .IsRequired()\n                        .HasMaxLength(100)\n                        .HasColumnType(\"character varying(100)\");\n\n                    b.Property<DateTime>(\"UpdatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.HasKey(\"Id\");\n\n                    b.HasIndex(\"Name\")\n                        .IsUnique();\n\n                    b.ToTable(\"VideoCategories\");\n\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.Artwork\", b =>\n                {\n                    b.HasOne(\"MomSite.Core.Models.Category\", \"Category\")\n                        .WithMany(\"Artworks\")\n                        .HasForeignKey(\"CategoryId\")\n                        .OnDelete(DeleteBehavior.Restrict)\n                        .IsRequired();\n\n                    b.Navigation(\"Category\");\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.Video\", b =>\n                {\n                    b.HasOne(\"MomSite.Core.Models.VideoCategory\", \"VideoCategory\")\n                        .WithMany(\"Videos\")\n                        .HasForeignKey(\"VideoCategoryId\")\n                        .OnDelete(DeleteBehavior.Restrict)\n                        .IsRequired();\n\n                    b.Navigation(\"VideoCategory\");\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.Category\", b =>\n                {\n                    b.Navigation(\"Artworks\");\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.VideoCategory\", b =>\n                {\n                    b.Navigation(\"Videos\");\n                });\n#pragma warning restore 612, 618\n        }\n    }\n}",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 136,
+      "secondFile": {
+        "end": 351,
+        "endLoc": {
+          "column": 1,
+          "line": 351,
+          "position": 12798
+        },
+        "name": "MomSite.Infrastructure\\Data\\Migrations\\20260918170134_AddContactMessages.Designer.cs",
+        "start": 218,
+        "startLoc": {
+          "column": 42,
+          "line": 218,
+          "position": 8084
+        }
+      },
+      "tokens": 609
+    },
+    {
+      "firstFile": {
+        "end": 351,
+        "endLoc": {
+          "column": 1,
+          "line": 351,
+          "position": 12798
+        },
+        "name": "MomSite.Infrastructure\\Data\\Migrations\\20260918170134_AddContactMessages.Designer.cs",
+        "start": 104,
+        "startLoc": {
+          "column": 48,
+          "line": 104,
+          "position": 3845
+        }
+      },
+      "format": "csharp",
+      "fragment": "                        .HasColumnType(\"boolean\");\n\n                    b.Property<DateTime>(\"UpdatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.HasKey(\"Id\");\n\n                    b.HasIndex(\"Name\")\n                        .IsUnique();\n\n                    b.ToTable(\"Categories\");\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.ContactMessage\", b =>\n                {\n                    b.Property<int>(\"Id\")\n                        .ValueGeneratedOnAdd()\n                        .HasColumnType(\"integer\");\n\n                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>(\"Id\"));\n\n                    b.Property<DateTime>(\"CreatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.Property<string>(\"Email\")\n                        .IsRequired()\n                        .HasMaxLength(200)\n                        .HasColumnType(\"character varying(200)\");\n\n                    b.Property<string>(\"IpAddress\")\n                        .HasMaxLength(64)\n                        .HasColumnType(\"character varying(64)\");\n\n                    b.Property<string>(\"Message\")\n                        .IsRequired()\n                        .HasMaxLength(5000)\n                        .HasColumnType(\"character varying(5000)\");\n\n                    b.Property<string>(\"Name\")\n                        .IsRequired()\n                        .HasMaxLength(200)\n                        .HasColumnType(\"character varying(200)\");\n\n                    b.Property<string>(\"Status\")\n                        .IsRequired()\n                        .HasMaxLength(20)\n                        .HasColumnType(\"character varying(20)\");\n\n                    b.Property<string>(\"Subject\")\n                        .IsRequired()\n                        .HasMaxLength(200)\n                        .HasColumnType(\"character varying(200)\");\n\n                    b.Property<string>(\"UserAgent\")\n                        .HasMaxLength(512)\n                        .HasColumnType(\"character varying(512)\");\n\n                    b.Property<string>(\"UtmCampaign\")\n                        .HasMaxLength(200)\n                        .HasColumnType(\"character varying(200)\");\n\n                    b.Property<string>(\"UtmMedium\")\n                        .HasMaxLength(200)\n                        .HasColumnType(\"character varying(200)\");\n\n                    b.Property<string>(\"UtmSource\")\n                        .HasMaxLength(200)\n                        .HasColumnType(\"character varying(200)\");\n\n                    b.HasKey(\"Id\");\n\n                    b.HasIndex(\"CreatedAt\");\n\n                    b.HasIndex(\"Status\");\n\n                    b.ToTable(\"ContactMessages\");\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.PageContent\", b =>\n                {\n                    b.Property<int>(\"Id\")\n                        .ValueGeneratedOnAdd()\n                        .HasColumnType(\"integer\");\n\n                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>(\"Id\"));\n\n                    b.Property<string>(\"ContentKey\")\n                        .IsRequired()\n                        .HasMaxLength(100)\n                        .HasColumnType(\"character varying(100)\");\n\n                    b.Property<DateTime>(\"CreatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.Property<int>(\"DisplayOrder\")\n                        .HasColumnType(\"integer\");\n\n                    b.Property<string>(\"ImagePath\")\n                        .HasMaxLength(500)\n                        .HasColumnType(\"character varying(500)\");\n\n                    b.Property<bool>(\"IsActive\")\n                        .HasColumnType(\"boolean\");\n\n                    b.Property<string>(\"LinkUrl\")\n                        .HasMaxLength(500)\n                        .HasColumnType(\"character varying(500)\");\n\n                    b.Property<string>(\"PageKey\")\n                        .IsRequired()\n                        .HasMaxLength(100)\n                        .HasColumnType(\"character varying(100)\");\n\n                    b.Property<string>(\"TextContent\")\n                        .HasMaxLength(2000)\n                        .HasColumnType(\"character varying(2000)\");\n\n                    b.Property<DateTime>(\"UpdatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.HasKey(\"Id\");\n\n                    b.HasIndex(\"PageKey\", \"ContentKey\")\n                        .IsUnique();\n\n                    b.ToTable(\"PageContents\");\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.Video\", b =>\n                {\n                    b.Property<int>(\"Id\")\n                        .ValueGeneratedOnAdd()\n                        .HasColumnType(\"integer\");\n\n                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>(\"Id\"));\n\n                    b.Property<DateTime>(\"CreatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.Property<string>(\"Description\")\n                        .HasMaxLength(1000)\n                        .HasColumnType(\"character varying(1000)\");\n\n                    b.Property<int>(\"DisplayOrder\")\n                        .HasColumnType(\"integer\");\n\n                    b.Property<bool>(\"IsActive\")\n                        .HasColumnType(\"boolean\");\n\n                    b.Property<string>(\"ThumbnailPath\")\n                        .HasMaxLength(500)\n                        .HasColumnType(\"character varying(500)\");\n\n                    b.Property<string>(\"Title\")\n                        .IsRequired()\n                        .HasMaxLength(200)\n                        .HasColumnType(\"character varying(200)\");\n\n                    b.Property<DateTime>(\"UpdatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.Property<int>(\"VideoCategoryId\")\n                        .HasColumnType(\"integer\");\n\n                    b.Property<string>(\"VideoPath\")\n                        .IsRequired()\n                        .HasMaxLength(500)\n                        .HasColumnType(\"character varying(500)\");\n\n                    b.HasKey(\"Id\");\n\n                    b.HasIndex(\"VideoCategoryId\");\n\n                    b.ToTable(\"Videos\");\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.VideoCategory\", b =>\n                {\n                    b.Property<int>(\"Id\")\n                        .ValueGeneratedOnAdd()\n                        .HasColumnType(\"integer\");\n\n                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>(\"Id\"));\n\n                    b.Property<DateTime>(\"CreatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.Property<string>(\"Description\")\n                        .HasMaxLength(500)\n                        .HasColumnType(\"character varying(500)\");\n\n                    b.Property<int>(\"DisplayOrder\")\n                        .HasColumnType(\"integer\");\n\n                    b.Property<bool>(\"IsActive\")\n                        .HasColumnType(\"boolean\");\n\n                    b.Property<string>(\"Name\")\n                        .IsRequired()\n                        .HasMaxLength(100)\n                        .HasColumnType(\"character varying(100)\");\n\n                    b.Property<DateTime>(\"UpdatedAt\")\n                        .HasColumnType(\"timestamp with time zone\");\n\n                    b.HasKey(\"Id\");\n\n                    b.HasIndex(\"Name\")\n                        .IsUnique();\n\n                    b.ToTable(\"VideoCategories\");\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.Artwork\", b =>\n                {\n                    b.HasOne(\"MomSite.Core.Models.Category\", \"Category\")\n                        .WithMany(\"Artworks\")\n                        .HasForeignKey(\"CategoryId\")\n                        .OnDelete(DeleteBehavior.Restrict)\n                        .IsRequired();\n\n                    b.Navigation(\"Category\");\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.Video\", b =>\n                {\n                    b.HasOne(\"MomSite.Core.Models.VideoCategory\", \"VideoCategory\")\n                        .WithMany(\"Videos\")\n                        .HasForeignKey(\"VideoCategoryId\")\n                        .OnDelete(DeleteBehavior.Restrict)\n                        .IsRequired();\n\n                    b.Navigation(\"VideoCategory\");\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.Category\", b =>\n                {\n                    b.Navigation(\"Artworks\");\n                });\n\n            modelBuilder.Entity(\"MomSite.Core.Models.VideoCategory\", b =>\n                {\n                    b.Navigation(\"Videos\");\n                });\n#pragma warning restore 612, 618\n        }\n    }\n}",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 248,
+      "secondFile": {
+        "end": 348,
+        "endLoc": {
+          "column": 1,
+          "line": 348,
+          "position": 12695
+        },
+        "name": "MomSite.Infrastructure\\Data\\Migrations\\ApplicationDbContextModelSnapshot.cs",
+        "start": 101,
+        "startLoc": {
+          "column": 48,
+          "line": 101,
+          "position": 3742
+        }
+      },
+      "tokens": 1154
     },
     {
       "firstFile": {
@@ -3042,41 +3346,41 @@
     },
     {
       "firstFile": {
-        "end": 10,
+        "end": 141,
         "endLoc": {
-          "column": 31,
-          "line": 10,
-          "position": 268
+          "column": 50,
+          "line": 141,
+          "position": 5860
         },
-        "name": "MomSite.Tests\\AdminControllerTests.cs",
-        "start": 1,
+        "name": "MomSite.Tests\\PublicControllerTests.cs",
+        "start": 135,
         "startLoc": {
-          "column": 0,
-          "line": 1,
-          "position": 0
+          "column": 52,
+          "line": 135,
+          "position": 5583
         }
       },
       "format": "csharp",
-      "fragment": "using Xunit;\nusing Moq;\nusing MomSite.API.Controllers;\nusing MomSite.Infrastructure.Data;\nusing Microsoft.EntityFrameworkCore;\nusing MomSite.Core.Models;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Threading.Tasks;\nusing Microsoft.AspNetCore.Mvc;",
+      "fragment": "            var email = EnabledNotifier(throws: true);\n            var telegram = DisabledNotifier();\n            var controller = CreateController(context, new[] { email.Object, telegram.Object });\n\n            var result = await controller.SendContactMessage(ValidMessage());\n\n            AssertOkAndPersisted(result, context);",
       "isNew": false,
       "kind": "exact",
-      "lines": 10,
+      "lines": 7,
       "secondFile": {
-        "end": 10,
+        "end": 176,
         "endLoc": {
-          "column": 31,
-          "line": 10,
-          "position": 268
+          "column": 50,
+          "line": 176,
+          "position": 7361
         },
         "name": "MomSite.Tests\\PublicControllerTests.cs",
-        "start": 1,
+        "start": 170,
         "startLoc": {
-          "column": 0,
-          "line": 1,
-          "position": 0
+          "column": 41,
+          "line": 170,
+          "position": 7084
         }
       },
-      "tokens": 58
+      "tokens": 50
     },
     {
       "firstFile": {
@@ -4372,19 +4676,19 @@
     }
   ],
   "statistics": {
-    "detectionDate": "2026-09-18T16:53:18.143Z",
+    "detectionDate": "2026-09-18T17:07:55.641Z",
     "formats": {
       "csharp": {
-        "clones": 81,
-        "duplicatedLines": 3306,
-        "duplicatedTokens": 20145,
-        "lines": 8493,
+        "clones": 89,
+        "duplicatedLines": 3711,
+        "duplicatedTokens": 22053,
+        "lines": 9410,
         "newClones": 0,
         "newDuplicatedLines": 0,
-        "percentage": 38.92617449664429,
-        "percentageTokens": 34.92787294541924,
-        "sources": 40,
-        "tokens": 57676
+        "percentage": 39.436769394261425,
+        "percentageTokens": 35.10562091087092,
+        "sources": 45,
+        "tokens": 62819
       },
       "css": {
         "clones": 0,
@@ -4460,16 +4764,16 @@
       }
     },
     "total": {
-      "clones": 115,
-      "duplicatedLines": 3754,
-      "duplicatedTokens": 22538,
-      "lines": 24471,
+      "clones": 123,
+      "duplicatedLines": 4159,
+      "duplicatedTokens": 24446,
+      "lines": 25388,
       "newClones": 0,
       "newDuplicatedLines": 0,
-      "percentage": 15.340607249397245,
-      "percentageTokens": 18.558653513611436,
-      "sources": 82,
-      "tokens": 121442
+      "percentage": 16.38175515991807,
+      "percentageTokens": 19.31192479361694,
+      "sources": 87,
+      "tokens": 126585
     }
   }
 }

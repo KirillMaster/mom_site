@@ -74,6 +74,23 @@ namespace MomSite.Tests
             return mock;
         }
 
+        // Asserts the controller answered 200 with the lead already
+        // persisted, and returns that saved row for scenario-specific checks.
+        private static ContactMessage AssertOkAndPersisted(IActionResult result, ApplicationDbContext context)
+        {
+            var ok = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal(200, ok.StatusCode);
+
+            var saved = Assert.Single(context.ContactMessages);
+            Assert.Equal(ContactMessageStatus.New, saved.Status);
+            return saved;
+        }
+
+        private static void VerifyNeverNotified(Mock<IFeedbackNotifier> notifier)
+        {
+            notifier.Verify(n => n.NotifyAsync(It.IsAny<ContactMessage>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
         // A DbContext whose SaveChangesAsync always fails, to simulate a
         // PostgreSQL outage (@S1-AS5) without needing a real database.
         private class FailingSaveDbContext : ApplicationDbContext
@@ -98,15 +115,11 @@ namespace MomSite.Tests
             var dto = ValidMessage();
             var result = await controller.SendContactMessage(dto);
 
-            var ok = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal(200, ok.StatusCode);
-
-            var saved = Assert.Single(context.ContactMessages);
+            var saved = AssertOkAndPersisted(result, context);
             Assert.Equal("Иван Иванов", saved.Name);
             Assert.Equal("ivan@example.com", saved.Email);
             Assert.Equal("Хочу картину", saved.Subject);
             Assert.Equal("Расскажите про доставку", saved.Message);
-            Assert.Equal(ContactMessageStatus.New, saved.Status);
             Assert.False(string.IsNullOrEmpty(saved.IpAddress));
             Assert.False(string.IsNullOrEmpty(saved.UserAgent));
 
@@ -125,16 +138,13 @@ namespace MomSite.Tests
 
             var result = await controller.SendContactMessage(ValidMessage());
 
+            AssertOkAndPersisted(result, context);
+
             var ok = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal(200, ok.StatusCode);
-
-            var saved = Assert.Single(context.ContactMessages);
-            Assert.Equal(ContactMessageStatus.New, saved.Status);
-
             var body = Assert.IsAssignableFrom<object>(ok.Value);
             Assert.DoesNotContain("channel failure", body.ToString());
 
-            telegram.Verify(n => n.NotifyAsync(It.IsAny<ContactMessage>(), It.IsAny<CancellationToken>()), Times.Never);
+            VerifyNeverNotified(telegram);
         }
 
         [Fact]
@@ -148,13 +158,8 @@ namespace MomSite.Tests
 
             var result = await controller.SendContactMessage(ValidMessage());
 
-            var ok = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal(200, ok.StatusCode);
-
-            var saved = Assert.Single(context.ContactMessages);
-            Assert.Equal(ContactMessageStatus.New, saved.Status);
-
-            email.Verify(n => n.NotifyAsync(It.IsAny<ContactMessage>(), It.IsAny<CancellationToken>()), Times.Never);
+            AssertOkAndPersisted(result, context);
+            VerifyNeverNotified(email);
         }
 
         [Fact]
@@ -168,14 +173,9 @@ namespace MomSite.Tests
 
             var result = await controller.SendContactMessage(ValidMessage());
 
-            var ok = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal(200, ok.StatusCode);
-
-            var saved = Assert.Single(context.ContactMessages);
-            Assert.Equal(ContactMessageStatus.New, saved.Status);
-
-            email.Verify(n => n.NotifyAsync(It.IsAny<ContactMessage>(), It.IsAny<CancellationToken>()), Times.Never);
-            telegram.Verify(n => n.NotifyAsync(It.IsAny<ContactMessage>(), It.IsAny<CancellationToken>()), Times.Never);
+            AssertOkAndPersisted(result, context);
+            VerifyNeverNotified(email);
+            VerifyNeverNotified(telegram);
         }
 
         [Fact]
@@ -195,8 +195,8 @@ namespace MomSite.Tests
             var statusResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(500, statusResult.StatusCode);
 
-            email.Verify(n => n.NotifyAsync(It.IsAny<ContactMessage>(), It.IsAny<CancellationToken>()), Times.Never);
-            telegram.Verify(n => n.NotifyAsync(It.IsAny<ContactMessage>(), It.IsAny<CancellationToken>()), Times.Never);
+            VerifyNeverNotified(email);
+            VerifyNeverNotified(telegram);
         }
 
         [Fact]
