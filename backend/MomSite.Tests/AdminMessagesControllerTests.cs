@@ -182,5 +182,209 @@ namespace MomSite.Tests
             Assert.Empty(page.Items);
             Assert.Equal(0, page.UnreadCount);
         }
+
+        // @S2-AS1-EXT: Each message endpoint is separately marked [Authorize] or inherited from class.
+        // This verifies all four methods (not just the class) are protected.
+        [Fact]
+        [Trait("Scenario", "S2-AS1-EXT")]
+        public void AllMessageEndpoints_AreEachProtected()
+        {
+            var controllerType = typeof(AdminController);
+
+            // Methods that must be individually checked or inherited
+            var getMessagesMethod = controllerType.GetMethod(nameof(AdminController.GetMessages));
+            var unreadCountMethod = controllerType.GetMethod(nameof(AdminController.GetUnreadMessagesCount));
+            var getMessageMethod = controllerType.GetMethod(nameof(AdminController.GetMessage));
+            var archiveMessageMethod = controllerType.GetMethod(nameof(AdminController.ArchiveMessage));
+
+            // All must exist
+            Assert.NotNull(getMessagesMethod);
+            Assert.NotNull(unreadCountMethod);
+            Assert.NotNull(getMessageMethod);
+            Assert.NotNull(archiveMessageMethod);
+
+            // None should have [AllowAnonymous] override
+            Assert.False(getMessagesMethod!.IsDefined(typeof(AllowAnonymousAttribute)),
+                $"{nameof(AdminController.GetMessages)} must not bypass authorization");
+            Assert.False(unreadCountMethod!.IsDefined(typeof(AllowAnonymousAttribute)),
+                $"{nameof(AdminController.GetUnreadMessagesCount)} must not bypass authorization");
+            Assert.False(getMessageMethod!.IsDefined(typeof(AllowAnonymousAttribute)),
+                $"{nameof(AdminController.GetMessage)} must not bypass authorization");
+            Assert.False(archiveMessageMethod!.IsDefined(typeof(AllowAnonymousAttribute)),
+                $"{nameof(AdminController.ArchiveMessage)} must not bypass authorization");
+        }
+
+        // @S2-AS2-EXT: Sorting is strictly by CreatedAt (descending), not by ID.
+        // This test seeds messages with dates that differ from insertion/ID order.
+        [Fact]
+        [Trait("Scenario", "S2-AS2-EXT")]
+        public async Task GetMessages_SortedByCreatedAtDescending_NotById()
+        {
+            var options = CreateDbOptions(nameof(GetMessages_SortedByCreatedAtDescending_NotById));
+            var (imageServiceMock, configMock) = CreateMocks();
+
+            var baseTime = DateTime.UtcNow;
+            using (var context = new ApplicationDbContext(options))
+            {
+                // Insert in reverse date order: oldest first, newest last
+                // IDs will be 1, 2, 3 (insertion order), but dates will be old, mid, newest
+                context.ContactMessages.AddRange(
+                    new ContactMessage { Name = "Oldest", Email = "old@x.com", Subject = "S1", Message = "M1", Status = ContactMessageStatus.New, CreatedAt = baseTime.AddDays(-2) },
+                    new ContactMessage { Name = "Middle", Email = "mid@x.com", Subject = "S2", Message = "M2", Status = ContactMessageStatus.New, CreatedAt = baseTime.AddDays(-1) },
+                    new ContactMessage { Name = "Newest", Email = "new@x.com", Subject = "S3", Message = "M3", Status = ContactMessageStatus.New, CreatedAt = baseTime }
+                );
+                await context.SaveChangesAsync();
+            }
+
+            using (var context = new ApplicationDbContext(options))
+            {
+                var page = await GetMessagesPageAsync(context, imageServiceMock, configMock);
+
+                // Should be newest → oldest by date, NOT by ID (which would be Oldest, Middle, Newest)
+                Assert.Equal(new[] { "Newest", "Middle", "Oldest" }, page.Items.Select(i => i.Name).ToArray());
+            }
+        }
+
+        // @S2-AS3-EXT: Viewing an already-Read message does not change status or decrement count again.
+        [Fact]
+        [Trait("Scenario", "S2-AS3-EXT")]
+        public async Task GetMessage_AlreadyRead_DoesNotChangeStatusOrCount()
+        {
+            var options = await SeedSingleMessageAsync(
+                nameof(GetMessage_AlreadyRead_DoesNotChangeStatusOrCount), ContactMessageStatus.Read);
+            var (imageServiceMock, configMock) = CreateMocks();
+
+            using (var context = new ApplicationDbContext(options))
+            {
+                var controller = new AdminController(context, imageServiceMock.Object, configMock.Object);
+
+                var countBefore = (await controller.GetUnreadMessagesCount()).Value;
+                Assert.Equal(0, countBefore);
+
+                var result = await controller.GetMessage(1);
+                var ok = Assert.IsType<OkObjectResult>(result.Result);
+                var dto = Assert.IsType<ContactMessageAdminDto>(ok.Value);
+                Assert.Equal("Read", dto.Status);
+
+                var countAfter = (await controller.GetUnreadMessagesCount()).Value;
+                Assert.Equal(0, countAfter); // Should still be 0, not negative
+            }
+
+            using (var context = new ApplicationDbContext(options))
+            {
+                var saved = await context.ContactMessages.FindAsync(1);
+                Assert.Equal(ContactMessageStatus.Read, saved!.Status);
+            }
+        }
+
+        // @S2-AS4-EXT: Archiving a nonexistent message returns 404, not an exception.
+        [Fact]
+        [Trait("Scenario", "S2-AS4-EXT")]
+        public async Task ArchiveMessage_NonexistentId_Returns404()
+        {
+            var options = CreateDbOptions(nameof(ArchiveMessage_NonexistentId_Returns404));
+            var (imageServiceMock, configMock) = CreateMocks();
+
+            using var context = new ApplicationDbContext(options);
+            var controller = new AdminController(context, imageServiceMock.Object, configMock.Object);
+
+            var result = await controller.ArchiveMessage(99999);
+            Assert.IsType<NotFoundResult>(result.Result);
+        }
+
+        // @S2-AS4-EXT: Viewing a nonexistent message returns 404.
+        [Fact]
+        [Trait("Scenario", "S2-AS4-EXT")]
+        public async Task GetMessage_NonexistentId_Returns404()
+        {
+            var options = CreateDbOptions(nameof(GetMessage_NonexistentId_Returns404));
+            var (imageServiceMock, configMock) = CreateMocks();
+
+            using var context = new ApplicationDbContext(options);
+            var controller = new AdminController(context, imageServiceMock.Object, configMock.Object);
+
+            var result = await controller.GetMessage(99999);
+            Assert.IsType<NotFoundResult>(result.Result);
+        }
+
+        // @S2-AS2-EXT: Archived messages are excluded from the active filter.
+        [Fact]
+        [Trait("Scenario", "S2-AS2-EXT")]
+        public async Task GetMessages_ActiveFilter_ExcludesArchivedMessages()
+        {
+            var options = CreateDbOptions(nameof(GetMessages_ActiveFilter_ExcludesArchivedMessages));
+            var (imageServiceMock, configMock) = CreateMocks();
+
+            using (var context = new ApplicationDbContext(options))
+            {
+                context.ContactMessages.AddRange(
+                    new ContactMessage { Name = "Active", Email = "a@x.com", Subject = "S1", Message = "M1", Status = ContactMessageStatus.Read, CreatedAt = DateTime.UtcNow },
+                    new ContactMessage { Name = "Archived", Email = "b@x.com", Subject = "S2", Message = "M2", Status = ContactMessageStatus.Archived, CreatedAt = DateTime.UtcNow }
+                );
+                await context.SaveChangesAsync();
+            }
+
+            using (var context = new ApplicationDbContext(options))
+            {
+                var activePage = await GetMessagesPageAsync(context, imageServiceMock, configMock, "active");
+                Assert.Single(activePage.Items);
+                Assert.Equal("Active", activePage.Items[0].Name);
+            }
+        }
+
+        // @S2-AS3-EXT: Multiple GetMessage calls on the same New message mark it as Read only once.
+        [Fact]
+        [Trait("Scenario", "S2-AS3-EXT")]
+        public async Task GetMessage_CalledTwiceOnNewMessage_MarksReadOnce()
+        {
+            var options = await SeedSingleMessageAsync(
+                nameof(GetMessage_CalledTwiceOnNewMessage_MarksReadOnce), ContactMessageStatus.New);
+            var (imageServiceMock, configMock) = CreateMocks();
+
+            using (var context = new ApplicationDbContext(options))
+            {
+                var controller = new AdminController(context, imageServiceMock.Object, configMock.Object);
+
+                var count1 = (await controller.GetUnreadMessagesCount()).Value;
+                Assert.Equal(1, count1);
+
+                // First call
+                await controller.GetMessage(1);
+                var count2 = (await controller.GetUnreadMessagesCount()).Value;
+                Assert.Equal(0, count2);
+
+                // Second call on same message
+                await controller.GetMessage(1);
+                var count3 = (await controller.GetUnreadMessagesCount()).Value;
+                Assert.Equal(0, count3); // Must stay 0, not go negative
+            }
+        }
+
+        // @S2-AS2-EXT: UnreadCount includes only New messages, not Read or Archived.
+        [Fact]
+        [Trait("Scenario", "S2-AS2-EXT")]
+        public async Task GetUnreadMessagesCount_CountsOnlyNewMessages()
+        {
+            var options = CreateDbOptions(nameof(GetUnreadMessagesCount_CountsOnlyNewMessages));
+            var (imageServiceMock, configMock) = CreateMocks();
+
+            using (var context = new ApplicationDbContext(options))
+            {
+                context.ContactMessages.AddRange(
+                    new ContactMessage { Name = "New1", Email = "a@x.com", Subject = "S1", Message = "M1", Status = ContactMessageStatus.New, CreatedAt = DateTime.UtcNow },
+                    new ContactMessage { Name = "New2", Email = "b@x.com", Subject = "S2", Message = "M2", Status = ContactMessageStatus.New, CreatedAt = DateTime.UtcNow },
+                    new ContactMessage { Name = "Read", Email = "c@x.com", Subject = "S3", Message = "M3", Status = ContactMessageStatus.Read, CreatedAt = DateTime.UtcNow },
+                    new ContactMessage { Name = "Archived", Email = "d@x.com", Subject = "S4", Message = "M4", Status = ContactMessageStatus.Archived, CreatedAt = DateTime.UtcNow }
+                );
+                await context.SaveChangesAsync();
+            }
+
+            using (var context = new ApplicationDbContext(options))
+            {
+                var controller = new AdminController(context, imageServiceMock.Object, configMock.Object);
+                var count = (await controller.GetUnreadMessagesCount()).Value;
+                Assert.Equal(2, count); // Only the two New messages
+            }
+        }
     }
 }

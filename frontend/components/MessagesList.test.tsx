@@ -100,4 +100,181 @@ describe('MessagesList', () => {
     expect(screen.getByTestId('empty-state')).toBeInTheDocument();
     expect(screen.queryByTestId('unread-badge')).not.toBeInTheDocument();
   });
+
+  // @S2-AS2-EXT: unread badge must be hidden when unreadCount is 0,
+  // even if the message list is non-empty (e.g., all Read or Archived).
+  it('@S2-AS2-EXT hides the unread badge when unreadCount is 0 but messages exist', () => {
+    const messages = [
+      makeMessage({ id: 1, name: 'ReadMessage', status: 'Read' }),
+      makeMessage({ id: 2, name: 'AnotherRead', status: 'Read' }),
+    ];
+
+    render(
+      <MessagesList
+        messages={messages}
+        unreadCount={0}
+        onOpen={jest.fn()}
+        onArchive={jest.fn()}
+        filter="active"
+        onFilterChange={jest.fn()}
+      />
+    );
+
+    // Messages should be rendered
+    expect(screen.getByText('ReadMessage')).toBeInTheDocument();
+    expect(screen.getByText('AnotherRead')).toBeInTheDocument();
+    // Badge must not be present when count is 0
+    expect(screen.queryByTestId('unread-badge')).not.toBeInTheDocument();
+  });
+
+  // @S2-AS2-EXT: unread badge must be visible and show correct count
+  // when unreadCount > 0, distinguishing New from Read visually.
+  it('@S2-AS2-EXT displays unread badge with count when there are unread messages', () => {
+    const messages = [
+      makeMessage({ id: 1, name: 'FirstNew', status: 'New' }),
+      makeMessage({ id: 2, name: 'SecondRead', status: 'Read' }),
+      makeMessage({ id: 3, name: 'ThirdNew', status: 'New' }),
+    ];
+
+    render(
+      <MessagesList
+        messages={messages}
+        unreadCount={2}
+        onOpen={jest.fn()}
+        onArchive={jest.fn()}
+        filter="active"
+        onFilterChange={jest.fn()}
+      />
+    );
+
+    const badge = screen.getByTestId('unread-badge');
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveTextContent('2');
+  });
+
+  // @S2-AS5-EXT: empty state for archived filter when no archived messages exist.
+  it('@S2-AS5-EXT renders empty state for archived filter with no archived messages', () => {
+    render(
+      <MessagesList
+        messages={[]}
+        unreadCount={0}
+        onOpen={jest.fn()}
+        onArchive={jest.fn()}
+        filter="archived"
+        onFilterChange={jest.fn()}
+      />
+    );
+
+    expect(screen.getByTestId('empty-state')).toBeInTheDocument();
+  });
+
+  // @S2-AS3-EXT: clicking "Открыть" on a Read message still calls onOpen.
+  it('@S2-AS3-EXT calls onOpen for Read messages as well as New', () => {
+    const onOpen = jest.fn();
+    const messages = [makeMessage({ id: 5, status: 'Read', name: 'ReadMsg' })];
+
+    render(
+      <MessagesList
+        messages={messages}
+        unreadCount={0}
+        onOpen={onOpen}
+        onArchive={jest.fn()}
+        filter="active"
+        onFilterChange={jest.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByText('Открыть'));
+    expect(onOpen).toHaveBeenCalledWith(5);
+  });
+
+  // @S2-AS4-EXT: archive button is not shown for Archived messages,
+  // but is shown for non-archived (New and Read).
+  it('@S2-AS4-EXT does not show archive button for Archived messages', () => {
+    const messages = [
+      makeMessage({ id: 1, status: 'New' }),
+      makeMessage({ id: 2, status: 'Archived' }),
+    ];
+
+    render(
+      <MessagesList
+        messages={messages}
+        unreadCount={1}
+        onOpen={jest.fn()}
+        onArchive={jest.fn()}
+        filter="active"
+        onFilterChange={jest.fn()}
+      />
+    );
+
+    // Both messages should have "Открыть" button
+    const openButtons = screen.getAllByText('Открыть');
+    expect(openButtons).toHaveLength(2);
+
+    // Only New message should have "Архивировать" button (Archived row should not)
+    const archiveButtons = screen.getAllByText('Архивировать');
+    expect(archiveButtons).toHaveLength(1); // Only for the New message
+  });
+
+  // @S2-AS2-EXT: New messages should be visually distinguishable from Read ones
+  // (e.g., bold text, different color, or icon).
+  it('@S2-AS2-EXT renders New messages with distinct visual styling (bold and background)', () => {
+    const messages = [
+      makeMessage({ id: 1, name: 'NewMsg', status: 'New' }),
+      makeMessage({ id: 2, name: 'ReadMsg', status: 'Read' }),
+    ];
+
+    const { container } = render(
+      <MessagesList
+        messages={messages}
+        unreadCount={1}
+        onOpen={jest.fn()}
+        onArchive={jest.fn()}
+        filter="active"
+        onFilterChange={jest.fn()}
+      />
+    );
+
+    // Find the rows
+    const rows = screen.getAllByRole('row').slice(1); // skip header
+    const newRow = rows[0]; // NewMsg (newest)
+    const readRow = rows[1]; // ReadMsg
+
+    // New message row should have bold font (font-semibold) and background (bg-primary-50)
+    expect(newRow).toHaveClass('font-semibold');
+    expect(newRow).toHaveClass('bg-primary-50');
+
+    // Read message row should not have these classes
+    expect(readRow).not.toHaveClass('font-semibold');
+    expect(readRow).not.toHaveClass('bg-primary-50');
+  });
+
+  // @S2-AS5-EXT: long names, emails, and subjects are handled without breaking layout.
+  it('@S2-AS5-EXT handles long message names and subjects without breaking', () => {
+    const longName = 'A'.repeat(100);
+    const longSubject = 'B'.repeat(100);
+    const messages = [
+      makeMessage({
+        id: 1,
+        name: longName,
+        subject: longSubject,
+        status: 'Read',
+      }),
+    ];
+
+    render(
+      <MessagesList
+        messages={messages}
+        unreadCount={0}
+        onOpen={jest.fn()}
+        onArchive={jest.fn()}
+        filter="active"
+        onFilterChange={jest.fn()}
+      />
+    );
+
+    // Should render without crashing and content should be in the document
+    expect(screen.getByText(longName)).toBeInTheDocument();
+    expect(screen.getByText(longSubject)).toBeInTheDocument();
+  });
 });
