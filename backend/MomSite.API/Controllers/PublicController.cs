@@ -502,6 +502,77 @@ public class PublicController : ControllerBase
         }
     }
 
+    [HttpGet("reviews")]
+    public async Task<ActionResult<List<ReviewDto>>> GetReviews()
+    {
+        var reviews = await _context.Reviews
+            .Where(r => r.IsPublished)
+            .OrderBy(r => r.SortOrder)
+            .ThenByDescending(r => r.PublishedAt)
+            .ThenByDescending(r => r.CreatedAt)
+            .ToListAsync();
+
+        return Ok(reviews.Select(r => r.ToDto()).ToList());
+    }
+
+    private static readonly object ReviewAccepted = new { message = "Спасибо за отзыв! Он появится на сайте после проверки." };
+
+    [HttpPost("reviews")]
+    public async Task<IActionResult> CreateReview([FromBody] CreateReviewDto review)
+    {
+        var clientIp = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+        if (!_rateLimiter.TryAcquire($"review:{clientIp}"))
+        {
+            _logger.LogWarning("Rate limit exceeded for reviews from {ClientIp}", clientIp);
+            return StatusCode(StatusCodes.Status429TooManyRequests, new { message = "Слишком много запросов. Попробуйте позже." });
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var entity = new Review
+        {
+            AuthorName = review.AuthorName,
+            AuthorCity = review.AuthorCity,
+            Text = review.Text,
+            Rating = review.Rating,
+            ArtworkId = review.ArtworkId,
+            PhotoPath = review.PhotoPath,
+            CreatedAt = DateTime.UtcNow,
+            IsPublished = false
+        };
+
+        _context.Reviews.Add(entity);
+        await _context.SaveChangesAsync();
+
+        await NotifyNewReviewAsync(entity);
+
+        return Ok(ReviewAccepted);
+    }
+
+    private async Task NotifyNewReviewAsync(Review entity)
+    {
+        foreach (var notifier in _notifiers)
+        {
+            if (!notifier.IsEnabled)
+            {
+                continue;
+            }
+
+            try
+            {
+                await notifier.NotifyAsync(entity);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Notifier {Notifier} failed to deliver new review {Id}", notifier.GetType().Name, entity.Id);
+            }
+        }
+    }
+
     [HttpGet("health")]
     public IActionResult HealthCheck()
     {

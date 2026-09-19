@@ -61,6 +61,56 @@ public class TelegramNotifier : IFeedbackNotifier
         _logger.LogInformation("Contact message notification sent to Telegram chats {ChatIds}", string.Join(",", ChatIds));
     }
 
+    public async Task NotifyAsync(Review review, CancellationToken cancellationToken = default)
+    {
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        cts.CancelAfter(SendTimeout);
+
+        var text = BuildReviewText(review);
+
+        var client = _httpClientFactory.CreateClient(nameof(TelegramNotifier));
+        var token = BotToken;
+
+        foreach (var chatId in ChatIds)
+        {
+            var url = $"https://api.telegram.org/bot{token}/sendMessage";
+            var response = await client.PostAsJsonAsync(url, new { chat_id = chatId, text }, cts.Token);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync(cts.Token);
+                throw new InvalidOperationException(
+                    $"Telegram sendMessage to chat {chatId} failed with {(int)response.StatusCode}: {body}");
+            }
+        }
+
+        _logger.LogInformation("New review notification sent to Telegram chats {ChatIds}", string.Join(",", ChatIds));
+    }
+
+    /// <summary>
+    /// Builds the notification body for a newly submitted (still
+    /// unpublished) review, so the owner can moderate it.
+    /// </summary>
+    public static string BuildReviewText(Review review)
+    {
+        var lines = new List<string>
+        {
+            "Новый отзыв на сайте (ожидает модерации)",
+            $"Автор: {review.AuthorName}",
+            $"Оценка: {review.Rating}/5",
+        };
+
+        if (!string.IsNullOrWhiteSpace(review.AuthorCity))
+        {
+            lines.Add($"Город: {review.AuthorCity}");
+        }
+
+        lines.Add(string.Empty);
+        lines.Add(review.Text);
+
+        return string.Join("\n", lines);
+    }
+
     /// <summary>
     /// Builds the notification body. The campaign that brought the visitor is
     /// part of it because the owner acts on a lead differently depending on
