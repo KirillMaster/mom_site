@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { getHomeData, getGalleryData, getAboutData, getContactsData, getVideosData } from '@/hooks/useApi';
 import { artworksForSale } from '@/lib/gallery';
+import { buildArtworkSlug } from '@/lib/artworkSlug';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://angelamoiseenko.ru';
@@ -45,7 +46,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Exhibition photo reports share the gallery page and are not works for
     // sale, so they do not earn a crawl budget of their own.
     const artworkPages = (galleryData ? artworksForSale(galleryData) : []).map((artwork) => ({
-      url: `${baseUrl}/gallery?artwork=${artwork.id}`,
+      url: `${baseUrl}/gallery/${buildArtworkSlug(artwork.title, artwork.id)}`,
       lastModified: new Date(artwork.updatedAt || artwork.createdAt),
       changeFrequency: 'monthly' as const,
       priority: 0.6,
