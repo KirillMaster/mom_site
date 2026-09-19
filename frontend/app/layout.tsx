@@ -4,6 +4,7 @@ import './globals.css'
 import Providers from '@/components/Providers'
 import UtmTracker from '@/components/UtmTracker'
 import YandexMetrica from '@/components/YandexMetrica'
+import ClickTracker from '@/components/ClickTracker'
 import LayoutContent from '@/components/LayoutContent';
 import { Toaster } from 'react-hot-toast';
 
@@ -85,6 +86,7 @@ export default function RootLayout({
         <Providers>
           <UtmTracker />
           <YandexMetrica />
+          <ClickTracker />
           <Toaster position="top-right" />
           <div className="flex flex-col min-h-screen">
             <LayoutContent>
