@@ -7,6 +7,7 @@ import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
 import { getImageUrl } from '@/hooks/useApi';
 import { GalleryData } from '@/lib/api';
+import { reachGoal, Goals } from '@/lib/analytics';
 
 const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -38,6 +39,8 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
 
   const openLightbox = (index: number) => {
     setLightbox({ isOpen: true, photoIndex: index });
+    const artwork = artworksToDisplay[index];
+    reachGoal(Goals.ArtworkView, { id: artwork?.id, title: artwork?.title });
   };
 
   return (
