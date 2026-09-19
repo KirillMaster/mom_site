@@ -1,0 +1,47 @@
+{
+  "feature": "reviews",
+  "slices": [
+    {
+      "id": "S1",
+      "title": "Review entity + EF Core миграция (backend domain)",
+      "depends_on": [],
+      "scenario_refs": [
+        "S1-AS1", "S1-AS2", "S1-AS3", "S1-AS4", "S1-AS5", "S1-AS6"
+      ]
+    },
+    {
+      "id": "S2",
+      "title": "Публичные API: список опубликованных отзывов + форма отправки (rate limit, Telegram)",
+      "depends_on": ["S1"],
+      "scenario_refs": [
+        "S2-AS1", "S2-AS2", "S2-AS3", "S2-AS4", "S2-AS5",
+        "S2-AS6", "S2-AS7", "S2-AS8", "S2-AS9"
+      ]
+    },
+    {
+      "id": "S3",
+      "title": "Приватный CRUD и модерация отзывов (admin API)",
+      "depends_on": ["S1"],
+      "scenario_refs": [
+        "S3-AS1", "S3-AS2", "S3-AS3", "S3-AS4", "S3-AS5", "S3-AS6"
+      ]
+    },
+    {
+      "id": "S4",
+      "title": "Публичная страница /reviews (список, форма, пустое состояние, SEO/schema.org, sitemap, навигация)",
+      "depends_on": ["S2"],
+      "scenario_refs": [
+        "S4-AS1", "S4-AS2", "S4-AS3", "S4-AS4", "S4-AS5", "S4-AS6",
+        "S4-AS7", "S4-AS8", "S4-AS9", "S4-AS10", "S4-AS11", "S4-AS12", "S4-AS13"
+      ]
+    },
+    {
+      "id": "S5",
+      "title": "Админская страница /admin/reviews (список, публикация/снятие, редактирование, удаление)",
+      "depends_on": ["S3"],
+      "scenario_refs": [
+        "S5-AS1", "S5-AS2", "S5-AS3", "S5-AS4", "S5-AS5", "S5-AS6"
+      ]
+    }
+  ]
+}
