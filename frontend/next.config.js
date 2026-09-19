@@ -2,7 +2,13 @@
 const nextConfig = {
   output: 'standalone',
   images: {
-    domains: ['localhost', 's3.twcstorage.ru', 'cdn.angelamoiseenko.ru'],
+    remotePatterns: [
+      { protocol: 'http', hostname: 'localhost' },
+      { protocol: 'https', hostname: 's3.twcstorage.ru' },
+      { protocol: 'https', hostname: 'cdn.angelamoiseenko.ru' }
+    ],
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 2678400,
     unoptimized: false
   },
   compress: true,

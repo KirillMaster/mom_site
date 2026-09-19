@@ -35,8 +35,9 @@ ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV NEXT_PUBLIC_API_URL http://mom_site_api:5000
 
-# Install curl for health checks
-RUN apk add --no-cache curl
+# Install curl for health checks; libc6-compat is required at runtime by
+# sharp's prebuilt binary (used for next/image optimization) on alpine
+RUN apk add --no-cache curl libc6-compat
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
@@ -51,6 +52,11 @@ RUN chown nextjs:nodejs .next
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Next's output tracing does not reliably pull sharp into the standalone
+# bundle, and without it /_next/image answers 500 in production instead of
+# serving the optimized banner. Installing it here is cheap and deterministic.
+RUN npm install --no-package-lock --no-save --omit=dev sharp@0.33.5 && chown -R nextjs:nodejs /app/node_modules
 
 USER nextjs
 
