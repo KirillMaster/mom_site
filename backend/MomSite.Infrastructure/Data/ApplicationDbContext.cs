@@ -17,6 +17,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<VideoCategory> VideoCategories { get; set; }
     public DbSet<PageContent> PageContents { get; set; }
     public DbSet<ContactMessage> ContactMessages { get; set; }
+    public DbSet<Review> Reviews { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -99,6 +100,22 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Status).HasConversion<string>().HasMaxLength(20);
             entity.HasIndex(e => e.CreatedAt);
             entity.HasIndex(e => e.Status);
+        });
+
+        // Review configuration
+        modelBuilder.Entity<Review>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.AuthorName).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.AuthorCity).HasMaxLength(100);
+            entity.Property(e => e.Text).IsRequired().HasMaxLength(2000);
+            entity.Property(e => e.PhotoPath).HasMaxLength(500);
+            entity.HasOne(e => e.Artwork)
+                  .WithMany()
+                  .HasForeignKey(e => e.ArtworkId)
+                  .OnDelete(DeleteBehavior.SetNull);
+            entity.HasIndex(e => e.IsPublished);
+            entity.HasIndex(e => e.SortOrder);
         });
 
         // Seed data was removed in migration 20260427120500_RemoveSeedData.
