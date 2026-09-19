@@ -24,6 +24,7 @@ jest.mock('yet-another-react-lightbox', () => ({
   __esModule: true,
   default: ({ open }: { open: boolean }) => (open ? <div data-testid="lightbox" /> : null),
 }));
+jest.mock('yet-another-react-lightbox/plugins/zoom', () => ({ __esModule: true, default: {} }));
 jest.mock('yet-another-react-lightbox/styles.css', () => ({}), { virtual: true });
 
 const mockedGetGalleryData = getGalleryData as jest.Mock;

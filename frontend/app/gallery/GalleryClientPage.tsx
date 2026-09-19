@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Filter, Eye, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Lightbox from 'yet-another-react-lightbox';
+import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import 'yet-another-react-lightbox/styles.css';
 import { getImageUrl } from '@/hooks/useApi';
 import { GalleryData } from '@/lib/api';
@@ -165,6 +166,17 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
                           <Eye className="w-5 h-5" />
                         </button>
                       </div>
+
+                      {/* Touch devices never hover, so the overlay above stays
+                          invisible there and the eye is unreachable; this corner
+                          button is the same action, always visible below md. */}
+                      <button
+                        onClick={(event) => handleOpenLightbox(event, index)}
+                        aria-label={`Открыть «${artwork.title}» в полном размере`}
+                        className="md:hidden absolute top-2 right-2 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center text-white"
+                      >
+                        <Eye className="w-5 h-5" />
+                      </button>
                     </div>
                   </a>
 
@@ -232,6 +244,8 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
         open={lightbox.isOpen}
         close={() => setLightbox({ isOpen: false, photoIndex: 0 })}
         index={lightbox.photoIndex}
+        plugins={[Zoom]}
+        zoom={{ maxZoomPixelRatio: 3, doubleTapDelay: 300 }}
         slides={artworksToDisplay.map(artwork => ({
           src: getImageUrl(artwork.imagePath),
           title: artwork.title,

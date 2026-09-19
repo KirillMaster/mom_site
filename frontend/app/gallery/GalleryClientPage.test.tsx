@@ -12,6 +12,7 @@ jest.mock('yet-another-react-lightbox', () => ({
   default: () => null,
 }));
 
+jest.mock('yet-another-react-lightbox/plugins/zoom', () => ({ __esModule: true, default: {} }));
 jest.mock('yet-another-react-lightbox/styles.css', () => ({}), { virtual: true });
 
 jest.mock('framer-motion', () => ({
@@ -150,6 +151,15 @@ describe('GalleryClientPage', () => {
 
     expect(screen.getByText('Осенний сад')).toBeInTheDocument();
     expect(screen.queryByText('Холст, масло')).not.toBeInTheDocument();
+  });
+
+  it('keeps an eye button reachable without hovering, for touch devices', () => {
+    render(<GalleryClientPage galleryData={galleryData([artwork()])} />);
+
+    const eye = screen.getByRole('button', { name: /Открыть «Осенний сад» в полном размере/ });
+    fireEvent.click(eye);
+
+    expect(reachGoal).toHaveBeenCalledWith(Goals.ArtworkView, expect.anything());
   });
 
   it('sends the visitor to the slug page for the full description', () => {

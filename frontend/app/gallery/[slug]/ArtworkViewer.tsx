@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Eye, Maximize2 } from 'lucide-react';
 import Lightbox from 'yet-another-react-lightbox';
+import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import 'yet-another-react-lightbox/styles.css';
 import { reachGoal, Goals } from '@/lib/analytics';
 
@@ -51,10 +52,17 @@ const ArtworkViewer = ({ src, title }: ArtworkViewerProps) => {
         Смотреть в полном размере
       </button>
 
+      {/* Zoom is what makes "полный размер" mean anything here: without it the
+          lightbox scales the painting down to the viewport, the same size the
+          page already shows. A single slide also needs no prev/next arrows. */}
       <Lightbox
         open={isOpen}
         close={() => setIsOpen(false)}
         slides={[{ src, alt: title }]}
+        plugins={[Zoom]}
+        zoom={{ maxZoomPixelRatio: 3, doubleTapDelay: 300 }}
+        carousel={{ finite: true }}
+        render={{ buttonPrev: () => null, buttonNext: () => null }}
       />
     </div>
   );
