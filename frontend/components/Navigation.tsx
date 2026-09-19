@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, Palette } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import PhoneLink from './PhoneLink';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -80,6 +81,14 @@ const Navigation = () => {
             ))}
           </div>
 
+          {/* The phone is the shortest path to a sale, so it sits in the header on
+              every page; on narrow desktops only the icon remains. */}
+          <PhoneLink
+            place="header"
+            showNumberFrom="md"
+            className="hidden md:inline-flex items-center gap-2 rounded-full bg-primary-600 px-4 h-10 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-700"
+          />
+
           {/* Mobile menu button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
@@ -115,6 +124,10 @@ const Navigation = () => {
                   {item.label}
                 </Link>
               ))}
+              <PhoneLink
+                place="header-mobile"
+                className="mt-2 flex items-center justify-center gap-2 rounded-md bg-primary-600 px-3 py-2 text-base font-semibold text-white transition-colors duration-200 hover:bg-primary-700"
+              />
             </div>
           </motion.div>
         )}

@@ -10,6 +10,8 @@ export default function YandexMetrica() {
     <>
       <Script id="yandex-metrica" strategy="afterInteractive">
         {`
+          window.dataLayer = window.dataLayer || [];
+
           (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
           m[i].l=1*new Date();
           for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
@@ -17,10 +19,15 @@ export default function YandexMetrica() {
           (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
           ym(${YM_COUNTER_ID}, "init", {
+            ssr: true,
+            webvisor: true,
+            trackHash: true,
             clickmap: true,
-            trackLinks: true,
+            ecommerce: "dataLayer",
+            referrer: document.referrer,
+            url: location.href,
             accurateTrackBounce: true,
-            webvisor: true
+            trackLinks: true
           });
         `}
       </Script>
