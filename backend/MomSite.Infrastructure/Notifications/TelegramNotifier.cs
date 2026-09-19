@@ -40,12 +40,7 @@ public class TelegramNotifier : IFeedbackNotifier
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         cts.CancelAfter(SendTimeout);
 
-        var text =
-            $"Новое сообщение с сайта\n" +
-            $"Имя: {message.Name}\n" +
-            $"Email: {message.Email}\n" +
-            $"Тема: {message.Subject}\n\n" +
-            $"{message.Message}";
+        var text = BuildText(message);
 
         var client = _httpClientFactory.CreateClient(nameof(TelegramNotifier));
         var token = BotToken;
@@ -64,5 +59,34 @@ public class TelegramNotifier : IFeedbackNotifier
         }
 
         _logger.LogInformation("Contact message notification sent to Telegram chats {ChatIds}", string.Join(",", ChatIds));
+    }
+
+    /// <summary>
+    /// Builds the notification body. The campaign that brought the visitor is
+    /// part of it because the owner acts on a lead differently depending on
+    /// where it came from, and the site's whole point is selling paintings.
+    /// </summary>
+    public static string BuildText(ContactMessage message)
+    {
+        var lines = new List<string>
+        {
+            "Новое сообщение с сайта",
+            $"Имя: {message.Name}",
+            $"Email: {message.Email}",
+            $"Тема: {message.Subject}",
+        };
+
+        var source = new[] { message.UtmSource, message.UtmMedium, message.UtmCampaign }
+            .Where(part => !string.IsNullOrWhiteSpace(part))
+            .ToArray();
+
+        lines.Add(source.Length > 0
+            ? $"Источник: {string.Join(" / ", source)}"
+            : "Источник: прямой заход");
+
+        lines.Add(string.Empty);
+        lines.Add(message.Message);
+
+        return string.Join("\n", lines);
     }
 }

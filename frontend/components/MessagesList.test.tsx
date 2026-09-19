@@ -178,6 +178,62 @@ describe('MessagesList', () => {
     expect(readRow).not.toHaveClass('bg-primary-50');
   });
 
+  // UTM badges render when present, using compact source/medium/campaign labels.
+  it('renders UTM source, medium and campaign as badges when present', () => {
+    const messages = [
+      makeMessage({
+        id: 1,
+        utmSource: 'yandex',
+        utmMedium: 'cpc',
+        utmCampaign: 'spring-sale',
+      }),
+    ];
+
+    renderList({ messages });
+
+    expect(screen.getByText('yandex')).toBeInTheDocument();
+    expect(screen.getByText('cpc')).toBeInTheDocument();
+    expect(screen.getByText('spring-sale')).toBeInTheDocument();
+  });
+
+  // When no UTM data was captured, show a plain-language fallback instead of
+  // leaving the column blank.
+  it('shows "прямой заход" when no UTM data is present', () => {
+    const messages = [makeMessage({ id: 1 })];
+
+    renderList({ messages });
+
+    expect(screen.getByText('Источник: прямой заход')).toBeInTheDocument();
+  });
+
+  // Search filters the already-loaded list client-side by name, email,
+  // subject and message text.
+  it('filters messages by search query across name, email, subject and message', () => {
+    const messages = [
+      makeMessage({ id: 1, name: 'Ольга Петрова', email: 'olga@example.com', subject: 'Про пейзаж' }),
+      makeMessage({ id: 2, name: 'Сергей Кузнецов', email: 'sergey@example.com', subject: 'Про портрет' }),
+    ];
+
+    renderList({ messages });
+
+    fireEvent.change(screen.getByLabelText('Поиск по заявкам'), { target: { value: 'петрова' } });
+
+    expect(screen.getByText('Ольга Петрова')).toBeInTheDocument();
+    expect(screen.queryByText('Сергей Кузнецов')).not.toBeInTheDocument();
+  });
+
+  // An unmatched query shows the "nothing found" empty state rather than the
+  // "no messages at all" one.
+  it('shows a "nothing found" empty state when the search query matches nothing', () => {
+    const messages = [makeMessage({ id: 1, name: 'Ольга Петрова' })];
+
+    renderList({ messages });
+
+    fireEvent.change(screen.getByLabelText('Поиск по заявкам'), { target: { value: 'несуществующий' } });
+
+    expect(screen.getByTestId('empty-state')).toHaveTextContent('Ничего не найдено');
+  });
+
   // @S2-AS5-EXT: long names, emails, and subjects are handled without breaking layout.
   it('@S2-AS5-EXT handles long message names and subjects without breaking', () => {
     const longName = 'A'.repeat(100);
