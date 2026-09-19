@@ -47,10 +47,12 @@ const AboutClientPage = ({ aboutData }: { aboutData: AboutData }) => {
               className="relative"
             >
               <div className="relative overflow-hidden rounded-2xl shadow-2xl">
+                {/* The portrait keeps the face in the top third of the frame, so a
+                    centred crop inside this wide box cut the eyes off. */}
                 <img
                   src={getImageUrl(aboutData.artistPhoto)}
                   alt="Анжела Моисеенко - Художник-импрессионист"
-                  className="w-full h-96 object-cover"
+                  className="w-full h-96 object-cover object-top"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
               </div>

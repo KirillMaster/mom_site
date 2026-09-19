@@ -196,12 +196,23 @@ const VideosClientPage = ({ videosData }: { videosData: VideosData }) => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="relative">
+                {/* playsInline keeps the video inside the modal on iOS, which
+                    otherwise hijacks playback into its own fullscreen player. */}
                 <ReactPlayer
                   url={getImageUrl(selectedVideo.videoPath)}
                   width="100%"
                   height="400px"
                   controls
                   playing
+                  config={{
+                    file: {
+                      attributes: {
+                        playsInline: true,
+                        preload: 'metadata',
+                        poster: getImageUrl(selectedVideo.thumbnailPath),
+                      },
+                    },
+                  }}
                 />
               </div>
               

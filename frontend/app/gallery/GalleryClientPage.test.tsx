@@ -48,7 +48,26 @@ const artwork = (overrides: Record<string, unknown> = {}) => ({
 });
 
 const galleryData = (artworks: unknown[]) =>
-  ({ artworks, categories: [{ id: 1, name: 'Пейзаж' }] } as any);
+  ({
+    artworks,
+    categories: [
+      { id: 1, name: 'Пейзаж' },
+      { id: 4, name: 'Фото с выставок' },
+    ],
+  } as any);
+
+const exhibitionPhoto = (overrides: Record<string, unknown> = {}) => ({
+  id: 9,
+  title: 'Открытие выставки',
+  description: 'Фотоотчёт',
+  imagePath: 'b.jpg',
+  thumbnailPath: 'b-thumb.jpg',
+  isForSale: true,
+  price: null,
+  categoryId: 4,
+  category: { id: 4, name: 'Фото с выставок' },
+  ...overrides,
+});
 
 describe('GalleryClientPage', () => {
   beforeEach(() => jest.clearAllMocks());
@@ -90,5 +109,22 @@ describe('GalleryClientPage', () => {
       channel: 'ask_price',
       artwork: 'Осенний сад',
     });
+  });
+
+  it('hides exhibition photos from the all-works view but keeps paintings visible', () => {
+    render(<GalleryClientPage galleryData={galleryData([artwork(), exhibitionPhoto()])} />);
+
+    expect(screen.getByText('Осенний сад')).toBeInTheDocument();
+    expect(screen.queryByText('Открытие выставки')).not.toBeInTheDocument();
+  });
+
+  it('shows exhibition photos without an ask-price button when that category is selected', () => {
+    render(<GalleryClientPage galleryData={galleryData([artwork(), exhibitionPhoto()])} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Фото с выставок' }));
+
+    expect(screen.getByText('Открытие выставки')).toBeInTheDocument();
+    expect(screen.queryByText('Осенний сад')).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Узнать цену' })).not.toBeInTheDocument();
   });
 });
