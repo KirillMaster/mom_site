@@ -22,4 +22,15 @@ public interface IFeedbackNotifier
     /// and not failing the request because of it.
     /// </summary>
     Task NotifyAsync(ContactMessage message, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Attempts to deliver a notification about a newly submitted, still
+    /// unpublished <paramref name="review"/>. Same failure contract as
+    /// <see cref="NotifyAsync(ContactMessage, CancellationToken)"/>. Channels
+    /// that don't carry review notifications keep the default no-op: a review
+    /// is not a lead that can be lost, and throwing here would put an error in
+    /// the log for every single review just because e-mail doesn't relay them.
+    /// </summary>
+    Task NotifyAsync(Review review, CancellationToken cancellationToken = default) =>
+        Task.CompletedTask;
 }

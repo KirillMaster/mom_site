@@ -15,7 +15,7 @@ namespace MomSite.API.DTOs
         public string? PhotoPath { get; set; }
     }
 
-    public class CreateReviewDto
+    public class CreateReviewAdminDto
     {
         public string AuthorName { get; set; } = string.Empty;
         public string? AuthorCity { get; set; }

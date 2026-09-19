@@ -373,7 +373,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpPost("reviews")]
-    public async Task<ActionResult<ReviewAdminDto>> CreateReview([FromBody] CreateReviewDto dto)
+    public async Task<ActionResult<ReviewAdminDto>> CreateReview([FromBody] CreateReviewAdminDto dto)
     {
         var review = new Review
         {

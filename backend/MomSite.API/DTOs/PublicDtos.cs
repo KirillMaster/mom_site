@@ -103,4 +103,21 @@ namespace MomSite.API.DTOs
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
     }
+
+    /// <summary>
+    /// Public projection of a published Review. Moderation-only fields
+    /// (IsPublished, PublishedAt) are intentionally not exposed here.
+    /// </summary>
+    public class ReviewDto
+    {
+        public int Id { get; set; }
+        public string AuthorName { get; set; } = string.Empty;
+        public string? AuthorCity { get; set; }
+        public string Text { get; set; } = string.Empty;
+        public int Rating { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public int SortOrder { get; set; }
+        public int? ArtworkId { get; set; }
+        public string? PhotoPath { get; set; }
+    }
 }
