@@ -50,6 +50,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_YM_ID=${NEXT_PUBLIC_YM_ID:-}
     container_name: mom_site_frontend_prod
     environment:
       - NEXT_PUBLIC_API_URL=https://angelamoiseenko.ru/api

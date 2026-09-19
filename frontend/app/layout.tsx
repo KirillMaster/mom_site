@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import Providers from '@/components/Providers'
 import UtmTracker from '@/components/UtmTracker'
+import YandexMetrica from '@/components/YandexMetrica'
 import LayoutContent from '@/components/LayoutContent';
 import { Toaster } from 'react-hot-toast';
 
@@ -79,55 +80,11 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         
         {/* Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Person",
-              "name": "Анжела Моисеенко",
-              "jobTitle": "Художник-импрессионист",
-              "description": "Художник-импрессионист, специализирующийся на театральных работах и натюрмортах",
-              "url": "https://angelamoiseenko.ru",
-              "image": "https://s3.twcstorage.ru/577cc034-8ff38061-52e3-42ed-af0c-f06c744e4e66/2025/08/13/54c8e902-28cf-40f4-a6d1-29fe7739ea7b_page-content/fd3b2327-6328-47ec-ad68-a058fddcb07c.jpg",
-              "sameAs": [
-                "https://instagram.com/anzhela.moiseenko",
-                "https://vk.com/daritenastoyashee",
-                "https://t.me/Angelamois"
-              ],
-              "worksFor": {
-                "@type": "Organization",
-                "name": "Анжела Моисеенко - Художник"
-              }
-            })
-          }}
-        />
-        
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              "name": "Анжела Моисеенко - Художник-импрессионист",
-              "url": "https://angelamoiseenko.ru",
-              "description": "Официальный сайт художника-импрессиониста Анжелы Моисеенко",
-              "author": {
-                "@type": "Person",
-                "name": "Анжела Моисеенко"
-              },
-              "potentialAction": {
-                "@type": "SearchAction",
-                "target": "https://angelamoiseenko.ru/search?q={search_term_string}",
-                "query-input": "required name=search_term_string"
-              }
-            })
-          }}
-        />
       </head>
       <body className={`${inter.className} bg-gray-50 text-gray-800`}>
         <Providers>
           <UtmTracker />
+          <YandexMetrica />
           <Toaster position="top-right" />
           <div className="flex flex-col min-h-screen">
             <LayoutContent>

@@ -7,6 +7,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Галерея Работ | Анжела Моисеенко',
   description: 'Исследуйте коллекцию уникальных работ в стиле импрессионизма. Каждая картина создана с любовью и передает особую атмосферу.',
+  alternates: { canonical: '/gallery' },
   openGraph: {
     title: 'Галерея Работ Анжелы Моисеенко',
     description: 'Коллекция работ в стиле импрессионизма.',

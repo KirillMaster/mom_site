@@ -23,6 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       keywords: 'контакты, художник, связь, Анжела Моисеенко, импрессионизм, заказать картину',
+      alternates: { canonical: '/contacts' },
       openGraph: {
         title,
         description,
