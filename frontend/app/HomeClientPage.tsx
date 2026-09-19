@@ -9,6 +9,14 @@ import { HomeData } from '@/lib/api';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import { shortBio } from '@/data/biography';
+
+const homeHighlights = [
+  'Член Союза художников России и АИАП ЮНЕСКО',
+  'Председатель Севастопольского отделения СХР, 2018–2023',
+  'Работы в музее имени М. П. Крошицкого и частных коллекциях 12 стран',
+  'Картины «Муза» и «Дамские штучки» — символы фестиваля «ЗАЗЕРКАЛЬЕ»',
+];
 
 const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
   const settings = {
@@ -158,9 +166,23 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
               <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 text-gray-900">
                 Обо мне
               </h2>
-              <p className="text-xl text-gray-700 leading-relaxed">
-                {homeData.biographyText || "Информация о художнике пока не добавлена."}
+              <p className="text-xl text-gray-700 leading-relaxed mb-6">
+                {homeData.biographyText || shortBio}
               </p>
+              {/* The first thing a visitor wants to know about an artist they
+                  have never heard of is who vouches for her. */}
+              <ul className="text-gray-700 space-y-2 mb-8">
+                {homeHighlights.map((highlight) => (
+                  <li key={highlight} className="flex items-start gap-3 justify-center md:justify-start">
+                    <span className="mt-2 w-2 h-2 rounded-full bg-primary-600 shrink-0" />
+                    <span>{highlight}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link href="/about" className="btn-outline inline-flex items-center space-x-2">
+                <span>Биография и выставки</span>
+                <ArrowRight className="w-5 h-5" />
+              </Link>
             </motion.div>
 
             {/* Right: Author Photo */}

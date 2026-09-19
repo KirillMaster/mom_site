@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { getAboutData } from '@/hooks/useApi';
 import AboutClientPage from './AboutClientPage';
+import { fullBio } from '@/data/biography';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 export const dynamic = 'force-dynamic';
@@ -18,9 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
     }
 
     const title = 'О себе | Анжела Моисеенко - Художник-импрессионист';
-    const description = aboutData.biography 
-      ? `${aboutData.biography.substring(0, 160)}...`
-      : 'Познакомьтесь с художником-импрессионистом Анжелой Моисеенко. Узнайте о творческом пути, специализациях и философии искусства.';
+    const description = `${fullBio[0].substring(0, 160)}...`;
 
     const imageUrl = aboutData.artistPhoto || 'https://s3.twcstorage.ru/577cc034-8ff38061-52e3-42ed-af0c-f06c744e4e66/2025/08/13/54c8e902-28cf-40f4-a6d1-29fe7739ea7b_page-content/fd3b2327-6328-47ec-ad68-a058fddcb07c.jpg';
 
@@ -78,9 +77,24 @@ const AboutPage = async () => {
     '@type': 'Person',
     name: 'Анжела Моисеенко',
     jobTitle: 'Художник-импрессионист',
-    description: aboutData.biography || 'Художник-импрессионист, специализирующийся на театральных работах и натюрмортах',
+    description: fullBio.join(' '),
     url: 'https://angelamoiseenko.ru/about',
     image: aboutData.artistPhoto || 'https://s3.twcstorage.ru/577cc034-8ff38061-52e3-42ed-af0c-f06c744e4e66/2025/08/13/54c8e902-28cf-40f4-a6d1-29fe7739ea7b_page-content/fd3b2327-6328-47ec-ad68-a058fddcb07c.jpg',
+    birthDate: '1970-11-19',
+    birthPlace: { '@type': 'Place', name: 'Симферополь' },
+    alumniOf: [
+      { '@type': 'EducationalOrganization', name: 'Крымское художественное училище имени Н. С. Самокиша' },
+      { '@type': 'EducationalOrganization', name: 'Харьковский художественно-промышленный институт' },
+    ],
+    memberOf: [
+      { '@type': 'Organization', name: 'Союз художников России' },
+      { '@type': 'Organization', name: 'Национальный союз художников Украины' },
+      { '@type': 'Organization', name: 'Международная ассоциация изобразительных искусств — АИАП ЮНЕСКО' },
+    ],
+    award: [
+      'Медаль «За значительные творческие достижения в области изобразительного искусства и народного творчества»',
+      'Лауреат премии «Победа года 2012» в номинации «Талант года»',
+    ],
     knowsAbout: ['Импрессионизм', 'Театральное искусство', 'Натюрморты', 'Живопись'],
     hasOccupation: {
       '@type': 'Occupation',
