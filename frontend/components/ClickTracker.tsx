@@ -38,7 +38,9 @@ export default function ClickTracker() {
     const onClick = (event: MouseEvent) => {
       const anchor = (event.target as HTMLElement | null)?.closest?.('a');
       const href = anchor?.getAttribute('href');
-      if (!href) return;
+      // Links that report a goal themselves opt out, otherwise the click would
+      // be counted twice.
+      if (!href || anchor?.hasAttribute('data-ym-tracked')) return;
 
       const hit = goalForHref(href);
       if (hit) reachGoal(hit.goal, hit.params);

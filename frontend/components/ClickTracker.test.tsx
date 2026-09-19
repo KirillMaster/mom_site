@@ -38,3 +38,17 @@ describe('ClickTracker', () => {
     expect(reachGoal).not.toHaveBeenCalled();
   });
 });
+
+describe('ClickTracker opt-out', () => {
+  it('leaves links that report themselves alone', () => {
+    (reachGoal as jest.Mock).mockClear();
+    render(<ClickTracker />);
+    const a = document.createElement('a');
+    a.setAttribute('href', 'tel:+79785458650');
+    a.setAttribute('data-ym-tracked', 'phone');
+    document.body.appendChild(a);
+    a.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    a.remove();
+    expect(reachGoal).not.toHaveBeenCalled();
+  });
+});

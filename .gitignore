@@ -112,3 +112,4 @@ dist
 f.key
 test-results/
 .worktrees/
+.secrets.local.md
