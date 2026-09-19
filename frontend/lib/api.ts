@@ -165,6 +165,8 @@ export interface HomeData {
   authorPhoto: string;
   artworks: ArtworkDto[];
   contacts: ContactsData;
+  seoTitle?: string;
+  seoDescription?: string;
 }
 
 export interface GalleryData {

@@ -11,7 +11,13 @@ namespace MomSite.API.DTOs
         public string AuthorPhoto { get; set; } = string.Empty;
         public List<ArtworkDto> Artworks { get; set; } = new();
         public ContactsData Contacts { get; set; } = new ContactsData();
-        
+
+        // Admin-editable homepage SEO fields, independent of WelcomeMessage
+        // (which is marketing copy shown on the page, not a <title>/<meta
+        // description>). Empty strings mean "not set" — the frontend applies
+        // its own commercial default in that case.
+        public string SeoTitle { get; set; } = string.Empty;
+        public string SeoDescription { get; set; } = string.Empty;
     }
 
     public class GalleryData

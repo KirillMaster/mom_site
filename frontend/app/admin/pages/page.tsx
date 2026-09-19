@@ -31,7 +31,9 @@ const pageFields: Record<string, PageField[]> = {
     { key: 'welcome_message', label: 'Приветственное сообщение', type: 'textarea' },
     { key: 'banner_image', label: 'Изображение баннера', type: 'image' },
     { key: 'home_biography_text', label: 'Текст биографии', type: 'textarea' },
-    { key: 'home_author_photo', label: 'Фото автора', type: 'image' }
+    { key: 'home_author_photo', label: 'Фото автора', type: 'image' },
+    { key: 'home_seo_title', label: 'SEO заголовок (главная)', type: 'text' },
+    { key: 'home_seo_description', label: 'SEO описание (главная)', type: 'textarea' }
   ],
   gallery: [
     { key: 'banner_title', label: 'Заголовок баннера', type: 'text', required: true },
