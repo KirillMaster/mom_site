@@ -109,6 +109,24 @@ namespace MomSite.API.DTOs
             };
         }
 
+        public static ReviewAdminDto ToAdminDto(this Review review)
+        {
+            return new ReviewAdminDto
+            {
+                Id = review.Id,
+                AuthorName = review.AuthorName,
+                AuthorCity = review.AuthorCity,
+                Text = review.Text,
+                Rating = review.Rating,
+                CreatedAt = review.CreatedAt,
+                IsPublished = review.IsPublished,
+                PublishedAt = review.PublishedAt,
+                SortOrder = review.SortOrder,
+                ArtworkId = review.ArtworkId,
+                PhotoPath = review.PhotoPath
+            };
+        }
+
         public static VideoCategoryPublicDto ToPublicDto(this VideoCategory videoCategory)
         {
             return new VideoCategoryPublicDto
