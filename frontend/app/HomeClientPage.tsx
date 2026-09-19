@@ -2,6 +2,8 @@
 
 import { ArrowRight, Star, Quote } from 'lucide-react';
 import { FaInstagram, FaVk, FaTelegram, FaWhatsapp, FaYoutube, FaEnvelope } from 'react-icons/fa';
+import MaxIcon from '@/components/MaxIcon';
+import { maxProfileUrl } from '@/lib/social';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -297,6 +299,21 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
               >
                 <FaYoutube className="w-12 h-12" />
                 <span className="text-lg font-medium">YouTube</span>
+              </motion.a>
+            )}
+            {maxProfileUrl(homeData.contacts.socialLinks.max, homeData.contacts.phone) && (
+              <motion.a
+                href={maxProfileUrl(homeData.contacts.socialLinks.max, homeData.contacts.phone)!}
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.45 }}
+                viewport={{ once: true }}
+                className="flex flex-col items-center space-y-2 text-gray-700 hover:text-indigo-500 transition-colors"
+              >
+                <MaxIcon className="w-12 h-12" />
+                <span className="text-lg font-medium">MAX</span>
               </motion.a>
             )}
             {homeData.contacts.email && (

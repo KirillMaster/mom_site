@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { getContactsData } from '@/hooks/useApi';
 import ContactsClientPage from './ContactsClientPage';
+import { maxProfileUrl } from '@/lib/social';
 
 export const dynamic = 'force-dynamic';
 
@@ -89,7 +90,8 @@ const ContactsPage = async () => {
         contactsData.socialLinks.vk,
         contactsData.socialLinks.telegram,
         contactsData.socialLinks.whatsapp,
-        contactsData.socialLinks.youtube
+        contactsData.socialLinks.youtube,
+        maxProfileUrl(contactsData.socialLinks.max, contactsData.phone)
       ].filter(Boolean)
     },
     potentialAction: {

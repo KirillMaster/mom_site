@@ -204,6 +204,7 @@ export interface SocialLinks {
   telegram?: string;
   whatsapp?: string;
   youtube?: string;
+  max?: string;
 }
 
 export interface VideosData {

@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { Palette, Mail, Phone } from 'lucide-react';
 import { FaInstagram, FaVk, FaTelegram, FaWhatsapp, FaYoutube } from 'react-icons/fa';
+import MaxIcon from '@/components/MaxIcon';
+import { maxProfileUrl } from '@/lib/social';
 import { useFooterData } from '@/hooks/useApi';
 
 const Footer = () => {
@@ -73,6 +75,17 @@ const Footer = () => {
                   className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
                 >
                   <FaYoutube className="w-5 h-5" />
+                </a>
+              )}
+              {maxProfileUrl(footerData?.socialLinks?.max, footerData?.phone) && (
+                <a
+                  href={maxProfileUrl(footerData?.socialLinks?.max, footerData?.phone)!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="MAX"
+                  className="w-10 h-10 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
+                >
+                  <MaxIcon className="w-5 h-5" />
                 </a>
               )}
               {footerData?.email && (

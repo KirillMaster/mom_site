@@ -103,6 +103,9 @@ public class PublicController : ControllerBase
                 case "youtube":
                     contactsData.SocialLinks.Youtube = social.LinkUrl;
                     break;
+                case "max":
+                    contactsData.SocialLinks.Max = social.LinkUrl;
+                    break;
             }
         }
 
@@ -247,6 +250,9 @@ public class PublicController : ControllerBase
                 case "youtube":
                     contactsData.SocialLinks.Youtube = social.LinkUrl;
                     break;
+                case "max":
+                    contactsData.SocialLinks.Max = social.LinkUrl;
+                    break;
             }
         }
 
@@ -382,6 +388,9 @@ public class PublicController : ControllerBase
                     break;
                 case "youtube":
                     footerData.SocialLinks.Youtube = social.LinkUrl;
+                    break;
+                case "max":
+                    footerData.SocialLinks.Max = social.LinkUrl;
                     break;
             }
         }

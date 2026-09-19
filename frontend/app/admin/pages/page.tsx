@@ -64,6 +64,7 @@ const pageFields: Record<string, PageField[]> = {
     { key: 'vk', label: 'VK ссылка', type: 'url' },
     { key: 'telegram', label: 'Telegram ссылка', type: 'url' },
     { key: 'whatsapp', label: 'WhatsApp ссылка', type: 'url' },
+    { key: 'max', label: 'MAX ссылка', type: 'url' },
     { key: 'youtube', label: 'YouTube ссылка', type: 'url' }
   ],
   footer: [

@@ -18,14 +18,15 @@ export default function YandexMetrica() {
           k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
           (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
+          // No ssr/url/referrer here on purpose: those switch the counter into
+          // the mode where the app has to send every hit itself with
+          // ym(id, 'hit', ...). Without that call the counter never fired a hit,
+          // never set the first-party _ym_uid cookie, and every visit looked new.
           ym(${YM_COUNTER_ID}, "init", {
-            ssr: true,
             webvisor: true,
             trackHash: true,
             clickmap: true,
             ecommerce: "dataLayer",
-            referrer: document.referrer,
-            url: location.href,
             accurateTrackBounce: true,
             trackLinks: true
           });

@@ -56,6 +56,7 @@ namespace MomSite.API.DTOs
         public string? Telegram { get; set; }
         public string? Whatsapp { get; set; }
         public string? Youtube { get; set; }
+        public string? Max { get; set; }
     }
 
     public class VideosData
