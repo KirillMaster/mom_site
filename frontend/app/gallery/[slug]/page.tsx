@@ -4,6 +4,7 @@ import { getGalleryData, getImageUrl } from '@/hooks/useApi';
 import { resolveArtworkBySlug, buildArtworkSlug } from '@/lib/artworkSlug';
 import { isExhibitionPhoto } from '@/lib/gallery';
 import AskPriceButton from './AskPriceButton';
+import ArtworkViewer from './ArtworkViewer';
 
 export const dynamic = 'force-dynamic';
 
@@ -154,7 +155,7 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
   );
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(artworkSchema) }}
@@ -163,36 +164,90 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <nav aria-label="breadcrumbs">
-        <a href="/">Главная</a>
-        <a href="/gallery">Галерея</a>
-        <span>{artwork.title}</span>
-      </nav>
 
-      <h1>{artwork.title}</h1>
+      {/* pt-24 clears the fixed site header, which otherwise covers the top of
+          the painting on this page. */}
+      <div className="mx-auto max-w-7xl px-4 pt-24 pb-16">
+        <nav aria-label="breadcrumbs" className="mb-6 flex flex-wrap items-center gap-2 text-sm text-gray-500">
+          <a href="/" className="transition-colors hover:text-primary-600">Главная</a>
+          <span aria-hidden="true">/</span>
+          <a href="/gallery" className="transition-colors hover:text-primary-600">Галерея</a>
+          <span aria-hidden="true">/</span>
+          <span className="text-gray-900">{artwork.title}</span>
+        </nav>
 
-      <img src={getImageUrl(artwork.imagePath)} alt={artwork.title} />
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:items-start">
+          <ArtworkViewer
+            src={getImageUrl(artwork.imagePath)}
+            title={artwork.title}
+          />
 
-      {artwork.description && <p>{artwork.description}</p>}
-      {categoryName && <p>{categoryName}</p>}
+          <aside className="lg:sticky lg:top-28">
+            <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5 md:p-8">
+              {categoryName && (
+                <p className="mb-2 text-sm font-medium uppercase tracking-wide text-primary-600">
+                  {categoryName}
+                </p>
+              )}
 
-      {priceLabel && <p>{priceLabel}</p>}
-      {showPriceCta && <AskPriceButton title={artwork.title} id={artwork.id} />}
+              <h1 className="font-serif text-3xl font-bold text-gray-900 md:text-4xl">
+                {artwork.title}
+              </h1>
 
-      {relatedWorks.length > 0 && (
-        <section>
-          <h2>Другие работы этой категории</h2>
-          <ul>
-            {relatedWorks.map((related: any) => (
-              <li key={related.id}>
-                <a href={`/gallery/${buildArtworkSlug(related.title, related.id)}`}>
-                  {related.title}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+              {artwork.description && (
+                <p className="mt-4 leading-relaxed text-gray-600">{artwork.description}</p>
+              )}
+
+              {priceLabel && (
+                <p className="mt-6 text-2xl font-bold text-gray-900">{priceLabel}</p>
+              )}
+
+              {showPriceCta && (
+                <div className="mt-6">
+                  <AskPriceButton title={artwork.title} id={artwork.id} />
+                </div>
+              )}
+
+              <a
+                href="/gallery"
+                className="mt-6 inline-block text-sm font-medium text-primary-600 transition-colors hover:text-primary-700"
+              >
+                ← Вернуться в галерею
+              </a>
+            </div>
+          </aside>
+        </div>
+
+        {relatedWorks.length > 0 && (
+          <section className="mt-16">
+            <h2 className="mb-6 font-serif text-2xl font-semibold text-gray-900 md:text-3xl">
+              Другие работы этой категории
+            </h2>
+            <ul className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
+              {relatedWorks.map((related: any) => (
+                <li key={related.id}>
+                  <a
+                    href={`/gallery/${buildArtworkSlug(related.title, related.id)}`}
+                    className="group block overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-black/5 transition-shadow hover:shadow-md"
+                  >
+                    <div className="aspect-square overflow-hidden bg-neutral-100">
+                      <img
+                        src={getImageUrl(related.thumbnailPath || related.imagePath)}
+                        alt=""
+                        aria-hidden="true"
+                        className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </div>
+                    <span className="block p-3 text-sm font-medium text-gray-900">
+                      {related.title}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </div>
     </div>
   );
 };

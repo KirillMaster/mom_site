@@ -17,8 +17,14 @@ jest.mock('next/navigation', () => ({
 
 jest.mock('@/lib/analytics', () => ({
   reachGoal: jest.fn(),
-  Goals: { ContactClick: 'contact_click' },
+  Goals: { ContactClick: 'contact_click', ArtworkView: 'artwork_view' },
 }));
+
+jest.mock('yet-another-react-lightbox', () => ({
+  __esModule: true,
+  default: ({ open }: { open: boolean }) => (open ? <div data-testid="lightbox" /> : null),
+}));
+jest.mock('yet-another-react-lightbox/styles.css', () => ({}), { virtual: true });
 
 const mockedGetGalleryData = getGalleryData as jest.Mock;
 
@@ -420,5 +426,40 @@ describe('@S3-AS6 BreadcrumbList schema.org block', () => {
     expect(breadcrumbBlock).toBeDefined();
     expect(breadcrumbBlock.itemListElement).toHaveLength(3);
     expect(breadcrumbBlock.itemListElement[2].name).toBe('Осенний сад');
+  });
+});
+
+describe('the artwork page opens the painting full-screen', () => {
+  it('shows the lightbox on the explicit button and reports the view goal', async () => {
+    mockedGetGalleryData.mockResolvedValue(
+      gallery([
+        { id: 7, title: 'Осенний сад', isForSale: false, imagePath: '/full/osenniy-sad.jpg' },
+      ])
+    );
+
+    const element = await ArtworkPage({ params: { slug: 'osenniy-sad-7' } });
+    render(element);
+
+    expect(screen.queryByTestId('lightbox')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Смотреть в полном размере' }));
+
+    expect(screen.getByTestId('lightbox')).toBeInTheDocument();
+    expect(reachGoal).toHaveBeenCalledWith(Goals.ArtworkView, expect.objectContaining({ title: 'Осенний сад' }));
+  });
+
+  it('also opens it when the painting itself is clicked', async () => {
+    mockedGetGalleryData.mockResolvedValue(
+      gallery([
+        { id: 7, title: 'Осенний сад', isForSale: false, imagePath: '/full/osenniy-sad.jpg' },
+      ])
+    );
+
+    const element = await ArtworkPage({ params: { slug: 'osenniy-sad-7' } });
+    render(element);
+
+    fireEvent.click(screen.getByRole('button', { name: /Открыть «Осенний сад» в полном размере/ }));
+
+    expect(screen.getByTestId('lightbox')).toBeInTheDocument();
   });
 });
