@@ -9,6 +9,7 @@ import { getImageUrl } from '@/hooks/useApi';
 import { GalleryData } from '@/lib/api';
 import { reachGoal, Goals } from '@/lib/analytics';
 import { artworksForSale, isExhibitionPhoto } from '@/lib/gallery';
+import { buildArtworkSlug } from '@/lib/artworkSlug';
 
 const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -42,6 +43,17 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
 
   const getAskPriceHref = (artwork: any) => {
     return `/contacts?artwork=${encodeURIComponent(artwork.title)}&id=${artwork.id}`;
+  };
+
+  // Each card links straight to its own artwork page (S2-AS1) — the lightbox
+  // eye button remains for a quick in-place preview, so its click must not
+  // also trigger this anchor's navigation.
+  const getArtworkHref = (artwork: any) => `/gallery/${buildArtworkSlug(artwork.title, artwork.id)}`;
+
+  const handleOpenLightbox = (event: React.MouseEvent, index: number) => {
+    event.preventDefault();
+    event.stopPropagation();
+    openLightbox(index);
   };
 
   const handleAskPriceClick = (artwork: any) => {
@@ -136,24 +148,26 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
                   {/* A square frame with the whole painting inside it: a fixed
                       height cropped tall canvases down to a letterbox strip and
                       the work itself was barely visible in the card. */}
-                  <div className="relative overflow-hidden aspect-square bg-neutral-100">
-                    <img
-                      src={getImageUrl(artwork.thumbnailPath)}
-                      alt={artwork.title}
-                      className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
-                    />
-                    
-                    {/* Overlay */}
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                      <button
-                        onClick={() => openLightbox(index)}
-                        className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors duration-200"
-                      >
-                        <Eye className="w-5 h-5" />
-                      </button>
+                  <a href={getArtworkHref(artwork)} aria-label={artwork.title} className="block">
+                    <div className="relative overflow-hidden aspect-square bg-neutral-100">
+                      <img
+                        src={getImageUrl(artwork.thumbnailPath)}
+                        alt={artwork.title}
+                        className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
+                      />
+
+                      {/* Overlay */}
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <button
+                          onClick={(event) => handleOpenLightbox(event, index)}
+                          className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors duration-200"
+                        >
+                          <Eye className="w-5 h-5" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                  
+                  </a>
+
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm text-primary-600 font-medium">
