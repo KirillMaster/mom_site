@@ -57,13 +57,16 @@ const GalleryPage = async () => {
           thumbnailUrl: getImageUrl(artwork.thumbnailPath),
           author: {
             '@type': 'Person',
-            name: 'Имя Художника', // Замените на реальное имя
+            name: 'Анжела Моисеенко',
           },
           datePublished: artwork.createdAt,
           keywords: artwork.category?.name,
           inLanguage: 'ru',
           isFamilyFriendly: 'true',
-          ...(artwork.isForSale && {
+          // Almost every painting is sold at a negotiated price, and an Offer
+          // without one is invalid structured data, so the offer only appears
+          // once a price actually exists.
+          ...(artwork.isForSale && (artwork.price ?? 0) > 0 && {
             offers: {
               '@type': 'Offer',
               price: artwork.price,

@@ -27,6 +27,11 @@ jest.mock('@/hooks/useApi', () => ({
   sendContactMessage: jest.fn(),
 }));
 
+const searchParams = new URLSearchParams();
+jest.mock('next/navigation', () => ({
+  useSearchParams: () => searchParams,
+}));
+
 window.alert = jest.fn();
 
 const contactsData: ContactsData = {
@@ -98,5 +103,29 @@ describe('ContactsClientPage honeypot & error handling (@S3)', () => {
     fireEvent.click(screen.getByRole('button', { name: /Отправить сообщение/ }));
 
     expect(await screen.findByText('Произошла ошибка при отправке сообщения.')).toBeInTheDocument();
+  });
+});
+
+describe('ContactsClientPage prefill from a painting', () => {
+  afterEach(() => {
+    searchParams.delete('artwork');
+  });
+
+  it('writes the visitor a head start when they came from a painting', () => {
+    searchParams.set('artwork', 'Осенний сад');
+
+    render(<ContactsClientPage contactsData={contactsData} />);
+
+    expect(screen.getByLabelText(/Тема/)).toHaveValue('Вопрос о картине «Осенний сад»');
+    expect(screen.getByLabelText(/Сообщение/)).toHaveValue(
+      'Здравствуйте! Интересует картина «Осенний сад». Подскажите, пожалуйста, стоимость и условия покупки.'
+    );
+  });
+
+  it('leaves the form empty for a visitor who arrived on their own', () => {
+    render(<ContactsClientPage contactsData={contactsData} />);
+
+    expect(screen.getByLabelText(/Тема/)).toHaveValue('');
+    expect(screen.getByLabelText(/Сообщение/)).toHaveValue('');
   });
 });

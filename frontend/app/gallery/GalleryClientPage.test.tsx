@@ -1,0 +1,94 @@
+import { render, screen, fireEvent } from '@testing-library/react';
+import GalleryClientPage from './GalleryClientPage';
+import { reachGoal, Goals } from '@/lib/analytics';
+
+jest.mock('@/lib/analytics', () => ({
+  reachGoal: jest.fn(),
+  Goals: { ContactClick: 'contact_click', ArtworkView: 'artwork_view' },
+}));
+
+jest.mock('yet-another-react-lightbox', () => ({
+  __esModule: true,
+  default: () => null,
+}));
+
+jest.mock('yet-another-react-lightbox/styles.css', () => ({}), { virtual: true });
+
+jest.mock('framer-motion', () => ({
+  motion: new Proxy(
+    {},
+    {
+      get: () => {
+        const Component = ({ children, ...rest }: any) => <div {...stripMotionProps(rest)}>{children}</div>;
+        return Component;
+      },
+    }
+  ),
+  AnimatePresence: ({ children }: any) => <>{children}</>,
+}));
+
+// framer-motion swallows its own animation props; forwarding them to a plain div
+// would make React warn about unknown DOM attributes and drown the output.
+function stripMotionProps(props: Record<string, unknown>) {
+  const { initial, animate, exit, transition, variants, whileHover, whileTap, layout, ...rest } = props;
+  return rest;
+}
+
+const artwork = (overrides: Record<string, unknown> = {}) => ({
+  id: 7,
+  title: 'Осенний сад',
+  description: 'Холст, масло',
+  imagePath: 'a.jpg',
+  thumbnailPath: 'a-thumb.jpg',
+  isForSale: true,
+  price: null,
+  categoryId: 1,
+  category: { id: 1, name: 'Пейзаж' },
+  ...overrides,
+});
+
+const galleryData = (artworks: unknown[]) =>
+  ({ artworks, categories: [{ id: 1, name: 'Пейзаж' }] } as any);
+
+describe('GalleryClientPage', () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  it('invites the visitor to ask for the price of a painting that is for sale', () => {
+    render(<GalleryClientPage galleryData={galleryData([artwork()])} />);
+
+    const link = screen.getByRole('link', { name: 'Узнать цену' });
+    expect(link).toHaveAttribute(
+      'href',
+      `/contacts?artwork=${encodeURIComponent('Осенний сад')}&id=7`
+    );
+  });
+
+  it('says nothing about the price when none is set', () => {
+    render(<GalleryClientPage galleryData={galleryData([artwork()])} />);
+
+    expect(screen.queryByText(/договорн/i)).not.toBeInTheDocument();
+  });
+
+  it('shows the price when the painting has one', () => {
+    render(<GalleryClientPage galleryData={galleryData([artwork({ price: 45000 })])} />);
+
+    expect(screen.getByText(/45\s?000/)).toBeInTheDocument();
+  });
+
+  it('offers nothing to ask about when the painting is not for sale', () => {
+    render(<GalleryClientPage galleryData={galleryData([artwork({ isForSale: false })])} />);
+
+    expect(screen.queryByRole('link', { name: 'Узнать цену' })).not.toBeInTheDocument();
+  });
+
+  it('reports which painting the visitor asked about', () => {
+    render(<GalleryClientPage galleryData={galleryData([artwork()])} />);
+
+    fireEvent.click(screen.getByRole('link', { name: 'Узнать цену' }));
+
+    expect(reachGoal).toHaveBeenCalledWith(Goals.ContactClick, {
+      channel: 'ask_price',
+      artwork: 'Осенний сад',
+    });
+  });
+});
