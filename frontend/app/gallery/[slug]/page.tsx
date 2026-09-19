@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import { Metadata } from 'next';
 import { getGalleryData, getImageUrl } from '@/hooks/useApi';
 import { resolveArtworkBySlug, buildArtworkSlug } from '@/lib/artworkSlug';
@@ -169,9 +170,9 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
           the painting on this page. */}
       <div className="mx-auto max-w-7xl px-4 pt-24 pb-16">
         <nav aria-label="breadcrumbs" className="mb-6 flex flex-wrap items-center gap-2 text-sm text-gray-500">
-          <a href="/" className="transition-colors hover:text-primary-600">Главная</a>
+          <Link href="/" className="transition-colors hover:text-primary-600">Главная</Link>
           <span aria-hidden="true">/</span>
-          <a href="/gallery" className="transition-colors hover:text-primary-600">Галерея</a>
+          <Link href="/gallery" className="transition-colors hover:text-primary-600">Галерея</Link>
           <span aria-hidden="true">/</span>
           <span className="text-gray-900">{artwork.title}</span>
         </nav>
@@ -208,12 +209,12 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
                 </div>
               )}
 
-              <a
+              <Link
                 href="/gallery"
                 className="mt-6 inline-block text-sm font-medium text-primary-600 transition-colors hover:text-primary-700"
               >
                 ← Вернуться в галерею
-              </a>
+              </Link>
             </div>
           </aside>
         </div>
