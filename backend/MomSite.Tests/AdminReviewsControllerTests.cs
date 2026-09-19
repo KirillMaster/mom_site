@@ -18,6 +18,10 @@ namespace MomSite.Tests
     // Slice 3 — private CRUD / moderation for reviews. Exercises the real
     // JWT auth pipeline (same as AdminMessagesAuthorizationIntegrationTests)
     // through an in-process WebApplicationFactory backed by Sqlite.
+    // Shares the AdminEnvIntegration collection with
+    // AdminMessagesAuthorizationIntegrationTests: both mutate the same
+    // process-wide auth environment variables, so they must not overlap.
+    [Collection("AdminEnvIntegration")]
     public class AdminReviewsControllerTests : IClassFixture<AdminReviewsWebApplicationFactory>
     {
         private readonly AdminReviewsWebApplicationFactory _factory;

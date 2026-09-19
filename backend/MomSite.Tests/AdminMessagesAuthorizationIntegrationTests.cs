@@ -24,6 +24,13 @@ namespace MomSite.Tests
     // A misconfigured JWT scheme (wrong key, missing middleware order,
     // AllowAnonymous left on by mistake, etc.) would make this test fail,
     // where the reflection-only test cannot detect it.
+    // This class and AdminReviewsControllerTests both mutate process-wide
+    // JWT__Secret / AdminPassword environment variables (Program.cs reads
+    // them while building the host, before any per-test override can run),
+    // so they must never execute concurrently with each other. The shared
+    // "AdminEnvIntegration" collection serializes just these two classes;
+    // every other test class keeps running in parallel as usual.
+    [Collection("AdminEnvIntegration")]
     public class AdminMessagesAuthorizationIntegrationTests
         : IClassFixture<AdminMessagesWebApplicationFactory>
     {
