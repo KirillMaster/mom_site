@@ -120,11 +120,13 @@ const VideosClientPage = ({ videosData }: { videosData: VideosData }) => {
                   className="card group cursor-pointer"
                   onClick={() => openVideo(video)}
                 >
-                  <div className="relative overflow-hidden">
+                  {/* A square frame: the thumbnails arrive in mixed aspect
+                      ratios, and a fixed height squashed the portrait ones. */}
+                  <div className="relative overflow-hidden aspect-square">
                     <img
                       src={video.thumbnailPath ? getImageUrl(video.thumbnailPath) : '/images/video-placeholder.jpg'}
                       alt={video.title}
-                      className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                     
                     {/* Play Button Overlay */}

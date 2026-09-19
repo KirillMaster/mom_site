@@ -3,6 +3,7 @@
 import { ArrowRight, Star, Quote } from 'lucide-react';
 import { FaInstagram, FaVk, FaTelegram, FaWhatsapp, FaYoutube, FaEnvelope } from 'react-icons/fa';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { getImageUrl } from '@/hooks/useApi';
 import { HomeData } from '@/lib/api';
@@ -51,16 +52,17 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero Banner - Full Screen */}
-      <section className="relative flex items-center justify-center overflow-hidden h-screen pt-32">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: `url(${getImageUrl(homeData.bannerImage)})`,
-          }}
-        >
-          <div className="absolute inset-0 bg-black/40"></div>
-        </div>
-        
+      <section className="relative flex items-center justify-center overflow-hidden h-screen pt-32 bg-[#3d2b1a]">
+        <Image
+          src={getImageUrl(homeData.bannerImage)}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-black/40"></div>
+
         <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
