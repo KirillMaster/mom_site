@@ -144,4 +144,20 @@ describe('GalleryClientPage', () => {
     expect(screen.queryByText('Осенний сад')).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Узнать цену' })).not.toBeInTheDocument();
   });
+
+  it('keeps the card to the title alone and leaves the description to the artwork page', () => {
+    render(<GalleryClientPage galleryData={galleryData([artwork()])} />);
+
+    expect(screen.getByText('Осенний сад')).toBeInTheDocument();
+    expect(screen.queryByText('Холст, масло')).not.toBeInTheDocument();
+  });
+
+  it('sends the visitor to the slug page for the full description', () => {
+    render(<GalleryClientPage galleryData={galleryData([artwork()])} />);
+
+    expect(screen.getByRole('link', { name: /Перейти к описанию/ })).toHaveAttribute(
+      'href',
+      '/gallery/osenniy-sad-7'
+    );
+  });
 });

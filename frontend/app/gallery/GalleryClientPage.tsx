@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Filter, Eye } from 'lucide-react';
+import { Filter, Eye, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
@@ -184,20 +184,29 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
                       {artwork.title}
                     </h3>
                     
-                    <p className="text-gray-600 text-sm leading-relaxed">
-                      {artwork.description}
-                    </p>
-
-                    {artwork.isForSale && !isExhibitionPhoto(artwork, galleryData.categories) && (
+                    {/* The card carries the title only; the description lives on
+                        the work's own page, so the "подробнее" link is what sends
+                        both visitors and crawlers to the indexable slug URL. */}
+                    <div className="mt-4 flex flex-wrap gap-3">
                       <a
-                        href={getAskPriceHref(artwork)}
-                        onClick={() => handleAskPriceClick(artwork)}
-                        data-ym-tracked="ask-price"
-                        className="mt-4 inline-block px-4 py-2 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-700 transition-colors duration-200"
+                        href={getArtworkHref(artwork)}
+                        className="inline-flex items-center gap-1 rounded-lg border border-primary-600 px-4 py-2 font-medium text-primary-700 transition-colors duration-200 hover:bg-primary-50"
                       >
-                        Узнать цену
+                        Перейти к описанию
+                        <ArrowRight className="w-4 h-4" />
                       </a>
-                    )}
+
+                      {artwork.isForSale && !isExhibitionPhoto(artwork, galleryData.categories) && (
+                        <a
+                          href={getAskPriceHref(artwork)}
+                          onClick={() => handleAskPriceClick(artwork)}
+                          data-ym-tracked="ask-price"
+                          className="inline-block px-4 py-2 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-700 transition-colors duration-200"
+                        >
+                          Узнать цену
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </motion.div>
               ))}

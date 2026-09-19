@@ -8,6 +8,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import { getImageUrl } from '@/hooks/useApi';
 import Link from 'next/link';
 import { ArtworkAdminDto } from '@/lib/api'; // Добавлен импорт
+import { buildArtworkSlug, slugifyTitle } from '@/lib/artworkSlug';
 
 const AdminArtworksPage = () => {
   const { data: artworks, isLoading, isError, refetch: refetchArtworks } = useArtworks();
@@ -193,7 +194,17 @@ const AdminArtworksPage = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <img src={getImageUrl(artwork.thumbnailPath)} alt={artwork.title} className="h-16 w-16 object-cover rounded-md" />
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{artwork.title}</td>
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                    {artwork.title}
+                    <a
+                      href={`/gallery/${buildArtworkSlug(artwork.title, artwork.id)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-1 block text-xs font-normal text-indigo-600 hover:text-indigo-900"
+                    >
+                      /gallery/{buildArtworkSlug(artwork.title, artwork.id)}
+                    </a>
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{artwork.category?.name || 'Без категории'}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {artwork.isForSale ? (
@@ -254,6 +265,16 @@ const AdminArtworksPage = () => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
+                  {/* Slugs are derived from the title, never stored, so the
+                      admin sees the exact public URL the work will get the
+                      moment it is saved. */}
+                  <p className="mt-2 text-xs text-gray-500">
+                    Адрес страницы:{' '}
+                    <code className="text-gray-700">
+                      /gallery/{slugifyTitle(formState.title)}-{isEditMode && currentArtwork ? currentArtwork.id : 'ID'}
+                    </code>
+                    {!isEditMode && ' — ID присваивается после сохранения'}
+                  </p>
                 </div>
 
                 <div>

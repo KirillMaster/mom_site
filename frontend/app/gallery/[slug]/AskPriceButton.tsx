@@ -18,7 +18,12 @@ const AskPriceButton = ({ title, id }: AskPriceButtonProps) => {
   };
 
   return (
-    <a href={href} onClick={handleClick} data-ym-tracked="ask-price">
+    <a
+      href={href}
+      onClick={handleClick}
+      data-ym-tracked="ask-price"
+      className="inline-flex w-full items-center justify-center rounded-lg bg-primary-600 px-6 py-3 font-medium text-white shadow-sm transition-colors duration-200 hover:bg-primary-700 sm:w-auto"
+    >
       Узнать цену
     </a>
   );
