@@ -243,6 +243,27 @@ export interface ContactMessage {
   utm_campaign?: string;
 }
 
+export interface ReviewDto {
+  id: number;
+  authorName: string;
+  authorCity?: string | null;
+  text: string;
+  rating: number;
+  createdAt: string;
+  sortOrder: number;
+  artworkId?: number | null;
+  photoPath?: string | null;
+}
+
+export interface CreateReviewPayload {
+  authorName: string;
+  authorCity?: string;
+  text: string;
+  rating: number;
+  artworkId?: number;
+  photoPath?: string;
+}
+
 export type ContactMessageStatus = 'New' | 'Read' | 'Archived';
 
 export interface ContactMessageAdmin {

@@ -54,6 +54,18 @@ describe('@S4-AS2 the sitemap excludes exhibition photos from artwork entries', 
   });
 });
 
+describe('@S4-AS11 /reviews присутствует в sitemap.ts', () => {
+  it('включает https://angelamoiseenko.ru/reviews в список урлов', async () => {
+    mockedGetGalleryData.mockResolvedValue(gallery([]));
+    mockedGetVideosData.mockResolvedValue({ videos: [] });
+
+    const result = await sitemap();
+    const urls = result.map((entry) => entry.url);
+
+    expect(urls).toContain('https://angelamoiseenko.ru/reviews');
+  });
+});
+
 describe('@S4-AS3 sitemap generation degrades gracefully when the gallery API is unavailable', () => {
   it('still returns the static pages without throwing when getGalleryData rejects', async () => {
     mockedGetGalleryData.mockRejectedValue(new Error('gallery API down'));

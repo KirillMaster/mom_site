@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, auth, API_BASE_URL, Artwork, Category, Video, VideoCategory, PageContent, HomeData, GalleryData, AboutData, ContactsData, VideosData, FooterData, ArtworkDto, CategoryDto, ArtworkAdminDto } from '../lib/api';
-import { ContactMessage, ContactMessageAdmin, ContactMessagesPage, ReviewAdmin, UpdateReviewPayload } from '../lib/api';
+import { ContactMessage, ContactMessageAdmin, ContactMessagesPage, ReviewAdmin, UpdateReviewPayload, ReviewDto, CreateReviewPayload } from '../lib/api';
 
 
 // Helper to get image URL
@@ -104,6 +104,16 @@ export function useVideosData() {
 
 export const sendContactMessage = async (message: ContactMessage) => {
   const response = await api.post('/public/contact-message', message);
+  return response.data;
+};
+
+export async function getReviewsData(): Promise<ReviewDto[]> {
+  const response = await api.get('/public/reviews');
+  return response.data?.$values || response.data || [];
+}
+
+export const submitReview = async (payload: CreateReviewPayload) => {
+  const response = await api.post('/public/reviews', payload);
   return response.data;
 };
 
