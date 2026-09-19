@@ -133,11 +133,14 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="card group"
                 >
-                  <div className="relative overflow-hidden">
+                  {/* A square frame with the whole painting inside it: a fixed
+                      height cropped tall canvases down to a letterbox strip and
+                      the work itself was barely visible in the card. */}
+                  <div className="relative overflow-hidden aspect-square bg-neutral-100">
                     <img
                       src={getImageUrl(artwork.thumbnailPath)}
                       alt={artwork.title}
-                      className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
                     />
                     
                     {/* Overlay */}

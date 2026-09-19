@@ -111,6 +111,16 @@ describe('GalleryClientPage', () => {
     });
   });
 
+  it('shows the whole painting in a square frame whatever the canvas ratio', () => {
+    render(<GalleryClientPage galleryData={galleryData([artwork()])} />);
+
+    const image = screen.getByAltText('Осенний сад');
+
+    expect(image.parentElement).toHaveClass('aspect-square');
+    // A fixed height plus object-cover cropped tall canvases to a strip.
+    expect(image).toHaveClass('h-full', 'object-contain');
+  });
+
   it('hides exhibition photos from the all-works view but keeps paintings visible', () => {
     render(<GalleryClientPage galleryData={galleryData([artwork(), exhibitionPhoto()])} />);
 

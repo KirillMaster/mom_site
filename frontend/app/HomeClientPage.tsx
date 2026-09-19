@@ -134,11 +134,15 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
                         viewport={{ once: true }}
                         className="card p-4"
                       >
-                        <img
-                          src={getImageUrl(artwork.imagePath)}
-                          alt={artwork.title}
-                          className="w-full h-48 object-cover rounded-lg mb-4"
-                        />
+                        {/* Same square frame as the gallery cards, so a tall
+                            canvas is shown whole instead of cropped to a strip. */}
+                        <div className="aspect-square bg-neutral-100 rounded-lg overflow-hidden mb-4">
+                          <img
+                            src={getImageUrl(artwork.imagePath)}
+                            alt={artwork.title}
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
                         <h3 className="text-lg font-semibold text-gray-900">{artwork.title}</h3>
                         <p className="text-sm text-gray-600">{artwork.category?.name}</p>
                       </motion.div>
