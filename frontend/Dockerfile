@@ -50,13 +50,16 @@ RUN chown nextjs:nodejs .next
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
+# sharp must be installed BEFORE the standalone bundle is copied in: npm
+# install rebuilds /app/node_modules from scratch and would drop `next` itself
+# (the container then crash-loops on "Cannot find module 'next'"). Copying the
+# bundle afterwards merges into the same directory and keeps both.
+# Without sharp, /_next/image answers 500 instead of serving the banner.
+RUN npm install --no-package-lock --no-save --omit=dev sharp@0.33.5     && chown -R nextjs:nodejs /app/node_modules
+
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Next's output tracing does not reliably pull sharp into the standalone
-# bundle, and without it /_next/image answers 500 in production instead of
-# serving the optimized banner. Installing it here is cheap and deterministic.
-RUN npm install --no-package-lock --no-save --omit=dev sharp@0.33.5 && chown -R nextjs:nodejs /app/node_modules
 
 USER nextjs
 
