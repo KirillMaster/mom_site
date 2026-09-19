@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo, useState } from 'react';
 import { ContactMessageAdmin } from '@/lib/api';
 
 interface MessagesListProps {
@@ -25,7 +26,64 @@ const formatDate = (iso: string) => {
   }
 };
 
+// UTM badges for a lead's source; falls back to a plain-text label so the
+// column never renders as an empty gap when the visitor came in directly.
+const LeadSource = ({ message }: { message: ContactMessageAdmin }) => {
+  const { utmSource, utmMedium, utmCampaign } = message;
+  if (!utmSource && !utmMedium && !utmCampaign) {
+    return <span className="text-xs text-gray-500">Источник: прямой заход</span>;
+  }
+
+  return (
+    <div className="flex flex-wrap gap-1">
+      {utmSource && (
+        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+          {utmSource}
+        </span>
+      )}
+      {utmMedium && (
+        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+          {utmMedium}
+        </span>
+      )}
+      {utmCampaign && (
+        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800">
+          {utmCampaign}
+        </span>
+      )}
+    </div>
+  );
+};
+
+// IP/user-agent are diagnostic, not something the owner reads day-to-day —
+// tucked behind <details> so the table stays scannable.
+const TechDetails = ({ message }: { message: ContactMessageAdmin }) => {
+  if (!message.ipAddress && !message.userAgent) return null;
+
+  return (
+    <details className="mt-1">
+      <summary className="text-xs text-gray-400 cursor-pointer select-none">Технические данные</summary>
+      <div className="mt-1 text-xs text-gray-500 space-y-0.5">
+        {message.ipAddress && <div>IP: {message.ipAddress}</div>}
+        {message.userAgent && <div className="break-all">User-Agent: {message.userAgent}</div>}
+      </div>
+    </details>
+  );
+};
+
+const matchesQuery = (message: ContactMessageAdmin, query: string) => {
+  const haystack = `${message.name} ${message.email} ${message.subject} ${message.message}`.toLowerCase();
+  return haystack.includes(query.toLowerCase());
+};
+
 const MessagesList = ({ messages, unreadCount, onOpen, onArchive, filter, onFilterChange }: MessagesListProps) => {
+  const [search, setSearch] = useState('');
+
+  const filteredMessages = useMemo(() => {
+    if (!search.trim()) return messages;
+    return messages.filter((message) => matchesQuery(message, search));
+  }, [messages, search]);
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
@@ -57,9 +115,24 @@ const MessagesList = ({ messages, unreadCount, onOpen, onArchive, filter, onFilt
         </div>
       </div>
 
-      {messages.length === 0 ? (
+      <div className="mb-4">
+        <input
+          type="text"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Поиск по имени, email, теме или тексту заявки"
+          aria-label="Поиск по заявкам"
+          className="w-full sm:w-96 rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm"
+        />
+      </div>
+
+      {filteredMessages.length === 0 ? (
         <div className="card p-6 text-center text-gray-600" data-testid="empty-state">
-          {filter === 'archived' ? 'В архиве пока нет заявок.' : 'Заявок пока нет.'}
+          {messages.length === 0
+            ? filter === 'archived'
+              ? 'В архиве пока нет заявок.'
+              : 'Заявок пока нет.'
+            : 'Ничего не найдено по вашему запросу.'}
         </div>
       ) : (
         <div className="overflow-x-auto">
@@ -67,22 +140,34 @@ const MessagesList = ({ messages, unreadCount, onOpen, onArchive, filter, onFilt
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Дата</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Имя</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Контакт</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Тема</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Источник</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Статус</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Действия</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {messages.map((message) => (
+              {filteredMessages.map((message) => (
                 <tr
                   key={message.id}
                   data-testid={`message-row-${message.id}`}
                   className={message.status === 'New' ? 'font-semibold bg-primary-50' : ''}
                 >
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(message.createdAt)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{message.name}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{message.subject}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    <div>{message.name}</div>
+                    <a href={`mailto:${message.email}`} className="text-indigo-600 hover:text-indigo-900 font-normal">
+                      {message.email}
+                    </a>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    <div>{message.subject}</div>
+                    <TechDetails message={message} />
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    <LeadSource message={message} />
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{statusLabel[message.status]}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
                     <button onClick={() => onOpen(message.id)} className="text-indigo-600 hover:text-indigo-900">

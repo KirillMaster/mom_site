@@ -56,10 +56,29 @@ const MessagesPageContent = () => {
               className="card p-6 w-full max-w-lg bg-white"
             >
               <h2 className="text-xl font-semibold mb-2">{selected.subject}</h2>
-              <p className="text-sm text-gray-500 mb-4">
-                {selected.name} · {selected.email} · {formatDate(selected.createdAt)}
+              <p className="text-sm text-gray-500 mb-1">
+                {selected.name} ·{' '}
+                <a href={`mailto:${selected.email}`} className="text-indigo-600 hover:text-indigo-900">
+                  {selected.email}
+                </a>{' '}
+                · {formatDate(selected.createdAt)}
               </p>
-              <p className="whitespace-pre-wrap text-gray-800 mb-6">{selected.message}</p>
+              <p className="text-xs text-gray-500 mb-4">
+                {selected.utmSource || selected.utmMedium || selected.utmCampaign
+                  ? `Источник: ${[selected.utmSource, selected.utmMedium, selected.utmCampaign].filter(Boolean).join(' / ')}`
+                  : 'Источник: прямой заход'}
+              </p>
+              <p className="whitespace-pre-wrap text-gray-800 mb-4">{selected.message}</p>
+
+              {(selected.ipAddress || selected.userAgent) && (
+                <details className="mb-6">
+                  <summary className="text-xs text-gray-400 cursor-pointer select-none">Технические данные</summary>
+                  <div className="mt-1 text-xs text-gray-500 space-y-0.5">
+                    {selected.ipAddress && <div>IP: {selected.ipAddress}</div>}
+                    {selected.userAgent && <div className="break-all">User-Agent: {selected.userAgent}</div>}
+                  </div>
+                </details>
+              )}
 
               <div className="flex justify-end space-x-3">
                 {selected.status !== 'Archived' && (
