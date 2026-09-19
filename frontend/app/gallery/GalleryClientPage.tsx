@@ -8,6 +8,7 @@ import 'yet-another-react-lightbox/styles.css';
 import { getImageUrl } from '@/hooks/useApi';
 import { GalleryData } from '@/lib/api';
 import { reachGoal, Goals } from '@/lib/analytics';
+import { artworksForSale, isExhibitionPhoto } from '@/lib/gallery';
 
 const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -19,7 +20,7 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
 
   const artworksToDisplay = selectedCategory
     ? galleryData.artworks.filter(artwork => artwork.categoryId === selectedCategory)
-    : galleryData.artworks;
+    : artworksForSale(galleryData);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('ru-RU', {
@@ -155,7 +156,7 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
                       <span className="text-sm text-primary-600 font-medium">
                         {artwork.category?.name || 'Без категории'}
                       </span>
-                      {artwork.isForSale && (
+                      {artwork.isForSale && !isExhibitionPhoto(artwork, galleryData.categories) && (
                         <span className="text-lg font-bold text-gray-900">
                           {getPriceDisplay(artwork)}
                         </span>
@@ -170,7 +171,7 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
                       {artwork.description}
                     </p>
 
-                    {artwork.isForSale && (
+                    {artwork.isForSale && !isExhibitionPhoto(artwork, galleryData.categories) && (
                       <a
                         href={getAskPriceHref(artwork)}
                         onClick={() => handleAskPriceClick(artwork)}

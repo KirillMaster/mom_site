@@ -1,6 +1,7 @@
 import { getGalleryData, getImageUrl } from '@/hooks/useApi';
 import GalleryClientPage from './GalleryClientPage';
 import { Metadata } from 'next';
+import { artworksForSale } from '@/lib/gallery';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,7 +47,9 @@ const GalleryPage = async () => {
     url: 'https://angelamoiseenko.ru/gallery', // Замените на реальный URL
     mainEntity: {
       '@type': 'ItemList',
-      itemListElement: galleryData.artworks.map((artwork, index) => ({
+      // Exhibition photo reports are not works for sale; keeping them out of
+      // the catalogue's structured data keeps the paintings visible in search.
+      itemListElement: artworksForSale(galleryData).map((artwork, index) => ({
         '@type': 'ListItem',
         position: index + 1,
         item: {
