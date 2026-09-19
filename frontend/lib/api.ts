@@ -265,3 +265,27 @@ export interface ContactMessagesPage {
   totalCount: number;
   unreadCount: number;
 }
+
+export interface ReviewAdmin {
+  id: number;
+  authorName: string;
+  authorCity?: string;
+  text: string;
+  rating: number;
+  createdAt: string;
+  isPublished: boolean;
+  publishedAt?: string;
+  sortOrder: number;
+  artworkId?: number;
+  photoPath?: string;
+}
+
+export interface UpdateReviewPayload {
+  authorName?: string;
+  authorCity?: string;
+  text?: string;
+  rating?: number;
+  sortOrder?: number;
+  artworkId?: number;
+  photoPath?: string;
+}
