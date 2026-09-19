@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, auth, API_BASE_URL, Artwork, Category, Video, VideoCategory, PageContent, HomeData, GalleryData, AboutData, ContactsData, VideosData, FooterData, ArtworkDto, CategoryDto, ArtworkAdminDto } from '../lib/api';
-import { ContactMessage, ContactMessageAdmin, ContactMessagesPage } from '../lib/api';
+import { ContactMessage, ContactMessageAdmin, ContactMessagesPage, ReviewAdmin, UpdateReviewPayload } from '../lib/api';
 
 
 // Helper to get image URL
@@ -440,6 +440,68 @@ export function useArchiveContactMessage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contactMessages'] });
+    },
+  });
+}
+
+// Admin: Reviews (модерация отзывов)
+export function useAdminReviews() {
+  return useQuery<ReviewAdmin[], Error>({
+    queryKey: ['adminReviews'],
+    queryFn: async () => {
+      const response = await api.get('/admin/reviews');
+      return response.data;
+    },
+  });
+}
+
+export function usePublishReview() {
+  const queryClient = useQueryClient();
+  return useMutation<ReviewAdmin, Error, number>({
+    mutationFn: async (id) => {
+      const response = await api.patch(`/admin/reviews/${id}/publish`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['adminReviews'] });
+    },
+  });
+}
+
+export function useUnpublishReview() {
+  const queryClient = useQueryClient();
+  return useMutation<ReviewAdmin, Error, number>({
+    mutationFn: async (id) => {
+      const response = await api.patch(`/admin/reviews/${id}/unpublish`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['adminReviews'] });
+    },
+  });
+}
+
+export function useUpdateReview() {
+  const queryClient = useQueryClient();
+  return useMutation<ReviewAdmin, Error, { id: number; payload: UpdateReviewPayload }>({
+    mutationFn: async ({ id, payload }) => {
+      const response = await api.put(`/admin/reviews/${id}`, payload);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['adminReviews'] });
+    },
+  });
+}
+
+export function useDeleteReview() {
+  const queryClient = useQueryClient();
+  return useMutation<void, Error, number>({
+    mutationFn: async (id) => {
+      await api.delete(`/admin/reviews/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['adminReviews'] });
     },
   });
 }
