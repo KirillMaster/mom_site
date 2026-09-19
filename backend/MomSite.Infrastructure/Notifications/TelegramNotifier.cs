@@ -76,13 +76,7 @@ public class TelegramNotifier : IFeedbackNotifier
             $"Тема: {message.Subject}",
         };
 
-        var source = new[] { message.UtmSource, message.UtmMedium, message.UtmCampaign }
-            .Where(part => !string.IsNullOrWhiteSpace(part))
-            .ToArray();
-
-        lines.Add(source.Length > 0
-            ? $"Источник: {string.Join(" / ", source)}"
-            : "Источник: прямой заход");
+        lines.Add($"Источник: {LeadSource.Describe(message)}");
 
         lines.Add(string.Empty);
         lines.Add(message.Message);
