@@ -55,18 +55,22 @@ public class EmailNotifier : IFeedbackNotifier
                 <p><strong>Имя:</strong> {enc.Encode(message.Name)}</p>
                 <p><strong>Email:</strong> {enc.Encode(message.Email)}</p>
                 <p><strong>Тема:</strong> {enc.Encode(message.Subject)}</p>
+                <p><strong>Источник:</strong> {enc.Encode(LeadSource.Describe(message))}</p>
                 <p><strong>Сообщение:</strong></p>
                 <p>{enc.Encode(message.Message).Replace("\n", "<br>")}</p>
             ",
-            TextBody = $"Имя: {message.Name}\nEmail: {message.Email}\nТема: {message.Subject}\n\n{message.Message}"
+            TextBody = $"Имя: {message.Name}\nEmail: {message.Email}\nТема: {message.Subject}\n" +
+                       $"Источник: {LeadSource.Describe(message)}\n\n{message.Message}"
         };
         email.Body = bodyBuilder.ToMessageBody();
+
+        var port = int.Parse(Environment.GetEnvironmentVariable("EMAIL_SMTP_PORT") ?? "587");
 
         using var smtp = new SmtpClient();
         await smtp.ConnectAsync(
             Environment.GetEnvironmentVariable("EMAIL_SMTP_SERVER") ?? "smtp.gmail.com",
-            int.Parse(Environment.GetEnvironmentVariable("EMAIL_SMTP_PORT") ?? "587"),
-            SecureSocketOptions.StartTls,
+            port,
+            SecurityForPort(port),
             cts.Token
         );
 
@@ -81,4 +85,12 @@ public class EmailNotifier : IFeedbackNotifier
 
         _logger.LogInformation("Contact message notification emailed to {To} from {FromEmail}", toAddr, message.Email);
     }
+
+    /// <summary>
+    /// A server on 465 expects TLS from the first byte, while 587 starts in the
+    /// clear and upgrades. Guessing wrong makes the handshake hang until the send
+    /// timeout, so the port decides.
+    /// </summary>
+    public static SecureSocketOptions SecurityForPort(int port) =>
+        port == 465 ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTls;
 }
