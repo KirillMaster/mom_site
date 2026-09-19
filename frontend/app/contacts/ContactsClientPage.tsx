@@ -3,9 +3,9 @@
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { motion } from 'framer-motion';
-import { 
-  Mail, 
-  Phone, 
+import {
+  Mail,
+  Phone,
   ExternalLink
 } from 'lucide-react';
 import { FaInstagram, FaVk, FaTelegram, FaWhatsapp, FaYoutube } from 'react-icons/fa';
@@ -13,14 +13,28 @@ import { ContactsData, ContactMessage } from '@/lib/api';
 import { sendContactMessage } from '@/hooks/useApi';
 import { getStoredUtm } from '@/lib/utm';
 import { Goals, reachGoal } from '@/lib/analytics';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 
-const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) => {
+// useSearchParams requires a Suspense boundary, otherwise Next.js fails the
+// production build with "missing suspense boundary" for this route.
+const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) => (
+  <Suspense fallback={null}>
+    <ContactsForm contactsData={contactsData} />
+  </Suspense>
+);
+
+const ContactsForm = ({ contactsData }: { contactsData: ContactsData }) => {
+  const searchParams = useSearchParams();
+  const artworkTitle = searchParams.get('artwork');
+
   const [formData, setFormData] = useState<ContactMessage>({
     name: '',
     email: '',
-    subject: '',
-    message: '',
+    subject: artworkTitle ? `Вопрос о картине «${artworkTitle}»` : '',
+    message: artworkTitle
+      ? `Здравствуйте! Интересует картина «${artworkTitle}». Подскажите, пожалуйста, стоимость и условия покупки.`
+      : '',
     website: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);

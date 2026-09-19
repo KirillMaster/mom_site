@@ -29,12 +29,22 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
     }).format(price);
   };
 
+  // Prices are negotiated, so a painting usually has none. Saying so on the
+  // card adds nothing — the ask-price button below already says what to do.
   const getPriceDisplay = (artwork: any) => {
     if (!artwork.isForSale) return null;
     if (artwork.price && typeof artwork.price === 'number' && artwork.price > 0) {
       return formatPrice(artwork.price);
     }
-    return 'Цена: договорная';
+    return null;
+  };
+
+  const getAskPriceHref = (artwork: any) => {
+    return `/contacts?artwork=${encodeURIComponent(artwork.title)}&id=${artwork.id}`;
+  };
+
+  const handleAskPriceClick = (artwork: any) => {
+    reachGoal(Goals.ContactClick, { channel: 'ask_price', artwork: artwork.title });
   };
 
   const openLightbox = (index: number) => {
@@ -159,6 +169,17 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
                     <p className="text-gray-600 text-sm leading-relaxed">
                       {artwork.description}
                     </p>
+
+                    {artwork.isForSale && (
+                      <a
+                        href={getAskPriceHref(artwork)}
+                        onClick={() => handleAskPriceClick(artwork)}
+                        data-ym-tracked="ask-price"
+                        className="mt-4 inline-block px-4 py-2 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-700 transition-colors duration-200"
+                      >
+                        Узнать цену
+                      </a>
+                    )}
                   </div>
                 </motion.div>
               ))}
