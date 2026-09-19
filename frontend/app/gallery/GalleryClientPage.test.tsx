@@ -128,6 +128,13 @@ describe('GalleryClientPage', () => {
     expect(screen.queryByText('Открытие выставки')).not.toBeInTheDocument();
   });
 
+  it('@S2-AS1 links each gallery card straight to the artwork page', () => {
+    render(<GalleryClientPage galleryData={galleryData([artwork()])} />);
+
+    const link = screen.getByRole('link', { name: 'Осенний сад' });
+    expect(link).toHaveAttribute('href', '/gallery/osenniy-sad-7');
+  });
+
   it('shows exhibition photos without an ask-price button when that category is selected', () => {
     render(<GalleryClientPage galleryData={galleryData([artwork(), exhibitionPhoto()])} />);
 
