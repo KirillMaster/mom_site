@@ -361,6 +361,119 @@ public class AdminController : ControllerBase
         return NoContent();
     }
 
+    [HttpGet("reviews")]
+    public async Task<ActionResult<IEnumerable<ReviewAdminDto>>> GetReviews()
+    {
+        var reviews = await _context.Reviews
+            .OrderBy(r => r.SortOrder)
+            .ThenByDescending(r => r.CreatedAt)
+            .ToListAsync();
+
+        return Ok(reviews.Select(r => r.ToAdminDto()));
+    }
+
+    [HttpPost("reviews")]
+    public async Task<ActionResult<ReviewAdminDto>> CreateReview([FromBody] CreateReviewDto dto)
+    {
+        var review = new Review
+        {
+            AuthorName = dto.AuthorName,
+            AuthorCity = dto.AuthorCity,
+            Text = dto.Text,
+            Rating = dto.Rating,
+            SortOrder = dto.SortOrder,
+            ArtworkId = dto.ArtworkId,
+            PhotoPath = dto.PhotoPath,
+            CreatedAt = DateTime.UtcNow,
+            IsPublished = false
+        };
+
+        if (!TryValidateModel(review))
+        {
+            return ValidationProblem(ModelState);
+        }
+
+        _context.Reviews.Add(review);
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetReviews), new { id = review.Id }, review.ToAdminDto());
+    }
+
+    [HttpPut("reviews/{id}")]
+    public async Task<ActionResult<ReviewAdminDto>> UpdateReview(int id, [FromBody] UpdateReviewDto dto)
+    {
+        var review = await _context.Reviews.FindAsync(id);
+        if (review == null)
+        {
+            return NotFound();
+        }
+
+        review.AuthorName = dto.AuthorName ?? review.AuthorName;
+        review.AuthorCity = dto.AuthorCity ?? review.AuthorCity;
+        review.Text = dto.Text ?? review.Text;
+        review.Rating = dto.Rating ?? review.Rating;
+        review.SortOrder = dto.SortOrder ?? review.SortOrder;
+        review.ArtworkId = dto.ArtworkId ?? review.ArtworkId;
+        review.PhotoPath = dto.PhotoPath ?? review.PhotoPath;
+
+        if (!TryValidateModel(review))
+        {
+            return ValidationProblem(ModelState);
+        }
+
+        await _context.SaveChangesAsync();
+
+        return Ok(review.ToAdminDto());
+    }
+
+    [HttpPatch("reviews/{id}/publish")]
+    public async Task<ActionResult<ReviewAdminDto>> PublishReview(int id)
+    {
+        var review = await _context.Reviews.FindAsync(id);
+        if (review == null)
+        {
+            return NotFound();
+        }
+
+        review.IsPublished = true;
+        review.PublishedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(review.ToAdminDto());
+    }
+
+    [HttpPatch("reviews/{id}/unpublish")]
+    public async Task<ActionResult<ReviewAdminDto>> UnpublishReview(int id)
+    {
+        var review = await _context.Reviews.FindAsync(id);
+        if (review == null)
+        {
+            return NotFound();
+        }
+
+        review.IsPublished = false;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(review.ToAdminDto());
+    }
+
+    [HttpDelete("reviews/{id}")]
+    public async Task<IActionResult> DeleteReview(int id)
+    {
+        var review = await _context.Reviews.FindAsync(id);
+        if (review == null)
+        {
+            return NotFound();
+        }
+
+        _context.Reviews.Remove(review);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+
     [HttpGet("messages")]
     public async Task<ActionResult<ContactMessagesPageDto>> GetMessages([FromQuery] string status = "active")
     {
