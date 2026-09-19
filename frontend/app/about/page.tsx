@@ -28,6 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       keywords: 'художник, импрессионизм, биография, творческий путь, живопись, искусство, Анжела Моисеенко',
+      alternates: { canonical: '/about' },
       openGraph: {
         title,
         description,

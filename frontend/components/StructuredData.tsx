@@ -43,11 +43,6 @@ export default function StructuredData({ homeData }: StructuredDataProps) {
     "author": {
       "@type": "Person",
       "name": "Анжела Моисеенко"
-    },
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://angelamoiseenko.ru/search?q={search_term_string}",
-      "query-input": "required name=search_term_string"
     }
   };
 
