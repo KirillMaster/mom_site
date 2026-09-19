@@ -20,6 +20,10 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 ENV NEXT_TELEMETRY_DISABLED 1
 
+# NEXT_PUBLIC_* values are inlined at build time, so the Metrica counter id has
+# to be present here rather than only in the runtime environment.
+ARG NEXT_PUBLIC_YM_ID
+ENV NEXT_PUBLIC_YM_ID=$NEXT_PUBLIC_YM_ID
 
 RUN npm run build
 

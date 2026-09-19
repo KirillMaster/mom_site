@@ -12,6 +12,7 @@ import { FaInstagram, FaVk, FaTelegram, FaWhatsapp, FaYoutube } from 'react-icon
 import { ContactsData, ContactMessage } from '@/lib/api';
 import { sendContactMessage } from '@/hooks/useApi';
 import { getStoredUtm } from '@/lib/utm';
+import { Goals, reachGoal } from '@/lib/analytics';
 import { useState } from 'react';
 
 const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) => {
@@ -37,7 +38,9 @@ const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) =>
     setSubmissionResult(null);
 
     try {
-      await sendContactMessage({ ...formData, ...getStoredUtm() });
+      const utm = getStoredUtm();
+      await sendContactMessage({ ...formData, ...utm });
+      reachGoal(Goals.ContactFormSubmit, { ...utm });
       setSubmissionResult('success');
       alert('Сообщение успешно отправлено!');
       setFormData({ name: '', email: '', subject: '', message: '', website: '' });

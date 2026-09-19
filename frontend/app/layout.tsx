@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import Providers from '@/components/Providers'
 import UtmTracker from '@/components/UtmTracker'
+import YandexMetrica from '@/components/YandexMetrica'
 import LayoutContent from '@/components/LayoutContent';
 import { Toaster } from 'react-hot-toast';
 
@@ -128,6 +129,7 @@ export default function RootLayout({
       <body className={`${inter.className} bg-gray-50 text-gray-800`}>
         <Providers>
           <UtmTracker />
+          <YandexMetrica />
           <Toaster position="top-right" />
           <div className="flex flex-col min-h-screen">
             <LayoutContent>
