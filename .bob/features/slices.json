@@ -1,0 +1,45 @@
+{
+  "feature": "artwork-pages",
+  "slices": [
+    {
+      "id": "S1",
+      "title": "Slug routing: /gallery/[slug] resolves artworks by trailing id, 301 from legacy ?artwork=N",
+      "depends_on": [],
+      "scenario_refs": [
+        "S1-AS1", "S1-AS2", "S1-AS3", "S1-AS4", "S1-AS5", "S1-AS6", "S1-AS7", "S1-AS8", "S1-AS9"
+      ]
+    },
+    {
+      "id": "S2",
+      "title": "Artwork page content: full image, description, price/CTA, related works, breadcrumbs, gallery card links",
+      "depends_on": ["S1"],
+      "scenario_refs": [
+        "S2-AS1", "S2-AS2", "S2-AS3", "S2-AS4", "S2-AS5", "S2-AS6", "S2-AS7", "S2-AS8", "S2-AS9"
+      ]
+    },
+    {
+      "id": "S3",
+      "title": "SEO metadata (generateMetadata: title/description/canonical/OG) and schema.org (VisualArtwork/Product + BreadcrumbList)",
+      "depends_on": ["S1"],
+      "scenario_refs": [
+        "S3-AS1", "S3-AS2", "S3-AS3", "S3-AS4", "S3-AS5", "S3-AS6"
+      ]
+    },
+    {
+      "id": "S4",
+      "title": "sitemap.ts emits /gallery/[slug] entries instead of ?artwork=N",
+      "depends_on": ["S1"],
+      "scenario_refs": [
+        "S4-AS1", "S4-AS2", "S4-AS3"
+      ]
+    },
+    {
+      "id": "S5",
+      "title": "Homepage SEO title/description decoupled from welcomeMessage, admin-editable with sensible default",
+      "depends_on": [],
+      "scenario_refs": [
+        "S5-AS1", "S5-AS2", "S5-AS3", "S5-AS4"
+      ]
+    }
+  ]
+}

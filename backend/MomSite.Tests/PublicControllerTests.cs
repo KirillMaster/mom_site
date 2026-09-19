@@ -904,5 +904,98 @@ namespace MomSite.Tests
             var names = context.ContactMessages.OrderBy(m => m.Id).Select(m => m.Name).ToList();
             Assert.Equal(new[] { "First", "NewWindow" }, names);
         }
+
+        // -----------------------------------------------------------------
+        // S5 — Homepage SEO title/description decoupled from welcomeMessage
+        // -----------------------------------------------------------------
+
+        [Fact]
+        [Trait("Scenario", "S5-AS1")]
+        public async Task GetHomeData_NoSeoContentSet_ReturnsEmptySeoFieldsSeparateFromWelcomeMessage()
+        {
+            using var context = CreateDbContext(nameof(GetHomeData_NoSeoContentSet_ReturnsEmptySeoFieldsSeparateFromWelcomeMessage));
+            context.PageContents.Add(new PageContent
+            {
+                PageKey = "home",
+                ContentKey = "welcome_message",
+                TextContent = new string('W', 200),
+                IsActive = true
+            });
+            await context.SaveChangesAsync();
+
+            var controller = CreateController(context, Array.Empty<IFeedbackNotifier>());
+
+            var result = await controller.GetHomeData();
+
+            var ok = Assert.IsType<OkObjectResult>(result.Result);
+            var homeData = Assert.IsType<MomSite.API.DTOs.HomeData>(ok.Value);
+
+            // The backend does not fold the long welcomeMessage into the SEO
+            // fields — it reports "not set", and the frontend applies its own
+            // commercial default rather than rendering the raw welcome copy.
+            Assert.Equal(string.Empty, homeData.SeoTitle);
+            Assert.Equal(string.Empty, homeData.SeoDescription);
+            Assert.Equal(200, homeData.WelcomeMessage.Length);
+        }
+
+        [Fact]
+        [Trait("Scenario", "S5-AS2")]
+        public async Task GetHomeData_SeoContentSet_ReturnsItVerbatim()
+        {
+            using var context = CreateDbContext(nameof(GetHomeData_SeoContentSet_ReturnsItVerbatim));
+            context.PageContents.AddRange(
+                new PageContent
+                {
+                    PageKey = "home",
+                    ContentKey = "home_seo_title",
+                    TextContent = "Анжела Моисеенко — картины маслом на заказ",
+                    IsActive = true
+                },
+                new PageContent
+                {
+                    PageKey = "home",
+                    ContentKey = "home_seo_description",
+                    TextContent = "Галерея и заказ картин маслом художника Анжелы Моисеенко",
+                    IsActive = true
+                });
+            await context.SaveChangesAsync();
+
+            var controller = CreateController(context, Array.Empty<IFeedbackNotifier>());
+
+            var result = await controller.GetHomeData();
+
+            var ok = Assert.IsType<OkObjectResult>(result.Result);
+            var homeData = Assert.IsType<MomSite.API.DTOs.HomeData>(ok.Value);
+
+            Assert.Equal("Анжела Моисеенко — картины маслом на заказ", homeData.SeoTitle);
+            Assert.Equal("Галерея и заказ картин маслом художника Анжелы Моисеенко", homeData.SeoDescription);
+        }
+
+        [Fact]
+        [Trait("Scenario", "S5-AS4")]
+        public async Task GetHomeData_SeoTitleSetToEmptyString_ReportsEmptyRatherThanNull()
+        {
+            using var context = CreateDbContext(nameof(GetHomeData_SeoTitleSetToEmptyString_ReportsEmptyRatherThanNull));
+            context.PageContents.Add(new PageContent
+            {
+                PageKey = "home",
+                ContentKey = "home_seo_title",
+                TextContent = "",
+                IsActive = true
+            });
+            await context.SaveChangesAsync();
+
+            var controller = CreateController(context, Array.Empty<IFeedbackNotifier>());
+
+            var result = await controller.GetHomeData();
+
+            var ok = Assert.IsType<OkObjectResult>(result.Result);
+            var homeData = Assert.IsType<MomSite.API.DTOs.HomeData>(ok.Value);
+
+            // The frontend's generateMetadata (S5-AS4) is what supplies the
+            // default when this comes back empty — the backend's contract is
+            // simply to never surface null here.
+            Assert.Equal(string.Empty, homeData.SeoTitle);
+        }
     }
 }

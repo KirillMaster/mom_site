@@ -54,6 +54,14 @@ public class PublicController : ControllerBase
             .Where(pc => pc.PageKey == "home" && pc.ContentKey == "home_author_photo" && pc.IsActive)
             .FirstOrDefaultAsync();
 
+        var seoTitle = await _context.PageContents
+            .Where(pc => pc.PageKey == "home" && pc.ContentKey == "home_seo_title" && pc.IsActive)
+            .FirstOrDefaultAsync();
+
+        var seoDescription = await _context.PageContents
+            .Where(pc => pc.PageKey == "home" && pc.ContentKey == "home_seo_description" && pc.IsActive)
+            .FirstOrDefaultAsync();
+
         var contactsData = new ContactsData();
 
         // Get contact info from contacts page
@@ -116,7 +124,9 @@ public class PublicController : ControllerBase
             BiographyText = biographyText?.TextContent ?? "Информация о художнике",
             AuthorPhoto = authorPhoto?.ImagePath ?? null,
             Artworks = artworks.Select(a => a.ToDto()).ToList(),
-            Contacts = contactsData // Assign the populated contactsData
+            Contacts = contactsData, // Assign the populated contactsData
+            SeoTitle = seoTitle?.TextContent ?? string.Empty,
+            SeoDescription = seoDescription?.TextContent ?? string.Empty
         });
     }
 
