@@ -9,6 +9,8 @@ namespace MomSite.Infrastructure.Notifications;
 /// </summary>
 public static class LeadSource
 {
+    public static string Dash(string? value) => string.IsNullOrWhiteSpace(value) ? "—" : value;
+
     public static string Describe(ContactMessage message)
     {
         var parts = new[] { message.UtmSource, message.UtmMedium, message.UtmCampaign }

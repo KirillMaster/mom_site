@@ -116,16 +116,14 @@ public class TelegramNotifier : IFeedbackNotifier
     /// part of it because the owner acts on a lead differently depending on
     /// where it came from, and the site's whole point is selling paintings.
     /// </summary>
-    private static string Dash(string? value) => string.IsNullOrWhiteSpace(value) ? "—" : value;
-
     public static string BuildText(ContactMessage message)
     {
         var lines = new List<string>
         {
             "Новое сообщение с сайта",
             $"Имя: {message.Name}",
-            $"Email: {Dash(message.Email)}",
-            $"Телефон/мессенджер: {Dash(message.Phone)}",
+            $"Email: {LeadSource.Dash(message.Email)}",
+            $"Телефон/мессенджер: {LeadSource.Dash(message.Phone)}",
             $"Тема: {message.Subject}",
         };
 

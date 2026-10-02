@@ -73,23 +73,21 @@ public class EmailNotifier : IFeedbackNotifier
         _logger.LogInformation("Contact message notification emailed to {To} from {FromEmail}", toAddr, message.Email ?? message.Phone);
     }
 
-    private static string Dash(string? value) => string.IsNullOrWhiteSpace(value) ? "—" : value;
-
     public static (string Html, string Text) BuildBodies(ContactMessage message)
     {
         var enc = HtmlEncoder.Default;
         var html = $@"
                 <h2>Новое сообщение с сайта</h2>
                 <p><strong>Имя:</strong> {enc.Encode(message.Name)}</p>
-                <p><strong>Email:</strong> {enc.Encode(Dash(message.Email))}</p>
-                <p><strong>Телефон/мессенджер:</strong> {enc.Encode(Dash(message.Phone))}</p>
+                <p><strong>Email:</strong> {enc.Encode(LeadSource.Dash(message.Email))}</p>
+                <p><strong>Телефон/мессенджер:</strong> {enc.Encode(LeadSource.Dash(message.Phone))}</p>
                 <p><strong>Тема:</strong> {enc.Encode(message.Subject)}</p>
                 <p><strong>Источник:</strong> {enc.Encode(LeadSource.Describe(message))}</p>
                 <p><strong>Сообщение:</strong></p>
                 <p>{enc.Encode(message.Message).Replace("\n", "<br>")}</p>
             ";
-        var text = $"Имя: {message.Name}\nEmail: {Dash(message.Email)}\n" +
-                   $"Телефон/мессенджер: {Dash(message.Phone)}\n" +
+        var text = $"Имя: {message.Name}\nEmail: {LeadSource.Dash(message.Email)}\n" +
+                   $"Телефон/мессенджер: {LeadSource.Dash(message.Phone)}\n" +
                    $"Тема: {message.Subject}\nИсточник: {LeadSource.Describe(message)}\n\n{message.Message}";
         return (html, text);
     }
