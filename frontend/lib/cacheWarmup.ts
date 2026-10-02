@@ -17,25 +17,36 @@ export function toLocalUrl(loc: string, origin: string): string {
   return `${origin}${url.pathname}${url.search}`;
 }
 
+async function fetchSitemapUrls(origin: string): Promise<string[]> {
+  const response = await fetch(`${origin}/sitemap.xml`);
+  if (!response.ok) {
+    throw new Error(`sitemap status ${response.status}`);
+  }
+  return extractLocs(await response.text()).map((loc) => toLocalUrl(loc, origin));
+}
+
+async function warmUrl(url: string): Promise<void> {
+  try {
+    const res = await fetch(url);
+    await res.arrayBuffer();
+  } catch (error) {
+    console.error('Cache warmup request failed:', url, error);
+  }
+}
+
+async function warmUrls(urls: string[]): Promise<void> {
+  const queue = [...urls];
+  const worker = async () => {
+    for (let url = queue.shift(); url; url = queue.shift()) {
+      await warmUrl(url);
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(CONCURRENCY, urls.length) }, worker));
+}
+
 async function runWarmup(origin: string): Promise<void> {
   try {
-    const response = await fetch(`${origin}/sitemap.xml`);
-    if (!response.ok) {
-      throw new Error(`sitemap status ${response.status}`);
-    }
-    const urls = extractLocs(await response.text()).map((loc) => toLocalUrl(loc, origin));
-    const queue = [...urls];
-    const worker = async () => {
-      for (let url = queue.shift(); url; url = queue.shift()) {
-        try {
-          const res = await fetch(url);
-          await res.arrayBuffer();
-        } catch (error) {
-          console.error('Cache warmup request failed:', url, error);
-        }
-      }
-    };
-    await Promise.all(Array.from({ length: Math.min(CONCURRENCY, urls.length) }, worker));
+    await warmUrls(await fetchSitemapUrls(origin));
   } catch (error) {
     console.error('Cache warmup failed:', error);
   }
