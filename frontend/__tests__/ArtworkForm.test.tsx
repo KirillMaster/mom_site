@@ -86,3 +86,22 @@ describe('@US1-AS5 лимит с учётом уже сохранённых', ()
     expect(screen.getByRole('alert')).toHaveTextContent('не более 10 фото');
   });
 });
+
+describe('@US1-EC8 повтор после частичного сбоя создания', () => {
+  it('does not create the artwork twice on retry', async () => {
+    createMutateAsync.mockResolvedValue({ id: 9 });
+    upload.mockRejectedValueOnce(new Error('net')).mockResolvedValueOnce([]);
+    const onSaved = jest.fn();
+    render(<ArtworkForm artwork={null} categories={cats} onSaved={onSaved} />);
+    fireEvent.change(screen.getByLabelText('Название'), { target: { value: 'Новая' } });
+    fireEvent.change(screen.getByLabelText('Категория'), { target: { value: '1' } });
+    const [a, b] = [file('a.png'), file('b.png')];
+    pick([a, b]);
+    fireEvent.click(screen.getByText('Добавить картину'));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Работа создана');
+    fireEvent.click(screen.getByText('Добавить картину'));
+    await waitFor(() => expect(onSaved).toHaveBeenCalled());
+    expect(createMutateAsync).toHaveBeenCalledTimes(1);
+    expect(upload).toHaveBeenLastCalledWith(9, [b]);
+  });
+});
