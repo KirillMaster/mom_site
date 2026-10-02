@@ -3,123 +3,32 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { PlusCircle, Edit, Trash2, Image as ImageIcon, XCircle, ChevronLeft } from 'lucide-react';
-import { useArtworks, useCategories, useCreateArtwork, useUpdateArtwork, useDeleteArtwork } from '@/hooks/useApi';
+import { useArtworks, useCategories, useDeleteArtwork } from '@/hooks/useApi';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { getImageUrl } from '@/hooks/useApi';
 import Link from 'next/link';
 import { ArtworkAdminDto } from '@/lib/api'; // Добавлен импорт
-import { buildArtworkSlug, slugifyTitle } from '@/lib/artworkSlug';
+import ArtworkForm from '@/components/admin/ArtworkForm';
+import { buildArtworkSlug } from '@/lib/artworkSlug';
 
 const AdminArtworksPage = () => {
   const { data: artworks, isLoading, isError, refetch: refetchArtworks } = useArtworks();
   const { data: categories, isLoading: isLoadingCategories } = useCategories();
-  const createArtworkMutation = useCreateArtwork();
-  const updateArtworkMutation = useUpdateArtwork();
   const deleteArtworkMutation = useDeleteArtwork();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
   const [currentArtwork, setCurrentArtwork] = useState<any>(null);
-  const [formState, setFormState] = useState({
-    title: '',
-    description: '',
-    price: '',
-    isForSale: true,
-    categoryId: '',
-    image: null as File | null,
-  });
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const openModal = (artwork?: any) => {
-    if (artwork) {
-      setIsEditMode(true);
-      setCurrentArtwork(artwork);
-      setFormState({
-        title: artwork.title,
-        description: artwork.description || '',
-        price: artwork.price ? String(artwork.price) : '',
-        isForSale: artwork.isForSale,
-        categoryId: String(artwork.categoryId),
-        image: null,
-      });
-      setImagePreview(getImageUrl(artwork.imagePath));
-    } else {
-      setIsEditMode(false);
-      setCurrentArtwork(null);
-      setFormState({
-        title: '',
-        description: '',
-        price: '',
-        isForSale: true,
-        categoryId: '',
-        image: null,
-      });
-      setImagePreview(null);
-    }
+    setCurrentArtwork(artwork ?? null);
     setIsModalOpen(true);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setFormState({
-      title: '',
-      description: '',
-      price: '',
-      isForSale: true,
-      categoryId: '',
-      image: null,
-    });
-    setImagePreview(null);
-  };
+  const closeModal = () => setIsModalOpen(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    if (type === 'checkbox') {
-      setFormState({ ...formState, [name]: (e.target as HTMLInputElement).checked });
-    } else {
-      setFormState({ ...formState, [name]: value });
-    }
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setFormState({ ...formState, image: file });
-      setImagePreview(URL.createObjectURL(file));
-    } else {
-      setFormState({ ...formState, image: null });
-      setImagePreview(null);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const formData = new FormData();
-    formData.append('title', formState.title);
-    formData.append('description', formState.description);
-    formData.append('price', formState.price);
-    formData.append('isForSale', String(formState.isForSale));
-    formData.append('categoryId', formState.categoryId);
-    if (formState.image) {
-      formData.append('image', formState.image);
-    }
-
-    try {
-      if (isEditMode && currentArtwork) {
-        await updateArtworkMutation.mutateAsync({ id: currentArtwork.id, data: formData });
-      } else {
-        await createArtworkMutation.mutateAsync(formData);
-      }
-      refetchArtworks();
-      closeModal();
-    } catch (error) {
-      console.error('Error saving artwork:', error);
-      // TODO: Display error message to user
-    } finally {
-      refetchArtworks();
-      closeModal();
-    }
+  const handleSaved = () => {
+    refetchArtworks();
+    closeModal();
   };
 
   const handleDelete = async (id: number) => {
@@ -250,116 +159,15 @@ const AdminArtworksPage = () => {
                   <XCircle className="w-6 h-6" />
                 </button>
                 <h2 className="text-2xl font-serif font-bold text-gray-900 mb-6">
-                  {isEditMode ? 'Редактировать картину' : 'Добавить новую картину'}
+                  {currentArtwork ? 'Редактировать картину' : 'Добавить новую картину'}
                 </h2>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">Название</label>
-                  <input
-                    type="text"
-                    id="title"
-                    name="title"
-                    value={formState.title}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
-                  {/* Slugs are derived from the title, never stored, so the
-                      admin sees the exact public URL the work will get the
-                      moment it is saved. */}
-                  <p className="mt-2 text-xs text-gray-500">
-                    Адрес страницы:{' '}
-                    <code className="text-gray-700">
-                      /gallery/{slugifyTitle(formState.title)}-{isEditMode && currentArtwork ? currentArtwork.id : 'ID'}
-                    </code>
-                    {!isEditMode && ' — ID присваивается после сохранения'}
-                  </p>
-                </div>
-
-                <div>
-                  <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">Описание</label>
-                  <textarea
-                    id="description"
-                    name="description"
-                    value={formState.description}
-                    onChange={handleChange}
-                    rows={4}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                  ></textarea>
-                </div>
-
-                <div>
-                  <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">Цена (₽) <span className="text-gray-500 text-xs">(опционально)</span></label>
-                  <input
-                    type="number"
-                    id="price"
-                    name="price"
-                    value={formState.price}
-                    onChange={handleChange}
-                    placeholder="Оставьте пустым для 'Цена: договорная'"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700 mb-2">Категория</label>
-                  <select
-                    id="categoryId"
-                    name="categoryId"
-                    value={formState.categoryId}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  >
-                    <option value="">Выберите категорию</option>
-                    {categories && Array.isArray(categories) && categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="isForSale"
-                    name="isForSale"
-                    checked={formState.isForSale}
-                    onChange={handleChange}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  />
-                  <label htmlFor="isForSale" className="ml-2 block text-sm text-gray-900">В продаже</label>
-                </div>
-
-                <div>
-                  <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">Изображение</label>
-                  <input
-                    type="file"
-                    id="image"
-                    name="image"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                    required={!isEditMode} // Image is required only for new artworks
-                  />
-                  {imagePreview && (
-                    <div className="mt-4">
-                      <img src={imagePreview} alt="Предпросмотр" className="max-w-xs h-auto rounded-md shadow-md" />
-                    </div>
-                  )}
-                </div>
-
-                <button
-                  type="submit"
-                  className="btn-primary w-full flex items-center justify-center"
-                  disabled={createArtworkMutation.isPending || updateArtworkMutation.isPending}
-                >
-                  {(createArtworkMutation.isPending || updateArtworkMutation.isPending) && <LoadingSpinner size="sm" className="mr-2" />}
-                  {isEditMode ? 'Сохранить изменения' : 'Добавить картину'}
-                </button>
-              </form>
+                <ArtworkForm
+                  key={currentArtwork?.id ?? 'new'}
+                  artwork={currentArtwork}
+                  categories={categories}
+                  onSaved={handleSaved}
+                />
               </motion.div>
             </div>
           </div>
