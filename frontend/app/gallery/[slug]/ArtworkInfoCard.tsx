@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { isExhibitionPhoto } from '@/lib/gallery';
 import { normalizeTitle, quotedTitle } from '@/lib/normalizeTitle';
 import { resolveStatus } from '@/lib/artworkStatus';
+import type { ArtworkDto, GalleryData } from '@/lib/api';
 import AskPriceButton from './AskPriceButton';
 import ArtworkSpecs from './ArtworkSpecs';
 
@@ -13,12 +14,12 @@ const formatPrice = (price: number) =>
   }).format(price);
 
 interface Props {
-  artwork: any;
+  artwork: ArtworkDto;
   categoryName?: string;
-  categories: any[];
+  categories: GalleryData['categories'];
 }
 
-const priceLabelOf = (artwork: any, available: boolean) => {
+const priceLabelOf = (artwork: ArtworkDto, available: boolean) => {
   if (!available) return null;
   return artwork.price ? formatPrice(artwork.price) : 'цена по запросу';
 };

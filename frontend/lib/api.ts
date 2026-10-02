@@ -125,6 +125,12 @@ export interface ArtworkDto {
   thumbnailPath: string;
   price?: number;
   isForSale: boolean;
+  status?: ArtworkStatus;
+  widthCm?: number | null;
+  heightCm?: number | null;
+  year?: number | null;
+  support?: string | null;
+  technique?: string | null;
   createdAt: string;
   updatedAt: string;
   categoryId: number;
