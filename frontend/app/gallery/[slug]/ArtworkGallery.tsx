@@ -20,6 +20,46 @@ interface ArtworkGalleryProps {
 const altFor = (title: string, index: number, total: number) =>
   total > 1 ? `${title} — фото ${index + 1}` : title;
 
+interface PhotoNavigationProps {
+  photos: GalleryPhoto[];
+  active: number;
+  onSelect: (index: number) => void;
+}
+
+// Mobile: dot indicators under the carousel. Desktop: clickable thumbnails.
+const PhotoNavigation = ({ photos, active, onSelect }: PhotoNavigationProps) => (
+  <>
+    <div data-testid="gallery-dots" className="mt-3 flex justify-center gap-2 md:hidden">
+      {photos.map((photo, index) => (
+        <span
+          key={photo.src}
+          data-testid="gallery-dot"
+          aria-current={index === active ? 'true' : undefined}
+          className={`h-2 w-2 rounded-full ${index === active ? 'bg-gray-900' : 'bg-gray-300'}`}
+        />
+      ))}
+    </div>
+
+    <div data-testid="gallery-thumbs" className="mt-4 hidden gap-3 overflow-x-auto md:flex">
+      {photos.map((photo, index) => (
+        <button
+          key={photo.src}
+          type="button"
+          data-testid="gallery-thumb"
+          aria-label={`Показать фото ${index + 1}`}
+          aria-current={index === active ? 'true' : undefined}
+          onClick={() => onSelect(index)}
+          className={`h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-neutral-100 ring-2 ${
+            index === active ? 'ring-primary-600' : 'ring-transparent hover:ring-gray-300'
+          }`}
+        >
+          <img src={photo.thumb} alt="" loading="lazy" className="h-full w-full object-cover" />
+        </button>
+      ))}
+    </div>
+  </>
+);
+
 // Every photo is rendered once, in the server HTML. On mobile the track is a
 // CSS scroll-snap carousel; from md up only the active slide is displayed and
 // the thumbnail strip switches it.
@@ -72,38 +112,7 @@ const ArtworkGallery = ({ photos, title }: ArtworkGalleryProps) => {
         ))}
       </div>
 
-      {multi && (
-        <>
-          <div data-testid="gallery-dots" className="mt-3 flex justify-center gap-2 md:hidden">
-            {photos.map((photo, index) => (
-              <span
-                key={photo.src}
-                data-testid="gallery-dot"
-                aria-current={index === active ? 'true' : undefined}
-                className={`h-2 w-2 rounded-full ${index === active ? 'bg-gray-900' : 'bg-gray-300'}`}
-              />
-            ))}
-          </div>
-
-          <div data-testid="gallery-thumbs" className="mt-4 hidden gap-3 overflow-x-auto md:flex">
-            {photos.map((photo, index) => (
-              <button
-                key={photo.src}
-                type="button"
-                data-testid="gallery-thumb"
-                aria-label={`Показать фото ${index + 1}`}
-                aria-current={index === active ? 'true' : undefined}
-                onClick={() => setActive(index)}
-                className={`h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-neutral-100 ring-2 ${
-                  index === active ? 'ring-primary-600' : 'ring-transparent hover:ring-gray-300'
-                }`}
-              >
-                <img src={photo.thumb} alt="" loading="lazy" className="h-full w-full object-cover" />
-              </button>
-            ))}
-          </div>
-        </>
-      )}
+      {multi && <PhotoNavigation photos={photos} active={active} onSelect={setActive} />}
 
       <button
         type="button"
