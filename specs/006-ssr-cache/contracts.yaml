@@ -1,0 +1,28 @@
+feature: "Кэширование серверного рендеринга публичных страниц"
+contracts:
+  - id: "C-1"
+    name: "POST /internal/revalidate (frontend, внутренняя сеть docker)"
+    kind: "interface"
+    request:
+      - {name: "X-Revalidate-Secret", type: "string", required: true, description: "Заголовок; равен env REVALIDATE_SECRET фронта"}
+    response_cases:
+      - outcome: "200 OK — кэш всех страниц сброшен (revalidatePath('/', 'layout')), фоновый прогрев запущен"
+        fields:
+          - {name: "revalidated", type: "boolean", required: true, description: "true"}
+          - {name: "warmup", type: "string", required: true, description: "started | already-running"}
+      - outcome: "401 — секрет отсутствует, неверен или REVALIDATE_SECRET не задан на фронте"
+        fields:
+          - {name: "revalidated", type: "boolean", required: true, description: "false"}
+      - outcome: "404 — запрос пришёл через публичный nginx (location /internal закрыт)"
+        fields: []
+    entity_refs: []
+  - id: "C-2"
+    name: "Побочный эффект admin API: успешный POST/PUT/PATCH/DELETE под /api/admin (кроме login)"
+    kind: "interface"
+    request: []
+    response_cases:
+      - outcome: "2xx — после ответа fire-and-forget POST на Frontend:RevalidateUrl с X-Revalidate-Secret; ошибка/таймаут (5 с) только логируется"
+        fields: []
+      - outcome: "4xx/5xx или GET — инвалидация не вызывается"
+        fields: []
+    entity_refs: []
