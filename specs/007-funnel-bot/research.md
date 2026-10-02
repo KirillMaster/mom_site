@@ -37,7 +37,7 @@
 - **Rationale**: каждая ветка покрывается unit-тестами без моков (P5), файлы ≤ 200 строк (P3).
 
 ## R8. Deep-link payload
-- **Decision**: `art_<int>` → `GET` работы через существующий `ApplicationDbContext` (только опубликованные); не найдена → полный сценарий без контекста. `mk`, `interior` → предустановленная цель. Иное (`[A-Za-z0-9_-]{1,64}`) → `UtmCampaign`, полный сценарий. `UtmSource=telegram_bot`.
+- **Decision**: `art_<int>` → `GET` работы через существующий `ApplicationDbContext` (после 005 — кроме скрытых `IsPublished=false`); не найдена → полный сценарий без контекста. `mk`, `interior` → предустановленная цель. Иное (`[A-Za-z0-9_-]{1,64}`) → `UtmCampaign`, полный сценарий. `UtmSource=telegram_bot`.
 
 ## R9. /privacy
 - **Decision**: новый `GET /api/public/privacy` (по образцу `about`/`contacts`) читает `PageContent` с `PageKey=privacy, ContentKey=body`; если записи нет — отдаёт `null`, фронт показывает встроенный шаблон политики с реквизитами (A-1). Правка — существующий `/admin/pages` (`POST/PUT admin/page-content`). Страница — SSR (`app/privacy/page.tsx`, `revalidate`), `generateMetadata`, в `sitemap.ts`; ссылки — футер, строка согласия под формой контактов, шаг 4 бота.

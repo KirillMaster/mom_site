@@ -40,7 +40,7 @@ entities:
     fields:
       - {name: Id, type: number, required: true, description: PK}
       - {name: Title, type: string, required: true, description: Название}
-      - {name: IsPublished, type: boolean, required: true, description: Только опубликованные используются в deep-link}
+      - {name: ThumbnailPath, type: string, required: true, description: Фото для sendPhoto}
     relationships: []
   - id: lead-quota
     name: LeadQuota
