@@ -122,8 +122,8 @@ describe('@US3-AS5 artwork schema.org structure', () => {
     const artwork = { title: 'Картина', id: 1, isForSale: true, price: 50000 };
     const schema = buildArtworkSchema(artwork, []);
     expect(schema.offers).toBeDefined();
-    expect(schema.offers.price).toBe(50000);
-    expect(schema.offers.priceCurrency).toBe('RUB');
+    expect(schema.offers?.price).toBe(50000);
+    expect(schema.offers?.priceCurrency).toBe('RUB');
   });
 
   it('omits offers when isForSale is false', () => {
