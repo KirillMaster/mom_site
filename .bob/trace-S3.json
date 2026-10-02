@@ -1,0 +1,20 @@
+{
+  "scenario_ids": [
+    "US2-AS6",
+    "US2-AS7",
+    "US2-AS8",
+    "US2-AS9",
+    "US3-AS10",
+    "US3-FR13",
+    "US4-AS11"
+  ],
+  "traced_ids": [
+    "US2-AS6",
+    "US2-AS7",
+    "US2-AS8",
+    "US2-AS9",
+    "US3-AS10",
+    "US3-FR13",
+    "US4-AS11"
+  ]
+}
