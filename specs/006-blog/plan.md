@@ -19,7 +19,7 @@
 - **Target Platform**: Linux Docker (mom_site_api_prod, mom_site_frontend_prod), браузеры mobile-first
 - **Project Type**: web_application
 - **Performance Goals**: LCP статьи на мобильном ≤ 2,5 с (SSR + ISR revalidate 300 с, priority только у обложки); публичный бандл без TipTap
-- **Constraints**: Только [Authorize] для admin; санитизация при каждом сохранении; картинки ≤ 10 МБ jpeg/png/webp; slug ^[a-z0-9-]{1,120}$ неизменен после публикации; ключ IndexNow через env; файлы ≤ 200 строк (P3)
+- **Constraints**: Только [Authorize] для admin; санитизация при каждом сохранении; картинки ≤ 15 МБ jpeg/png/webp с авто-уменьшением; редактор в простом режиме без HTML (A-8); slug ^[a-z0-9-]{1,120}$ неизменен после публикации; ключ IndexNow через env; файлы ≤ 200 строк (P3)
 - **Scale/Scope**: Десятки статей в год, 1 автор, 5–6 рубрик
 
 ## Constitution Check

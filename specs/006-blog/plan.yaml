@@ -22,7 +22,7 @@ technical_context:
   target_platform: Linux Docker (mom_site_api_prod, mom_site_frontend_prod), браузеры mobile-first
   project_type: web_application
   performance_goals: LCP статьи на мобильном ≤ 2,5 с (SSR + ISR revalidate 300 с, priority только у обложки); публичный бандл без TipTap
-  constraints: Только [Authorize] для admin; санитизация при каждом сохранении; картинки ≤ 10 МБ jpeg/png/webp; slug ^[a-z0-9-]{1,120}$ неизменен после публикации; ключ IndexNow через env; файлы ≤ 200 строк (P3)
+  constraints: Только [Authorize] для admin; санитизация при каждом сохранении; картинки ≤ 15 МБ jpeg/png/webp с авто-уменьшением; редактор в простом режиме без HTML (A-8); slug ^[a-z0-9-]{1,120}$ неизменен после публикации; ключ IndexNow через env; файлы ≤ 200 строк (P3)
   scale_scope: Десятки статей в год, 1 автор, 5–6 рубрик
 constitution_check:
   - principle_id: P1

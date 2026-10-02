@@ -74,7 +74,7 @@ contracts:
       - {name: excerpt, type: string, required: false, description: '≤ 300'}
       - {name: cover, type: object, required: false, description: 'coverImagePath + coverAlt'}
       - {name: seo, type: object, required: false, description: 'seoTitle / seoDescription'}
-      - {name: blogCategoryId, type: number, required: true, description: Рубрика}
+      - {name: blogCategoryId, type: number, required: false, description: 'По умолчанию — рубрика Новости'}
       - {name: artworkIds, type: array, required: false, description: 'Порядок = SortOrder'}
       - {name: publishedAt, type: string, required: false, description: 'null = черновик; будущее = запланировано'}
     response_cases:
@@ -114,7 +114,7 @@ contracts:
     name: 'POST /api/admin/blog/images (multipart; Authorize)'
     kind: interface
     request:
-      - {name: file, type: object, required: true, description: 'jpeg/png/webp ≤ 10 МБ'}
+      - {name: file, type: object, required: true, description: 'jpeg/png/webp ≤ 15 МБ (iPhone отдаёт JPEG через input accept=image/*); крупное уменьшается существующим ресайзом'}
     response_cases:
       - outcome: '200 uploaded'
         fields:

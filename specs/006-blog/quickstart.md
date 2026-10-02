@@ -32,6 +32,8 @@ cd frontend && npm test -- blog sitemap && npx tsc --noEmit && npx playwright te
 | 13 | Клик CTA в статье | Переход в `/contacts`, цель Метрики | `public-blog-post` |
 | 14 | Lighthouse mobile статьи; размер публичного бандла | LCP ≤ 2,5 с; TipTap в публичных чанках отсутствует | — |
 | 15 | Admin-запросы без JWT | 401 | `admin-blog` |
+| 16 | Простота (A-8): новость только с заголовком и текстом, фото с телефона кнопкой «Фото»; вставить текст из Word | Публикуется в «Новости», подпись фото = заголовок; оформление Word убрано; на ширине 360 px кнопки видны | `admin-blog`, `admin-blog-images` |
+| 17 | Юзабилити: мама публикует новость с 2 фото без подсказок | ≤ 10 минут, без вопросов (SC-001) | — |
 
 ## Прод
 1. `INDEXNOW_KEY` — в серверный `.env` и GitHub secret (не в git); строка в `docker-compose.prod.yml`.

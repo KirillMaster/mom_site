@@ -10,7 +10,7 @@ entities:
       - {name: Excerpt, type: string, required: false, description: '≤ 300; анонс и description по умолчанию'}
       - {name: BodyHtml, type: string, required: true, description: 'Санитизированный HTML'}
       - {name: CoverImagePath, type: string, required: false, description: '≤ 500; URL в S3'}
-      - {name: CoverAlt, type: string, required: false, description: '≤ 200; обязателен при наличии обложки'}
+      - {name: CoverAlt, type: string, required: false, description: '≤ 200; необязателен; по умолчанию = Title'}
       - {name: SeoTitle, type: string, required: false, description: '≤ 70'}
       - {name: SeoDescription, type: string, required: false, description: '≤ 200'}
       - {name: BlogCategoryId, type: id_ref, required: true, description: Рубрика}
