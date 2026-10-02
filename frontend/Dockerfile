@@ -25,6 +25,11 @@ ENV NEXT_TELEMETRY_DISABLED 1
 ARG NEXT_PUBLIC_YM_ID
 ENV NEXT_PUBLIC_YM_ID=$NEXT_PUBLIC_YM_ID
 
+# Build-time only: pages are prerendered during the build, and the internal
+# docker hostname is not resolvable there, so the public API URL is used.
+ARG INTERNAL_API_URL
+ENV INTERNAL_API_URL=$INTERNAL_API_URL
+
 RUN npm run build
 
 # Production image, copy all the files and run next
