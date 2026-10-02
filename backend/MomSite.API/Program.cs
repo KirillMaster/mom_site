@@ -156,6 +156,8 @@ builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddSingleton(new MomSite.Infrastructure.Blog.BlogHtmlSanitizer(new[] { "s3.twcstorage.ru" }, "angelamoiseenko.ru"));
 builder.Services.AddScoped<IBlogService, MomSite.Infrastructure.Blog.BlogService>();
 builder.Services.AddHttpClient();
+builder.Services.AddHttpClient(MomSite.Infrastructure.Blog.IndexNowClient.HttpClientName);
+builder.Services.AddSingleton<IIndexNowClient, MomSite.Infrastructure.Blog.IndexNowClient>();
 builder.Services.AddScoped<IFeedbackNotifier, EmailNotifier>();
 builder.Services.AddScoped<IFeedbackNotifier, TelegramNotifier>();
 

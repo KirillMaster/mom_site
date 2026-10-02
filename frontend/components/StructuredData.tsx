@@ -8,6 +8,7 @@ export default function StructuredData({ homeData }: StructuredDataProps) {
   const personSchema = {
     "@context": "https://schema.org",
     "@type": "Person",
+    "@id": "https://angelamoiseenko.ru/#artist",
     "name": "Анжела Моисеенко",
     "jobTitle": "Художник-импрессионист",
     "description": homeData.biographyText || "Художник-импрессионист, специализирующийся на театральных работах и натюрмортах",

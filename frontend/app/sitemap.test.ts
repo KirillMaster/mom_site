@@ -78,3 +78,55 @@ describe('@S4-AS3 sitemap generation degrades gracefully when the gallery API is
     expect(urls).toContain('https://angelamoiseenko.ru/gallery');
   });
 });
+
+describe('blog in sitemap', () => {
+  const realFetch = global.fetch;
+  afterEach(() => {
+    global.fetch = realFetch;
+  });
+
+  const respond = (routes: Record<string, unknown>) => {
+    global.fetch = jest.fn(async (input: string) => {
+      const url = new URL(input, 'http://api');
+      const key = url.pathname.replace(/^.*\/public\/blog/, '') || '/';
+      if (!(key in routes)) return { ok: false, status: 500, json: async () => ({}) };
+      return { ok: true, status: 200, json: async () => routes[key] };
+    }) as unknown as typeof fetch;
+  };
+
+  it('lists /blog, published posts with UpdatedAt and only non-empty categories', async () => {
+    mockedGetGalleryData.mockResolvedValue(gallery([]));
+    mockedGetVideosData.mockResolvedValue({ videos: [] });
+    respond({
+      '/': {
+        items: [{ slug: 'vystavka', publishedAt: '2026-09-01T10:00:00Z', updatedAt: '2026-09-05T10:00:00Z' }],
+        total: 1,
+        page: 1,
+        pageSize: 12,
+      },
+      '/categories': [
+        { slug: 'novosti', name: 'Новости', postCount: 1 },
+        { slug: 'pusto', name: 'Пусто', postCount: 0 },
+      ],
+    });
+
+    const result = await sitemap();
+    const post = result.find((entry) => entry.url === 'https://angelamoiseenko.ru/blog/vystavka');
+
+    expect(result.map((e) => e.url)).toContain('https://angelamoiseenko.ru/blog');
+    expect(post?.lastModified).toEqual(new Date('2026-09-05T10:00:00Z'));
+    expect(result.map((e) => e.url)).toContain('https://angelamoiseenko.ru/blog/category/novosti');
+    expect(result.map((e) => e.url)).not.toContain('https://angelamoiseenko.ru/blog/category/pusto');
+  });
+
+  it('keeps the rest of the sitemap when the blog API fails', async () => {
+    mockedGetGalleryData.mockResolvedValue(gallery([{ id: 7, title: 'Осенний сад', isForSale: true }]));
+    mockedGetVideosData.mockResolvedValue({ videos: [] });
+    respond({});
+
+    const urls = (await sitemap()).map((e) => e.url);
+
+    expect(urls).toContain('https://angelamoiseenko.ru/blog');
+    expect(urls.some((url) => url.endsWith('/gallery/osenniy-sad-7'))).toBe(true);
+  });
+});

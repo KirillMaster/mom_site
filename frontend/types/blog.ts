@@ -14,6 +14,7 @@ export interface BlogPostListItem {
   category: BlogCategoryRef;
   publishedAt: string;
   readingMinutes: number;
+  updatedAt: string;
 }
 
 export interface BlogPostPage {
@@ -28,7 +29,6 @@ export interface BlogPost extends BlogPostListItem {
   bodyHtml: string;
   seoTitle?: string | null;
   seoDescription?: string | null;
-  updatedAt: string;
 }
 
 export interface BlogRelatedArtwork {

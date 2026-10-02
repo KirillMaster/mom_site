@@ -31,6 +31,7 @@ public class BlogPostListItemDto
     public BlogCategoryRefDto Category { get; set; } = new();
     public DateTime PublishedAt { get; set; }
     public int ReadingMinutes { get; set; }
+    public DateTime UpdatedAt { get; set; }
 }
 
 public class BlogPostDto : BlogPostListItemDto
@@ -38,7 +39,6 @@ public class BlogPostDto : BlogPostListItemDto
     public string BodyHtml { get; set; } = string.Empty;
     public string? SeoTitle { get; set; }
     public string? SeoDescription { get; set; }
-    public DateTime UpdatedAt { get; set; }
 }
 
 /// <summary>Slug работы фронт строит сам (buildArtworkSlug) — в БД его нет.</summary>
@@ -89,7 +89,6 @@ public static partial class BlogPublicMapping
         post.BodyHtml = result.Post.BodyHtml;
         post.SeoTitle = result.Post.SeoTitle;
         post.SeoDescription = result.Post.SeoDescription;
-        post.UpdatedAt = result.Post.UpdatedAt;
         return new BlogPublicPostDto
         {
             Post = post,
@@ -127,6 +126,7 @@ public static partial class BlogPublicMapping
         dto.Category = new BlogCategoryRefDto { Slug = post.BlogCategory.Slug, Name = post.BlogCategory.Name };
         dto.PublishedAt = post.PublishedAt!.Value;
         dto.ReadingMinutes = BlogQueries.ReadingMinutes(post.BodyHtml);
+        dto.UpdatedAt = post.UpdatedAt;
         return dto;
     }
 

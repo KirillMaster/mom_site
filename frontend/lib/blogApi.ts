@@ -1,6 +1,7 @@
 import { api, API_BASE_URL } from './api';
 import type {
   BlogCategory,
+  BlogPostListItem,
   BlogCategorySave,
   BlogPostAdmin,
   BlogPostAdminListItem,
@@ -33,6 +34,17 @@ export function getBlogPost(slug: string): Promise<BlogPublicPost | null> {
 
 export async function getBlogCategories(): Promise<BlogPublicCategory[]> {
   return (await getPublic<BlogPublicCategory[]>('/categories')) ?? [];
+}
+
+export async function getLatestBlogPosts(limit = Infinity): Promise<BlogPostListItem[]> {
+  const items: BlogPostListItem[] = [];
+  for (let page = 1; items.length < limit; page++) {
+    const data = await getBlogList(page);
+    if (!data || data.items.length === 0) break;
+    items.push(...data.items);
+    if (items.length >= data.total) break;
+  }
+  return items.slice(0, limit);
 }
 
 export const adminBlog = {

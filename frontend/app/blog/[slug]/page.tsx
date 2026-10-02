@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getImageUrl } from '@/hooks/useApi';
@@ -6,11 +7,22 @@ import { formatBlogDate } from '@/lib/blogFormat';
 import ArticleBody from '@/components/blog/ArticleBody';
 import RelatedArtworks from '@/components/blog/RelatedArtworks';
 import BlogCta from '@/components/blog/BlogCta';
+import BlogPostJsonLd from '@/components/blog/BlogPostJsonLd';
+import { buildBlogPostMetadata } from '@/lib/blogSeo';
 
 export const revalidate = 300;
 
 interface BlogPostPageProps {
   params: { slug: string };
+}
+
+export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+  try {
+    const data = await getBlogPost(params.slug);
+    return data ? buildBlogPostMetadata(data.post, getImageUrl) : {};
+  } catch {
+    return {};
+  }
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
@@ -20,6 +32,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <BlogPostJsonLd post={post} />
       <article className="mx-auto max-w-3xl px-4 pt-24 pb-16">
         <nav aria-label="breadcrumbs" className="mb-6 flex flex-wrap items-center gap-2 text-sm text-gray-500">
           <Link href="/" className="hover:text-primary-600">Главная</Link>

@@ -525,7 +525,7 @@ tasks:
     acceptance_criteria:
       - id: AC-1
         description: 'В исходнике статьи canonical / og:type article / ld+json BlogPosting'
-        done: false
+        done: true
     test_scenarios:
       - id: TS-1
         given: ['Статья без SeoTitle']
@@ -557,7 +557,7 @@ tasks:
     acceptance_criteria:
       - id: AC-1
         description: 'sitemap.test и rss тест зелёные; черновиков нет'
-        done: false
+        done: true
     test_scenarios:
       - id: TS-1
         given: ['Опубликованная статья и черновик']
@@ -595,7 +595,7 @@ tasks:
     acceptance_criteria:
       - id: AC-1
         description: 'Тесты зелёные; публикация успешна при недоступном IndexNow'
-        done: false
+        done: true
     test_scenarios:
       - id: TS-1
         given: ['INDEXNOW_KEY не задан']

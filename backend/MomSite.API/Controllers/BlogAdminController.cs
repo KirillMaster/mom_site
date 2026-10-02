@@ -15,12 +15,14 @@ public class BlogAdminController : ControllerBase
     private readonly IBlogService _blog;
     private readonly IImageService _imageService;
     private readonly TimeProvider _time;
+    private readonly IIndexNowClient _indexNow;
 
-    public BlogAdminController(IBlogService blog, IImageService imageService, TimeProvider time)
+    public BlogAdminController(IBlogService blog, IImageService imageService, TimeProvider time, IIndexNowClient indexNow)
     {
         _blog = blog;
         _imageService = imageService;
         _time = time;
+        _indexNow = indexNow;
     }
 
     private DateTime Now => _time.GetUtcNow().UtcDateTime;
@@ -36,14 +38,19 @@ public class BlogAdminController : ControllerBase
     public async Task<IActionResult> Create([FromBody] BlogPostSaveDto dto)
     {
         var result = await _blog.CreateAsync(dto.ToInput());
+        NotifySearchEngines(result);
         return result.Outcome == BlogOutcome.Ok
             ? CreatedAtAction(nameof(Get), new { id = result.Value!.Id }, result.Value.ToAdminDto(Now))
             : ToPost(result);
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] BlogPostSaveDto dto) =>
-        ToPost(await _blog.UpdateAsync(id, dto.ToInput()));
+    public async Task<IActionResult> Update(int id, [FromBody] BlogPostSaveDto dto)
+    {
+        var result = await _blog.UpdateAsync(id, dto.ToInput());
+        NotifySearchEngines(result);
+        return ToPost(result);
+    }
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id) => ToEmpty(await _blog.DeleteAsync(id));
@@ -73,6 +80,15 @@ public class BlogAdminController : ControllerBase
         var prepared = await BlogImageProcessor.PrepareAsync(file!);
         if (prepared == null) return BadRequest(new { message = "Файл не похож на фото. Выберите снимок в формате JPEG, PNG или WebP." });
         return Ok(new { url = await _imageService.SaveImageAsync(prepared, "blog") });
+    }
+
+    /// <summary>В фоне: мама не ждёт ответа Яндекса, а его сбой не мешает сохранению.</summary>
+    private void NotifySearchEngines(BlogResult<Core.Models.BlogPost> result)
+    {
+        var post = result.Value;
+        if (result.Outcome != BlogOutcome.Ok || post?.PublishedAt == null || post.PublishedAt > Now) return;
+        var urls = IndexNowClient.BlogUrls(post.Slug, post.BlogCategory.Slug);
+        _ = Task.Run(() => _indexNow.NotifyAsync(urls));
     }
 
     private IActionResult ToPost(BlogResult<Core.Models.BlogPost> result) =>

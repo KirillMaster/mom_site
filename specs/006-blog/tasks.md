@@ -476,7 +476,7 @@ generateMetadata (title / description / canonical / OG article) и BlogPostJsonL
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` В исходнике статьи canonical / og:type article / ld+json BlogPosting
+- [x] `AC-1` В исходнике статьи canonical / og:type article / ld+json BlogPosting
 
 **Test Scenarios**:
 
@@ -508,7 +508,7 @@ generateMetadata (title / description / canonical / OG article) и BlogPostJsonL
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` sitemap.test и rss тест зелёные; черновиков нет
+- [x] `AC-1` sitemap.test и rss тест зелёные; черновиков нет
 
 **Test Scenarios**:
 
@@ -542,7 +542,7 @@ IIndexNowClient + реализация; вызов после публикаци
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Тесты зелёные; публикация успешна при недоступном IndexNow
+- [x] `AC-1` Тесты зелёные; публикация успешна при недоступном IndexNow
 
 **Test Scenarios**:
 

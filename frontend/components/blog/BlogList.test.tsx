@@ -10,6 +10,7 @@ const post = (n: number): BlogPostListItem => ({
   category: { slug: 'vystavki', name: 'Выставки' },
   publishedAt: '2026-09-01T10:00:00Z',
   readingMinutes: 2,
+  updatedAt: '2026-09-01T10:00:00Z',
 });
 
 const categories = [{ slug: 'vystavki', name: 'Выставки', postCount: 15 }];

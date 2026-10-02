@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 import { getHomeData, getGalleryData, getAboutData, getContactsData, getVideosData } from '@/hooks/useApi';
 import { artworksForSale } from '@/lib/gallery';
 import { buildArtworkSlug } from '@/lib/artworkSlug';
+import { getBlogCategories, getLatestBlogPosts } from '@/lib/blogApi';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://angelamoiseenko.ru';
@@ -44,7 +45,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly' as const,
       priority: 0.7,
     },
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    },
   ];
+
+  const blogPages = await blogSitemap(baseUrl);
 
   try {
     // Get dynamic data for artworks
@@ -67,9 +76,32 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     })) || [];
 
-    return [...staticPages, ...artworkPages, ...videoPages];
+    return [...staticPages, ...blogPages, ...artworkPages, ...videoPages];
   } catch (error) {
     console.error('Error generating sitemap:', error);
-    return staticPages;
+    return [...staticPages, ...blogPages];
+  }
+}
+
+async function blogSitemap(baseUrl: string): Promise<MetadataRoute.Sitemap> {
+  try {
+    const [posts, categories] = await Promise.all([getLatestBlogPosts(), getBlogCategories()]);
+    const postPages = posts.map((post) => ({
+      url: `${baseUrl}/blog/${post.slug}`,
+      lastModified: new Date(post.updatedAt || post.publishedAt),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    }));
+    const categoryPages = categories
+      .filter((category) => category.postCount > 0)
+      .map((category) => ({
+        url: `${baseUrl}/blog/category/${category.slug}`,
+        changeFrequency: 'weekly' as const,
+        priority: 0.5,
+      }));
+    return [...postPages, ...categoryPages];
+  } catch (error) {
+    console.error('Error adding blog to sitemap:', error);
+    return [];
   }
 }
