@@ -1,9 +1,11 @@
 import { getGalleryData, getImageUrl } from '@/hooks/useApi';
 import GalleryClientPage from './GalleryClientPage';
 import { Metadata } from 'next';
+import { loadOrBuildFallback } from '@/lib/buildPhase';
+import type { GalleryData } from '@/lib/api';
 import { artworksForSale } from '@/lib/gallery';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'Галерея Работ | Анжела Моисеенко',
@@ -26,18 +28,8 @@ export const metadata: Metadata = {
 };
 
 const GalleryPage = async () => {
-  const galleryData = await getGalleryData();
+  const galleryData = await loadOrBuildFallback(getGalleryData, { artworks: [], categories: [] } as unknown as GalleryData);
 
-  if (!galleryData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Ошибка загрузки</h2>
-          <p className="text-gray-600 mb-4">Не удалось загрузить данные</p>
-        </div>
-      </div>
-    );
-  }
 
   const jsonLd = {
     '@context': 'https://schema.org',

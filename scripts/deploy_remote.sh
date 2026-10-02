@@ -36,6 +36,16 @@ git checkout main
 git reset --hard "$GIT_SHA"
 git --no-pager log -1 --format='now at %H %s'
 
+log "ensuring REVALIDATE_SECRET in .env"
+if ! grep -qE '^REVALIDATE_SECRET=.+' "$REPO_DIR/.env" 2>/dev/null; then
+  touch "$REPO_DIR/.env"
+  [ -n "$(tail -c1 "$REPO_DIR/.env")" ] && echo >> "$REPO_DIR/.env"
+  printf 'REVALIDATE_SECRET=%s\n' "$(openssl rand -hex 32)" >> "$REPO_DIR/.env"
+  echo "REVALIDATE_SECRET generated"
+else
+  echo "REVALIDATE_SECRET present"
+fi
+
 log "building & (re)starting containers"
 docker compose -f "$COMPOSE_FILE" up -d --build --remove-orphans
 
@@ -80,6 +90,34 @@ for i in 1 2 3 4 5; do
   sleep 5
   [ "$i" = "5" ] && { echo "public endpoint never responded" >&2; exit 1; }
 done
+
+log "invalidating frontend cache (inside docker network)"
+revalidated=0
+for i in 1 2 3 4 5; do
+  if docker compose -f "$COMPOSE_FILE" exec -T frontend node -e "
+fetch('http://127.0.0.1:3000/internal/revalidate', {method: 'POST', headers: {'X-Revalidate-Secret': process.env.REVALIDATE_SECRET || ''}})
+  .then(r => { console.log('revalidate status', r.status); process.exit(r.status === 200 ? 0 : 1); })
+  .catch(e => { console.error(String(e)); process.exit(1); });
+"; then
+    revalidated=1
+    break
+  fi
+  echo "revalidate attempt $i failed, retrying..."
+  sleep 5
+done
+if [ "$revalidated" != "1" ]; then
+  echo "cache revalidation failed" >&2
+  exit 1
+fi
+
+log "warming up cache from sitemap"
+warm_urls=$(curl -fsS --max-time 30 "${PUBLIC_URL%/}/sitemap.xml" 2>/dev/null | grep -o '<loc>[^<]*</loc>' | sed -e 's#<loc>##' -e 's#</loc>##' || true)
+if [ -n "$warm_urls" ]; then
+  echo "warming $(printf '%s\n' "$warm_urls" | wc -l | tr -d ' ') URLs"
+  printf '%s\n' "$warm_urls" | xargs -P 3 -n 1 curl -s -o /dev/null --max-time 30 -w '%{http_code} %{url_effective}\n' || true
+else
+  echo "no sitemap URLs found, skipping warmup"
+fi
 
 log "pruning dangling images (safe — does not affect tagged images)"
 docker image prune -f

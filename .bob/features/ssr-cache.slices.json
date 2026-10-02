@@ -1,0 +1,26 @@
+{
+  "feature": "ssr-cache",
+  "slices": [
+    {
+      "id": "S1",
+      "title": "Frontend: ISR, ошибки API не кэшируются, /internal/revalidate, прогрев по sitemap",
+      "depends_on": [],
+      "tasks": ["T001", "T002", "T003", "T004"],
+      "scenario_refs": ["US1-AS1", "US1-AS2", "US1-AS3", "US4-AS9", "US1-EC2", "US1-EC1", "US2-AS5", "US2-AS4", "US3-AS8", "US2-EC3"]
+    },
+    {
+      "id": "S2",
+      "title": "Backend: инвалидация кэша после записи в админке",
+      "depends_on": [],
+      "tasks": ["T005"],
+      "scenario_refs": ["US2-BE1", "US2-BE2", "US2-AS6"]
+    },
+    {
+      "id": "S3",
+      "title": "Инфраструктура: nginx, compose, deploy-прогрев + e2e",
+      "depends_on": ["S1", "S2"],
+      "tasks": ["T006", "T007"],
+      "scenario_refs": ["US2-IN1", "US3-EC4", "US3-AS7", "US1-E2E1"]
+    }
+  ]
+}

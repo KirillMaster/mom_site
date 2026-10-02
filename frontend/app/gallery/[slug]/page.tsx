@@ -17,7 +17,12 @@ import {
 } from './artworkSeo';
 import { getArtworkPhotos } from '@/lib/artworkPhotos';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
+export const dynamicParams = true;
+
+export function generateStaticParams() {
+  return [];
+}
 
 interface ArtworkPageProps {
   params: { slug: string };
@@ -27,7 +32,13 @@ interface ArtworkPageProps {
 // renders the 404 via notFound(); metadata simply falls back to empty so a
 // missing artwork never turns into a 500 (S3 constraint on graceful 404s).
 export async function generateMetadata({ params }: ArtworkPageProps): Promise<Metadata> {
-  const galleryData = await getGalleryData();
+  let galleryData;
+  try {
+    galleryData = await getGalleryData();
+  } catch (error) {
+    console.error('Error generating metadata:', error);
+    return {};
+  }
   const artwork = galleryData ? resolveArtworkBySlug(params.slug, galleryData.artworks) : null;
 
   if (!artwork) {
@@ -83,7 +94,15 @@ const categoryNameOf = (artwork: any, categories: any[]) =>
   artwork.category?.name ?? categories?.find((category) => category.id === artwork.categoryId)?.name;
 
 const ArtworkPage = async ({ params }: ArtworkPageProps) => {
-  const galleryData = await getGalleryData();
+  let galleryData;
+  try {
+    galleryData = await getGalleryData();
+  } catch (error) {
+    if ((error as any)?.response?.status === 404) {
+      notFound();
+    }
+    throw error;
+  }
   const artwork = galleryData ? resolveArtworkBySlug(params.slug, galleryData.artworks) : null;
 
   if (!artwork) {

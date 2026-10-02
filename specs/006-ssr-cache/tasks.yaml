@@ -1,0 +1,251 @@
+feature: "Кэширование серверного рендеринга публичных страниц"
+tasks:
+  - id: "T001"
+    title: "ISR-конфигурация публичных страниц и layout"
+    description: "Убрать export const dynamic = 'force-dynamic' из layout.tsx и всех публичных page.tsx, добавить export const revalidate = 3600; в gallery/[slug] добавить generateStaticParams() { return [] } и dynamicParams = true."
+    context: "Сейчас каждая страница рендерится на каждый запрос; ISR даёт отдачу из файлового кэша."
+    story_ref: "US1"
+    requirement_refs: ["FR-001", "FR-002", "FR-008"]
+    depends_on: []
+    parallelizable: false
+    entity_refs: []
+    contract_refs: []
+    steps:
+      - order: 1
+        action: "Заменить force-dynamic на revalidate"
+        detail: "frontend/app/layout.tsx, page.tsx, about, contacts, gallery, gallery/[slug], reviews, videos: export const revalidate = 3600"
+      - order: 2
+        action: "Пустой generateStaticParams"
+        detail: "frontend/app/gallery/[slug]/page.tsx: generateStaticParams возвращает [] — сборка не ходит в API, страницы строятся при первом запросе"
+      - order: 3
+        action: "Проверить, что ничто не делает страницу динамической"
+        detail: "нет cookies()/headers()/searchParams в серверных компонентах публичных страниц; useSearchParams в клиентских компонентах обёрнут в Suspense; legacy /gallery?artwork=N обрабатывает middleware.ts"
+      - order: 4
+        action: "Сборка без API"
+        detail: "npm run build с недоступным NEXT_PUBLIC_API_URL/INTERNAL_API_URL проходит; в выводе build публичные маршруты помечены ISR/○, а не λ"
+    technical_notes:
+      - path: "frontend/app/sitemap.ts"
+        note: "sitemap тоже revalidate = 3600; уже ловит ошибку API"
+      - path: "frontend/hooks/useApi.ts"
+        note: "загрузчики через axios — Data Cache не участвует, кэшируется Full Route Cache"
+    acceptance_criteria:
+      - id: "AC-1"
+        description: "В публичных сегментах нет force-dynamic, есть revalidate = 3600"
+        done: false
+      - id: "AC-2"
+        description: "next build проходит без доступа к API"
+        done: false
+    test_scenarios:
+      - id: "TS-1"
+        given: ["исходники публичных страниц"]
+        when: "jest-тест читает файлы сегментов"
+        then: ["нет 'force-dynamic'", "revalidate = 3600 экспортирован"]
+        verification: ["automated"]
+        level: "unit"
+
+  - id: "T002"
+    title: "Ошибка API не кэшируется как страница"
+    description: "Публичные page.tsx при ошибке загрузки данных бросают исключение (не рендерят заглушку «Ошибка загрузки»), generateMetadata может проглатывать ошибку. Несуществующий slug — notFound()."
+    context: "При ISR отрендеренная заглушка ошибки попала бы в кэш на час; брошенная ошибка при фоновой регенерации оставляет прежнюю версию."
+    story_ref: "US4"
+    requirement_refs: ["FR-007"]
+    depends_on: ["T001"]
+    parallelizable: false
+    entity_refs: []
+    contract_refs: []
+    steps:
+      - order: 1
+        action: "Убрать try/catch-заглушки в страницах"
+        detail: "frontend/app/page.tsx, about, contacts, videos, gallery, reviews: catch → rethrow; ветки if (!data) return <Ошибка> заменить на throw"
+      - order: 2
+        action: "Оставить защиту metadata"
+        detail: "generateMetadata ловит ошибку и возвращает дефолты (не влияет на кэш страницы)"
+    technical_notes:
+      - path: "frontend/app/gallery/page.tsx"
+        note: "сейчас рендерит «Ошибка загрузки» при пустых данных"
+    acceptance_criteria:
+      - id: "AC-3"
+        description: "При ошибке загрузчика серверный компонент страницы отклоняет промис"
+        done: false
+    test_scenarios:
+      - id: "TS-2"
+        given: ["загрузчик замокан и бросает ошибку"]
+        when: "вызывается серверный компонент страницы"
+        then: ["промис отклонён", "заглушка ошибки не возвращена"]
+        verification: ["automated"]
+        level: "unit"
+
+  - id: "T003"
+    title: "Внутренний endpoint сброса кэша"
+    description: "frontend/app/internal/revalidate/route.ts: POST, проверка X-Revalidate-Secret (timingSafeEqual) против env REVALIDATE_SECRET, revalidatePath('/', 'layout'), запуск фонового прогрева без ожидания."
+    context: "Бэкенду нужен способ сбросить кэш после правок в админке."
+    story_ref: "US2"
+    requirement_refs: ["FR-003", "FR-004"]
+    depends_on: ["T004"]
+    parallelizable: false
+    entity_refs: []
+    contract_refs: ["C-1"]
+    steps:
+      - order: 1
+        action: "Route handler"
+        detail: "export const dynamic = 'force-dynamic'; runtime nodejs; пустой/незаданный секрет → 401"
+      - order: 2
+        action: "Сброс и прогрев"
+        detail: "revalidatePath('/', 'layout'); void warmCache() из lib/cacheWarmup; ответ {revalidated:true, warmup}"
+    technical_notes:
+      - path: "frontend/next.config.js"
+        note: "rewrite /api/:path* уходит на бэкенд — поэтому путь /internal, не /api"
+    acceptance_criteria:
+      - id: "AC-4"
+        description: "Верный секрет → 200 и revalidatePath вызван; неверный/пустой → 401 без вызова"
+        done: false
+    test_scenarios:
+      - id: "TS-3"
+        given: ["REVALIDATE_SECRET задан"]
+        when: "POST без/с неверным/с верным заголовком"
+        then: ["401/401/200", "revalidatePath вызван только в последнем случае"]
+        verification: ["automated"]
+        level: "unit"
+
+  - id: "T004"
+    title: "Прогрев кэша по sitemap"
+    description: "frontend/lib/cacheWarmup.ts: warmCache(baseUrl) получает /sitemap.xml с собственного сервера (http://127.0.0.1:${PORT}), извлекает <loc>, переписывает origin на локальный, запрашивает с параллелизмом 3; single-flight — повторный вызов во время прогрева возвращает 'already-running'."
+    context: "Чтобы первый бот после сброса/деплоя получал HIT."
+    story_ref: "US3"
+    requirement_refs: ["FR-006"]
+    depends_on: []
+    parallelizable: true
+    entity_refs: []
+    contract_refs: ["C-1"]
+    steps:
+      - order: 1
+        action: "Пул с лимитом"
+        detail: "без новых зависимостей; ошибки отдельных URL игнорируются и считаются"
+      - order: 2
+        action: "Single-flight"
+        detail: "модульный флаг inProgress; после окончания сбрасывается"
+    technical_notes:
+      - path: "frontend/app/sitemap.ts"
+        note: "абсолютные URL https://angelamoiseenko.ru/... — путь сохранить, origin заменить"
+    acceptance_criteria:
+      - id: "AC-5"
+        description: "Все URL sitemap запрошены, одновременно ≤ 3; параллельный вызов не запускает второй прогрев"
+        done: false
+    test_scenarios:
+      - id: "TS-4"
+        given: ["fetch замокан, sitemap с 7 URL"]
+        when: "warmCache вызван дважды подряд"
+        then: ["7 запросов страниц", "максимум 3 одновременно", "второй вызов → already-running"]
+        verification: ["automated"]
+        level: "unit"
+
+  - id: "T005"
+    title: "Backend: инвалидация кэша после записи в админке"
+    description: "ICacheInvalidator (Core), FrontendCacheInvalidator (Infrastructure, HttpClient, таймаут 5 с, заголовок X-Revalidate-Secret, URL из Frontend:RevalidateUrl), глобальный фильтр/middleware в API: после успешного (2xx) не-GET запроса под /api/admin, кроме /api/admin/login, fire-and-forget вызов; пустой URL/секрет → no-op."
+    context: "Правки владелицы должны появляться сразу, а сбой фронта не должен ломать админку."
+    story_ref: "US2"
+    requirement_refs: ["FR-003", "FR-005"]
+    depends_on: []
+    parallelizable: true
+    entity_refs: []
+    contract_refs: ["C-2"]
+    steps:
+      - order: 1
+        action: "Интерфейс и реализация"
+        detail: "Task InvalidateAsync(CancellationToken); исключения ловятся и логируются Warning"
+      - order: 2
+        action: "Хук в пайплайне"
+        detail: "IAsyncResultFilter или middleware после next(); запуск через Task.Run без await ответа клиенту"
+      - order: 3
+        action: "Конфигурация"
+        detail: "Frontend__RevalidateUrl, Frontend__RevalidateSecret из env; в Testing — фейк-инвалидатор"
+    technical_notes:
+      - path: "backend/MomSite.API/Program.cs"
+        note: "AddHttpClient<ICacheInvalidator, FrontendCacheInvalidator>"
+    acceptance_criteria:
+      - id: "AC-6"
+        description: "Успешный POST/PUT/DELETE админки вызывает инвалидатор; GET, login, 4xx — нет"
+        done: false
+      - id: "AC-7"
+        description: "Исключение инвалидатора не меняет ответ админки"
+        done: false
+    test_scenarios:
+      - id: "TS-5"
+        given: ["WebApplicationFactory с фейковым ICacheInvalidator"]
+        when: "успешный PUT админки / GET / неуспешный PUT"
+        then: ["вызван один раз / не вызван / не вызван"]
+        verification: ["automated"]
+        level: "integration"
+      - id: "TS-6"
+        given: ["HttpMessageHandler, бросающий исключение"]
+        when: "FrontendCacheInvalidator.InvalidateAsync"
+        then: ["исключение не всплывает", "запрос содержит X-Revalidate-Secret"]
+        verification: ["automated"]
+        level: "unit"
+
+  - id: "T006"
+    title: "Инфраструктура: nginx, compose, deploy-прогрев"
+    description: "nginx.conf: location ^~ /internal/ { return 404; }. docker-compose.prod.yml: REVALIDATE_SECRET фронту, Frontend__RevalidateUrl=http://mom_site_frontend_prod:3000/internal/revalidate и Frontend__RevalidateSecret бэкенду. deploy_remote.sh: если в .env нет REVALIDATE_SECRET — сгенерировать (openssl rand -hex 32) и дописать до up -d; после public endpoint check — прогрев: curl sitemap.xml, xargs -P 3 curl по URL (ошибки не валят деплой)."
+    context: "Секрет без ручной настройки сервера; путь сброса недоступен извне; кэш прогрет после деплоя."
+    story_ref: "US3"
+    requirement_refs: ["FR-004", "FR-006"]
+    depends_on: []
+    parallelizable: true
+    entity_refs: []
+    contract_refs: ["C-1"]
+    steps:
+      - order: 1
+        action: "nginx"
+        detail: "блок до location /"
+      - order: 2
+        action: "compose + .env"
+        detail: "${REVALIDATE_SECRET} в обоих сервисах"
+      - order: 3
+        action: "deploy_remote.sh"
+        detail: "шаг warm cache с таймаутом на запрос 30 с, итог 'warmed N/M'"
+    technical_notes:
+      - path: "scripts/deploy_remote.sh"
+        note: "set -e — прогрев обернуть, чтобы сбой не ронял деплой"
+    acceptance_criteria:
+      - id: "AC-8"
+        description: "curl https://angelamoiseenko.ru/internal/revalidate → 404"
+        done: false
+      - id: "AC-9"
+        description: "после деплоя первый запрос страницы работы — x-nextjs-cache HIT"
+        done: false
+    test_scenarios:
+      - id: "TS-7"
+        given: ["deploy_remote.sh"]
+        when: "bash -n и shellcheck (если есть)"
+        then: ["синтаксис валиден"]
+        verification: ["automated"]
+        level: "unit"
+
+  - id: "T007"
+    title: "E2E-проверка кэша"
+    description: "frontend/e2e/ssr-cache.spec.ts: для BASE_URL на prod-сборке — второй запрос /gallery и страницы работы имеет x-nextjs-cache HIT; /internal/revalidate снаружи → 404; правка в админке видна ≤ 10 с (только при наличии admin-кредов в env, иначе skip)."
+    context: "Подтверждение SC-001..SC-003 на реальном окружении."
+    story_ref: "US1"
+    requirement_refs: ["FR-001", "FR-003", "FR-004"]
+    depends_on: ["T001", "T003", "T005", "T006"]
+    parallelizable: false
+    entity_refs: []
+    contract_refs: ["C-1", "C-2"]
+    steps:
+      - order: 1
+        action: "Playwright request-тесты"
+        detail: "skip, если BASE_URL указывает на next dev (заголовка нет)"
+    technical_notes:
+      - path: "frontend/playwright.config.ts"
+        note: "использовать существующий baseURL"
+    acceptance_criteria:
+      - id: "AC-10"
+        description: "Спека зелёная против прода после деплоя"
+        done: false
+    test_scenarios:
+      - id: "TS-8"
+        given: ["прод после деплоя"]
+        when: "npx playwright test e2e/ssr-cache.spec.ts"
+        then: ["все проверки зелёные"]
+        verification: ["automated"]
+        level: "e2e"

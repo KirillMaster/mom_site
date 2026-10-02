@@ -155,6 +155,7 @@ builder.Services.AddScoped<IS3Service, S3Service>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IArtworkImageService, ArtworkImageService>();
 builder.Services.AddHttpClient();
+builder.Services.AddHttpClient<ICacheInvalidator, FrontendCacheInvalidator>();
 builder.Services.AddScoped<IFeedbackNotifier, EmailNotifier>();
 builder.Services.AddScoped<IFeedbackNotifier, TelegramNotifier>();
 
@@ -245,6 +246,8 @@ if (app.Environment.IsDevelopment())
         RequestPath = "/uploads"
     });
 }
+
+app.UseMiddleware<MomSite.API.AdminCacheInvalidationMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
