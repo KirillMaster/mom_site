@@ -72,7 +72,7 @@ const TechDetails = ({ message }: { message: ContactMessageAdmin }) => {
 };
 
 const matchesQuery = (message: ContactMessageAdmin, query: string) => {
-  const haystack = `${message.name} ${message.email} ${message.subject} ${message.message}`.toLowerCase();
+  const haystack = `${message.name} ${message.email ?? ''} ${message.phone ?? ''} ${message.subject} ${message.message}`.toLowerCase();
   return haystack.includes(query.toLowerCase());
 };
 
@@ -120,7 +120,7 @@ const MessagesList = ({ messages, unreadCount, onOpen, onArchive, filter, onFilt
           type="text"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          placeholder="Поиск по имени, email, теме или тексту заявки"
+          placeholder="Поиск по имени, email, телефону, теме или тексту заявки"
           aria-label="Поиск по заявкам"
           className="w-full sm:w-96 rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm"
         />
@@ -157,9 +157,16 @@ const MessagesList = ({ messages, unreadCount, onOpen, onArchive, filter, onFilt
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(message.createdAt)}</td>
                   <td className="px-6 py-4 text-sm text-gray-900">
                     <div>{message.name}</div>
-                    <a href={`mailto:${message.email}`} className="text-indigo-600 hover:text-indigo-900 font-normal">
-                      {message.email}
-                    </a>
+                    {message.email && (
+                      <a href={`mailto:${message.email}`} className="block text-indigo-600 hover:text-indigo-900 font-normal">
+                        {message.email}
+                      </a>
+                    )}
+                    {message.phone && (
+                      <a href={`tel:${message.phone}`} className="block text-indigo-600 hover:text-indigo-900 font-normal">
+                        {message.phone}
+                      </a>
+                    )}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
                     <div>{message.subject}</div>

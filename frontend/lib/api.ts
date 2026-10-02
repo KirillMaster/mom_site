@@ -251,7 +251,8 @@ export interface Specialty {
 
 export interface ContactMessage {
   name: string;
-  email: string;
+  email?: string;
+  phone?: string;
   subject: string;
   message: string;
   // Honeypot anti-spam field. Left empty by real visitors (the input is
@@ -292,7 +293,8 @@ export type ContactMessageStatus = 'New' | 'Read' | 'Archived';
 export interface ContactMessageAdmin {
   id: number;
   name: string;
-  email: string;
+  email?: string | null;
+  phone?: string | null;
   subject: string;
   message: string;
   ipAddress?: string;

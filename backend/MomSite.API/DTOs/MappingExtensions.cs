@@ -131,6 +131,7 @@ namespace MomSite.API.DTOs
                 Id = message.Id,
                 Name = message.Name,
                 Email = message.Email,
+                Phone = message.Phone,
                 Subject = message.Subject,
                 Message = message.Message,
                 IpAddress = message.IpAddress,

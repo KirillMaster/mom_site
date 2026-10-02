@@ -122,7 +122,8 @@ public class TelegramNotifier : IFeedbackNotifier
         {
             "Новое сообщение с сайта",
             $"Имя: {message.Name}",
-            $"Email: {message.Email}",
+            $"Email: {LeadSource.Dash(message.Email)}",
+            $"Телефон/мессенджер: {LeadSource.Dash(message.Phone)}",
             $"Тема: {message.Subject}",
         };
 

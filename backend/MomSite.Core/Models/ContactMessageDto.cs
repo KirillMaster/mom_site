@@ -3,16 +3,29 @@ using System.Text.Json.Serialization;
 
 namespace MomSite.Core.Models
 {
-    public class ContactMessageDto
+    public class ContactMessageDto : IValidatableObject
     {
         [Required(ErrorMessage = "Имя обязательно")]
         [StringLength(200, MinimumLength = 1)]
         public string Name { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Email обязателен")]
+        private string? _email;
+        private string? _phone;
+
         [EmailAddress(ErrorMessage = "Некорректный email")]
         [StringLength(200)]
-        public string Email { get; set; } = string.Empty;
+        public string? Email
+        {
+            get => _email;
+            set => _email = string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+        }
+
+        [StringLength(100, ErrorMessage = "Телефон не длиннее 100 символов")]
+        public string? Phone
+        {
+            get => _phone;
+            set => _phone = string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+        }
 
         [Required(ErrorMessage = "Тема обязательна")]
         [StringLength(200, MinimumLength = 1)]
@@ -42,5 +55,15 @@ namespace MomSite.Core.Models
         /// </summary>
         [JsonPropertyName("website")]
         public string? Website { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (Email is null && Phone is null)
+            {
+                yield return new ValidationResult(
+                    "Укажите email или телефон",
+                    new[] { nameof(Email), nameof(Phone) });
+            }
+        }
     }
 }

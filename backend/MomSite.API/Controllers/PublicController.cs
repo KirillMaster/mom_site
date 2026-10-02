@@ -438,7 +438,7 @@ public class PublicController : ControllerBase
 
         var entity = BuildContactMessageEntity(message);
 
-        if (!await TryPersistContactMessageAsync(entity, message.Email))
+        if (!await TryPersistContactMessageAsync(entity, message.Email ?? message.Phone))
         {
             return StatusCode(500, new { message = "Ошибка при отправке сообщения. Попробуйте позже." });
         }
@@ -458,6 +458,7 @@ public class PublicController : ControllerBase
         {
             Name = message.Name,
             Email = message.Email,
+            Phone = message.Phone,
             Subject = message.Subject,
             Message = message.Message,
             UtmSource = message.UtmSource,
@@ -469,7 +470,7 @@ public class PublicController : ControllerBase
             Status = ContactMessageStatus.New
         };
 
-    private async Task<bool> TryPersistContactMessageAsync(ContactMessage entity, string fromEmail)
+    private async Task<bool> TryPersistContactMessageAsync(ContactMessage entity, string? fromEmail)
     {
         try
         {
