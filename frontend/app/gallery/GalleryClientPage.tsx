@@ -10,6 +10,7 @@ import { GalleryData } from '@/lib/api';
 import { reachGoal, Goals } from '@/lib/analytics';
 import { artworksForSale, isExhibitionPhoto } from '@/lib/gallery';
 import { buildArtworkSlug } from '@/lib/artworkSlug';
+import { ARTWORK_STATUS_LABELS, resolveStatus } from '@/lib/artworkStatus';
 
 const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -192,6 +193,11 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
                     <h3 className="text-xl font-serif font-semibold mb-2 text-gray-900">
                       {artwork.title}
                     </h3>
+                    {!isExhibitionPhoto(artwork, galleryData.categories) && resolveStatus(artwork) !== 'Available' && (
+                      <span data-testid="status-badge" className="mb-2 inline-block rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-700">
+                        {ARTWORK_STATUS_LABELS[resolveStatus(artwork)]}
+                      </span>
+                    )}
                     
                     {/* The card carries the title only; the description lives on
                         the work's own page, so the "подробнее" link is what sends
