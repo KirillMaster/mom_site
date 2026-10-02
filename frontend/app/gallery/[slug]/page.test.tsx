@@ -586,4 +586,51 @@ describe('@US2 page wires contact channels and mobile bar', () => {
     expect(screen.queryByTestId('contact-channels')).toBeNull();
     expect(screen.queryByTestId('mobile-contact-bar')).toBeNull();
   });
+
+  it('@US2-EC22 both desktop and mobile contact UI visible for regular artwork', async () => {
+    getContactsData.mockResolvedValue(contacts);
+    mockedGetGalleryData.mockResolvedValue(gallery([{ id: 7, title: 'Мой Закат', isForSale: true }]));
+    render(await ArtworkPage({ params: { slug: buildArtworkSlug('Мой Закат', 7) } }));
+    expect(screen.getByTestId('contact-channels')).toBeInTheDocument();
+    expect(screen.getByTestId('mobile-contact-bar')).toBeInTheDocument();
+    expect(screen.getByLabelText('Написать в Telegram')).toBeInTheDocument();
+    expect(screen.getByText('Позвонить')).toBeInTheDocument();
+  });
+
+  it('@US2-EC23 telegram channel receives correct href and artwork title', async () => {
+    getContactsData.mockResolvedValue(contacts);
+    mockedGetGalleryData.mockResolvedValue(gallery([{ id: 7, title: 'Ночной пейзаж', isForSale: true }]));
+    render(await ArtworkPage({ params: { slug: buildArtworkSlug('Ночной пейзаж', 7) } }));
+    const tg = screen.getByLabelText('Написать в Telegram');
+    expect(tg).toHaveAttribute('href', 'https://t.me/a');
+    expect(tg).toHaveAttribute('target', '_blank');
+  });
+
+  it('@US2-EC24 artwork with no configured explicit channels still builds whatsapp from phone', async () => {
+    getContactsData.mockResolvedValue({ socialLinks: {}, phone: '+7 (978) 545-86-50' });
+    mockedGetGalleryData.mockResolvedValue(gallery([{ id: 10, title: 'Эскиз', isForSale: true }]));
+    render(await ArtworkPage({ params: { slug: buildArtworkSlug('Эскиз', 10) } }));
+    expect(screen.queryByLabelText('Написать в Telegram')).toBeNull();
+    expect(screen.getByLabelText('Написать в WhatsApp')).toBeInTheDocument();
+    expect(screen.getByLabelText('Позвонить')).toBeInTheDocument();
+    expect(screen.getByText('Написать')).toBeInTheDocument();
+  });
+
+  it('@US2-EC25 mobile bar shows write and call when whatsapp is built from phone', async () => {
+    getContactsData.mockResolvedValue({ socialLinks: {}, phone: '+7 (978) 545-86-50' });
+    mockedGetGalleryData.mockResolvedValue(gallery([{ id: 11, title: 'Натюрморт', isForSale: true }]));
+    render(await ArtworkPage({ params: { slug: buildArtworkSlug('Натюрморт', 11) } }));
+    const bar = screen.getByTestId('mobile-contact-bar');
+    expect(bar).toBeInTheDocument();
+    expect(screen.getByText('Написать')).toBeInTheDocument();
+    expect(screen.getByText('Позвонить')).toBeInTheDocument();
+  });
+
+  it('@US2-EC26 null socialLinks in contacts still renders channels', async () => {
+    getContactsData.mockResolvedValue({ socialLinks: null, phone: '+7 (978) 545-86-50' });
+    mockedGetGalleryData.mockResolvedValue(gallery([{ id: 12, title: 'Портрет', isForSale: true }]));
+    render(await ArtworkPage({ params: { slug: buildArtworkSlug('Портрет', 12) } }));
+    expect(screen.getByTestId('contact-channels')).toBeInTheDocument();
+    expect(screen.getByLabelText('Позвонить')).toBeInTheDocument();
+  });
 });
