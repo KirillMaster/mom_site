@@ -17,3 +17,12 @@ describe('@S4-AS9 в Footer есть ссылка на /reviews', () => {
     expect(link).toHaveAttribute('href', '/reviews');
   });
 });
+
+describe('в Footer есть ссылка на /blog', () => {
+  it('рендерит ссылку на /blog', () => {
+    mockedUseFooterData.mockReturnValue({ data: undefined, isLoading: false });
+    render(<Footer />);
+
+    expect(screen.getByRole('link', { name: 'Блог' })).toHaveAttribute('href', '/blog');
+  });
+});

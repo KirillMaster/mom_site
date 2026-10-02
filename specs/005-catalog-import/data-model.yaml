@@ -1,0 +1,56 @@
+feature: 005-catalog-import
+entities:
+  - id: artwork
+    name: Artwork (существующая, расширение)
+    description: 'Работа художницы; новые поля карточки добавляются миграцией AddArtworkCatalogFields'
+    fields:
+      - {name: Id, type: id_ref, required: true, description: Ключ сопоставления строки xlsx}
+      - {name: Title, type: string, required: true, description: '≤ 200'}
+      - {name: Description, type: string, required: false, description: 'Полное описание ≤ 5000'}
+      - {name: ShortDescription, type: string, required: false, description: 'Новое; ≤ 300; meta description'}
+      - {name: Price, type: number, required: false, description: 'null = по запросу'}
+      - {name: Status, type: enum, required: true, enum_values: [Available, Sold, PrivateCollection, Unavailable, NotForSale, NotMine], description: 'Новое; default Available'}
+      - {name: IsForSale, type: boolean, required: true, description: 'Существующее; вычисляется как Status == Available'}
+      - {name: WidthCm, type: number, required: false, description: 'Новое; 1–1000'}
+      - {name: HeightCm, type: number, required: false, description: 'Новое; 1–1000'}
+      - {name: Year, type: number, required: false, description: 'Новое; 1950–текущий'}
+      - {name: Support, type: string, required: false, description: 'Новое; основа ≤ 100'}
+      - {name: Technique, type: string, required: false, description: 'Новое; техника ≤ 100'}
+      - {name: IsFeatured, type: boolean, required: true, description: 'Новое; сильная работа'}
+      - {name: NeedsReshoot, type: boolean, required: true, description: 'Новое; видно только в админке'}
+      - {name: IsPublished, type: boolean, required: true, description: 'Новое; default true; false = черновик или скрыта'}
+      - {name: CategoryId, type: id_ref, required: true, description: 'Существующее; импорт не меняет'}
+      - {name: UpdatedAt, type: string, required: true, description: 'Для детекта ручных правок при откате'}
+    relationships:
+      - {field: CategoryId, target_entity_ref: category, cardinality: one}
+  - id: category
+    name: Category (существующая)
+    description: 'Раздел галереи; новые работы из импорта попадают в категорию по умолчанию'
+    fields:
+      - {name: Id, type: id_ref, required: true, description: Ключ}
+      - {name: DisplayOrder, type: number, required: true, description: 'Первая по порядку = категория по умолчанию'}
+    relationships: []
+  - id: catalog-import-log
+    name: CatalogImportLog
+    description: 'Журнал применённого импорта для отката последнего'
+    fields:
+      - {name: Id, type: id_ref, required: true, description: Ключ}
+      - {name: CreatedAt, type: string, required: true, description: 'Время применения (UTC)'}
+      - {name: UserName, type: string, required: true, description: 'Админ из JWT'}
+      - {name: FileName, type: string, required: true, description: 'Имя загруженного файла'}
+      - {name: FileSha256, type: string, required: true, description: 'Хэш файла'}
+      - {name: Summary, type: object, required: true, description: 'updated / created / skipped / warnings / errors'}
+      - {name: Snapshot, type: array, required: true, description: 'jsonb [{artworkId; field; oldValue}] только изменённых полей'}
+      - {name: CreatedIds, type: array, required: true, description: 'Id созданных черновиков'}
+      - {name: RolledBackAt, type: string, required: false, description: 'Заполнено после отката'}
+    relationships:
+      - {field: Snapshot, target_entity_ref: artwork, cardinality: many}
+  - id: import-report
+    name: ImportReport (не хранится)
+    description: 'Ответ предпросмотра и применения'
+    fields:
+      - {name: summary, type: object, required: true, description: 'updated / created / skipped / warnings / errors / templateVersionMismatch'}
+      - {name: rows, type: array, required: true, description: 'RowReport[]: row; sheet; id; title; changes[{field; old; new}]; issues[{level error|warning; column; message}]; comment'}
+      - {name: logId, type: id_ref, required: false, description: 'Только при применении'}
+    relationships:
+      - {field: logId, target_entity_ref: catalog-import-log, cardinality: one}

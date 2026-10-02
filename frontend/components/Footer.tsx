@@ -124,6 +124,11 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link href="/blog" className="text-gray-300 hover:text-white transition-colors duration-200">
+                  Блог
+                </Link>
+              </li>
+              <li>
                 <Link href="/reviews" className="text-gray-300 hover:text-white transition-colors duration-200">
                   Отзывы
                 </Link>

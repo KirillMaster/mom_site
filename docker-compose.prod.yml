@@ -22,6 +22,7 @@ services:
       # Telegram notifications
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - TELEGRAM_CHAT_IDS=${TELEGRAM_CHAT_IDS}
+      - INDEXNOW_KEY=${INDEXNOW_KEY:-}
       # S3 Storage Configuration
       - S3_ACCESS_KEY=${S3_ACCESS_KEY}
       - S3_SECRET_KEY=${S3_SECRET_KEY}
@@ -69,6 +70,7 @@ services:
       - NEXT_PUBLIC_API_URL=https://angelamoiseenko.ru/api
       - INTERNAL_API_URL=http://mom_site_api_prod:5000/api
       - REVALIDATE_SECRET=${REVALIDATE_SECRET:?REVALIDATE_SECRET is required}
+      - INDEXNOW_KEY=${INDEXNOW_KEY:-}
     expose:
       - "3000"
     healthcheck:

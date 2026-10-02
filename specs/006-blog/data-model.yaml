@@ -1,0 +1,51 @@
+feature: 006-blog
+entities:
+  - id: blog-post
+    name: BlogPost
+    description: 'Статья блога; PublishedAt null = черновик; в будущем = запланировано'
+    fields:
+      - {name: Id, type: id_ref, required: true, description: Ключ}
+      - {name: Slug, type: string, required: true, description: 'unique; ^[a-z0-9-]{1,120}$; неизменен после публикации'}
+      - {name: Title, type: string, required: true, description: '≤ 200; H1'}
+      - {name: Excerpt, type: string, required: false, description: '≤ 300; анонс и description по умолчанию'}
+      - {name: BodyHtml, type: string, required: true, description: 'Санитизированный HTML'}
+      - {name: CoverImagePath, type: string, required: false, description: '≤ 500; URL в S3'}
+      - {name: CoverAlt, type: string, required: false, description: '≤ 200; необязателен; по умолчанию = Title'}
+      - {name: SeoTitle, type: string, required: false, description: '≤ 70'}
+      - {name: SeoDescription, type: string, required: false, description: '≤ 200'}
+      - {name: BlogCategoryId, type: id_ref, required: true, description: Рубрика}
+      - {name: PublishedAt, type: string, required: false, description: 'UTC; null = черновик'}
+      - {name: CreatedAt, type: string, required: true, description: UTC}
+      - {name: UpdatedAt, type: string, required: true, description: 'UTC; lastmod в sitemap и dateModified'}
+    relationships:
+      - {field: BlogCategoryId, target_entity_ref: blog-category, cardinality: one}
+      - {field: Artworks, target_entity_ref: blog-post-artwork, cardinality: many}
+  - id: blog-category
+    name: BlogCategory
+    description: 'Рубрика блога (отдельна от Category галереи)'
+    fields:
+      - {name: Id, type: id_ref, required: true, description: Ключ}
+      - {name: Slug, type: string, required: true, description: 'unique; ^[a-z0-9-]{1,80}$'}
+      - {name: Name, type: string, required: true, description: '≤ 100'}
+      - {name: Description, type: string, required: false, description: '≤ 1000; текст страницы рубрики'}
+      - {name: DisplayOrder, type: number, required: true, description: Порядок}
+    relationships: []
+  - id: blog-post-artwork
+    name: BlogPostArtwork
+    description: 'Связь статья — работа по теме'
+    fields:
+      - {name: BlogPostId, type: id_ref, required: true, description: 'PK часть; cascade'}
+      - {name: ArtworkId, type: id_ref, required: true, description: 'PK часть; cascade при удалении работы'}
+      - {name: SortOrder, type: number, required: true, description: Порядок показа}
+    relationships:
+      - {field: BlogPostId, target_entity_ref: blog-post, cardinality: one}
+      - {field: ArtworkId, target_entity_ref: artwork, cardinality: one}
+  - id: artwork
+    name: Artwork (существующая)
+    description: 'Используются только поля для карточки по теме; видимость — Visible() из 005'
+    fields:
+      - {name: Id, type: id_ref, required: true, description: Ключ}
+      - {name: Title, type: string, required: true, description: Название}
+      - {name: ThumbnailPath, type: string, required: true, description: Миниатюра}
+      - {name: IsForSale, type: boolean, required: true, description: 'Проданные — без призыва к покупке'}
+    relationships: []

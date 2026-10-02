@@ -1,0 +1,92 @@
+feature: 005-catalog-import
+contracts:
+  - id: catalog-import-service
+    name: ICatalogImportService (Core)
+    kind: interface
+    request:
+      - {name: file, type: object, required: true, description: 'Stream + FileName'}
+      - {name: dryRun, type: boolean, required: true, description: 'true = только отчёт'}
+      - {name: userName, type: string, required: true, description: Админ}
+    response_cases:
+      - outcome: report
+        fields:
+          - {name: report, type: object, required: true, description: ImportReport}
+      - outcome: file_invalid
+        fields:
+          - {name: error, type: enum, required: true, enum_values: [not_xlsx, file_unreadable, sheet_missing, required_header_missing, too_many_rows], description: 'Ошибка файла целиком'}
+      - outcome: busy
+        fields: []
+    entity_refs: [artwork, catalog-import-log, import-report]
+  - id: catalog-import-service-impl
+    name: CatalogImportService (Infrastructure/Catalog)
+    kind: implementation
+    implements_ref: catalog-import-service
+    response_cases:
+      - outcome: same_as_interface
+        fields: []
+    entity_refs: [artwork, catalog-import-log, import-report]
+  - id: admin-catalog-import
+    name: 'POST /api/admin/catalog/import?dryRun=true|false (multipart; Authorize)'
+    kind: interface
+    request:
+      - {name: file, type: object, required: true, description: 'multipart; ≤ 5 МБ; .xlsx'}
+      - {name: dryRun, type: boolean, required: false, description: 'default true'}
+    response_cases:
+      - outcome: '200 report'
+        fields:
+          - {name: summary, type: object, required: true, description: ImportReport.summary}
+          - {name: rows, type: array, required: true, description: ImportReport.rows}
+          - {name: logId, type: number, required: false, description: 'Только при dryRun=false и изменениях > 0'}
+      - outcome: '400 file_invalid'
+        fields:
+          - {name: error, type: string, required: true, description: 'Код из catalog-import-service.file_invalid'}
+          - {name: message, type: string, required: true, description: 'Понятный текст по-русски'}
+      - outcome: '401 unauthorized'
+        fields: []
+      - outcome: '409 import_in_progress'
+        fields: []
+      - outcome: '413 too_large'
+        fields: []
+    entity_refs: [import-report, catalog-import-log]
+  - id: admin-catalog-rollback
+    name: 'POST /api/admin/catalog/import/rollback (Authorize)'
+    kind: interface
+    request: []
+    response_cases:
+      - outcome: '200 rolled_back'
+        fields:
+          - {name: restoredFields, type: number, required: true, description: 'Число восстановленных значений'}
+          - {name: deletedDrafts, type: number, required: true, description: 'Удалённые черновики без фото'}
+          - {name: editedAfterImport, type: array, required: true, description: 'Id работ, правленных после импорта'}
+      - outcome: '404 nothing_to_rollback'
+        fields: []
+      - outcome: '409 import_in_progress'
+        fields: []
+      - outcome: '401 unauthorized'
+        fields: []
+    entity_refs: [catalog-import-log, artwork]
+  - id: admin-artworks
+    name: 'GET/POST/PUT /api/admin/artworks (существует; расширение DTO после merge 004)'
+    kind: interface
+    request:
+      - {name: status, type: enum, required: false, enum_values: [Available, Sold, PrivateCollection, Unavailable, NotForSale, NotMine], description: 'Новое; IsForSale из запроса игнорируется'}
+      - {name: catalogFields, type: object, required: false, description: 'widthCm / heightCm / year / support / technique / shortDescription / isFeatured / needsReshoot / isPublished'}
+    response_cases:
+      - outcome: '200 ok'
+        fields:
+          - {name: artwork, type: object, required: true, description: 'DTO с новыми полями'}
+      - outcome: '400 validation'
+        fields: []
+    entity_refs: [artwork]
+  - id: public-artworks
+    name: 'GET /api/public/gallery и работа по slug (существуют; фильтр видимости + новые поля)'
+    kind: interface
+    request:
+      - {name: slug, type: string, required: false, description: 'Для карточки'}
+    response_cases:
+      - outcome: '200 visible'
+        fields:
+          - {name: artwork, type: object, required: true, description: 'Публичный DTO: размеры / год / основа / техника / shortDescription / status; price только при Available; без NeedsReshoot'}
+      - outcome: '404 hidden_or_missing'
+        fields: []
+    entity_refs: [artwork]

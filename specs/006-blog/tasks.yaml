@@ -1,0 +1,641 @@
+feature: 006-blog
+tasks:
+  # ---------- Phase 1: Setup ----------
+  - id: T001
+    title: 'Спайк TipTap на Next 14.0 / React 18'
+    description: 'Проверить что @tiptap/react + starter-kit + extension-link + extension-image + extension-placeholder собираются и работают через next/dynamic ssr:false'
+    context: 'Редактор — главный риск фичи; если не заведётся — запасной вариант блочная форма (R7)'
+    story_ref: US3
+    requirement_refs: [FR-006]
+    depends_on: []
+    parallelizable: true
+    entity_refs: []
+    contract_refs: []
+    steps:
+      - order: 1
+        action: 'Установить пакеты'
+        detail: 'cd frontend && npm i @tiptap/react @tiptap/pm @tiptap/starter-kit @tiptap/extension-link @tiptap/extension-image @tiptap/extension-placeholder (версии 2.x совместимые с React 18)'
+      - order: 2
+        action: 'Собрать проект'
+        detail: 'npx tsc --noEmit && npm run build; убедиться что чанки TipTap не попали в публичные страницы (.next/server/app/blog отсутствуют ссылки на tiptap)'
+      - order: 3
+        action: 'Зафиксировать результат'
+        detail: 'Дописать в specs/006-blog/research.md строку «Спайк R7: OK/FAIL + версии»'
+    technical_notes:
+      - path: frontend/package.json
+        note: 'Next 14.0.0 / React 18; jest 30; новые зависимости только MIT'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'npm run build проходит; версии TipTap записаны в research.md'
+        done: true
+    test_scenarios:
+      - id: TS-1
+        given: ['Пакеты установлены']
+        when: 'npm run build'
+        then: ['Сборка без ошибок']
+        verification: [automated]
+        level: integration
+
+  - id: T002
+    title: 'Подключить HtmlSanitizer в Infrastructure'
+    description: 'Добавить пакет HtmlSanitizer (Ganss.Xss) в MomSite.Infrastructure.csproj'
+    context: 'Текст статьи приходит HTML-ом из редактора; его надо чистить от опасной разметки (R1)'
+    story_ref: US3
+    requirement_refs: [FR-003]
+    depends_on: []
+    parallelizable: true
+    entity_refs: []
+    contract_refs: []
+    steps:
+      - order: 1
+        action: 'Добавить пакет'
+        detail: 'cd backend && dotnet add MomSite.Infrastructure package HtmlSanitizer'
+      - order: 2
+        action: 'Проверить сборку'
+        detail: 'dotnet build'
+    technical_notes:
+      - path: backend/MomSite.Infrastructure/MomSite.Infrastructure.csproj
+        note: 'Сейчас нет ни ClosedXML ни HtmlSanitizer'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'dotnet build зелёный с новым пакетом'
+        done: true
+    test_scenarios:
+      - id: TS-1
+        given: ['Пакет добавлен']
+        when: 'dotnet build'
+        then: ['0 ошибок']
+        verification: [automated]
+        level: unit
+
+  # ---------- Phase 2: Foundational ----------
+  - id: T003
+    title: 'Общий фильтр видимости работ Visible()'
+    description: 'Если в коде ещё нет IQueryable<Artwork>.Visible() — создать минимальную версию в общем месте; 005 потом расширит её же (без дубля)'
+    context: 'Блок «Работы по теме» должен показывать только видимые работы; фильтр должен быть один на весь сайт'
+    story_ref: US1
+    requirement_refs: [FR-004]
+    depends_on: []
+    parallelizable: true
+    entity_refs: [artwork]
+    contract_refs: []
+    steps:
+      - order: 1
+        action: 'Проверить наличие'
+        detail: 'grep -rn "Visible(" backend --include=*.cs; если есть — задача закрывается без изменений'
+      - order: 2
+        action: 'Создать расширение'
+        detail: 'backend/MomSite.Infrastructure/Data/ArtworkQueryExtensions.cs: public static IQueryable<Artwork> Visible(this IQueryable<Artwork> q) => q; с XML-комментарием «005 добавит фильтр IsPublished здесь»'
+      - order: 3
+        action: 'Обновить план 005'
+        detail: 'В specs/005-catalog-import/research.md (R по Visible) дописать: «расширение уже создано в 006 — добавить условие, не создавать новое»'
+    technical_notes:
+      - path: backend/MomSite.API/Controllers/PublicController.cs
+        note: 'Публичные запросы работ сейчас без фильтра публикации; их перевод на Visible() — задача 005'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'В решении ровно одно определение Visible() для Artwork'
+        done: true
+    test_scenarios:
+      - id: TS-1
+        given: ['Три работы в БД']
+        when: 'context.Artworks.Visible().Count()'
+        then: ['3 (пока все видимы)']
+        verification: [automated]
+        level: unit
+
+  - id: T004
+    title: 'Модели блога и миграция'
+    description: 'BlogPost / BlogCategory / BlogPostArtwork в Core/Models, DbSet и конфигурация в ApplicationDbContext, миграция AddBlog с seed рубрик'
+    context: 'Без таблиц нечего хранить и показывать'
+    story_ref: US3
+    requirement_refs: [FR-001, FR-004, FR-008]
+    depends_on: []
+    parallelizable: false
+    entity_refs: [blog-post, blog-category, blog-post-artwork]
+    contract_refs: []
+    steps:
+      - order: 1
+        action: 'Создать модели'
+        detail: 'backend/MomSite.Core/Models/BlogPost.cs / BlogCategory.cs / BlogPostArtwork.cs — поля и длины по data-model.yaml'
+      - order: 2
+        action: 'Настроить контекст'
+        detail: 'ApplicationDbContext: DbSet BlogPosts / BlogCategories / BlogPostArtworks; unique index Slug у обеих; составной PK (BlogPostId / ArtworkId); cascade на обе стороны; Restrict на BlogCategoryId; index PublishedAt'
+      - order: 3
+        action: 'Seed рубрик'
+        detail: 'HasData: Новости (DisplayOrder 0, slug novosti) / Крым и Севастополь / Как выбрать картину / Истории картин / Театр и цирк / Мастерская'
+      - order: 4
+        action: 'Сгенерировать миграцию'
+        detail: 'cd backend && dotnet ef migrations add AddBlog -p MomSite.Infrastructure -s MomSite.API -o Data/Migrations'
+    technical_notes:
+      - path: backend/MomSite.Infrastructure/Data/ApplicationDbContext.cs
+        note: 'Существующие DbSet: Artworks / Categories / Videos / PageContents / ContactMessages / Reviews'
+      - path: backend/MomSite.Infrastructure/Data/Migrations/
+        note: 'Каталог миграций'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Миграция применяется на чистую БД; 6 рубрик созданы'
+        done: true
+    test_scenarios:
+      - id: TS-1
+        given: ['Чистая БД']
+        when: 'dotnet ef database update'
+        then: ['Таблицы созданы', 'Рубрика novosti существует']
+        verification: [automated]
+        level: integration
+
+  - id: T005
+    title: 'Санитайзер и генератор адреса'
+    description: 'BlogHtmlSanitizer (белый список) и BlogSlug (валидация + уникализация суффиксом -2) в Infrastructure/Blog'
+    context: 'Чистка HTML и уникальный адрес нужны при каждом сохранении'
+    story_ref: US3
+    requirement_refs: [FR-003, FR-008]
+    depends_on: [T002]
+    parallelizable: true
+    entity_refs: [blog-post]
+    contract_refs: [blog-service-impl]
+    steps:
+      - order: 1
+        action: 'Написать тесты'
+        detail: 'backend/MomSite.Tests/Blog/BlogHtmlSanitizerTests.cs: script / onerror / iframe / style / javascript: удаляются; p / h2 / h3 / strong / em / ul / ol / li / blockquote / a[href] / img[src alt] сохраняются; ссылки получают rel="noopener nofollow" для внешних'
+      - order: 2
+        action: 'Реализовать санитайзер'
+        detail: 'backend/MomSite.Infrastructure/Blog/BlogHtmlSanitizer.cs на Ganss.Xss.HtmlSanitizer; img src только https и хост нашего S3 / сайта'
+      - order: 3
+        action: 'Тесты и реализация адреса'
+        detail: 'Tests/Blog/BlogSlugTests.cs + Infrastructure/Blog/BlogSlug.cs: regex ^[a-z0-9-]{1,120}$; MakeUnique(slug / existsFn) → slug / slug-2 / slug-3'
+    technical_notes:
+      - path: frontend/lib/artworkSlug.ts
+        note: 'slugifyTitle на фронте генерирует адрес из заголовка; backend не транслитерирует, только валидирует'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Все тесты санитайзера и адреса зелёные'
+        done: true
+    test_scenarios:
+      - id: TS-1
+        given: ['HTML <p>ok</p><script>x</script><img src=x onerror=a>']
+        when: 'Sanitize'
+        then: ['<p>ok</p> без script и onerror']
+        verification: [automated]
+        level: unit
+      - id: TS-2
+        given: ['Адрес vesna занят']
+        when: 'MakeUnique(vesna)'
+        then: ['vesna-2']
+        verification: [automated]
+        level: unit
+
+  - id: T006
+    title: 'IBlogService и реализация'
+    description: 'Интерфейс в Core/Interfaces и BlogService в Infrastructure/Blog: публичные выборки и админ CRUD статей и рубрик'
+    context: 'Вся логика блога в одном сервисе; контроллеры остаются тонкими'
+    story_ref: US3
+    requirement_refs: [FR-001, FR-002, FR-003, FR-004, FR-005, FR-006, FR-008]
+    depends_on: [T003, T004, T005]
+    parallelizable: false
+    entity_refs: [blog-post, blog-category, blog-post-artwork, artwork]
+    contract_refs: [blog-service, blog-service-impl]
+    steps:
+      - order: 1
+        action: 'Тесты сервиса'
+        detail: 'Tests/Blog/BlogServiceTests.cs (InMemory/Sqlite как в существующих тестах): черновик и будущая дата не видны публично; рубрика по умолчанию Новости; CoverAlt по умолчанию = Title; смена адреса опубликованной → conflict slug_locked_after_publish; удаление непустой рубрики → conflict category_not_empty; работы по теме через Visible() в порядке SortOrder'
+      - order: 2
+        action: 'Интерфейс'
+        detail: 'backend/MomSite.Core/Interfaces/IBlogService.cs — методы по contracts.yaml blog-service; результат как record Result<T> с outcome ok / not_found / validation_failed / conflict'
+      - order: 3
+        action: 'Реализация'
+        detail: 'Infrastructure/Blog/BlogService.cs; файлы ≤ 200 строк — выборки в BlogQueries.cs; readingMinutes = слова/180; пагинация 12; UpdatedAt на каждом сохранении'
+      - order: 4
+        action: 'Регистрация DI'
+        detail: 'Program.cs: AddScoped<IBlogService, BlogService>(); AddSingleton<BlogHtmlSanitizer>()'
+    technical_notes:
+      - path: backend/MomSite.API/Program.cs
+        note: 'Рядом с AddScoped<IImageService, ImageService>() (~строка 155)'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Все кейсы шага 1 зелёные'
+        done: true
+    test_scenarios:
+      - id: TS-1
+        given: ['Статья с PublishedAt завтра']
+        when: 'GetPublishedBySlug'
+        then: ['not_found']
+        verification: [automated]
+        level: unit
+
+  # ---------- Phase 3: US3 — мама публикует сама (P1) ----------
+  - id: T007
+    title: 'BlogAdminController: статьи / рубрики / фото'
+    description: 'api/admin/blog CRUD, api/admin/blog/categories CRUD, POST api/admin/blog/images; всё под [Authorize]'
+    context: 'Админка редактора общается с сервером через эти адреса'
+    story_ref: US3
+    requirement_refs: [FR-006, FR-007]
+    depends_on: [T006]
+    parallelizable: false
+    entity_refs: [blog-post, blog-category]
+    contract_refs: [admin-blog, admin-blog-categories, admin-blog-images]
+    steps:
+      - order: 1
+        action: 'DTO'
+        detail: 'backend/MomSite.API/DTOs/Blog/: BlogPostAdminDto / BlogPostSaveDto (DataAnnotations по длинам) / BlogCategoryDto; статус Draft|Scheduled|Published вычисляется'
+      - order: 2
+        action: 'Контроллер'
+        detail: 'backend/MomSite.API/Controllers/BlogAdminController.cs [Route("api/admin/blog")] [Authorize]; маппинг outcome → 200/201/400/404/409; ошибки по-русски'
+      - order: 3
+        action: 'Загрузка фото'
+        detail: 'POST images: проверка content-type jpeg/png/webp и ≤ 15 МБ → 400 с понятным текстом; затем BlogImageProcessor.PrepareAsync (null → 400 «не похоже на фото») и _imageService.SaveImageAsync(prepared, "blog"); вернуть {url}; лимит запроса [RequestSizeLimit(16_000_000)]'
+      - order: 4
+        action: 'Интеграционные тесты'
+        detail: 'Tests/Blog/BlogAdminControllerTests.cs по образцу AdminMessagesAuthorizationIntegrationTests: 401 без JWT; создание → 201 и итоговый адрес; дубль заголовка → -2; 409 при смене адреса опубликованной; 400 на .gif'
+    technical_notes:
+      - path: backend/MomSite.API/Controllers/AdminController.cs
+        note: 'Образец [Authorize]; не раздувать его — новый контроллер'
+      - path: backend/MomSite.Infrastructure/Services/ImageService.cs
+        note: 'IImageService.SaveImageAsync(IFormFile / folder) грузит как есть (ресайза нет) — уменьшение делает Infrastructure/Blog/BlogImageProcessor (сделан в T005)'
+      - path: nginx
+        note: 'Проверить client_max_body_size ≥ 16m для /api/admin/blog/images'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Интеграционные тесты зелёные; 401 без токена на всех методах'
+        done: true
+    test_scenarios:
+      - id: TS-1
+        given: ['Нет JWT']
+        when: 'POST /api/admin/blog'
+        then: ['401']
+        verification: [automated]
+        level: integration
+      - id: TS-2
+        given: ['JWT; файл photo.jpg 8 МБ']
+        when: 'POST /api/admin/blog/images'
+        then: ['200 {url} на S3 в папке blog']
+        verification: [automated]
+        level: integration
+
+  - id: T008
+    title: 'Типы и API-клиент блога на фронте'
+    description: 'frontend/types/blog.ts и frontend/lib/blogApi.ts (публичные и админ вызовы через существующий axios api)'
+    context: 'Один источник типов для админки и публичных страниц'
+    story_ref: US3
+    requirement_refs: [FR-006]
+    depends_on: [T007]
+    parallelizable: true
+    entity_refs: [blog-post, blog-category]
+    contract_refs: [admin-blog, admin-blog-categories, admin-blog-images, public-blog-list, public-blog-post, public-blog-categories]
+    steps:
+      - order: 1
+        action: 'Типы'
+        detail: 'frontend/types/blog.ts: BlogPostListItem / BlogPost / BlogCategory / BlogPostSave / BlogStatus'
+      - order: 2
+        action: 'Клиент'
+        detail: 'frontend/lib/blogApi.ts: getBlogList / getBlogPost / getBlogCategories (fetch с next.revalidate 300 для SSR) + admin* через api из lib/api.ts; uploadBlogImage(file / onProgress)'
+      - order: 3
+        action: 'Тест'
+        detail: 'frontend/lib/blogApi.test.ts — мок axios/fetch; правильные URL и параметры'
+    technical_notes:
+      - path: frontend/lib/api.ts
+        note: 'api = axios.create + auth; API_BASE_URL различается на сервере/клиенте'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'tsc --noEmit и jest blogApi зелёные'
+        done: true
+    test_scenarios:
+      - id: TS-1
+        given: ['Мок axios']
+        when: 'uploadBlogImage(file)'
+        then: ['POST /api/admin/blog/images multipart']
+        verification: [automated]
+        level: unit
+
+  - id: T009
+    title: 'Простой редактор текста (7 кнопок)'
+    description: 'components/blog/admin/RichTextEditor.tsx на TipTap в простом режиме: Жирный / Курсив / Подзаголовок / Список / Ссылка / Фото / Отменить'
+    context: 'Мама не программист: нужен маленький редактор как в Word без HTML (A-8)'
+    story_ref: US3
+    requirement_refs: [FR-006, FR-007]
+    depends_on: [T001, T008]
+    parallelizable: false
+    entity_refs: [blog-post]
+    contract_refs: [admin-blog-images]
+    steps:
+      - order: 1
+        action: 'Настроить расширения'
+        detail: 'StarterKit.configure({heading:{levels:[2]} / codeBlock:false / code:false / horizontalRule:false / strike:false / blockquote:false}) + Link({openOnClick:false}) + Image + Placeholder("Начните писать новость…")'
+      - order: 2
+        action: 'Панель кнопок'
+        detail: 'components/blog/admin/EditorToolbar.tsx: крупные кнопки ≥ 44px с иконкой и русской подписью; активное состояние; на ширине 360px переносятся в 2 ряда; «Ссылка» — простой prompt с адресом'
+      - order: 3
+        action: 'Фото в тексте'
+        detail: 'Кнопка «Фото» → <input type=file accept="image/*">; плюс drop и paste файлов (editorProps.handleDrop/handlePaste); во время загрузки — заглушка «Загружаем фото…», потом setImage({src:url / alt:заголовок}); ошибка → понятное сообщение'
+      - order: 4
+        action: 'Чистка вставки'
+        detail: 'editorProps.transformPastedHTML: убрать style / class / font / span / mso-*; base64-картинки не вставлять'
+      - order: 5
+        action: 'Тесты'
+        detail: 'components/blog/admin/RichTextEditor.test.tsx: 7 кнопок с подписями; вставка HTML из Word очищается; выбор файла вызывает uploadBlogImage и вставляет img с url'
+    technical_notes:
+      - path: frontend/components/blog/admin/
+        note: 'Каждый файл ≤ 200 строк (P3)'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Только 7 кнопок; HTML-режима нет; фото загружается в хранилище, не base64'
+        done: true
+    test_scenarios:
+      - id: TS-1
+        given: ['Редактор открыт']
+        when: 'Вставить <span style="mso-x">Текст</span>'
+        then: ['В документе <p>Текст</p> без style']
+        verification: [automated]
+        level: unit
+
+  - id: T010
+    title: 'Форма новости и страницы админки'
+    description: 'app/admin/blog (список со статусами) и app/admin/blog/[id] (форма): видимы заголовок / обложка / текст; «Дополнительно» свёрнуто; кнопки Сохранить черновик / Предпросмотр / Опубликовать'
+    context: 'Стандартный формат новости: мама заполняет только заголовок и текст, остальное само'
+    story_ref: US3
+    requirement_refs: [FR-006, FR-008]
+    depends_on: [T009]
+    parallelizable: false
+    entity_refs: [blog-post, blog-category, blog-post-artwork]
+    contract_refs: [admin-blog, admin-blog-categories]
+    steps:
+      - order: 1
+        action: 'Список'
+        detail: 'frontend/app/admin/blog/page.tsx в AdminPageShell + AdminAuthGuard: кнопка «Написать новость», таблица/карточки: заголовок / статус Черновик|Запланировано|Опубликовано / дата'
+      - order: 2
+        action: 'Форма'
+        detail: 'frontend/app/admin/blog/[id]/page.tsx (id=new для новой) + components/blog/admin/PostEditor.tsx; RichTextEditor через next/dynamic ssr:false; CoverUpload.tsx (кнопка «Выбрать обложку»)'
+      - order: 3
+        action: 'Блок «Дополнительно»'
+        detail: 'components/blog/admin/AdvancedFields.tsx (details/summary): рубрика (по умолчанию Новости) / адрес (slugifyTitle из заголовка; заблокирован после публикации) / анонс / SEO с счётчиками / дата публикации / ArtworkPicker.tsx'
+      - order: 4
+        action: 'Публикация'
+        detail: 'PublishBar.tsx — sticky внизу на мобильном; «Опубликовать» показывает мягкий чек-лист (нет обложки/анонса) с кнопкой «Опубликовать всё равно»; «Предпросмотр» — открыть /blog/preview в новой вкладке или модалку с ArticleBody'
+      - order: 5
+        action: 'Автосохранение'
+        detail: 'hooks/useDraftAutosave.ts: localStorage blog-draft:{id|new} каждые 5 с (try/catch); при открытии — «Восстановить несохранённый текст?»'
+      - order: 6
+        action: 'Пункт меню админки'
+        detail: 'frontend/app/admin/page.tsx — добавить «Блог / Новости» рядом с отзывами'
+      - order: 7
+        action: 'Тесты'
+        detail: 'PostEditor.test.tsx: без рубрики уходит default; чек-лист показывается; адрес заблокирован у опубликованной; восстановление черновика'
+    technical_notes:
+      - path: frontend/components/AdminPageShell.tsx
+        note: 'Общая оболочка админки'
+      - path: frontend/lib/artworkSlug.ts
+        note: 'slugifyTitle для адреса'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Новость публикуется только с заголовком и текстом; на 360px кнопки видны; восстановление черновика работает'
+        done: true
+    test_scenarios:
+      - id: TS-1
+        given: ['Новая новость: заголовок и текст']
+        when: 'Нажать «Опубликовать» → «Опубликовать всё равно»'
+        then: ['Статус Опубликовано', 'Рубрика Новости']
+        verification: [automated]
+        level: unit
+
+  # ---------- Phase 4: US1 — чтение статьи (P1) ----------
+  - id: T011
+    title: 'BlogPublicController'
+    description: 'GET api/public/blog / api/public/blog/{slug} / api/public/blog/categories'
+    context: 'Публичные страницы блога получают данные отсюда'
+    story_ref: US1
+    requirement_refs: [FR-001, FR-002, FR-004, FR-005]
+    depends_on: [T006]
+    parallelizable: true
+    entity_refs: [blog-post, blog-category, blog-post-artwork, artwork]
+    contract_refs: [public-blog-list, public-blog-post, public-blog-categories]
+    steps:
+      - order: 1
+        action: 'Контроллер'
+        detail: 'backend/MomSite.API/Controllers/BlogPublicController.cs [Route("api/public/blog")]; DTO в DTOs/Blog/BlogPublicDtos.cs; 404 для черновика / будущей / неизвестной / пустой рубрики'
+      - order: 2
+        action: 'Тесты'
+        detail: 'Tests/Blog/BlogPublicControllerTests.cs: 404 черновика; список 12/стр; фильтр рубрики; категории только непустые'
+    technical_notes:
+      - path: backend/MomSite.API/Controllers/PublicController.cs
+        note: 'Маршрут api/Public/...; новый контроллер на api/public/blog не конфликтует — проверить тестом'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Тесты зелёные'
+        done: true
+    test_scenarios:
+      - id: TS-1
+        given: ['Черновик с адресом test']
+        when: 'GET /api/public/blog/test'
+        then: ['404']
+        verification: [automated]
+        level: integration
+
+  - id: T012
+    title: 'Страница статьи /blog/[slug]'
+    description: 'SSR + ISR 300 с: обложка (priority) / заголовок / дата / рубрика / время чтения / тело / «Работы по теме» / кнопка связи'
+    context: 'Главная ценность для посетителя и поисковиков'
+    story_ref: US1
+    requirement_refs: [FR-001, FR-004, FR-012]
+    depends_on: [T008, T011]
+    parallelizable: false
+    entity_refs: [blog-post, artwork]
+    contract_refs: [public-blog-post]
+    steps:
+      - order: 1
+        action: 'Страница'
+        detail: 'frontend/app/blog/[slug]/page.tsx (export const revalidate = 300; notFound() на 404)'
+      - order: 2
+        action: 'Компоненты'
+        detail: 'components/blog/ArticleBody.tsx (типографика, img loading=lazy, без dangerouslySet для непроверенного — HTML уже очищен сервером) / RelatedArtworks.tsx (проданные — без призыва купить, ссылки через buildArtworkSlug) / BlogCta.tsx → /contacts + reachGoal(Goals.…)'
+      - order: 3
+        action: 'Тесты'
+        detail: 'components/blog/*.test.tsx: проданная работа без CTA; клик CTA вызывает reachGoal'
+    technical_notes:
+      - path: frontend/lib/analytics.ts
+        note: 'reachGoal / Goals — добавить цель blog_cta'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Статья открывается; один H1; блок работ и CTA на месте'
+        done: true
+    test_scenarios:
+      - id: TS-1
+        given: ['Статья с 3 работами, одна продана']
+        when: 'Рендер RelatedArtworks'
+        then: ['3 карточки; у проданной нет «Купить»']
+        verification: [automated]
+        level: unit
+
+  # ---------- Phase 5: US2 — список и рубрики (P1) ----------
+  - id: T013
+    title: 'Список /blog и рубрики /blog/category/[slug] + меню'
+    description: 'Карточки по 12 с пагинацией ?page=; страница рубрики с описанием; ссылка «Блог» в Navigation и Footer'
+    context: 'Посетитель должен найти статьи из меню'
+    story_ref: US2
+    requirement_refs: [FR-005]
+    depends_on: [T008, T011]
+    parallelizable: true
+    entity_refs: [blog-post, blog-category]
+    contract_refs: [public-blog-list, public-blog-categories]
+    steps:
+      - order: 1
+        action: 'Страницы'
+        detail: 'frontend/app/blog/page.tsx и app/blog/category/[slug]/page.tsx; components/blog/PostCard.tsx / Pagination.tsx / CategoryTabs.tsx'
+      - order: 2
+        action: 'Меню'
+        detail: 'components/Navigation.tsx и Footer.tsx — пункт «Блог»; обновить Navigation.test.tsx / Footer.test.tsx'
+    technical_notes:
+      - path: frontend/components/Navigation.tsx
+        note: 'Существующие тесты меню надо обновить, не удалять'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Пагинация и фильтр работают; ссылка «Блог» в меню и футере'
+        done: true
+    test_scenarios:
+      - id: TS-1
+        given: ['15 статей']
+        when: 'Открыть /blog?page=2'
+        then: ['3 карточки']
+        verification: [automated]
+        level: unit
+
+  # ---------- Phase 6: US4 — SEO / sitemap / RSS / IndexNow (P2) ----------
+  - id: T014
+    title: 'Метаданные и разметка статьи'
+    description: 'generateMetadata (title / description / canonical / OG article) и BlogPostJsonLd (BlogPosting + BreadcrumbList); Person в StructuredData получает @id'
+    context: 'Чтобы Яндекс и соцсети правильно показывали статьи'
+    story_ref: US4
+    requirement_refs: [FR-009]
+    depends_on: [T012]
+    parallelizable: true
+    entity_refs: [blog-post]
+    contract_refs: [public-blog-post]
+    steps:
+      - order: 1
+        action: 'Метаданные'
+        detail: 'generateMetadata в app/blog/[slug]/page.tsx и страницах списка; SeoTitle ?? Title; SeoDescription ?? Excerpt'
+      - order: 2
+        action: 'JSON-LD'
+        detail: 'components/blog/BlogPostJsonLd.tsx; author {"@id":"https://angelamoiseenko.ru/#artist"}; в components/StructuredData.tsx добавить только @id у Person'
+      - order: 3
+        action: 'Тест'
+        detail: 'BlogPostJsonLd.test.tsx — валидный JSON и нужные поля'
+    technical_notes:
+      - path: frontend/components/StructuredData.tsx
+        note: 'Менять только @id'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'В исходнике статьи canonical / og:type article / ld+json BlogPosting'
+        done: true
+    test_scenarios:
+      - id: TS-1
+        given: ['Статья без SeoTitle']
+        when: 'generateMetadata'
+        then: ['title = Title']
+        verification: [automated]
+        level: unit
+
+  - id: T015
+    title: 'Sitemap и RSS'
+    description: 'Статьи и непустые рубрики в app/sitemap.ts с lastModified = UpdatedAt; app/blog/rss.xml/route.ts'
+    context: 'Быстрая индексация и раздача в Дзен'
+    story_ref: US4
+    requirement_refs: [FR-010]
+    depends_on: [T008, T011]
+    parallelizable: true
+    entity_refs: [blog-post, blog-category]
+    contract_refs: [blog-rss, public-blog-list]
+    steps:
+      - order: 1
+        action: 'Sitemap'
+        detail: 'frontend/app/sitemap.ts — /blog + статьи + рубрики; ошибка API не ломает sitemap (try/catch); обновить app/sitemap.test.ts'
+      - order: 2
+        action: 'RSS'
+        detail: 'frontend/app/blog/rss.xml/route.ts: 50 последних, CDATA для content:encoded, enclosure обложки, revalidate 300; тест route.test.ts'
+    technical_notes:
+      - path: frontend/app/sitemap.ts
+        note: 'Уже собирает галерею через hooks/useApi'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'sitemap.test и rss тест зелёные; черновиков нет'
+        done: true
+    test_scenarios:
+      - id: TS-1
+        given: ['Опубликованная статья и черновик']
+        when: 'GET /blog/rss.xml'
+        then: ['Один item']
+        verification: [automated]
+        level: unit
+
+  - id: T016
+    title: 'IndexNow'
+    description: 'IIndexNowClient + реализация; вызов после публикации/правки в фоне; ключ-файл app/indexnow-key.txt/route.ts из env'
+    context: 'Яндекс узнаёт о новой статье сразу; сбой не мешает маме публиковать'
+    story_ref: US4
+    requirement_refs: [FR-011]
+    depends_on: [T007]
+    parallelizable: true
+    entity_refs: [blog-post]
+    contract_refs: [indexnow-client]
+    steps:
+      - order: 1
+        action: 'Клиент'
+        detail: 'Core/Interfaces/IIndexNowClient.cs; Infrastructure/Blog/IndexNowClient.cs (AddHttpClient("IndexNow")); INDEXNOW_KEY пуст → no-op; исключения → ILogger.Warning'
+      - order: 2
+        action: 'Вызов'
+        detail: 'BlogAdminController после успешного сохранения опубликованной: _ = Task.Run с новым scope; URL статьи / рубрики / /blog'
+      - order: 3
+        action: 'Ключ-файл и env'
+        detail: 'frontend/app/indexnow-key.txt/route.ts отдаёт process.env.INDEXNOW_KEY (404 если нет); INDEXNOW_KEY добавить в docker-compose.prod.yml как ${INDEXNOW_KEY} (значение — только в секретах)'
+      - order: 4
+        action: 'Тесты'
+        detail: 'Tests/Blog/IndexNowClientTests.cs: без ключа HTTP не вызывается; 500 от сервиса — исключения нет'
+    technical_notes:
+      - path: docker-compose.prod.yml
+        note: 'Ключ не хардкодить'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Тесты зелёные; публикация успешна при недоступном IndexNow'
+        done: true
+    test_scenarios:
+      - id: TS-1
+        given: ['INDEXNOW_KEY не задан']
+        when: 'NotifyAsync'
+        then: ['disabled_no_key; HTTP-запросов нет']
+        verification: [automated]
+        level: unit
+
+  # ---------- Phase 7: Polish ----------
+  - id: T017
+    title: 'E2E и финальная проверка'
+    description: 'frontend/e2e/blog.spec.ts: войти → написать новость с фото → опубликовать → увидеть; черновик → 404; мобильная ширина 360'
+    context: 'Подтверждение что мама справится без подсказок и всё связано'
+    story_ref: US3
+    requirement_refs: [FR-001, FR-002, FR-006]
+    depends_on: [T010, T012, T013, T014, T015, T016]
+    parallelizable: false
+    entity_refs: [blog-post]
+    contract_refs: [admin-blog, public-blog-post]
+    steps:
+      - order: 1
+        action: 'E2E'
+        detail: 'e2e/blog.spec.ts по образцу e2e/admin.spec.ts; viewport 360x740 для редактора'
+      - order: 2
+        action: 'Полный прогон'
+        detail: 'dotnet test; npm test; npx tsc --noEmit; npm run build; проверить что TipTap нет в публичных чанках'
+      - order: 3
+        action: 'Quickstart'
+        detail: 'Пройти сценарии specs/006-blog/quickstart.md 1–16; 17 (юзабилити с мамой) — после деплоя с «добро» пользователя'
+    technical_notes:
+      - path: frontend/e2e/admin.spec.ts
+        note: 'Образец логина в админку'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Все тесты и сборка зелёные; quickstart 1–16 пройден'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Админ на телефоне 360px']
+        when: 'Пишет новость с фото и публикует'
+        then: ['Новость на /blog/<адрес> с фото']
+        verification: [automated]
+        level: e2e

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Lock, Eye, EyeOff, Palette, FileText, Video, Users, Settings, Tag, Mail, MessageSquare } from 'lucide-react';
+import { Lock, Eye, EyeOff, Palette, FileText, Video, Users, Settings, Tag, Mail, MessageSquare, Newspaper } from 'lucide-react';
 import { auth } from '@/lib/api';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { useLogin, useArtworks, useCategories, useVideos, useUnreadMessagesCount, useAdminReviews } from '@/hooks/useApi';
@@ -324,6 +324,27 @@ const AdminPage = () => {
                 Управление категориями картин
               </p>
               <Link href="/admin/categories" className="btn-primary w-full text-center">
+                Управлять
+              </Link>
+            </motion.div>
+
+            {/* Blog */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="card p-6 hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+            >
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg flex items-center justify-center">
+                  <Newspaper className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">Блог / Новости</h3>
+              </div>
+              <p className="text-gray-600 text-sm mb-4">
+                Написать новость, добавить фото, опубликовать
+              </p>
+              <Link href="/admin/blog" className="btn-primary w-full text-center">
                 Управлять
               </Link>
             </motion.div>

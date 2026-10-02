@@ -1,0 +1,144 @@
+feature: 007-funnel-bot
+contracts:
+  - id: lead-service
+    name: ILeadService.SubmitAsync (Core)
+    kind: interface
+    request:
+      - {name: message, type: object, required: true, description: 'ContactMessage, уже собранный формой или ботом'}
+    response_cases:
+      - outcome: saved_and_notified
+        fields:
+          - {name: id, type: number, required: true, description: Id сохранённого ContactMessage}
+          - {name: notifiedChannels, type: number, required: true, description: 'Число включённых notifier-ов, которым ушло уведомление'}
+      - outcome: saved_notify_failed
+        fields:
+          - {name: id, type: number, required: true, description: Лид сохранён; ошибка notifier'а залогирована и не пробрасывается}
+      - outcome: persist_failed
+        fields:
+          - {name: error, type: string, required: true, description: Ошибка БД; вызывающий отвечает 500 (сайт) или «попробуйте позже» (бот)}
+    entity_refs: [contact-message]
+  - id: lead-service-impl
+    name: LeadService (Infrastructure)
+    kind: implementation
+    implements_ref: lead-service
+    response_cases:
+      - outcome: same_as_interface
+        fields: []
+    entity_refs: [contact-message]
+  - id: feedback-notifier
+    name: IFeedbackNotifier.NotifyAsync(ContactMessage) (существует)
+    kind: interface
+    request:
+      - {name: message, type: object, required: true, description: ContactMessage}
+    response_cases:
+      - outcome: delivered
+        fields: []
+      - outcome: failed_logged
+        fields: []
+    entity_refs: [contact-message]
+  - id: telegram-notifier
+    name: TelegramNotifier (существует, расширение текста)
+    kind: implementation
+    implements_ref: feedback-notifier
+    request:
+      - {name: Phone, type: string, required: false, description: 'Новая строка «Телефон: …»'}
+      - {name: TelegramUsername, type: string, required: false, description: 'Новая строка «Telegram: @user»'}
+      - {name: TelegramUserId, type: number, required: false, description: 'Если нет username — ссылка tg://user?id=…'}
+    response_cases:
+      - outcome: delivered_to_all_chat_ids
+        fields: []
+      - outcome: partial_or_failed_logged
+        fields: []
+    entity_refs: [contact-message]
+  - id: bot-api-client
+    name: IBotApiClient — используемое подмножество Telegram Bot API
+    kind: interface
+    request:
+      - {name: method, type: enum, required: true, enum_values: [getUpdates, sendMessage, sendPhoto, answerCallbackQuery], description: Метод Bot API}
+      - {name: offset, type: number, required: false, description: getUpdates — last_update_id + 1}
+      - {name: timeout, type: number, required: false, description: getUpdates — 50 с}
+      - {name: chat_id, type: number, required: false, description: sendMessage/sendPhoto}
+      - {name: text, type: string, required: false, description: sendMessage / caption}
+      - {name: reply_markup, type: object, required: false, description: inline_keyboard | keyboard с request_contact | remove_keyboard}
+      - {name: photo, type: string, required: false, description: sendPhoto — URL фото работы}
+      - {name: callback_query_id, type: string, required: false, description: answerCallbackQuery}
+    response_cases:
+      - outcome: ok
+        fields:
+          - {name: result, type: object, required: true, description: 'getUpdates — массив Update{update_id, message{chat{id,type}, from{id,username,first_name}, text, contact{phone_number}}, callback_query{id, from, data, message}}'}
+      - outcome: api_error
+        fields:
+          - {name: error_code, type: number, required: true, description: '4xx/5xx; 429 — уважать retry_after'}
+          - {name: description, type: string, required: true, description: Текст ошибки (логировать без токена)}
+      - outcome: network_error
+        fields:
+          - {name: exception, type: string, required: true, description: 'Таймаут/сеть — пауза 5 с и повтор цикла; сервис не падает'}
+    entity_refs: []
+  - id: telegram-bot-client
+    name: TelegramBotClient (Infrastructure/TelegramBot)
+    kind: implementation
+    implements_ref: bot-api-client
+    response_cases:
+      - outcome: same_as_interface
+        fields: []
+    entity_refs: []
+  - id: funnel-dialog
+    name: FunnelDialog.Handle — чистая функция сценария
+    kind: interface
+    request:
+      - {name: state, type: object, required: false, description: Текущий FunnelState или null}
+      - {name: input, type: object, required: true, description: 'BotInput: Start(payload) | Cancel | Callback(data) | Text | Contact(phone) | Unsupported'}
+      - {name: context, type: object, required: true, description: 'Пользователь (id, username, first_name), найденная работа для art_<id>, флаг исчерпанной квоты'}
+    response_cases:
+      - outcome: next_step
+        fields:
+          - {name: state, type: object, required: true, description: Новый FunnelState}
+          - {name: replies, type: array, required: true, description: Сообщения/фото с клавиатурами}
+      - outcome: lead_ready
+        fields:
+          - {name: lead, type: object, required: true, description: ContactMessage для ILeadService}
+          - {name: replies, type: array, required: true, description: «Спасибо» + ссылки на галерею и отзывы}
+      - outcome: reset
+        fields:
+          - {name: replies, type: array, required: true, description: /cancel — подтверждение сброса}
+      - outcome: quota_exceeded
+        fields:
+          - {name: replies, type: array, required: true, description: 'Вежливый отказ; лид не создаётся'}
+      - outcome: unsupported_input
+        fields:
+          - {name: replies, type: array, required: true, description: Фото/стикер/голос — подсказка нажать кнопку или написать текстом}
+    entity_refs: [funnel-state, artwork, contact-message, lead-quota]
+  - id: public-privacy
+    name: GET /api/public/privacy
+    kind: interface
+    request: []
+    response_cases:
+      - outcome: '200 content'
+        fields:
+          - {name: text, type: string, required: true, description: TextContent записи privacy/body}
+          - {name: updatedAt, type: string, required: true, description: Дата редакции}
+      - outcome: '200 empty'
+        fields:
+          - {name: text, type: string, required: false, description: null — фронт показывает встроенный шаблон с реквизитами}
+    entity_refs: [page-content-privacy]
+  - id: public-contact-message
+    name: POST /api/public/contact-message (существует, поведение без изменений)
+    kind: interface
+    request:
+      - {name: name, type: string, required: true, description: Имя}
+      - {name: email, type: string, required: true, description: Email (валидация в ContactMessageDto остаётся)}
+      - {name: subject, type: string, required: true, description: Тема}
+      - {name: message, type: string, required: true, description: Текст}
+      - {name: utm, type: object, required: false, description: utm_source/medium/campaign}
+    response_cases:
+      - outcome: '200 accepted'
+        fields: []
+      - outcome: '200 honeypot (silently discarded)'
+        fields: []
+      - outcome: '400 validation'
+        fields: []
+      - outcome: '429 rate limited'
+        fields: []
+      - outcome: '500 persist failed'
+        fields: []
+    entity_refs: [contact-message]

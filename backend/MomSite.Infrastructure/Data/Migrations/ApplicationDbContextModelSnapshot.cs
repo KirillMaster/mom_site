@@ -105,6 +105,123 @@ namespace MomSite.Infrastructure.Data.Migrations
                     b.ToTable("ArtworkImages");
                 });
 
+            modelBuilder.Entity("MomSite.Core.Models.BlogCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("BlogCategories");
+                });
+
+            modelBuilder.Entity("MomSite.Core.Models.BlogPost", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BlogCategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("BodyHtml")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CoverAlt")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("CoverImagePath")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Excerpt")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<DateTime?>("PublishedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("SeoDescription")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("SeoTitle")
+                        .HasMaxLength(70)
+                        .HasColumnType("character varying(70)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BlogCategoryId");
+
+                    b.HasIndex("PublishedAt");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("BlogPosts");
+                });
+
+            modelBuilder.Entity("MomSite.Core.Models.BlogPostArtwork", b =>
+                {
+                    b.Property<int>("BlogPostId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ArtworkId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.HasKey("BlogPostId", "ArtworkId");
+
+                    b.HasIndex("ArtworkId");
+
+                    b.ToTable("BlogPostArtworks");
+                });
+
             modelBuilder.Entity("MomSite.Core.Models.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -422,6 +539,36 @@ namespace MomSite.Infrastructure.Data.Migrations
                     b.Navigation("Artwork");
                 });
 
+            modelBuilder.Entity("MomSite.Core.Models.BlogPost", b =>
+                {
+                    b.HasOne("MomSite.Core.Models.BlogCategory", "BlogCategory")
+                        .WithMany("Posts")
+                        .HasForeignKey("BlogCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("BlogCategory");
+                });
+
+            modelBuilder.Entity("MomSite.Core.Models.BlogPostArtwork", b =>
+                {
+                    b.HasOne("MomSite.Core.Models.Artwork", "Artwork")
+                        .WithMany()
+                        .HasForeignKey("ArtworkId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MomSite.Core.Models.BlogPost", "BlogPost")
+                        .WithMany("Artworks")
+                        .HasForeignKey("BlogPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Artwork");
+
+                    b.Navigation("BlogPost");
+                });
+
             modelBuilder.Entity("MomSite.Core.Models.Review", b =>
                 {
                     b.HasOne("MomSite.Core.Models.Artwork", "Artwork")
@@ -446,6 +593,16 @@ namespace MomSite.Infrastructure.Data.Migrations
             modelBuilder.Entity("MomSite.Core.Models.Artwork", b =>
                 {
                     b.Navigation("Images");
+                });
+
+            modelBuilder.Entity("MomSite.Core.Models.BlogCategory", b =>
+                {
+                    b.Navigation("Posts");
+                });
+
+            modelBuilder.Entity("MomSite.Core.Models.BlogPost", b =>
+                {
+                    b.Navigation("Artworks");
                 });
 
             modelBuilder.Entity("MomSite.Core.Models.Category", b =>
