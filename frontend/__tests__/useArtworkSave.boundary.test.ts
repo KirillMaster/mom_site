@@ -315,3 +315,124 @@ describe('@US1 edge cases', () => {
     expect(event.preventDefault).toHaveBeenCalled();
   });
 });
+
+describe('@US1-EC11 spec field boundaries in FormData construction', () => {
+  it('accepts widthCm at minimum boundary 1', async () => {
+    mockCreateArtwork.mockResolvedValue({ id: 10 });
+    const testState: ArtworkFormState = { ...state, widthCm: '1' };
+    const { result } = renderHook(() => useArtworkSave(null, testState, [file('a.png')], jest.fn()));
+
+    await act(async () => {
+      const event = { preventDefault: jest.fn() } as any;
+      await result.current.submit(event);
+    });
+
+    const fd: FormData = mockCreateArtwork.mock.calls[0][0];
+    expect(fd.get('widthCm')).toBe('1');
+  });
+
+  it('accepts heightCm at maximum boundary 1000', async () => {
+    mockCreateArtwork.mockResolvedValue({ id: 10 });
+    const testState: ArtworkFormState = { ...state, heightCm: '1000' };
+    const { result } = renderHook(() => useArtworkSave(null, testState, [file('a.png')], jest.fn()));
+
+    await act(async () => {
+      const event = { preventDefault: jest.fn() } as any;
+      await result.current.submit(event);
+    });
+
+    const fd: FormData = mockCreateArtwork.mock.calls[0][0];
+    expect(fd.get('heightCm')).toBe('1000');
+  });
+
+  it('accepts year at 1950', async () => {
+    mockCreateArtwork.mockResolvedValue({ id: 10 });
+    const testState: ArtworkFormState = { ...state, year: '1950' };
+    const { result } = renderHook(() => useArtworkSave(null, testState, [file('a.png')], jest.fn()));
+
+    await act(async () => {
+      const event = { preventDefault: jest.fn() } as any;
+      await result.current.submit(event);
+    });
+
+    const fd: FormData = mockCreateArtwork.mock.calls[0][0];
+    expect(fd.get('year')).toBe('1950');
+  });
+
+  it('accepts support at exactly 100 characters', async () => {
+    mockCreateArtwork.mockResolvedValue({ id: 10 });
+    const longSupport = 'х'.repeat(100);
+    const testState: ArtworkFormState = { ...state, support: longSupport };
+    const { result } = renderHook(() => useArtworkSave(null, testState, [file('a.png')], jest.fn()));
+
+    await act(async () => {
+      const event = { preventDefault: jest.fn() } as any;
+      await result.current.submit(event);
+    });
+
+    const fd: FormData = mockCreateArtwork.mock.calls[0][0];
+    expect(fd.get('support')).toBe(longSupport);
+  });
+
+  it('accepts technique at exactly 100 characters', async () => {
+    mockCreateArtwork.mockResolvedValue({ id: 10 });
+    const longTechnique = 'т'.repeat(100);
+    const testState: ArtworkFormState = { ...state, technique: longTechnique };
+    const { result } = renderHook(() => useArtworkSave(null, testState, [file('a.png')], jest.fn()));
+
+    await act(async () => {
+      const event = { preventDefault: jest.fn() } as any;
+      await result.current.submit(event);
+    });
+
+    const fd: FormData = mockCreateArtwork.mock.calls[0][0];
+    expect(fd.get('technique')).toBe(longTechnique);
+  });
+
+  it('handles empty widthCm, heightCm, year, support, technique', async () => {
+    mockCreateArtwork.mockResolvedValue({ id: 10 });
+    const testState: ArtworkFormState = {
+      title: 'Test',
+      categoryId: '1',
+      status: 'Available',
+      widthCm: '',
+      heightCm: '',
+      year: '',
+      support: '',
+      technique: '',
+      description: 'Desc',
+      price: '100',
+    };
+    const { result } = renderHook(() => useArtworkSave(null, testState, [file('a.png')], jest.fn()));
+
+    await act(async () => {
+      const event = { preventDefault: jest.fn() } as any;
+      await result.current.submit(event);
+    });
+
+    const fd: FormData = mockCreateArtwork.mock.calls[0][0];
+    expect(fd.get('widthCm')).toBe('');
+    expect(fd.get('heightCm')).toBe('');
+    expect(fd.get('year')).toBe('');
+    expect(fd.get('support')).toBe('');
+    expect(fd.get('technique')).toBe('');
+  });
+
+  it('handles all status values', async () => {
+    const statuses = ['Available', 'Sold', 'NotForSale', 'Unavailable', 'NotMine', 'PrivateCollection'];
+    for (const status of statuses) {
+      jest.clearAllMocks();
+      mockCreateArtwork.mockResolvedValue({ id: 10 });
+      const testState: ArtworkFormState = { ...state, status: status as any };
+      const { result } = renderHook(() => useArtworkSave(null, testState, [file('a.png')], jest.fn()));
+
+      await act(async () => {
+        const event = { preventDefault: jest.fn() } as any;
+        await result.current.submit(event);
+      });
+
+      const fd: FormData = mockCreateArtwork.mock.calls[0][0];
+      expect(fd.get('status')).toBe(status);
+    }
+  });
+});

@@ -131,3 +131,100 @@ describe('@US1-BE4 admin form sends the catalog characteristics', () => {
     expect(fd.get('status')).toBe('Sold');
   });
 });
+
+describe('@US1-EC10 spec field boundaries in admin form', () => {
+  it('accepts width at minimum boundary (1)', async () => {
+    createMutateAsync.mockResolvedValue({ id: 9 });
+    upload.mockResolvedValue([]);
+    render(<ArtworkForm artwork={null} categories={cats} onSaved={jest.fn()} />);
+    fireEvent.change(screen.getByLabelText('Название'), { target: { value: 'Новая' } });
+    fireEvent.change(screen.getByLabelText('Категория'), { target: { value: '1' } });
+    fireEvent.change(screen.getByLabelText('Ширина (см)'), { target: { value: '1' } });
+    fireEvent.change(screen.getByLabelText('Высота (см)'), { target: { value: '100' } });
+    pick([file('a.png')]);
+    fireEvent.click(screen.getByText('Добавить картину'));
+    await waitFor(() => expect(createMutateAsync).toHaveBeenCalled());
+    const fd: FormData = createMutateAsync.mock.calls[0][0];
+    expect(fd.get('widthCm')).toBe('1');
+  });
+
+  it('accepts height at maximum boundary (1000)', async () => {
+    createMutateAsync.mockResolvedValue({ id: 9 });
+    upload.mockResolvedValue([]);
+    render(<ArtworkForm artwork={null} categories={cats} onSaved={jest.fn()} />);
+    fireEvent.change(screen.getByLabelText('Название'), { target: { value: 'Новая' } });
+    fireEvent.change(screen.getByLabelText('Категория'), { target: { value: '1' } });
+    fireEvent.change(screen.getByLabelText('Ширина (см)'), { target: { value: '100' } });
+    fireEvent.change(screen.getByLabelText('Высота (см)'), { target: { value: '1000' } });
+    pick([file('a.png')]);
+    fireEvent.click(screen.getByText('Добавить картину'));
+    await waitFor(() => expect(createMutateAsync).toHaveBeenCalled());
+    const fd: FormData = createMutateAsync.mock.calls[0][0];
+    expect(fd.get('heightCm')).toBe('1000');
+  });
+
+  it('accepts year at 1950', async () => {
+    createMutateAsync.mockResolvedValue({ id: 9 });
+    upload.mockResolvedValue([]);
+    render(<ArtworkForm artwork={null} categories={cats} onSaved={jest.fn()} />);
+    fireEvent.change(screen.getByLabelText('Название'), { target: { value: 'Новая' } });
+    fireEvent.change(screen.getByLabelText('Категория'), { target: { value: '1' } });
+    fireEvent.change(screen.getByLabelText('Год'), { target: { value: '1950' } });
+    pick([file('a.png')]);
+    fireEvent.click(screen.getByText('Добавить картину'));
+    await waitFor(() => expect(createMutateAsync).toHaveBeenCalled());
+    const fd: FormData = createMutateAsync.mock.calls[0][0];
+    expect(fd.get('year')).toBe('1950');
+  });
+
+  it('accepts support at exactly 100 characters', async () => {
+    createMutateAsync.mockResolvedValue({ id: 9 });
+    upload.mockResolvedValue([]);
+    render(<ArtworkForm artwork={null} categories={cats} onSaved={jest.fn()} />);
+    fireEvent.change(screen.getByLabelText('Название'), { target: { value: 'Новая' } });
+    fireEvent.change(screen.getByLabelText('Категория'), { target: { value: '1' } });
+    const longSupport = 'х'.repeat(100);
+    fireEvent.change(screen.getByLabelText('Основа'), { target: { value: longSupport } });
+    pick([file('a.png')]);
+    fireEvent.click(screen.getByText('Добавить картину'));
+    await waitFor(() => expect(createMutateAsync).toHaveBeenCalled());
+    const fd: FormData = createMutateAsync.mock.calls[0][0];
+    expect(fd.get('support')).toBe(longSupport);
+  });
+
+  it('accepts technique at exactly 100 characters', async () => {
+    createMutateAsync.mockResolvedValue({ id: 9 });
+    upload.mockResolvedValue([]);
+    render(<ArtworkForm artwork={null} categories={cats} onSaved={jest.fn()} />);
+    fireEvent.change(screen.getByLabelText('Название'), { target: { value: 'Новая' } });
+    fireEvent.change(screen.getByLabelText('Категория'), { target: { value: '1' } });
+    const longTechnique = 'т'.repeat(100);
+    fireEvent.change(screen.getByLabelText('Техника'), { target: { value: longTechnique } });
+    pick([file('a.png')]);
+    fireEvent.click(screen.getByText('Добавить картину'));
+    await waitFor(() => expect(createMutateAsync).toHaveBeenCalled());
+    const fd: FormData = createMutateAsync.mock.calls[0][0];
+    expect(fd.get('technique')).toBe(longTechnique);
+  });
+
+  it('accepts all status values in dropdown', async () => {
+    createMutateAsync.mockResolvedValue({ id: 9 });
+    upload.mockResolvedValue([]);
+    const statuses = ['Available', 'Sold', 'NotForSale', 'Unavailable', 'NotMine', 'PrivateCollection'];
+    for (const status of statuses) {
+      jest.clearAllMocks();
+      createMutateAsync.mockResolvedValue({ id: 9 });
+      upload.mockResolvedValue([]);
+      const { unmount } = render(<ArtworkForm artwork={null} categories={cats} onSaved={jest.fn()} />);
+      fireEvent.change(screen.getByLabelText('Название'), { target: { value: 'Test' } });
+      fireEvent.change(screen.getByLabelText('Категория'), { target: { value: '1' } });
+      fireEvent.change(screen.getByLabelText('Статус'), { target: { value: status } });
+      pick([file('a.png')]);
+      fireEvent.click(screen.getByText('Добавить картину'));
+      await waitFor(() => expect(createMutateAsync).toHaveBeenCalled());
+      const fd: FormData = createMutateAsync.mock.calls[0][0];
+      expect(fd.get('status')).toBe(status);
+      unmount();
+    }
+  });
+});

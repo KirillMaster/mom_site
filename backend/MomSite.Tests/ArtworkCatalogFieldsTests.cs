@@ -150,5 +150,150 @@ namespace MomSite.Tests
             Assert.Equal(HttpStatusCode.BadRequest, res.StatusCode);
             Assert.Contains("Technique", await res.Content.ReadAsStringAsync());
         }
+
+        [Theory, Trait("scenario", "US1-EC2")]
+        [InlineData("1", "1")]
+        [InlineData("1", "1000")]
+        [InlineData("1000", "1000")]
+        [InlineData("1000", "1")]
+        public async Task US1_EC2_SizeAtBoundaries_Returns201(string widthValue, string heightValue)
+        {
+            var client = await _factory.CreateAuthorizedClientAsync();
+            var cat = await SeedCategory();
+
+            var id = await CreateArtwork(client, cat, ("WidthCm", widthValue), ("HeightCm", heightValue));
+
+            var artwork = await Load(id);
+            Assert.Equal(int.Parse(widthValue), artwork.WidthCm);
+            Assert.Equal(int.Parse(heightValue), artwork.HeightCm);
+        }
+
+        [Theory, Trait("scenario", "US1-EC3")]
+        [InlineData("HeightCm", "1001")]
+        [InlineData("WidthCm", "-1")]
+        [InlineData("WidthCm", "0")]
+        public async Task US1_EC3_SizeOutOfRange_Returns400(string field, string value)
+        {
+            var client = await _factory.CreateAuthorizedClientAsync();
+            var cat = await SeedCategory();
+            var id = await CreateArtwork(client, cat);
+
+            var res = await client.PutAsync($"/api/admin/artworks/{id}", Form(cat, (field, value)));
+
+            Assert.Equal(HttpStatusCode.BadRequest, res.StatusCode);
+            Assert.Contains(field, await res.Content.ReadAsStringAsync());
+        }
+
+        [Fact, Trait("scenario", "US1-EC4")]
+        public async Task US1_EC4_YearAtMinBoundary1950_Accepts()
+        {
+            var client = await _factory.CreateAuthorizedClientAsync();
+            var cat = await SeedCategory();
+            var id = await CreateArtwork(client, cat);
+
+            var res = await client.PutAsync($"/api/admin/artworks/{id}", Form(cat, ("Year", "1950")));
+
+            Assert.Equal(HttpStatusCode.NoContent, res.StatusCode);
+            var artwork = await Load(id);
+            Assert.Equal(1950, artwork.Year);
+        }
+
+        [Fact, Trait("scenario", "US1-EC4")]
+        public async Task US1_EC4_YearAtCurrentYear_Accepts()
+        {
+            var client = await _factory.CreateAuthorizedClientAsync();
+            var cat = await SeedCategory();
+            var id = await CreateArtwork(client, cat);
+            var currentYear = DateTime.UtcNow.Year;
+
+            var res = await client.PutAsync($"/api/admin/artworks/{id}", Form(cat, ("Year", currentYear.ToString())));
+
+            Assert.Equal(HttpStatusCode.NoContent, res.StatusCode);
+            var artwork = await Load(id);
+            Assert.Equal(currentYear, artwork.Year);
+        }
+
+        [Fact, Trait("scenario", "US1-EC5")]
+        public async Task US1_EC5_SupportAtExactly100Chars_Accepts()
+        {
+            var client = await _factory.CreateAuthorizedClientAsync();
+            var cat = await SeedCategory();
+            var id = await CreateArtwork(client, cat);
+            var support = new string('х', 100);
+
+            var res = await client.PutAsync($"/api/admin/artworks/{id}", Form(cat, ("Support", support)));
+
+            Assert.Equal(HttpStatusCode.NoContent, res.StatusCode);
+            var artwork = await Load(id);
+            Assert.Equal(support, artwork.Support);
+        }
+
+        [Fact, Trait("scenario", "US1-EC6")]
+        public async Task US1_EC6_SupportOver100Chars_Returns400()
+        {
+            var client = await _factory.CreateAuthorizedClientAsync();
+            var cat = await SeedCategory();
+            var id = await CreateArtwork(client, cat);
+
+            var res = await client.PutAsync($"/api/admin/artworks/{id}", Form(cat, ("Support", new string('x', 101))));
+
+            Assert.Equal(HttpStatusCode.BadRequest, res.StatusCode);
+            Assert.Contains("Support", await res.Content.ReadAsStringAsync());
+        }
+
+        [Theory, Trait("scenario", "US1-EC7")]
+        [InlineData("Sold")]
+        [InlineData("NotForSale")]
+        [InlineData("Unavailable")]
+        [InlineData("NotMine")]
+        [InlineData("PrivateCollection")]
+        public async Task US1_EC7_AllStatusValues_Accepted(string statusValue)
+        {
+            var client = await _factory.CreateAuthorizedClientAsync();
+            var cat = await SeedCategory();
+            var id = await CreateArtwork(client, cat, ("Status", "Available"));
+
+            var res = await client.PutAsync($"/api/admin/artworks/{id}", Form(cat, ("Status", statusValue)));
+
+            Assert.Equal(HttpStatusCode.NoContent, res.StatusCode);
+            var artwork = await Load(id);
+            Assert.Equal(statusValue, artwork.Status.ToString());
+        }
+
+        [Fact, Trait("scenario", "US1-EC8")]
+        public async Task US1_EC8_EmptySupportAndTechnique_Accepted()
+        {
+            var client = await _factory.CreateAuthorizedClientAsync();
+            var cat = await SeedCategory();
+            var id = await CreateArtwork(client, cat, ("Support", "холст"), ("Technique", "масло"));
+
+            var res = await client.PutAsync($"/api/admin/artworks/{id}", Form(cat, ("Support", ""), ("Technique", "")));
+
+            Assert.Equal(HttpStatusCode.NoContent, res.StatusCode);
+            var artwork = await Load(id);
+            Assert.True(string.IsNullOrEmpty(artwork.Support));
+            Assert.True(string.IsNullOrEmpty(artwork.Technique));
+        }
+
+        [Fact, Trait("scenario", "US1-EC9")]
+        public async Task US1_EC9_AllFieldsAtBoundaries_Accepted()
+        {
+            var client = await _factory.CreateAuthorizedClientAsync();
+            var cat = await SeedCategory();
+            var currentYear = DateTime.UtcNow.Year;
+
+            var id = await CreateArtwork(client, cat,
+                ("WidthCm", "1"), ("HeightCm", "1000"),
+                ("Year", currentYear.ToString()), ("Support", new string('х', 100)),
+                ("Technique", "масло"), ("Status", "Available"));
+
+            var artwork = await Load(id);
+            Assert.Equal(1, artwork.WidthCm);
+            Assert.Equal(1000, artwork.HeightCm);
+            Assert.Equal(currentYear, artwork.Year);
+            Assert.Equal(new string('х', 100), artwork.Support);
+            Assert.Equal("масло", artwork.Technique);
+            Assert.Equal(ArtworkStatus.Available, artwork.Status);
+        }
     }
 }
