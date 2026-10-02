@@ -140,7 +140,7 @@ public class BlogAdminControllerTests : IClassFixture<BlogAdminWebApplicationFac
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal("https://s3.twcstorage.ru/test/blog/saved.jpg", (await Json(response)).GetProperty("url").GetString());
         Assert.Equal("blog", _factory.Images.LastFolder);
-        Assert.Equal(1920, Image.Identify(_factory.Images.LastBytes!).Width);
+        Assert.Equal(1920, SixLabors.ImageSharp.Image.Identify(_factory.Images.LastBytes!).Width);
     }
 
     private static MultipartFormDataContent FileContent(byte[] bytes, string name, string contentType)

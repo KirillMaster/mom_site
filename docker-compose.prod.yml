@@ -29,6 +29,9 @@ services:
       - S3_SERVICE_URL=${S3_SERVICE_URL:-https://s3.twcstorage.ru}
       - S3_BUCKET_NAME=${S3_BUCKET_NAME}
       - S3_BASE_URL=${S3_BASE_URL}
+      # Frontend cache invalidation
+      - Frontend__RevalidateUrl=http://mom_site_frontend_prod:3000/internal/revalidate
+      - Frontend__RevalidateSecret=${REVALIDATE_SECRET:?REVALIDATE_SECRET is required}
     expose:
       - "5000"
     healthcheck:
@@ -61,10 +64,12 @@ services:
       dockerfile: Dockerfile
       args:
         - NEXT_PUBLIC_YM_ID=${NEXT_PUBLIC_YM_ID:-}
+        - INTERNAL_API_URL=https://angelamoiseenko.ru/api
     container_name: mom_site_frontend_prod
     environment:
       - NEXT_PUBLIC_API_URL=https://angelamoiseenko.ru/api
       - INTERNAL_API_URL=http://mom_site_api_prod:5000/api
+      - REVALIDATE_SECRET=${REVALIDATE_SECRET:?REVALIDATE_SECRET is required}
       - INDEXNOW_KEY=${INDEXNOW_KEY:-}
     expose:
       - "3000"

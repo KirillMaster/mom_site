@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Filter, Play, ExternalLink } from 'lucide-react';
 import ReactPlayer from 'react-player';
 import { getImageUrl } from '@/hooks/useApi';
@@ -46,11 +45,8 @@ const VideosClientPage = ({ videosData }: { videosData: VideosData }) => {
       {/* Header */}
       <section className="pt-24 pb-16 gradient-bg">
         <div className="max-w-7xl mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
+          <div
+            className="rise-in text-center"
           >
             <h1 className="text-5xl md:text-6xl font-serif font-bold mb-6 text-gradient">
               Видеогалерея
@@ -58,7 +54,7 @@ const VideosClientPage = ({ videosData }: { videosData: VideosData }) => {
             <p className="text-xl text-gray-700 max-w-3xl mx-auto">
               Смотрите видео о процессе создания картин, выставках и интервью о творчестве
             </p>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -102,22 +98,14 @@ const VideosClientPage = ({ videosData }: { videosData: VideosData }) => {
       {/* Videos Grid */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={selectedCategory || 'all'}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          <div
+            key={selectedCategory || 'all'}
+            className="animate-fade-in grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
             >
               {filteredVideos.map((video, index) => (
-                <motion.div
+                <div
                   key={video.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="card group cursor-pointer"
+                  className="rise-in card group cursor-pointer"
                   onClick={() => openVideo(video)}
                 >
                   {/* A square frame: the thumbnails arrive in mixed aspect
@@ -160,41 +148,30 @@ const VideosClientPage = ({ videosData }: { videosData: VideosData }) => {
                       <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-primary-600 transition-colors duration-200" />
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
-            </motion.div>
-          </AnimatePresence>
+            </div>
           
           {filteredVideos.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-16"
+            <div
+              className="rise-in text-center py-16"
             >
               <p className="text-xl text-gray-500">
                 В выбранной категории пока нет видео
               </p>
-            </motion.div>
+            </div>
           )}
         </div>
       </section>
 
       {/* Video Modal */}
-      <AnimatePresence>
-        {selectedVideo && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+              {selectedVideo && (
+          <div
+            className="animate-fade-in fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
             onClick={closeVideo}
           >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="relative w-full max-w-4xl bg-white rounded-xl overflow-hidden"
+            <div
+              className="animate-scale-in relative w-full max-w-4xl bg-white rounded-xl overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="relative">
@@ -240,20 +217,15 @@ const VideosClientPage = ({ videosData }: { videosData: VideosData }) => {
                   </button>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
-
+      
       {/* Categories Info */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
+          <div
+            className="reveal text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6">
               Категории видео
@@ -261,17 +233,13 @@ const VideosClientPage = ({ videosData }: { videosData: VideosData }) => {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Исследуйте разные аспекты моего творчества через видео
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {videosData?.categories && Array.isArray(videosData.categories) && videosData.categories.map((category, index) => (
-              <motion.div
+              <div
                 key={category.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="card p-8 text-center hover:shadow-xl transition-shadow duration-300"
+                className="reveal card p-8 text-center hover:shadow-xl transition-shadow duration-300"
               >
                 <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Play className="w-8 h-8 text-white" />
@@ -282,7 +250,7 @@ const VideosClientPage = ({ videosData }: { videosData: VideosData }) => {
                 <p className="text-gray-600 leading-relaxed">
                   {category.description}
                 </p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

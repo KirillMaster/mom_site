@@ -18,6 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .MinimumLevel.Override("System.Net.Http.HttpClient", LogEventLevel.Warning)
     .WriteTo.Console()
     .WriteTo.File("logs/app-.log", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
     .CreateLogger();
@@ -153,9 +154,11 @@ builder.Services.AddAuthorization();
 // Add custom services
 builder.Services.AddScoped<IS3Service, S3Service>();
 builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IArtworkImageService, ArtworkImageService>();
+builder.Services.AddHttpClient();
+builder.Services.AddHttpClient<ICacheInvalidator, FrontendCacheInvalidator>();
 builder.Services.AddSingleton(new MomSite.Infrastructure.Blog.BlogHtmlSanitizer(new[] { "s3.twcstorage.ru" }, "angelamoiseenko.ru"));
 builder.Services.AddScoped<IBlogService, MomSite.Infrastructure.Blog.BlogService>();
-builder.Services.AddHttpClient();
 builder.Services.AddHttpClient(MomSite.Infrastructure.Blog.IndexNowClient.HttpClientName);
 builder.Services.AddSingleton<IIndexNowClient, MomSite.Infrastructure.Blog.IndexNowClient>();
 builder.Services.AddScoped<IFeedbackNotifier, EmailNotifier>();
@@ -248,6 +251,8 @@ if (app.Environment.IsDevelopment())
         RequestPath = "/uploads"
     });
 }
+
+app.UseMiddleware<MomSite.API.AdminCacheInvalidationMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

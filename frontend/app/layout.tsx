@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Playfair_Display } from 'next/font/google'
 import './globals.css'
 import Providers from '@/components/Providers'
 import UtmTracker from '@/components/UtmTracker'
@@ -8,7 +8,8 @@ import ClickTracker from '@/components/ClickTracker'
 import LayoutContent from '@/components/LayoutContent';
 import { Toaster } from 'react-hot-toast';
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin', 'cyrillic'], variable: '--font-inter', display: 'swap' })
+const playfair = Playfair_Display({ subsets: ['latin', 'cyrillic'], variable: '--font-playfair', display: 'swap' })
 
 export const metadata: Metadata = {
   title: 'Анжела Моисеенко - Художник-импрессионист',
@@ -65,7 +66,7 @@ export const metadata: Metadata = {
   },
 }
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export default function RootLayout({
   children,
@@ -73,7 +74,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ru">
+    <html lang="ru" className={`${inter.variable} ${playfair.variable}`}>
       <head>
         {/* Favicon — only the SVG is bundled; raster fallbacks are not shipped */}
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />

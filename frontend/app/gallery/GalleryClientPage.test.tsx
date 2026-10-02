@@ -15,25 +15,6 @@ jest.mock('yet-another-react-lightbox', () => ({
 jest.mock('yet-another-react-lightbox/plugins/zoom', () => ({ __esModule: true, default: {} }));
 jest.mock('yet-another-react-lightbox/styles.css', () => ({}), { virtual: true });
 
-jest.mock('framer-motion', () => ({
-  motion: new Proxy(
-    {},
-    {
-      get: () => {
-        const Component = ({ children, ...rest }: any) => <div {...stripMotionProps(rest)}>{children}</div>;
-        return Component;
-      },
-    }
-  ),
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}));
-
-// framer-motion swallows its own animation props; forwarding them to a plain div
-// would make React warn about unknown DOM attributes and drown the output.
-function stripMotionProps(props: Record<string, unknown>) {
-  const { initial, animate, exit, transition, variants, whileHover, whileTap, layout, ...rest } = props;
-  return rest;
-}
 
 const artwork = (overrides: Record<string, unknown> = {}) => ({
   id: 7,

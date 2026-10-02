@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, Palette } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import PhoneLink from './PhoneLink';
 
 const Navigation = () => {
@@ -72,12 +71,9 @@ const Navigation = () => {
               >
                 {item.label}
                 {isActive(item.href) && (
-                  <motion.div
-                    layoutId="activeTab"
+                  <span
                     className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600"
-                    initial={false}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  />
+                    />
                 )}
               </Link>
             ))}
@@ -102,14 +98,9 @@ const Navigation = () => {
       </div>
 
       {/* Mobile Navigation */}
-      <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden bg-white/95 backdrop-blur-md shadow-lg"
+          <div
+            className="animate-fade-in md:hidden bg-white/95 backdrop-blur-md shadow-lg"
           >
             <div className="px-4 pt-2 pb-3 space-y-1">
               {navItems.map((item) => (
@@ -131,9 +122,8 @@ const Navigation = () => {
                 className="mt-2 flex items-center justify-center gap-2 rounded-md bg-primary-600 px-3 py-2 text-base font-semibold text-white transition-colors duration-200 hover:bg-primary-700"
               />
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
     </nav>
   );
 };

@@ -1,0 +1,75 @@
+feature: "Несколько фотографий одной картины"
+contracts:
+  - id: "C-1"
+    name: "POST /api/admin/artworks/{id}/images (multipart, Images[])"
+    kind: "interface"
+    request:
+      - {name: "id", type: "number", required: true, description: "Id работы (route)"}
+      - {name: "Images", type: "array", required: true, description: "1..N файлов image/*, каждый ≤ 15 МБ; итог у работы ≤ 10"}
+    response_cases:
+      - outcome: "200 OK — фото добавлены в конец"
+        fields:
+          - {name: "images", type: "array", required: true, description: "Полный упорядоченный список ArtworkImageDto {id, imagePath, thumbnailPath, sortOrder}"}
+      - outcome: "400 — превышен лимит 10 / файл > 15 МБ / не изображение / пустой список"
+        fields:
+          - {name: "message", type: "string", required: true, description: "Сообщение на русском"}
+      - outcome: "401 — нет JWT"
+        fields: []
+      - outcome: "404 — работа не найдена"
+        fields: []
+    entity_refs: ["E-1", "E-2"]
+  - id: "C-2"
+    name: "DELETE /api/admin/artworks/{id}/images/{imageId}"
+    kind: "interface"
+    request:
+      - {name: "id", type: "number", required: true, description: "Id работы"}
+      - {name: "imageId", type: "number", required: true, description: "Id фото этой работы"}
+    response_cases:
+      - outcome: "200 OK — фото и файлы S3 удалены, порядок нормализован, обложка синхронизирована"
+        fields:
+          - {name: "images", type: "array", required: true, description: "Оставшийся список"}
+      - outcome: "400 — последнее фото"
+        fields:
+          - {name: "message", type: "string", required: true, description: "«У работы должно быть хотя бы одно фото»"}
+      - outcome: "401 — нет JWT"
+        fields: []
+      - outcome: "404 — работа или фото этой работы не найдены"
+        fields: []
+    entity_refs: ["E-1", "E-2"]
+  - id: "C-3"
+    name: "PUT /api/admin/artworks/{id}/images/order (JSON {imageIds})"
+    kind: "interface"
+    request:
+      - {name: "imageIds", type: "array", required: true, description: "Все id фото работы ровно один раз в новом порядке; первый — обложка"}
+    response_cases:
+      - outcome: "200 OK — порядок применён, обложка синхронизирована"
+        fields:
+          - {name: "images", type: "array", required: true, description: "Новый упорядоченный список"}
+      - outcome: "400 — набор id не совпадает с фото работы"
+        fields:
+          - {name: "message", type: "string", required: true, description: "Сообщение на русском"}
+      - outcome: "401 — нет JWT"
+        fields: []
+      - outcome: "404 — работа не найдена"
+        fields: []
+    entity_refs: ["E-1", "E-2"]
+  - id: "C-4"
+    name: "GET /api/public/gallery, /api/public/home, GET /api/admin/artworks — поле images"
+    kind: "interface"
+    request: []
+    response_cases:
+      - outcome: "200 OK — у каждой работы поле images"
+        fields:
+          - {name: "images", type: "array", required: true, description: "ArtworkImageDto[] по SortOrder; если в БД пусто — синтез из imagePath/thumbnailPath"}
+          - {name: "imagePath", type: "string", required: true, description: "Без изменений, = обложка"}
+    entity_refs: ["E-1", "E-2"]
+  - id: "C-5"
+    name: "POST /api/admin/artworks/create и DELETE /api/admin/artworks/{id} — побочные эффекты"
+    kind: "interface"
+    request: []
+    response_cases:
+      - outcome: "create: создаётся ArtworkImage(SortOrder 0)"
+        fields: []
+      - outcome: "delete: удаляются все ArtworkImage и их файлы в S3"
+        fields: []
+    entity_refs: ["E-1", "E-2"]

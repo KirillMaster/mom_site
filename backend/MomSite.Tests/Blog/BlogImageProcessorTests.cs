@@ -38,7 +38,7 @@ public class BlogImageProcessorTests
         Assert.NotNull(result);
         Assert.Equal("image/jpeg", result!.ContentType);
         Assert.Equal("photo.jpg", result.FileName);
-        using var img = await Image.LoadAsync(result.OpenReadStream());
+        using var img = await SixLabors.ImageSharp.Image.LoadAsync(result.OpenReadStream());
         Assert.Equal(1920, img.Width);
         Assert.Equal(1440, img.Height);
     }
@@ -47,7 +47,7 @@ public class BlogImageProcessorTests
     public async Task SmallImageIsNotEnlarged()
     {
         var result = await BlogImageProcessor.PrepareAsync(MakeFile(Png(800, 600), "image/png"));
-        using var img = await Image.LoadAsync(result!.OpenReadStream());
+        using var img = await SixLabors.ImageSharp.Image.LoadAsync(result!.OpenReadStream());
         Assert.Equal(800, img.Width);
     }
 

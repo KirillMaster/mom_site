@@ -18,7 +18,35 @@ namespace MomSite.API.DTOs
                 CreatedAt = artwork.CreatedAt,
                 UpdatedAt = artwork.UpdatedAt,
                 CategoryId = artwork.CategoryId,
-                Category = artwork.Category?.ToDto()
+                Category = artwork.Category?.ToDto(),
+                Images = artwork.ToImageDtos()
+            };
+        }
+
+        public static ArtworkImageDto ToDto(this ArtworkImage image)
+        {
+            return new ArtworkImageDto
+            {
+                Id = image.Id,
+                ImagePath = image.ImagePath,
+                ThumbnailPath = image.ThumbnailPath,
+                SortOrder = image.SortOrder
+            };
+        }
+
+        public static List<ArtworkImageDto> ToImageDtos(this Artwork artwork)
+        {
+            var images = artwork.Images.OrderBy(i => i.SortOrder).Select(i => i.ToDto()).ToList();
+            return images.Count > 0
+                ? images
+                : FallbackImages(artwork.ImagePath, artwork.ThumbnailPath);
+        }
+
+        public static List<ArtworkImageDto> FallbackImages(string imagePath, string thumbnailPath)
+        {
+            return new List<ArtworkImageDto>
+            {
+                new() { Id = 0, ImagePath = imagePath, ThumbnailPath = thumbnailPath, SortOrder = 0 }
             };
         }
 
