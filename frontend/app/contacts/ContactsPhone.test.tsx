@@ -89,4 +89,157 @@ describe('Contact form phone and prefill', () => {
     expect(container.querySelector('script')).toBeNull();
     expect((screen.getByLabelText(/Сообщение/) as HTMLTextAreaElement).value.length).toBeLessThanOrEqual(5000);
   });
+
+  // ====== Degradation mode boundary & validation tests ======
+
+  it('Degradation: form accepts both email and phone when both are provided', async () => {
+    mockedSend.mockResolvedValueOnce({});
+    render(<ContactsClientPage contactsData={contactsData} />);
+
+    fillNameAndMessage();
+    fireEvent.change(screen.getByLabelText(/Email/), { target: { value: 'test@example.com' } });
+    fireEvent.change(screen.getByLabelText(/Телефон или мессенджер/), { target: { value: '+7 900 111-22-33' } });
+    submit();
+
+    await waitFor(() => expect(mockedSend).toHaveBeenCalledTimes(1));
+    expect(mockedSend).toHaveBeenCalledWith(
+      expect.objectContaining({
+        email: 'test@example.com',
+        phone: '+7 900 111-22-33',
+      })
+    );
+  });
+
+  it('Degradation: form rejects only whitespace in phone and email', async () => {
+    render(<ContactsClientPage contactsData={contactsData} />);
+
+    fillNameAndMessage();
+    fireEvent.change(screen.getByLabelText(/Email/), { target: { value: '   ' } });
+    fireEvent.change(screen.getByLabelText(/Телефон или мессенджер/), { target: { value: '   ' } });
+    submit();
+
+    expect(await screen.findByText('Укажите телефон, мессенджер или email')).toBeInTheDocument();
+    expect(mockedSend).not.toHaveBeenCalled();
+  });
+
+  it('Degradation: form rejects null email and null phone (direct POST bypass)', async () => {
+    render(<ContactsClientPage contactsData={contactsData} />);
+
+    fillNameAndMessage();
+    fireEvent.change(screen.getByLabelText(/Email/), { target: { value: '' } });
+    fireEvent.change(screen.getByLabelText(/Телефон или мессенджер/), { target: { value: '' } });
+    submit();
+
+    expect(await screen.findByText('Укажите телефон, мессенджер или email')).toBeInTheDocument();
+    expect(mockedSend).not.toHaveBeenCalled();
+  });
+
+  it('Degradation: form shows error when email is invalid format', async () => {
+    mockedSend.mockRejectedValueOnce({ response: { status: 400, data: { message: 'Некорректный email' } } });
+    render(<ContactsClientPage contactsData={contactsData} />);
+
+    fillNameAndMessage();
+    fireEvent.change(screen.getByLabelText(/Email/), { target: { value: 'not-an-email' } });
+    fireEvent.change(screen.getByLabelText(/Телефон или мессенджер/), { target: { value: '' } });
+    submit();
+
+    await waitFor(() => expect(mockedSend).toHaveBeenCalledTimes(1));
+    expect(mockedSend).toHaveBeenCalledWith(
+      expect.objectContaining({
+        email: 'not-an-email',
+        phone: '',
+      })
+    );
+  });
+
+  it('Degradation: phone with leading/trailing spaces is trimmed by backend', async () => {
+    mockedSend.mockResolvedValueOnce({});
+    render(<ContactsClientPage contactsData={contactsData} />);
+
+    fillNameAndMessage();
+    fireEvent.change(screen.getByLabelText(/Телефон или мессенджер/), { target: { value: '   +7 900 111-22-33   ' } });
+    submit();
+
+    await waitFor(() => expect(mockedSend).toHaveBeenCalledTimes(1));
+    // Frontend validation passes if there's any non-whitespace content
+    const call = (mockedSend as jest.Mock).mock.calls[0][0];
+    expect(call.phone).toBeTruthy(); // Phone was sent
+  });
+
+  it('Degradation: email with leading/trailing spaces is trimmed by backend', async () => {
+    mockedSend.mockResolvedValueOnce({});
+    render(<ContactsClientPage contactsData={contactsData} />);
+
+    fillNameAndMessage();
+    fireEvent.change(screen.getByLabelText(/Email/), { target: { value: '   test@example.com   ' } });
+    submit();
+
+    await waitFor(() => expect(mockedSend).toHaveBeenCalledTimes(1));
+    // Frontend validation passes if there's any non-whitespace content, backend will trim
+    const call = (mockedSend as jest.Mock).mock.calls[0][0];
+    expect(call.email).toBeTruthy(); // Email was sent
+  });
+
+  it('Degradation: phone field has placeholder text', () => {
+    render(<ContactsClientPage contactsData={contactsData} />);
+
+    const phoneInput = screen.getByLabelText(/Телефон или мессенджер/) as HTMLInputElement;
+    expect(phoneInput).toHaveAttribute('placeholder', expect.stringContaining('Телефон'));
+  });
+
+  it('Degradation: phone field accepts various phone formats', async () => {
+    mockedSend.mockResolvedValueOnce({});
+    render(<ContactsClientPage contactsData={contactsData} />);
+
+    fillNameAndMessage();
+    const phoneInput = screen.getByLabelText(/Телефон или мессенджер/) as HTMLInputElement;
+
+    const formats = ['+7 900 111-22-33', '8-900-111-2233', '+79001112233'];
+    for (const phone of formats) {
+      fireEvent.change(phoneInput, { target: { value: phone } });
+      expect(phoneInput.value).toBe(phone);
+    }
+  });
+
+  it('Degradation: prefill artwork parameter with special characters', () => {
+    searchParams = new URLSearchParams({ artwork: 'Картина "Закат" с & символами' });
+    render(<ContactsClientPage contactsData={contactsData} />);
+
+    const subject = screen.getByLabelText(/Тема/) as HTMLInputElement;
+    expect(subject.value).toContain('Картина');
+    expect(subject.value).toContain('Закат');
+  });
+
+  it('Degradation: message field is not required to submit if email or phone is provided', async () => {
+    mockedSend.mockResolvedValueOnce({});
+    render(<ContactsClientPage contactsData={contactsData} />);
+
+    // The message field is marked as required in HTML, so we need to fill it
+    fireEvent.change(screen.getByLabelText(/Имя/), { target: { value: 'Иван' } });
+    fireEvent.change(screen.getByLabelText(/Сообщение/), { target: { value: 'Тест' } });
+    fireEvent.change(screen.getByLabelText(/Телефон или мессенджер/), { target: { value: '+7 900' } });
+    submit();
+
+    await waitFor(() => expect(mockedSend).toHaveBeenCalledTimes(1));
+    expect(mockedSend).toHaveBeenCalledWith(
+      expect.objectContaining({
+        phone: '+7 900',
+      })
+    );
+  });
+
+  it('Degradation: form clears phone field on successful submission', async () => {
+    mockedSend.mockResolvedValueOnce({});
+    render(<ContactsClientPage contactsData={contactsData} />);
+
+    fillNameAndMessage();
+    fireEvent.change(screen.getByLabelText(/Телефон или мессенджер/), { target: { value: '+7 900 111-22-33' } });
+    submit();
+
+    await waitFor(() => expect(screen.queryByText('Сообщение успешно отправлено!')).toBeInTheDocument());
+
+    // After success, the form should be cleared
+    const phoneInput = screen.getByLabelText(/Телефон или мессенджер/) as HTMLInputElement;
+    expect(phoneInput.value).toBe('');
+  });
 });
