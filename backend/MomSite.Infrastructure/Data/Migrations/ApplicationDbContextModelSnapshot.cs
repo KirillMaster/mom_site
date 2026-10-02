@@ -71,6 +71,40 @@ namespace MomSite.Infrastructure.Data.Migrations
                     b.ToTable("Artworks");
                 });
 
+            modelBuilder.Entity("MomSite.Core.Models.ArtworkImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ArtworkId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ThumbnailPath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArtworkId", "SortOrder");
+
+                    b.ToTable("ArtworkImages");
+                });
+
             modelBuilder.Entity("MomSite.Core.Models.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -377,6 +411,17 @@ namespace MomSite.Infrastructure.Data.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("MomSite.Core.Models.ArtworkImage", b =>
+                {
+                    b.HasOne("MomSite.Core.Models.Artwork", "Artwork")
+                        .WithMany("Images")
+                        .HasForeignKey("ArtworkId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Artwork");
+                });
+
             modelBuilder.Entity("MomSite.Core.Models.Review", b =>
                 {
                     b.HasOne("MomSite.Core.Models.Artwork", "Artwork")
@@ -396,6 +441,11 @@ namespace MomSite.Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("VideoCategory");
+                });
+
+            modelBuilder.Entity("MomSite.Core.Models.Artwork", b =>
+                {
+                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("MomSite.Core.Models.Category", b =>

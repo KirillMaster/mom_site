@@ -1,0 +1,24 @@
+feature: "Несколько фотографий одной картины"
+entities:
+  - id: "E-1"
+    name: "Artwork"
+    description: "Картина. Поля обложки сохраняются для обратной совместимости и всегда равны первому фото."
+    fields:
+      - {name: "Id", type: "number", required: true, description: "PK"}
+      - {name: "ImagePath", type: "string", required: true, description: "= Images[0].ImagePath"}
+      - {name: "ThumbnailPath", type: "string", required: true, description: "= Images[0].ThumbnailPath"}
+      - {name: "Images", type: "array", required: true, description: "1..10 ArtworkImage, упорядочены по SortOrder"}
+    relationships:
+      - {field: "Images", target_entity_ref: "E-2", cardinality: "many"}
+  - id: "E-2"
+    name: "ArtworkImage"
+    description: "Одно фото работы; SortOrder 0 — обложка; нормализуется в 0..N-1."
+    fields:
+      - {name: "Id", type: "number", required: true, description: "PK"}
+      - {name: "ArtworkId", type: "id_ref", required: true, description: "FK на Artwork, cascade delete"}
+      - {name: "ImagePath", type: "string", required: true, description: "S3 URL фото с водяным знаком, max 500"}
+      - {name: "ThumbnailPath", type: "string", required: true, description: "S3 URL миниатюры 300x300, max 500"}
+      - {name: "SortOrder", type: "number", required: true, description: "Порядок, 0 = обложка"}
+      - {name: "CreatedAt", type: "string", required: true, description: "UTC timestamp"}
+    relationships:
+      - {field: "ArtworkId", target_entity_ref: "E-1", cardinality: "one"}

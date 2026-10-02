@@ -11,6 +11,7 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<Artwork> Artworks { get; set; }
+    public DbSet<ArtworkImage> ArtworkImages { get; set; }
     public DbSet<Category> Categories { get; set; }
     
     public DbSet<Video> Videos { get; set; }
@@ -36,6 +37,19 @@ public class ApplicationDbContext : DbContext
                   .WithMany(c => c.Artworks)
                   .HasForeignKey(e => e.CategoryId)
                   .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // ArtworkImage configuration
+        modelBuilder.Entity<ArtworkImage>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.ImagePath).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.ThumbnailPath).IsRequired().HasMaxLength(500);
+            entity.HasOne(e => e.Artwork)
+                  .WithMany(a => a.Images)
+                  .HasForeignKey(e => e.ArtworkId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => new { e.ArtworkId, e.SortOrder });
         });
 
         // Category configuration

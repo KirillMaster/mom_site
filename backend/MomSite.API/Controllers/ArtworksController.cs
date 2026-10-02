@@ -4,8 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MomSite.Core.Models;
 using MomSite.Infrastructure.Data;
 using MomSite.Infrastructure.Services;
-using MomSite.API.DTOs; // Добавлено
-using Microsoft.AspNetCore.Http.Features;
+using MomSite.API.DTOs;
 
 namespace MomSite.API.Controllers;
 
@@ -15,12 +14,12 @@ namespace MomSite.API.Controllers;
 public class ArtworksController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
-    private readonly IImageService _imageService;
+    private readonly IArtworkImageService _artworkImages;
 
-    public ArtworksController(ApplicationDbContext context, IImageService imageService)
+    public ArtworksController(ApplicationDbContext context, IArtworkImageService artworkImages)
     {
         _context = context;
-        _imageService = imageService;
+        _artworkImages = artworkImages;
     }
 
     [HttpGet]
@@ -28,6 +27,7 @@ public class ArtworksController : ControllerBase
     {
         var query = _context.Artworks
             .Include(a => a.Category) // Включено обратно
+            .Include(a => a.Images)
             .AsQueryable();
 
         if (categoryId.HasValue)
@@ -49,6 +49,13 @@ public class ArtworksController : ControllerBase
                 CreatedAt = a.CreatedAt,
                 UpdatedAt = a.UpdatedAt,
                 CategoryId = a.CategoryId,
+                Images = a.Images.OrderBy(i => i.SortOrder).Select(i => new ArtworkImageDto
+                {
+                    Id = i.Id,
+                    ImagePath = i.ImagePath,
+                    ThumbnailPath = i.ThumbnailPath,
+                    SortOrder = i.SortOrder
+                }).ToList(),
                 Category = new CategoryDto
                 {
                     Id = a.Category.Id,
@@ -59,21 +66,20 @@ public class ArtworksController : ControllerBase
             })
             .ToListAsync();
 
-        // Добавляем логирование здесь, чтобы увидеть данные перед отправкой
-        foreach (var artwork in artworks)
+        foreach (var artwork in artworks.Where(a => a.Images.Count == 0))
         {
-            Console.WriteLine($"Artwork ID: {artwork.Id}, Title: {artwork.Title}, Description: {artwork.Description}, ImagePath: {artwork.ImagePath}");
+            artwork.Images = MappingExtensions.FallbackImages(artwork.ImagePath, artwork.ThumbnailPath);
         }
-        Console.WriteLine($"Returning {artworks.Count} artworks from GetArtworks. First artwork title: {artworks.FirstOrDefault()?.Title}");
 
         return Ok(artworks);
     }
 
     [HttpGet("{id}")] // Оставляем только GET для получения по ID
-    public async Task<ActionResult<Artwork>> GetArtwork(int id)
+    public async Task<ActionResult<ArtworkDto>> GetArtwork(int id)
     {
         var artwork = await _context.Artworks
             .Include(a => a.Category)
+            .Include(a => a.Images)
             .FirstOrDefaultAsync(a => a.Id == id);
 
         if (artwork == null)
@@ -81,7 +87,7 @@ public class ArtworksController : ControllerBase
             return NotFound();
         }
 
-        return Ok(artwork);
+        return Ok(artwork.ToDto());
     }
 
     [HttpPost("create")] // Изменено: добавлен явный маршрут "create"
@@ -95,39 +101,29 @@ public class ArtworksController : ControllerBase
 
         Console.WriteLine($"CreateArtwork: Title={dto.Title}, Description={dto.Description}, ImageFileName={dto.Image?.FileName}");
 
-        // Save original image
-        var imagePath = await _imageService.SaveImageAsync(dto.Image!, "artworks");
-        
-        // Create thumbnail
-        var thumbnailPath = await _imageService.CreateThumbnailAsync(imagePath, 300, 300);
-        
-        // Add watermark to original
-        var watermarkedPath = await _imageService.AddWatermarkAsync(imagePath, _imageService.GetWatermarkText());
-
         var artwork = new Artwork
         {
             Title = dto.Title,
             Description = dto.Description,
-            ImagePath = watermarkedPath,
-            ThumbnailPath = thumbnailPath,
             Price = dto.Price,
             IsForSale = dto.IsForSale,
             CategoryId = dto.CategoryId,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
+        await _artworkImages.SetCoverAsync(artwork, dto.Image!);
 
         _context.Artworks.Add(artwork);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetArtwork), new { id = artwork.Id }, artwork);
+        return CreatedAtAction(nameof(GetArtwork), new { id = artwork.Id }, artwork.ToDto());
     }
 
     [HttpPut("{id}")]
     [RequestFormLimits(MultipartBodyLengthLimit = 104857600)] // 100MB
     public async Task<IActionResult> UpdateArtwork(int id, [FromForm] UpdateArtworkDto dto)
     {
-        var artwork = await _context.Artworks.FindAsync(id);
+        var artwork = await _context.Artworks.Include(a => a.Images).FirstOrDefaultAsync(a => a.Id == id);
         if (artwork == null)
         {
             return NotFound();
@@ -144,17 +140,7 @@ public class ArtworksController : ControllerBase
 
         if (dto.Image != null)
         {
-            // Delete old images
-            _imageService.DeleteImage(artwork.ImagePath);
-            _imageService.DeleteImage(artwork.ThumbnailPath);
-
-            // Save new image
-            var imagePath = await _imageService.SaveImageAsync(dto.Image, "artworks");
-            var thumbnailPath = await _imageService.CreateThumbnailAsync(imagePath, 300, 300);
-            var watermarkedPath = await _imageService.AddWatermarkAsync(imagePath, _imageService.GetWatermarkText());
-
-            artwork.ImagePath = watermarkedPath;
-            artwork.ThumbnailPath = thumbnailPath;
+            await _artworkImages.SetCoverAsync(artwork, dto.Image);
         }
 
         await _context.SaveChangesAsync();
@@ -164,14 +150,13 @@ public class ArtworksController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteArtwork(int id)
     {
-        var artwork = await _context.Artworks.FindAsync(id);
+        var artwork = await _context.Artworks.Include(a => a.Images).FirstOrDefaultAsync(a => a.Id == id);
         if (artwork == null)
         {
             return NotFound();
         }
 
-        _imageService.DeleteImage(artwork.ImagePath);
-        _imageService.DeleteImage(artwork.ThumbnailPath);
+        _artworkImages.DeleteAllFiles(artwork);
 
         _context.Artworks.Remove(artwork);
         await _context.SaveChangesAsync();

@@ -157,6 +157,15 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
                         className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
                       />
 
+                      {artwork.images?.length > 1 && (
+                        <span
+                          data-testid="photo-count-badge"
+                          className="absolute bottom-2 left-2 rounded-full bg-black/60 px-2.5 py-1 text-xs font-medium text-white"
+                        >
+                          📷 {artwork.images.length}
+                        </span>
+                      )}
+
                       {/* Overlay */}
                       <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                         <button

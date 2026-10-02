@@ -1,0 +1,381 @@
+feature: "Несколько фотографий одной картины"
+tasks:
+  - id: "T001"
+    title: "Модель ArtworkImage и EF-миграция с переносом данных"
+    description: "Добавить сущность ArtworkImage, навигацию Artwork.Images, DbSet, конфигурацию FK cascade и миграцию AddArtworkImages с INSERT ... SELECT существующих фото как обложек."
+    context: "Нужна база для хранения нескольких фото; старые работы не должны потерять фото."
+    story_ref: "US1"
+    requirement_refs: ["FR-001", "FR-003", "FR-015"]
+    depends_on: []
+    parallelizable: false
+    entity_refs: ["E-1", "E-2"]
+    contract_refs: []
+    steps:
+      - order: 1
+        action: "Создать модель ArtworkImage"
+        detail: "backend/MomSite.Core/Models/ArtworkImage.cs: Id, ArtworkId, Artwork?, ImagePath [MaxLength 500], ThumbnailPath [MaxLength 500], SortOrder, CreatedAt"
+      - order: 2
+        action: "Добавить навигацию и DbSet"
+        detail: "Artwork.Images = List<ArtworkImage>; ApplicationDbContext.ArtworkImages; OnModelCreating: HasMany(Images).WithOne(Artwork).OnDelete(Cascade), индекс (ArtworkId, SortOrder)"
+      - order: 3
+        action: "Сгенерировать миграцию"
+        detail: "dotnet ef migrations add AddArtworkImages -p backend/MomSite.Infrastructure -s backend/MomSite.API; в Up после CreateTable migrationBuilder.Sql INSERT INTO \"ArtworkImages\" (\"ArtworkId\",\"ImagePath\",\"ThumbnailPath\",\"SortOrder\",\"CreatedAt\") SELECT \"Id\",\"ImagePath\",\"ThumbnailPath\",0,NOW() FROM \"Artworks\""
+    technical_notes:
+      - path: "backend/MomSite.Infrastructure/Data/ApplicationDbContext.cs"
+        note: "DbSet-ы и OnModelCreating"
+      - path: "backend/MomSite.Infrastructure/Data/Migrations"
+        note: "последняя миграция 20260919052526_AddReviewsTable"
+    acceptance_criteria:
+      - id: "AC-1"
+        description: "Миграция применяется; каждая работа имеет одно ArtworkImage с SortOrder 0 и путями, равными Artwork.ImagePath/ThumbnailPath"
+        done: false
+      - id: "AC-2"
+        description: "Удаление Artwork каскадно удаляет ArtworkImage"
+        done: false
+    test_scenarios:
+      - id: "TS-1"
+        given: ["работа в БД"]
+        when: "удаляется работа"
+        then: ["её ArtworkImage удалены"]
+        verification: ["automated"]
+        level: "integration"
+
+  - id: "T002"
+    title: "Сервис ArtworkImageService (порядок, обложка, синхронизация, валидация)"
+    description: "Сервис в Infrastructure с интерфейсом в Core: AddImagesAsync, DeleteImageAsync, ReorderAsync; нормализация SortOrder 0..N-1 и синхронизация Artwork.ImagePath/ThumbnailPath с обложкой."
+    context: "Логика порядка и обложки нужна в нескольких endpoint-ах — держим её в одном месте и тестируем unit-тестами."
+    story_ref: "US1"
+    requirement_refs: ["FR-001", "FR-002", "FR-004", "FR-005", "FR-006", "FR-007"]
+    depends_on: ["T001"]
+    parallelizable: false
+    entity_refs: ["E-1", "E-2"]
+    contract_refs: ["C-1", "C-2", "C-3"]
+    steps:
+      - order: 1
+        action: "Объявить интерфейс"
+        detail: "backend/MomSite.Core/Interfaces/IArtworkImageService.cs; результат — OperationResult (Ok/NotFound/BadRequest(message)) + список фото"
+      - order: 2
+        action: "Реализовать валидацию"
+        detail: "лимит 10 итого, ≤ 15 МБ (15*1024*1024), ContentType начинается с image/; сообщения на русском; проверка всех файлов до загрузки"
+      - order: 3
+        action: "Реализовать обработку файла"
+        detail: "SaveImageAsync(file,\"artworks\") → CreateThumbnailAsync(path,300,300) → AddWatermarkAsync(path, GetWatermarkText()) — как в ArtworksController.Create; вынести общий helper и использовать его в Create"
+      - order: 4
+        action: "Реализовать Delete/Reorder"
+        detail: "Delete: отказ на последнем фото, удаление файлов через IImageService.DeleteImage; Reorder: набор id должен совпадать с фото работы без дублей; затем Normalize + SyncCover"
+      - order: 5
+        action: "Зарегистрировать в DI и написать unit-тесты"
+        detail: "Program.cs AddScoped; backend/MomSite.Tests/ArtworkImageServiceTests.cs с InMemory/SQLite и мок IImageService"
+    technical_notes:
+      - path: "backend/MomSite.Infrastructure/Services/ImageService.cs"
+        note: "IImageService: SaveImageAsync, CreateThumbnailAsync, AddWatermarkAsync, DeleteImage, GetWatermarkText"
+    acceptance_criteria:
+      - id: "AC-1"
+        description: "После любой операции SortOrder = 0..N-1 и Artwork.ImagePath/ThumbnailPath = обложка"
+        done: false
+      - id: "AC-2"
+        description: "Отклоняются: >10 фото, файл >15 МБ, не image/*, удаление последнего фото, чужие id в порядке"
+        done: false
+    test_scenarios:
+      - id: "TS-1"
+        given: ["работа с 3 фото"]
+        when: "Reorder [3,1,2]"
+        then: ["обложка = фото 3", "Artwork.ImagePath = путь фото 3"]
+        verification: ["automated"]
+        level: "unit"
+      - id: "TS-2"
+        given: ["работа с 9 фото"]
+        when: "добавляют 2 файла"
+        then: ["BadRequest, фото не изменены"]
+        verification: ["automated"]
+        level: "unit"
+
+  - id: "T003"
+    title: "Admin endpoints фото работы"
+    description: "POST /api/admin/artworks/{id}/images, DELETE /api/admin/artworks/{id}/images/{imageId}, PUT /api/admin/artworks/{id}/images/order; Create создаёт обложку ArtworkImage; Update с Image синхронизирует обложку; Delete удаляет файлы всех фото."
+    context: "Админке нужны операции над фото через API."
+    story_ref: "US1"
+    requirement_refs: ["FR-004", "FR-005", "FR-006", "FR-007", "FR-008", "FR-015"]
+    depends_on: ["T002"]
+    parallelizable: false
+    entity_refs: ["E-1", "E-2"]
+    contract_refs: ["C-1", "C-2", "C-3", "C-5"]
+    steps:
+      - order: 1
+        action: "Добавить DTO"
+        detail: "backend/MomSite.API/DTOs/ArtworkImageDto.cs {Id, ImagePath, ThumbnailPath, SortOrder}; ReorderImagesDto {List<int> ImageIds}"
+      - order: 2
+        action: "Добавить actions"
+        detail: "ArtworksController (или новый ArtworkImagesController с [Route(\"api/admin/artworks/{id:int}/images\")], [Authorize]); RequestFormLimits/RequestSizeLimit 160MB для POST"
+      - order: 3
+        action: "Обновить Create/Update/Delete"
+        detail: "Create — добавить ArtworkImage SortOrder 0; Update с Image — заменить обложку; Delete — DeleteImage для всех фото"
+      - order: 4
+        action: "Integration-тесты"
+        detail: "backend/MomSite.Tests/ArtworkImagesEndpointsTests.cs: 200/400/401/404 для C-1..C-3, C-5"
+    technical_notes:
+      - path: "backend/MomSite.API/Controllers/ArtworksController.cs"
+        note: "[Route(\"api/admin/[controller]\")], [Authorize], Create/Update/Delete"
+      - path: "backend/MomSite.Tests/AdminTestHelpers.cs"
+        note: "helpers авторизации для тестов"
+    acceptance_criteria:
+      - id: "AC-1"
+        description: "Все response_cases C-1..C-3 и C-5 покрыты интеграционными тестами и проходят"
+        done: false
+    test_scenarios:
+      - id: "TS-1"
+        given: ["нет JWT"]
+        when: "POST /images"
+        then: ["401"]
+        verification: ["automated"]
+        level: "integration"
+      - id: "TS-2"
+        given: ["работа с 1 фото"]
+        when: "DELETE последнего фото"
+        then: ["400 с сообщением"]
+        verification: ["automated"]
+        level: "integration"
+
+  - id: "T004"
+    title: "Публичный и админский DTO: images[]"
+    description: "ArtworkDto/ArtworkAdminDto получают Images; запросы gallery/home/admin list делают Include(Images); fallback при пустой коллекции."
+    context: "Фронту нужны все фото работы в публичных данных."
+    story_ref: "US2"
+    requirement_refs: ["FR-009"]
+    depends_on: ["T001"]
+    parallelizable: true
+    entity_refs: ["E-1", "E-2"]
+    contract_refs: ["C-4"]
+    steps:
+      - order: 1
+        action: "Расширить DTO и маппинг"
+        detail: "DTOs/ArtworkDto.cs, ArtworkAdminDto.cs: List<ArtworkImageDto> Images; MappingExtensions.ToDto: OrderBy(SortOrder); если пусто — [new(0, ImagePath, ThumbnailPath, 0)]"
+      - order: 2
+        action: "Добавить Include"
+        detail: "PublicController gallery/home и ArtworksController GET — .Include(a => a.Images)"
+      - order: 3
+        action: "Тесты"
+        detail: "PublicControllerTests: gallery возвращает images по порядку; fallback"
+    technical_notes:
+      - path: "backend/MomSite.API/DTOs/MappingExtensions.cs"
+        note: "ToDto для Artwork"
+      - path: "backend/MomSite.API/Controllers/PublicController.cs"
+        note: "GET gallery, home"
+    acceptance_criteria:
+      - id: "AC-1"
+        description: "GET /api/public/gallery отдаёт images[] у каждой работы по SortOrder"
+        done: false
+    test_scenarios:
+      - id: "TS-1"
+        given: ["работа с 2 фото в обратном порядке вставки"]
+        when: "GET /api/public/gallery"
+        then: ["images отсортированы по sortOrder"]
+        verification: ["automated"]
+        level: "integration"
+
+  - id: "T005"
+    title: "Фронт: типы и API-клиент фото"
+    description: "Тип ArtworkImage, поле images у Artwork; функции uploadArtworkImages, deleteArtworkImage, reorderArtworkImages."
+    context: "Общая основа для админки и публичных страниц."
+    story_ref: "US1"
+    requirement_refs: ["FR-004", "FR-006", "FR-007", "FR-009"]
+    depends_on: ["T003", "T004"]
+    parallelizable: false
+    entity_refs: ["E-2"]
+    contract_refs: ["C-1", "C-2", "C-3", "C-4"]
+    steps:
+      - order: 1
+        action: "Добавить типы"
+        detail: "frontend/types (или lib/api.ts): interface ArtworkImage {id:number; imagePath:string; thumbnailPath:string; sortOrder:number}; Artwork.images: ArtworkImage[]"
+      - order: 2
+        action: "Добавить API-функции"
+        detail: "frontend/lib/artworkImagesApi.ts через существующий axios-инстанс; FormData с ключом Images"
+    technical_notes:
+      - path: "frontend/lib/api.ts"
+        note: "axios-инстанс и типы"
+    acceptance_criteria:
+      - id: "AC-1"
+        description: "tsc strict без ошибок; функции покрыты Jest-тестами с моком axios"
+        done: false
+    test_scenarios:
+      - id: "TS-1"
+        given: ["мок axios"]
+        when: "uploadArtworkImages(5,[f1,f2])"
+        then: ["POST /admin/artworks/5/images с двумя Images"]
+        verification: ["automated"]
+        level: "unit"
+
+  - id: "T006"
+    title: "Админка: мультизагрузка и управление фото"
+    description: "MultiImageDropzone (multiple + drag&drop, превью, удаление из очереди) и ArtworkImagesManager (миниатюры, drag&drop порядка, «Сделать обложкой», «Удалить» с confirm) в форме работы."
+    context: "Хозяйка сайта должна сама загружать и упорядочивать фото."
+    story_ref: "US1"
+    requirement_refs: ["FR-004", "FR-005", "FR-006", "FR-007"]
+    depends_on: ["T005"]
+    parallelizable: false
+    entity_refs: ["E-2"]
+    contract_refs: ["C-1", "C-2", "C-3"]
+    steps:
+      - order: 1
+        action: "Создать MultiImageDropzone"
+        detail: "frontend/components/admin/MultiImageDropzone.tsx: input type=file multiple accept=image/*, onDrop, превью URL.createObjectURL с revoke, клиентская проверка 15 МБ и остатка до 10"
+      - order: 2
+        action: "Создать ArtworkImagesManager"
+        detail: "frontend/components/admin/ArtworkImagesManager.tsx: HTML5 draggable, onDrop → reorderArtworkImages; кнопки «Сделать обложкой», «Удалить» (window.confirm); бейдж «Обложка» на первом"
+      - order: 3
+        action: "Встроить в страницу"
+        detail: "frontend/app/admin/artworks/page.tsx: создание — POST create с первым файлом, затем uploadArtworkImages с остальными; редактирование — менеджер + дозагрузка; вынести форму в отдельный компонент, чтобы файл ≤ 200 строк"
+      - order: 4
+        action: "Jest-тесты"
+        detail: "frontend/__tests__/MultiImageDropzone.test.tsx, ArtworkImagesManager.test.tsx"
+    technical_notes:
+      - path: "frontend/app/admin/artworks/page.tsx"
+        note: "372 строки — вынести форму"
+    acceptance_criteria:
+      - id: "AC-1"
+        description: "Можно создать работу с 3 фото, удалить фото, сменить порядок и обложку; ошибки на русском"
+        done: false
+    test_scenarios:
+      - id: "TS-1"
+        given: ["менеджер с 3 фото"]
+        when: "клик «Сделать обложкой» на 3-м"
+        then: ["вызван reorder с [id3,id1,id2]"]
+        verification: ["automated"]
+        level: "unit"
+
+  - id: "T007"
+    title: "Публичная галерея на странице работы"
+    description: "ArtworkGallery: scroll-snap трек со всеми фото, точки на мобайле, полоса миниатюр на lg+, лайтбокс со всеми слайдами с текущего индекса."
+    context: "Покупатель должен видеть картину с разных ракурсов, как на theograce.com."
+    story_ref: "US2"
+    requirement_refs: ["FR-010", "FR-011"]
+    depends_on: ["T005"]
+    parallelizable: true
+    entity_refs: ["E-2"]
+    contract_refs: ["C-4"]
+    steps:
+      - order: 1
+        action: "Переписать ArtworkViewer в ArtworkGallery"
+        detail: "frontend/app/gallery/[slug]/ArtworkGallery.tsx (client): props images, title; трек flex overflow-x-auto snap-x snap-mandatory; onScroll → активный индекс"
+      - order: 2
+        action: "Навигация"
+        detail: "Thumbnails (hidden lg:flex) с aria-current; Dots (lg:hidden); при одном фото — ни того ни другого"
+      - order: 3
+        action: "Лайтбокс"
+        detail: "yet-another-react-lightbox: slides = все фото, index = активный, Zoom; prev/next не скрывать при >1; reachGoal(Goals.ArtworkView) сохранить"
+      - order: 4
+        action: "Подключить на странице и Jest-тесты"
+        detail: "page.tsx передаёт artwork.images; frontend/__tests__/ArtworkGallery.test.tsx"
+    technical_notes:
+      - path: "frontend/app/gallery/[slug]/ArtworkViewer.tsx"
+        note: "текущий лайтбокс с одним слайдом"
+    acceptance_criteria:
+      - id: "AC-1"
+        description: "Клик по миниатюре переключает фото; лайтбокс открывается на текущем и листает все; одно фото — без навигации"
+        done: false
+    test_scenarios:
+      - id: "TS-1"
+        given: ["3 фото"]
+        when: "клик по 2-й миниатюре и затем по основному"
+        then: ["лайтбокс открыт с index 1"]
+        verification: ["automated"]
+        level: "unit"
+
+  - id: "T008"
+    title: "SEO: alt, приоритет загрузки, JSON-LD image[]"
+    description: "Все фото в SSR-HTML с alt «Название — фото N», первое eager+fetchPriority high, остальные lazy; JSON-LD image — массив, OG — обложка."
+    context: "Поисковики должны видеть все изображения работы."
+    story_ref: "US3"
+    requirement_refs: ["FR-002", "FR-012", "FR-013"]
+    depends_on: ["T007"]
+    parallelizable: false
+    entity_refs: ["E-2"]
+    contract_refs: ["C-4"]
+    steps:
+      - order: 1
+        action: "alt и loading"
+        detail: "в ArtworkGallery: alt = images.length>1 ? `${title} — фото ${i+1}` : title; i===0 → loading=eager fetchPriority=high"
+      - order: 2
+        action: "JSON-LD"
+        detail: "frontend/app/gallery/[slug]/page.tsx: image: images.map(getImageUrl)"
+      - order: 3
+        action: "Тест"
+        detail: "Jest-рендер: alt и loading атрибуты; e2e проверка HTML"
+    technical_notes:
+      - path: "frontend/app/gallery/[slug]/page.tsx"
+        note: "VisualArtwork JSON-LD"
+    acceptance_criteria:
+      - id: "AC-1"
+        description: "curl страницы содержит все img с alt и JSON-LD image-массив"
+        done: false
+    test_scenarios:
+      - id: "TS-1"
+        given: ["работа с 3 фото"]
+        when: "SSR страницы"
+        then: ["3 img, первый eager, 2 lazy", "JSON-LD image длины 3"]
+        verification: ["automated"]
+        level: "e2e"
+
+  - id: "T009"
+    title: "Бейдж «📷 N» в сетке галереи"
+    description: "Карточка работы в /gallery показывает бейдж с количеством фото при images.length > 1."
+    context: "Посетитель сразу видит, что у работы есть дополнительные фото."
+    story_ref: "US4"
+    requirement_refs: ["FR-014"]
+    depends_on: ["T005"]
+    parallelizable: true
+    entity_refs: ["E-2"]
+    contract_refs: ["C-4"]
+    steps:
+      - order: 1
+        action: "Добавить бейдж"
+        detail: "frontend/app/gallery/GalleryClientPage.tsx (или компонент карточки): absolute top-2 right-2 bg-black/60 text-white text-xs rounded px-2, aria-label «N фото»"
+      - order: 2
+        action: "Jest-тест"
+        detail: "бейдж есть при 3 фото, нет при 1"
+    technical_notes:
+      - path: "frontend/app/gallery/GalleryClientPage.tsx"
+        note: "сетка работ"
+    acceptance_criteria:
+      - id: "AC-1"
+        description: "Бейдж только у работ с >1 фото"
+        done: false
+    test_scenarios:
+      - id: "TS-1"
+        given: ["работа с 3 фото"]
+        when: "рендер сетки"
+        then: ["бейдж «📷 3»"]
+        verification: ["automated"]
+        level: "unit"
+
+  - id: "T010"
+    title: "E2E Playwright: админ-фото и публичная галерея"
+    description: "e2e/artwork-images.spec.ts: создание работы с 2+ фото, смена обложки, удаление; публичная страница — миниатюры, лайтбокс ←/→, мобильный viewport с точками."
+    context: "Критичные пользовательские сценарии проверяются автоматически."
+    story_ref: "US2"
+    requirement_refs: ["FR-004", "FR-007", "FR-010", "FR-011", "FR-014"]
+    depends_on: ["T006", "T008", "T009"]
+    parallelizable: false
+    entity_refs: ["E-2"]
+    contract_refs: ["C-1", "C-3", "C-4"]
+    steps:
+      - order: 1
+        action: "Написать spec"
+        detail: "frontend/e2e/artwork-images.spec.ts по образцу admin.spec.ts; фикстуры-картинки в e2e/fixtures"
+      - order: 2
+        action: "Прогнать"
+        detail: "npx playwright test e2e/artwork-images.spec.ts"
+    technical_notes:
+      - path: "frontend/e2e/admin.spec.ts"
+        note: "логин и паттерны админки"
+    acceptance_criteria:
+      - id: "AC-1"
+        description: "E2E проходит локально и в CI"
+        done: false
+    test_scenarios:
+      - id: "TS-1"
+        given: ["работа с 3 фото"]
+        when: "открыть лайтбокс и нажать →"
+        then: ["показано 2-е фото"]
+        verification: ["automated"]
+        level: "e2e"
