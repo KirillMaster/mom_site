@@ -15,6 +15,41 @@ interface Props {
 
 const btn = 'p-1 rounded bg-white text-gray-700 hover:text-blue-600 disabled:opacity-30 disabled:hover:text-gray-700';
 
+interface ControlsProps {
+  image: ArtworkImage;
+  index: number;
+  count: number;
+  onMove: (from: number, to: number) => void;
+  onRemove: (image: ArtworkImage) => void;
+}
+
+const ImageControls = ({ image, index, count, onMove, onRemove }: ControlsProps) => (
+  <>
+    <img src={getImageUrl(image.thumbnailPath)} alt={`Фото ${index + 1}`} className="h-24 w-full object-cover rounded" />
+    {index === 0 && (
+      <span className="absolute top-2 left-2 px-2 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Обложка</span>
+    )}
+    <div className="flex justify-between mt-1">
+      <button type="button" className={btn} aria-label={`Переместить фото ${index + 1} влево`} disabled={index === 0} onClick={() => onMove(index, index - 1)}>
+        <ArrowLeft className="w-4 h-4" />
+      </button>
+      {index > 0 && (
+        <button type="button" className={btn} aria-label={`Сделать обложкой фото ${index + 1}`} title="Сделать обложкой" onClick={() => onMove(index, 0)}>
+          <Star className="w-4 h-4" />
+        </button>
+      )}
+      <button type="button" className={btn} aria-label={`Переместить фото ${index + 1} вправо`} disabled={index === count - 1} onClick={() => onMove(index, index + 1)}>
+        <ArrowRight className="w-4 h-4" />
+      </button>
+      {count > 1 && (
+        <button type="button" className={`${btn} hover:text-red-600`} aria-label={`Удалить фото ${index + 1}`} onClick={() => onRemove(image)}>
+          <Trash2 className="w-4 h-4" />
+        </button>
+      )}
+    </div>
+  </>
+);
+
 const ArtworkImagesManager = ({ artworkId, images, onChange }: Props) => {
   const [error, setError] = useState<string | null>(null);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
@@ -59,28 +94,7 @@ const ArtworkImagesManager = ({ artworkId, images, onChange }: Props) => {
             }}
             className="relative border border-gray-200 rounded-md p-1 cursor-move"
           >
-            <img src={getImageUrl(image.thumbnailPath)} alt={`Фото ${index + 1}`} className="h-24 w-full object-cover rounded" />
-            {index === 0 && (
-              <span className="absolute top-2 left-2 px-2 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Обложка</span>
-            )}
-            <div className="flex justify-between mt-1">
-              <button type="button" className={btn} aria-label={`Переместить фото ${index + 1} влево`} disabled={index === 0} onClick={() => move(index, index - 1)}>
-                <ArrowLeft className="w-4 h-4" />
-              </button>
-              {index > 0 && (
-                <button type="button" className={btn} aria-label={`Сделать обложкой фото ${index + 1}`} title="Сделать обложкой" onClick={() => move(index, 0)}>
-                  <Star className="w-4 h-4" />
-                </button>
-              )}
-              <button type="button" className={btn} aria-label={`Переместить фото ${index + 1} вправо`} disabled={index === images.length - 1} onClick={() => move(index, index + 1)}>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-              {images.length > 1 && (
-                <button type="button" className={`${btn} hover:text-red-600`} aria-label={`Удалить фото ${index + 1}`} onClick={() => remove(image)}>
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              )}
-            </div>
+            <ImageControls image={image} index={index} count={images.length} onMove={move} onRemove={remove} />
           </li>
         ))}
       </ul>
