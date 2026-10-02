@@ -1,0 +1,38 @@
+{
+  "scenario_ids": [
+    "US1-EC1",
+    "US1-BE1",
+    "US1-BE2",
+    "US1-BE3",
+    "US1-BE4",
+    "US1-EC2",
+    "US1-BE5",
+    "US1-EC3",
+    "US1-EC4",
+    "US1-EC5",
+    "US1-EC6",
+    "US1-EC7",
+    "US1-BE6",
+    "US1-BE7",
+    "US2-BE1",
+    "US1-FE1"
+  ],
+  "traced_ids": [
+    "US1_EC1",
+    "US1_BE1",
+    "US1_BE2",
+    "US1_BE3",
+    "US1_BE4",
+    "US1_EC2",
+    "US1_BE5",
+    "US1_EC3",
+    "US1_EC4",
+    "US1_EC5",
+    "US1_EC6",
+    "US1_EC7",
+    "US1_BE6",
+    "US1_BE7",
+    "US2_BE1",
+    "US1-FE1"
+  ]
+}
