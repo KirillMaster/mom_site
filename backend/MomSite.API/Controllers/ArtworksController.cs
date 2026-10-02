@@ -75,10 +75,11 @@ public class ArtworksController : ControllerBase
     }
 
     [HttpGet("{id}")] // Оставляем только GET для получения по ID
-    public async Task<ActionResult<Artwork>> GetArtwork(int id)
+    public async Task<ActionResult<ArtworkDto>> GetArtwork(int id)
     {
         var artwork = await _context.Artworks
             .Include(a => a.Category)
+            .Include(a => a.Images)
             .FirstOrDefaultAsync(a => a.Id == id);
 
         if (artwork == null)
@@ -86,7 +87,7 @@ public class ArtworksController : ControllerBase
             return NotFound();
         }
 
-        return Ok(artwork);
+        return Ok(artwork.ToDto());
     }
 
     [HttpPost("create")] // Изменено: добавлен явный маршрут "create"
@@ -115,7 +116,7 @@ public class ArtworksController : ControllerBase
         _context.Artworks.Add(artwork);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetArtwork), new { id = artwork.Id }, artwork);
+        return CreatedAtAction(nameof(GetArtwork), new { id = artwork.Id }, artwork.ToDto());
     }
 
     [HttpPut("{id}")]
