@@ -11,7 +11,7 @@ describe('@US1-FE1 artwork images api - boundary cases', () => {
   beforeEach(() => jest.clearAllMocks());
 
   it('@US1-BE5 uploadArtworkImages handles empty file list correctly', async () => {
-    const images = [];
+    const images: unknown[] = [];
     mocked.post.mockResolvedValue({ data: { images } });
 
     const result = await uploadArtworkImages(5, []);
