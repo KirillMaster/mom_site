@@ -1,0 +1,75 @@
+feature: 008-conversion-quick-wins
+branch: feature/008-conversion-quick-wins
+summary: >-
+  Миграция AddArtworkCatalogFields вводит подмножество полей data-model 005 (Status enum,
+  WidthCm, HeightCm, Year, Support, Technique); IsForSale остаётся колонкой и синхронизируется
+  из Status при сохранении; данные мигрируются A-2. ContactMessage получает Phone ≤ 100,
+  Email становится необязательным, DTO проверяет «email или телефон» через IValidatableObject.
+  Админ-форма работы — блок характеристик. Фронт: ArtworkSpecs (только заполненные поля),
+  ContactChannels и MobileContactBar с предзаполненным текстом из lib/contactChannels и целью
+  ContactClick на канал; форма контактов с полем «Телефон или мессенджер» и ?artwork;
+  галерея — клиентский срез по 24 и «Показать ещё», lazy/async превью, карточка-ссылка с ценой
+  и размером; RelatedWorks ≤ 8 + «Смотреть все» на /gallery?category=; фикс overflow на /about;
+  SEO-метаданные и alt hero; утилита normalizeTitle; e2e на отсутствие горизонтального скролла
+  при 390 px.
+technical_context:
+  language_version: C# 12 / .NET 8 (backend); TypeScript 5 strict / Next.js 14 App Router, React 18 (frontend)
+  primary_dependencies:
+    - EF Core 8 + Npgsql (одна миграция AddArtworkCatalogFields, одна AddContactPhone)
+    - System.ComponentModel.DataAnnotations (IValidatableObject для правила email|phone)
+    - lib/analytics reachGoal (существует) — цель ContactClick с channel и artwork
+    - lib/social maxProfileUrl и socialLinks из публичного API (существуют)
+    - Tailwind, next/image (существуют); новых npm-зависимостей нет
+  storage: PostgreSQL — новые колонки Artworks (Status int, WidthCm, HeightCm, Year, Support, Technique) и ContactMessages.Phone
+  testing: xUnit (unit — правило email|phone, синхронизация IsForSale из Status, маппинг DTO; integration — POST /api/public/contact с телефоном без email, admin PUT работы с характеристиками); Jest (ArtworkSpecs, ContactChannels, MobileContactBar, normalizeTitle, buildPrefilledMessage, пагинация галереи, RelatedWorks, форма контактов); Playwright (карточка → мессенджер, форма без email, «Показать ещё», нет overflow на 390 px на всех публичных страницах)
+  target_platform: Linux Docker (mom_site_api_prod, mom_site_frontend_prod), браузеры mobile-first
+  project_type: web_application
+  performance_goals: Галерея рендерит ≤ 24 карточек до клика «Показать ещё»; превью loading=lazy кроме первого ряда; LCP карточки на мобильном ≤ 2,5 с; TTFB + render < 200 мс (P8)
+  constraints: Поля и enum строго по data-model 005 (совместимость будущего импорта); существующие API-поля не удаляются (IsForSale остаётся в DTO); телефон ≤ 100 символов без строгого формата; ссылки мессенджеров только из socialLinks/phone (A-3), Telegram — прямой чат (A-4); файлы ≤ 200 строк, функции ≤ 50 (P3)
+  scale_scope: ~300 работ, 1 администратор, десятки заявок в месяц
+constitution_check:
+  - principle_id: P1
+    status: pass
+  - principle_id: P2
+    status: pass
+  - principle_id: P3
+    status: pass
+  - principle_id: P4
+    status: pass
+  - principle_id: P5
+    status: pass
+  - principle_id: P6
+    status: pass
+  - principle_id: P7
+    status: pass
+  - principle_id: P8
+    status: pass
+  - principle_id: P9
+    status: pass
+  - principle_id: P10
+    status: pass
+project_structure:
+  layout: web_application
+  description: >-
+    Backend: enum ArtworkStatus и новые поля в Core/Models/Artwork.cs, Phone в ContactMessage и
+    ContactMessageDto (IValidatableObject), миграции в Infrastructure/Data/Migrations, расширение
+    ArtworkDto/ArtworkAdminDto/MappingExtensions и ArtworksController (Create/Update DTO).
+    Frontend: новые компоненты в app/gallery/[slug] (ArtworkSpecs, ContactChannels,
+    MobileContactBar), lib/contactChannels.ts и lib/normalizeTitle.ts, правки GalleryClientPage,
+    RelatedWorks, ContactsClientPage, AboutClientPage, HomeClientPage, метаданных gallery/reviews,
+    админ-формы ArtworkFormFields; e2e/conversion.spec.ts и e2e/no-overflow.spec.ts.
+  directories:
+    - backend/MomSite.Core/Models/
+    - backend/MomSite.Infrastructure/Data/Migrations/
+    - backend/MomSite.API/DTOs/
+    - backend/MomSite.API/Controllers/
+    - backend/MomSite.Tests/
+    - frontend/app/gallery/
+    - frontend/app/gallery/[slug]/
+    - frontend/app/contacts/
+    - frontend/app/about/
+    - frontend/app/reviews/
+    - frontend/components/admin/
+    - frontend/lib/
+    - frontend/types/
+    - frontend/e2e/

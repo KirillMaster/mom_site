@@ -1,0 +1,46 @@
+feature: 008-conversion-quick-wins
+entities:
+  - id: artwork
+    name: Artwork (существующая, расширение)
+    description: 'Работа; характеристики добавляются миграцией AddArtworkCatalogFields строго по data-model 005'
+    fields:
+      - {name: Id, type: id_ref, required: true, description: Ключ}
+      - {name: Title, type: string, required: true, description: '≤ 200; при выводе normalizeTitle'}
+      - {name: Price, type: number, required: false, description: 'null = цена по запросу'}
+      - {name: Status, type: enum, required: true, enum_values: [Available, Sold, PrivateCollection, Unavailable, NotForSale, NotMine], description: 'Новое; default Available; миграция: IsForSale ? Available : NotForSale'}
+      - {name: IsForSale, type: boolean, required: true, description: 'Существующее; сервер выставляет Status == Available'}
+      - {name: WidthCm, type: number, required: false, description: 'Новое; целое 1–1000'}
+      - {name: HeightCm, type: number, required: false, description: 'Новое; целое 1–1000'}
+      - {name: Year, type: number, required: false, description: 'Новое; 1950–текущий'}
+      - {name: Support, type: string, required: false, description: 'Новое; основа ≤ 100'}
+      - {name: Technique, type: string, required: false, description: 'Новое; техника ≤ 100'}
+      - {name: CategoryId, type: id_ref, required: true, description: Существующее}
+    relationships:
+      - {field: CategoryId, target_entity_ref: category, cardinality: one}
+  - id: category
+    name: Category (существующая)
+    description: 'Раздел галереи; используется в ссылке «Смотреть все» /gallery?category='
+    fields:
+      - {name: Id, type: id_ref, required: true, description: Ключ}
+      - {name: Name, type: string, required: true, description: Название}
+    relationships: []
+  - id: contact-message
+    name: ContactMessage (существующая, расширение)
+    description: 'Заявка из формы; миграция AddContactPhone'
+    fields:
+      - {name: Id, type: id_ref, required: true, description: Ключ}
+      - {name: Name, type: string, required: false, description: Существующее}
+      - {name: Email, type: string, required: false, description: 'Было обязательным, стало nullable ≤ 200'}
+      - {name: Phone, type: string, required: false, description: 'Новое; телефон или мессенджер ≤ 100; хотя бы одно из Email/Phone'}
+      - {name: Subject, type: string, required: true, description: 'Автоподстановка «Картина «<название>»» из ?artwork'}
+      - {name: Message, type: string, required: true, description: '≤ 5000'}
+    relationships: []
+  - id: contact-channel
+    name: ContactChannel (не хранится, фронт)
+    description: 'Быстрый канал связи на карточке; строится из socialLinks и phone'
+    fields:
+      - {name: channel, type: enum, required: true, enum_values: [telegram, whatsapp, max, phone], description: 'Значение channel в цели ContactClick'}
+      - {name: href, type: string, required: true, description: 'Ссылка; канал без ссылки не показывается'}
+      - {name: prefilledText, type: string, required: false, description: 'Здравствуйте! Интересует картина «<название>» <url>'}
+    relationships:
+      - {field: artwork, target_entity_ref: artwork, cardinality: one}
