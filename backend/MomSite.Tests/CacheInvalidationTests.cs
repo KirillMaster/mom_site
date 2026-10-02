@@ -71,9 +71,42 @@ namespace MomSite.Tests
         [InlineData("PATCH", "/api/admin/reviews/1/publish", 204)]
         [InlineData("DELETE", "/api/admin/videos/3", 204)]
         [InlineData("POST", "/api/admin/artworks/create", 201)]
+        [InlineData("POST", "/api/admin/categories", 299)]
         public async Task SuccessfulMutation_InvokesInvalidator(string method, string path, int status)
         {
             Assert.Equal(1, await RunAsync(method, path, status, new RecordingInvalidator()));
+        }
+
+        [Theory]
+        [Trait("Scenario", "US2-BE1")]
+        [InlineData("POST", "/api/admin/categories", 202)]
+        [InlineData("PUT", "/api/admin/videos/3", 206)]
+        [InlineData("PATCH", "/api/admin/reviews/1/publish", 200)]
+        public async Task VariousSuccessStatuses_InvokeInvalidator(string method, string path, int status)
+        {
+            Assert.Equal(1, await RunAsync(method, path, status, new RecordingInvalidator()));
+        }
+
+        [Theory]
+        [Trait("Scenario", "US2-BE1")]
+        [InlineData("/API/admin/categories")]
+        [InlineData("/Api/Admin/Videos")]
+        [InlineData("/API/ADMIN/photos")]
+        public async Task CaseInsensitivePathMatching_InvokesInvalidator(string path)
+        {
+            Assert.Equal(1, await RunAsync("POST", path, 200, new RecordingInvalidator()));
+        }
+
+        [Theory]
+        [Trait("Scenario", "US2-BE2")]
+        [InlineData("POST", "/api/admin/categories", 300)]
+        [InlineData("POST", "/api/admin/categories", 199)]
+        [InlineData("POST", "/api/admin/categories", 301)]
+        [InlineData("POST", "/api/admin/categories", 302)]
+        [InlineData("POST", "/api/admin/categories", 399)]
+        public async Task Non2xxStatuses_DoNotInvokeInvalidator(string method, string path, int status)
+        {
+            Assert.Equal(0, await RunAsync(method, path, status, new RecordingInvalidator()));
         }
 
         [Theory]
@@ -85,7 +118,31 @@ namespace MomSite.Tests
         [InlineData("POST", "/api/admin/categories", 401)]
         [InlineData("POST", "/api/admin/login", 200)]
         [InlineData("POST", "/api/public/contact-message", 200)]
+        [InlineData("HEAD", "/api/admin/categories", 200)]
+        [InlineData("OPTIONS", "/api/admin/categories", 200)]
         public async Task NonQualifyingRequests_DoNotInvokeInvalidator(string method, string path, int status)
+        {
+            Assert.Equal(0, await RunAsync(method, path, status, new RecordingInvalidator()));
+        }
+
+        [Theory]
+        [Trait("Scenario", "US2-BE2")]
+        [InlineData("POST", "/api/admin/login", 200)]
+        [InlineData("POST", "/api/admin/login/", 200)]
+        [InlineData("PUT", "/api/admin/login", 200)]
+        [InlineData("DELETE", "/api/admin/login", 200)]
+        public async Task LoginPath_NeverInvalidatesRegardlessOfMethod(string method, string path, int status)
+        {
+            Assert.Equal(0, await RunAsync(method, path, status, new RecordingInvalidator()));
+        }
+
+        [Theory]
+        [Trait("Scenario", "US2-BE2")]
+        [InlineData("POST", "/api/public/contact-message", 200)]
+        [InlineData("PUT", "/api/public/contact-message", 200)]
+        [InlineData("PATCH", "/api/public/anything", 200)]
+        [InlineData("DELETE", "/api/public/anything", 200)]
+        public async Task PublicApiPaths_NeverInvalidate(string method, string path, int status)
         {
             Assert.Equal(0, await RunAsync(method, path, status, new RecordingInvalidator()));
         }
@@ -125,10 +182,51 @@ namespace MomSite.Tests
         }
 
         [Theory]
+        [Trait("Scenario", "US2-BE1")]
+        [InlineData(HttpStatusCode.OK)]
+        [InlineData(HttpStatusCode.Created)]
+        [InlineData(HttpStatusCode.Accepted)]
+        [InlineData(HttpStatusCode.NoContent)]
+        [InlineData((HttpStatusCode)206)]
+        public async Task Various2xxStatuses_SucceedSilently(HttpStatusCode status)
+        {
+            var h = new StubHandler((_, _) => Task.FromResult(new HttpResponseMessage(status)));
+            var log = new ListLogger<FrontendCacheInvalidator>();
+            await Make(h, Config("http://x/y", "s"), log).InvalidateAsync();
+
+            Assert.Equal(1, h.Calls);
+            Assert.DoesNotContain(log.Entries, e => e.Level == LogLevel.Warning);
+        }
+
+        [Fact]
+        [Trait("Scenario", "US2-BE1")]
+        public async Task SecretHeaderContainsExactValue()
+        {
+            var h = new StubHandler((_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)));
+            var secret = "very-secret-with-special-chars!@#$%";
+            await Make(h, Config("http://x/y", secret), new()).InvalidateAsync();
+
+            Assert.Equal(secret, h.Last!.Headers.GetValues("X-Revalidate-Secret").Single());
+        }
+
+        [Fact]
+        [Trait("Scenario", "US2-BE1")]
+        public async Task SecretHeaderWithWhitespace_IsSentAsIs()
+        {
+            var h = new StubHandler((_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)));
+            var secret = "  secret  ";
+            await Make(h, Config("http://x/y", secret), new()).InvalidateAsync();
+
+            Assert.Equal(secret, h.Last!.Headers.GetValues("X-Revalidate-Secret").Single());
+        }
+
+        [Theory]
         [Trait("Scenario", "US2-AS6")]
         [InlineData(null, "s")]
         [InlineData("http://x/y", null)]
         [InlineData("", "")]
+        [InlineData("   ", "s")]
+        [InlineData("http://x/y", "   ")]
         public async Task MissingConfig_IsNoOpAndLogged(string? url, string? secret)
         {
             var h = new StubHandler((_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)));
@@ -150,15 +248,23 @@ namespace MomSite.Tests
             Assert.Contains(log.Entries, e => e.Level == LogLevel.Warning);
         }
 
-        [Fact]
+        [Theory]
         [Trait("Scenario", "US2-AS6")]
-        public async Task Non2xx_IsLoggedNotThrown()
+        [InlineData(HttpStatusCode.MultipleChoices)]
+        [InlineData(HttpStatusCode.Moved)]
+        [InlineData(HttpStatusCode.BadRequest)]
+        [InlineData(HttpStatusCode.Unauthorized)]
+        [InlineData(HttpStatusCode.Forbidden)]
+        [InlineData(HttpStatusCode.NotFound)]
+        [InlineData(HttpStatusCode.InternalServerError)]
+        [InlineData((HttpStatusCode)599)]
+        public async Task Various_Non2xx_AreLoggedNotThrown(HttpStatusCode status)
         {
-            var h = new StubHandler((_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.Unauthorized)));
+            var h = new StubHandler((_, _) => Task.FromResult(new HttpResponseMessage(status)));
             var log = new ListLogger<FrontendCacheInvalidator>();
             await Make(h, Config("http://x/y", "s"), log).InvalidateAsync();
 
-            Assert.Contains(log.Entries, e => e.Level == LogLevel.Warning && e.Message.Contains("401"));
+            Assert.Contains(log.Entries, e => e.Level == LogLevel.Warning && e.Message.Contains(((int)status).ToString()));
         }
 
         [Fact]
@@ -174,6 +280,46 @@ namespace MomSite.Tests
             await Make(h, Config("http://x/y", "s"), log, TimeSpan.FromMilliseconds(100)).InvalidateAsync();
 
             Assert.Contains(log.Entries, e => e.Level == LogLevel.Warning);
+        }
+
+        [Fact]
+        [Trait("Scenario", "US2-AS6")]
+        public async Task OperationCanceledOutside_IsLoggedNotThrown()
+        {
+            var h = new StubHandler((_, ct) =>
+            {
+                ct.ThrowIfCancellationRequested();
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
+            });
+            var log = new ListLogger<FrontendCacheInvalidator>();
+            var cts = new CancellationTokenSource();
+            cts.Cancel();
+
+            await Make(h, Config("http://x/y", "s"), log).InvalidateAsync(cts.Token);
+
+            Assert.Contains(log.Entries, e => e.Level == LogLevel.Warning);
+        }
+
+        [Fact]
+        [Trait("Scenario", "US2-AS6")]
+        public async Task ConnectionResetException_IsLoggedNotThrown()
+        {
+            var h = new StubHandler((_, _) => throw new IOException("Connection reset"));
+            var log = new ListLogger<FrontendCacheInvalidator>();
+
+            await Make(h, Config("http://x/y", "s"), log).InvalidateAsync();
+
+            Assert.Contains(log.Entries, e => e.Level == LogLevel.Warning);
+        }
+
+        [Fact]
+        [Trait("Scenario", "US2-AS6")]
+        public async Task PostMethodAlwaysUsed()
+        {
+            var h = new StubHandler((_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)));
+            await Make(h, Config("http://x/y", "s"), new()).InvalidateAsync();
+
+            Assert.Equal(HttpMethod.Post, h.Last!.Method);
         }
     }
 
