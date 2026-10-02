@@ -1,6 +1,8 @@
 import { getGalleryData, getImageUrl } from '@/hooks/useApi';
 import GalleryClientPage from './GalleryClientPage';
 import { Metadata } from 'next';
+import { loadOrBuildFallback } from '@/lib/buildPhase';
+import type { GalleryData } from '@/lib/api';
 import { artworksForSale } from '@/lib/gallery';
 
 export const revalidate = 3600;
@@ -26,7 +28,7 @@ export const metadata: Metadata = {
 };
 
 const GalleryPage = async () => {
-  const galleryData = await getGalleryData();
+  const galleryData = await loadOrBuildFallback(getGalleryData, { artworks: [], categories: [] } as unknown as GalleryData);
 
 
   const jsonLd = {

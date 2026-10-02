@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { loadOrBuildFallback } from '@/lib/buildPhase';
 import { getReviewsData, getGalleryData } from '@/hooks/useApi';
 import ReviewsClientPage, { ReviewArtwork } from './ReviewsClientPage';
 
@@ -30,9 +31,9 @@ export async function generateMetadata(): Promise<Metadata> {
 const average = (values: number[]) => values.reduce((sum, value) => sum + value, 0) / values.length;
 
 const ReviewsPage = async () => {
-  const reviews = await getReviewsData();
+  const reviews = await loadOrBuildFallback(getReviewsData, []);
 
-  const galleryData = await getGalleryData();
+  const galleryData = await loadOrBuildFallback(getGalleryData, { artworks: [], categories: [] } as any);
   const artworksById: Record<number, ReviewArtwork> = {};
   (galleryData?.artworks || []).forEach((artwork: any) => {
     artworksById[artwork.id] = { id: artwork.id, title: artwork.title };

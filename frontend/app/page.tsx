@@ -3,6 +3,8 @@ import HomeClientPage from './HomeClientPage';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import StructuredData from '@/components/StructuredData';
 import { Metadata } from 'next';
+import { loadOrBuildFallback } from '@/lib/buildPhase';
+import type { HomeData } from '@/lib/api';
 
 export const revalidate = 3600;
 
@@ -17,7 +19,7 @@ const DEFAULT_HOME_SEO_DESCRIPTION =
 // Generate dynamic metadata for SEO
 export async function generateMetadata(): Promise<Metadata> {
   try {
-    const homeData = await getHomeData();
+    const homeData = await loadOrBuildFallback(getHomeData, { welcomeMessage: '', bannerImage: '', biographyText: '', authorPhoto: '', artworks: [], contacts: { socialLinks: {} } } as unknown as HomeData);
 
     if (!homeData) {
       return {
@@ -89,7 +91,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const HomePage = async () => {
-  const homeData = await getHomeData();
+  const homeData = await loadOrBuildFallback(getHomeData, { welcomeMessage: '', bannerImage: '', biographyText: '', authorPhoto: '', artworks: [], contacts: { socialLinks: {} } } as unknown as HomeData);
 
 
   return (

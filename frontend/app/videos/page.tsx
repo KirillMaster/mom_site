@@ -1,4 +1,6 @@
 import { Metadata } from 'next';
+import { loadOrBuildFallback } from '@/lib/buildPhase';
+import type { VideosData } from '@/lib/api';
 import { getVideosData, getImageUrl } from '@/hooks/useApi';
 import VideosClientPage from './VideosClientPage';
 
@@ -7,7 +9,7 @@ export const revalidate = 3600;
 // Generate dynamic metadata for SEO
 export async function generateMetadata(): Promise<Metadata> {
   try {
-    const videosData = await getVideosData();
+    const videosData = await loadOrBuildFallback(getVideosData, { categories: [], videos: [] } as unknown as VideosData);
     
     if (!videosData) {
       return {
@@ -55,7 +57,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const VideosPage = async () => {
-  const videosData = await getVideosData();
+  const videosData = await loadOrBuildFallback(getVideosData, { categories: [], videos: [] } as unknown as VideosData);
 
 
   const jsonLd = {
