@@ -2,9 +2,13 @@ import { test, expect } from '@playwright/test';
 
 const STAMP = `pw-${Date.now()}`;
 
+// Sends a real lead (email + Telegram to the artist), so it never runs against prod by default.
+const isProd = (process.env.PLAYWRIGHT_BASE_URL ?? '').includes('angelamoiseenko.ru');
+
 test('lead submitted after a utm landing carries the campaign', async ({ page }) => {
+  test.skip(isProd && !process.env.E2E_ALLOW_LEADS, 'creates a real lead on prod');
   // The form reports its outcome with window.alert.
-  page.on('dialog', (d) => d.accept());
+  page.on('dialog', (d) => d.accept().catch(() => {}));
 
   await page.goto(`/contacts?utm_source=playwright&utm_medium=e2e&utm_campaign=${STAMP}`);
 
