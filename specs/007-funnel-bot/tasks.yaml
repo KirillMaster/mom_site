@@ -1,0 +1,1643 @@
+feature: 007-funnel-bot
+tasks:
+- id: T001
+  title: Передать FUNNEL_BOT_TOKEN в api-контейнер
+  description: Добавить переменную окружения FUNNEL_BOT_TOKEN в docker-compose.prod.yml без значения
+  context: Публичный бот включается только по токену; токен живёт в серверном .env, не в репозитории
+  story_ref: US1
+  requirement_refs:
+  - FR-011
+  depends_on: []
+  parallelizable: true
+  entity_refs: []
+  contract_refs: []
+  steps:
+  - order: 1
+    action: Добавить переменную
+    detail: 'В docker-compose.prod.yml, сервис api, блок environment, после TELEGRAM_CHAT_IDS: `- FUNNEL_BOT_TOKEN=${FUNNEL_BOT_TOKEN:-}`; пустое значение = бот выключен'
+  - order: 2
+    action: Проверить отсутствие секретов
+    detail: '`git grep -nE "bot[0-9]{6,}:"` ничего не находит; в dev docker-compose.yml переменную не добавлять'
+  - order: 3
+    action: Зафиксировать ручной шаг
+    detail: Токен кладёт владелец в серверный .env; deploy.yml и scripts/deploy_remote.sh TELEGRAM_* не передают, менять их не нужно
+  technical_notes:
+  - path: docker-compose.prod.yml
+    note: Telegram-переменные уже в environment сервиса api (~строки 23-24); extra_hosts api.telegram.org уже закреплён
+  - path: scripts/deploy_remote.sh
+    note: 'Не передаёт TELEGRAM_*; .env живёт на сервере. Расхождение: quickstart говорит про GitHub secret, фактически используется серверный .env'
+  acceptance_criteria:
+  - id: AC-1
+    description: Переменная FUNNEL_BOT_TOKEN объявлена в api prod-compose, дефолт пустой
+    done: false
+  - id: AC-2
+    description: В репозитории нет значений токенов
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - docker-compose.prod.yml изменён
+    when: выполнено `docker compose -f docker-compose.prod.yml config` при пустом FUNNEL_BOT_TOKEN
+    then:
+    - команда проходит, переменная пустая
+    verification:
+    - automated
+    level: integration
+- id: T002
+  title: Расширить модель ContactMessage полями бота
+  description: Email сделать nullable, добавить Phone, TelegramUsername, TelegramUserId в модель, конфигурацию EF и admin-DTO
+  context: Заявка из бота хранится в существующей таблице; email у неё нет, зато есть телефон и Telegram
+  story_ref: US2
+  requirement_refs:
+  - FR-004
+  depends_on: []
+  parallelizable: false
+  entity_refs:
+  - contact-message
+  contract_refs:
+  - lead-service
+  steps:
+  - order: 1
+    action: Изменить модель
+    detail: 'В backend/MomSite.Core/Models/ContactMessage.cs: `string? Email` без [Required]; добавить `[MaxLength(100)] string? Phone`, `[MaxLength(64)] string? TelegramUsername`, `long? TelegramUserId`'
+  - order: 2
+    action: Обновить конфигурацию EF
+    detail: 'В ApplicationDbContext.OnModelCreating, блок ContactMessage: убрать IsRequired у Email (HasMaxLength(200) оставить), Phone HasMaxLength(100), TelegramUsername HasMaxLength(64)'
+  - order: 3
+    action: Обновить admin-DTO
+    detail: 'В ContactMessageAdminDto: `string? Email`, добавить Phone, TelegramUsername, TelegramUserId; дополнить ToAdminDto в MappingExtensions.cs'
+  - order: 4
+    action: Не трогать DTO формы
+    detail: 'ContactMessageDto.Email остаётся [Required]: форма сайта по-прежнему требует email'
+  - order: 5
+    action: Собрать
+    detail: '`cd backend && dotnet build`; поправить места, где Email считался non-null (см. T006)'
+  technical_notes:
+  - path: backend/MomSite.Core/Models/ContactMessage.cs
+    note: Email сейчас [Required] string
+  - path: backend/MomSite.Infrastructure/Data/ApplicationDbContext.cs
+    note: Блок конфигурации ContactMessage ~строки 104-120
+  - path: backend/MomSite.API/DTOs/ContactMessageAdminDto.cs
+    note: Email сейчас non-null string
+  - path: backend/MomSite.API/DTOs/MappingExtensions.cs
+    note: ToAdminDto ~строки 121-135
+  - path: specs/008-conversion-quick-wins
+    note: 'ПЕРЕСЕЧЕНИЕ: 008 тоже делает Email nullable и добавляет Phone (<=100, миграция AddContactPhone, ContactMessageDto : IValidatableObject). Phone здесь тоже <=100 (в data-model 007 указано 32 - выровнять). Кто сливается вторым, не дублирует поле,
+      а ребейзит модель, DTO и миграцию'
+  acceptance_criteria:
+  - id: AC-1
+    description: ContactMessage содержит Phone, TelegramUsername, TelegramUserId; Email nullable
+    done: false
+  - id: AC-2
+    description: Сборка зелёная, ContactMessageDto не изменён
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - модель обновлена
+    when: dotnet build
+    then:
+    - 0 ошибок
+    verification:
+    - automated
+    level: unit
+- id: T003
+  title: Миграция БД для полей заявки из бота
+  description: Сгенерировать EF-миграцию AddContactBotFields
+  context: Новые колонки и nullable Email должны попасть в Postgres при деплое
+  story_ref: US2
+  requirement_refs:
+  - FR-004
+  depends_on:
+  - T002
+  parallelizable: false
+  entity_refs:
+  - contact-message
+  contract_refs: []
+  steps:
+  - order: 1
+    action: Проверить миграции 008
+    detail: Если AddContactPhone из 008 уже в ветке - в этой миграции только TelegramUsername и TelegramUserId; иначе также Email nullable и Phone
+  - order: 2
+    action: Сгенерировать
+    detail: '`cd backend && dotnet ef migrations add AddContactBotFields --project MomSite.Infrastructure --startup-project MomSite.API`'
+  - order: 3
+    action: Проверить Up/Down
+    detail: 'Up: Email nullable, Phone varchar(100), TelegramUsername varchar(64), TelegramUserId bigint, все NULL; Down обратим'
+  - order: 4
+    action: Применить локально
+    detail: '`dotnet ef database update` на dev-Postgres'
+  technical_notes:
+  - path: backend/MomSite.Infrastructure/Data/Migrations
+    note: Последняя миграция 20261002174348_AddBlog; меняется ApplicationDbContextModelSnapshot.cs - конфликт при мердже с 008 разрешать вручную
+  - path: docker-compose.prod.yml
+    note: Миграции применяются при деплое сервисом api
+  acceptance_criteria:
+  - id: AC-1
+    description: Миграция создана и применяется к чистой и существующей БД
+    done: false
+  - id: AC-2
+    description: Существующие заявки сохраняют Email
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - БД с заявками формы
+    when: применена миграция
+    then:
+    - старые строки не изменились, новые колонки NULL
+    verification:
+    - manual
+    level: integration
+- id: T004
+  title: Создать ILeadService и LeadService
+  description: Вынести сохранение заявки и рассылку уведомлений в общий сервис
+  context: Форма сайта и бот должны доставлять заявки одним кодом без дублирования
+  story_ref: US2
+  requirement_refs:
+  - FR-004
+  - FR-005
+  - FR-006
+  depends_on:
+  - T002
+  parallelizable: false
+  entity_refs:
+  - contact-message
+  contract_refs:
+  - lead-service
+  - lead-service-impl
+  - feedback-notifier
+  steps:
+  - order: 1
+    action: Объявить интерфейс
+    detail: 'backend/MomSite.Core/Interfaces/ILeadService.cs: `Task<LeadSubmitResult> SubmitAsync(ContactMessage message, CancellationToken ct = default)`; record LeadSubmitResult(Id, NotifiedChannels) в том же файле'
+  - order: 2
+    action: Реализовать
+    detail: 'backend/MomSite.Infrastructure/Services/LeadService.cs: Add + SaveChangesAsync (ошибка БД пробрасывается); затем foreach IFeedbackNotifier где IsEnabled: try NotifyAsync, catch логируется и не пробрасывается; считать успешные каналы'
+  - order: 3
+    action: Зарегистрировать
+    detail: 'В Program.cs рядом с AddScoped<IFeedbackNotifier,...>: `AddScoped<ILeadService, LeadService>()`'
+  - order: 4
+    action: Логи
+    detail: Только Id и тип notifier'а; без имени, телефона, текста
+  technical_notes:
+  - path: backend/MomSite.API/Controllers/PublicController.cs
+    note: Исходная логика в приватных TryPersistContactMessageAsync и NotifyContactMessageAsync (~строки 472-505) переносится
+  - path: backend/MomSite.API/Program.cs
+    note: DI notifier'ов ~строки 158-165
+  - path: backend/MomSite.Core/Interfaces/IFeedbackNotifier.cs
+    note: IsEnabled, NotifyAsync(ContactMessage)
+  acceptance_criteria:
+  - id: AC-1
+    description: Сохранение и уведомление выполняются в одном сервисе
+    done: false
+  - id: AC-2
+    description: Сбой notifier'а не пробрасывается, лид сохранён
+    done: false
+  - id: AC-3
+    description: Сбой БД пробрасывается
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - один notifier бросает, второй исправен
+    when: SubmitAsync
+    then:
+    - заявка в БД, исключения нет, второй notifier вызван
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - включённый и выключенный notifier
+    when: SubmitAsync
+    then:
+    - вызван только включённый
+    verification:
+    - automated
+    level: unit
+  - id: TS-3
+    given:
+    - SaveChanges бросает
+    when: SubmitAsync
+    then:
+    - исключение проброшено, notifier не вызван
+    verification:
+    - automated
+    level: unit
+- id: T005
+  title: Перевести PublicController.SendContactMessage на ILeadService
+  description: Заменить приватные Persist/Notify вызовом ILeadService; rate-limit и honeypot оставить
+  context: Единый путь доставки заявок; поведение формы не должно измениться
+  story_ref: US2
+  requirement_refs:
+  - FR-004
+  - FR-005
+  depends_on:
+  - T004
+  parallelizable: false
+  entity_refs:
+  - contact-message
+  contract_refs:
+  - lead-service
+  - public-contact-message
+  steps:
+  - order: 1
+    action: Внедрить сервис
+    detail: В конструктор PublicController добавить ILeadService; убрать список notifier'ов и приватные TryPersistContactMessageAsync/NotifyContactMessageAsync
+  - order: 2
+    action: Вызвать
+    detail: После honeypot и валидации `await _leadService.SubmitAsync(BuildContactMessageEntity(dto))` в try; при исключении - лог и 500 с прежним сообщением
+  - order: 3
+    action: Обновить тесты
+    detail: В PublicControllerTests.cs конструктор контроллера принимает реальный LeadService с теми же моками notifier'ов; ожидания не менять
+  - order: 4
+    action: Прогнать
+    detail: '`dotnet test --filter FullyQualifiedName~PublicController`'
+  technical_notes:
+  - path: backend/MomSite.API/Controllers/PublicController.cs
+    note: 'ПЕРЕСЕЧЕНИЕ: 008 меняет этот же action (валидация email|phone) и ContactMessageDto - мерджить аккуратно'
+  - path: backend/MomSite.Tests/PublicControllerTests.cs
+    note: Фабрика контроллера и моки notifier'ов в начале файла
+  acceptance_criteria:
+  - id: AC-1
+    description: Ответы формы (200/400/429/500, honeypot) прежние
+    done: false
+  - id: AC-2
+    description: Существующие тесты PublicController проходят без смены ожиданий
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - валидная форма, notifier бросает
+    when: POST contact-message
+    then:
+    - 200, заявка в БД
+    verification:
+    - automated
+    level: integration
+  - id: TS-2
+    given:
+    - заполнен honeypot
+    when: POST contact-message
+    then:
+    - 200, заявки в БД нет
+    verification:
+    - automated
+    level: unit
+- id: T006
+  title: Расширить уведомления Telegram и Email под заявки без email
+  description: TelegramNotifier.BuildText добавляет Телефон и Telegram; EmailNotifier не падает при пустом Email
+  context: Мама должна сразу написать клиенту, у которого может не быть email
+  story_ref: US2
+  requirement_refs:
+  - FR-005
+  depends_on:
+  - T002
+  parallelizable: true
+  entity_refs:
+  - contact-message
+  contract_refs:
+  - telegram-notifier
+  - feedback-notifier
+  steps:
+  - order: 1
+    action: Заголовок
+    detail: 'В TelegramNotifier.BuildText: при UtmSource == "telegram_bot" первая строка «Новая заявка из Telegram-бота», иначе прежняя «Новое сообщение с сайта»'
+  - order: 2
+    action: Опциональные строки
+    detail: 'Email только если не пуст; `Телефон: …` если Phone; `Telegram: @username`, иначе `Telegram: tg://user?id=<id>` если есть TelegramUserId'
+  - order: 3
+    action: Email-канал
+    detail: 'EmailNotifier: Email через `?? "-"`; ReplyTo только при непустом Email; Phone и Telegram добавить в text и html (через кодирование)'
+  - order: 4
+    action: Тесты
+    detail: 'TelegramNotifierTests.cs и EmailNotifierTests.cs: заявка бота без email, с username, без username, без телефона; заявка формы не меняется'
+  technical_notes:
+  - path: backend/MomSite.Infrastructure/Notifications/TelegramNotifier.cs
+    note: BuildText - public static, тесты вызывают напрямую
+  - path: backend/MomSite.Infrastructure/Notifications/EmailNotifier.cs
+    note: message.Email используется ~строки 46-62 и 86
+  - path: backend/MomSite.Infrastructure/Notifications/LeadSource.cs
+    note: Describe не меняется
+  acceptance_criteria:
+  - id: AC-1
+    description: В уведомлении есть телефон и/или ссылка на Telegram клиента
+    done: false
+  - id: AC-2
+    description: Заявка формы выглядит как раньше
+    done: false
+  - id: AC-3
+    description: Email-канал не падает при Email = null
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - заявка с TelegramUsername
+    when: BuildText
+    then:
+    - 'строка «Telegram: @user»'
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - заявка без username, с TelegramUserId
+    when: BuildText
+    then:
+    - строка с tg://user?id=
+    verification:
+    - automated
+    level: unit
+  - id: TS-3
+    given:
+    - заявка с формы
+    when: BuildText
+    then:
+    - текст идентичен прежнему
+    verification:
+    - automated
+    level: unit
+- id: T007
+  title: Клиент Bot API и DTO апдейтов
+  description: Реализовать тонкий TelegramBotClient (getUpdates, sendMessage, sendPhoto, answerCallbackQuery) и DTO апдейтов
+  context: Бот принимает и отправляет сообщения без внешнего пакета
+  story_ref: US1
+  requirement_refs:
+  - FR-001
+  - FR-011
+  depends_on:
+  - T001
+  parallelizable: true
+  entity_refs: []
+  contract_refs:
+  - bot-api-client
+  - telegram-bot-client
+  steps:
+  - order: 1
+    action: DTO
+    detail: 'backend/MomSite.Infrastructure/TelegramBot/BotUpdateDtos.cs: Update, Message, Chat(id,type), User(id,username,first_name), Contact(phone_number), CallbackQuery, разметки клавиатур; System.Text.Json с JsonPropertyName'
+  - order: 2
+    action: Интерфейс
+    detail: 'backend/MomSite.Infrastructure/TelegramBot/IBotApiClient.cs: GetUpdatesAsync(offset, ct), SendMessageAsync, SendPhotoAsync, AnswerCallbackQueryAsync'
+  - order: 3
+    action: Реализация
+    detail: backend/MomSite.Infrastructure/TelegramBot/TelegramBotClient.cs на именованном HttpClient "FunnelBot" (Timeout 60 с); getUpdates timeout=50, allowed_updates=[message, callback_query]; ошибки API (в т.ч. 429 с retry_after) и сетевые возвращать
+      результатом, не бросать
+  - order: 4
+    action: Токен не в логах
+    detail: Логировать только имя метода и error_code; не логировать URL, exception.ToString(), текст и телефон
+  - order: 5
+    action: Тесты
+    detail: 'backend/MomSite.Tests/TelegramBot/TelegramBotClientTests.cs с фейковым HttpMessageHandler: разбор getUpdates, request_contact, 429, сетевая ошибка'
+  technical_notes:
+  - path: backend/MomSite.Infrastructure/Notifications/TelegramNotifier.cs
+    note: Образец похода в Bot API
+  - path: backend/MomSite.API/Program.cs
+    note: 'Serilog Override System.Net.Http.HttpClient -> Warning уже стоит: URL с токеном в лог не попадает'
+  - path: backend/MomSite.Infrastructure/TelegramBot/
+    note: Новая папка; каждый файл <= 200 строк (P3)
+  acceptance_criteria:
+  - id: AC-1
+    description: Все 4 метода работают против фейкового Bot API
+    done: false
+  - id: AC-2
+    description: Ошибки Telegram не бросают исключений наружу
+    done: false
+  - id: AC-3
+    description: Токен не появляется в логах
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - фейковый ответ getUpdates с message и callback_query
+    when: GetUpdatesAsync
+    then:
+    - Update десериализован с from.username и contact.phone_number
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - ответ 429 retry_after=3
+    when: SendMessageAsync
+    then:
+    - результат с retry_after, исключения нет
+    verification:
+    - automated
+    level: unit
+- id: T008
+  title: Модели диалога воронки и тексты
+  description: Описать FunnelState, BotInput, FunnelResult, FunnelContext и тексты, кнопки, вилки
+  context: Чистая функция сценария нуждается в неизменяемых моделях и централизованных текстах
+  story_ref: US1
+  requirement_refs:
+  - FR-001
+  depends_on: []
+  parallelizable: true
+  entity_refs:
+  - funnel-state
+  contract_refs:
+  - funnel-dialog
+  steps:
+  - order: 1
+    action: Модели
+    detail: 'backend/MomSite.Infrastructure/TelegramBot/FunnelModels.cs: enum FunnelStep {Goal, Detail, Theme, Budget, Contact, Name, Done}; enum FunnelGoal {Buy, Interior, Commission, Masterclass, Other}; records FunnelState, BotUser, FunnelContext(User,
+      Artwork, QuotaExceeded), FunnelResult(State, Replies, Lead); BotInput: Start | Cancel | Callback | Text | Contact | Unsupported'
+  - order: 2
+    action: Ответы
+    detail: 'Reply(text, photoUrl?, keyboard?): inline-кнопки, reply-кнопка request_contact или remove'
+  - order: 3
+    action: Тексты
+    detail: 'backend/MomSite.Infrastructure/TelegramBot/FunnelTexts.cs: приветствие, 5 целей, размеры, форматы МК, бюджеты, подтверждение, отказ по квоте, подсказка для Unsupported; тексты черновые (согласует владелец)'
+  - order: 4
+    action: callback_data
+    detail: Короткие коды <= 64 байт
+  technical_notes:
+  - path: backend/MomSite.Infrastructure/TelegramBot/
+    note: Новые файлы FunnelModels.cs, FunnelTexts.cs
+  - path: specs/007-funnel-bot/data-model.yaml
+    note: 'funnel-state: шаги и цели берутся оттуда'
+  acceptance_criteria:
+  - id: AC-1
+    description: Модели - неизменяемые record, тексты в одном файле
+    done: false
+  - id: AC-2
+    description: callback_data всех кнопок <= 64 байт
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - все кнопки FunnelTexts
+    when: проверка длины callback_data
+    then:
+    - каждая <= 64 байт
+    verification:
+    - automated
+    level: unit
+- id: T009
+  title: 'Основной сценарий FunnelDialog: цель, уточнение, бюджет, контакт, имя, лид'
+  description: Реализовать автомат FunnelDialog.Handle для 5 целей и сборку ContactMessage
+  context: 'Ядро воронки: превращает ответы посетителя в квалифицированный лид'
+  story_ref: US1
+  requirement_refs:
+  - FR-001
+  - FR-003
+  depends_on:
+  - T008
+  parallelizable: false
+  entity_refs:
+  - funnel-state
+  - contact-message
+  contract_refs:
+  - funnel-dialog
+  steps:
+  - order: 1
+    action: Ветвление
+    detail: 'backend/MomSite.Infrastructure/TelegramBot/FunnelDialog.cs: Goal -> (Interior|Commission: Detail(размер) -> Theme) | (Masterclass: Detail(формат), бюджет пропускается) | (Buy: Budget) | (Other: свободный текст); затем Budget (кроме МК) ->
+      Contact -> Name -> Done'
+  - order: 2
+    action: Контакт
+    detail: Кнопка «Поделиться номером» (request_contact) и «Пишите мне в Telegram»; без username «в Telegram» возвращает запрос номера (FR-003)
+  - order: 3
+    action: Имя
+    detail: Подставить first_name с кнопкой подтверждения; свободный ввод обрезать до 200
+  - order: 4
+    action: Сборка лида
+    detail: 'backend/MomSite.Infrastructure/TelegramBot/FunnelLeadBuilder.cs: ContactMessage{Name, Email=null, Phone, TelegramUsername, TelegramUserId, Subject="Telegram-бот: <цель>", Message из ответов, UtmSource="telegram_bot", UtmCampaign=payload};
+      Message до 5000, Subject до 200'
+  - order: 5
+    action: Размер файлов
+    detail: FunnelDialog.cs, FunnelKeyboards.cs, FunnelLeadBuilder.cs - каждый <= 200 строк; без I/O и статического состояния
+  technical_notes:
+  - path: backend/MomSite.Core/Models/ContactMessage.cs
+    note: Subject <= 200, Message <= 5000, UtmCampaign <= 200
+  - path: specs/007-funnel-bot/design-notes.md
+    note: Формат ContactMessage лида
+  - path: backend/MomSite.Infrastructure/TelegramBot/
+    note: FunnelDialog - чистая функция (state, input, context) -> result
+  acceptance_criteria:
+  - id: AC-1
+    description: Все 5 целей доходят до готового лида
+    done: false
+  - id: AC-2
+    description: Для мастер-класса бюджет пропускается
+    done: false
+  - id: AC-3
+    description: Без username бот просит телефон
+    done: false
+  - id: AC-4
+    description: Лид с пустым контактом не создаётся
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - новый диалог
+    when: пройдены все шаги ветки «Картина для интерьера»
+    then:
+    - 'лид: Subject «Telegram-бот: Картина для интерьера», Message с размером, темой, бюджетом; Email = null'
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - цель «Мастер-класс»
+    when: выбран формат
+    then:
+    - следующий шаг Contact, Budget пропущен
+    verification:
+    - automated
+    level: unit
+  - id: TS-3
+    given:
+    - пользователь без username
+    when: нажато «Пишите мне в Telegram»
+    then:
+    - запрос номера телефона
+    verification:
+    - automated
+    level: unit
+- id: T010
+  title: 'FunnelDialog: «Назад», /cancel, повторный /start, вне-сценарный текст, неподдерживаемый ввод'
+  description: Добавить навигацию назад, сброс, обработку произвольного текста и фото/стикеров
+  context: Сценарий не должен ломаться на нестандартных действиях
+  story_ref: US1
+  requirement_refs:
+  - FR-002
+  depends_on:
+  - T009
+  parallelizable: false
+  entity_refs:
+  - funnel-state
+  - contact-message
+  contract_refs:
+  - funnel-dialog
+  steps:
+  - order: 1
+    action: Назад
+    detail: На шагах 2-5 «Назад» делает pop из History, сохраняя ответы; на шаге Goal кнопки нет
+  - order: 2
+    action: /cancel и /start
+    detail: /cancel сбрасывает состояние с подтверждением; /start [payload] в любой момент начинает заново с новым payload
+  - order: 3
+    action: Текст вне сценария
+    detail: Нет состояния (или Done) и пришёл текст - лид с целью Other и этим текстом; на шаге с кнопками - подсказка нажать кнопку
+  - order: 4
+    action: Unsupported
+    detail: 'Фото, стикер, голос: подсказка текущего шага, состояние не меняется'
+  - order: 5
+    action: Квота
+    detail: context.QuotaExceeded при завершении - вежливый отказ, лид не создаётся
+  technical_notes:
+  - path: backend/MomSite.Infrastructure/TelegramBot/FunnelDialog.cs
+    note: При приближении к 200 строкам вынести в FunnelNavigation.cs
+  acceptance_criteria:
+  - id: AC-1
+    description: «Назад» и /cancel работают на каждом шаге
+    done: false
+  - id: AC-2
+    description: Текст вне сценария сохраняется как лид «Другой вопрос»
+    done: false
+  - id: AC-3
+    description: Неподдерживаемый ввод не ломает сценарий
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - диалог на шаге Budget
+    when: нажато «Назад»
+    then:
+    - шаг Detail, ответы сохранены
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - диалог на любом шаге
+    when: /cancel
+    then:
+    - состояние сброшено, подтверждение
+    verification:
+    - automated
+    level: unit
+  - id: TS-3
+    given:
+    - нет состояния
+    when: текст «Сколько стоит доставка?»
+    then:
+    - лид «Другой вопрос» с этим текстом
+    verification:
+    - automated
+    level: unit
+  - id: TS-4
+    given:
+    - диалог на шаге Contact
+    when: прислан стикер
+    then:
+    - подсказка, состояние прежнее
+    verification:
+    - automated
+    level: unit
+- id: T011
+  title: Unit-тесты FunnelDialog по всем веткам
+  description: Покрыть тестами каждую цель, переходы, «Назад», /cancel, квоту, Unsupported
+  context: Каждая ветка автомата проверяется без моков (P5)
+  story_ref: US1
+  requirement_refs:
+  - FR-001
+  - FR-002
+  - FR-003
+  depends_on:
+  - T010
+  - T012
+  parallelizable: false
+  entity_refs:
+  - funnel-state
+  contract_refs:
+  - funnel-dialog
+  steps:
+  - order: 1
+    action: Ветки
+    detail: 'backend/MomSite.Tests/TelegramBot/FunnelDialogTests.cs: Theory по 5 целям до готового лида'
+  - order: 2
+    action: Навигация
+    detail: 'backend/MomSite.Tests/TelegramBot/FunnelDialogNavigationTests.cs: «Назад» на шагах 2-5, /cancel, повторный /start с новым payload'
+  - order: 3
+    action: Граничные
+    detail: Квота, Unsupported, текст вне сценария, имя > 200, Message > 5000
+  - order: 4
+    action: Прогон
+    detail: '`cd backend && dotnet test --filter FullyQualifiedName~TelegramBot`'
+  technical_notes:
+  - path: backend/MomSite.Tests/TelegramBot/
+    note: Новая подпапка по аналогии с backend/MomSite.Tests/Blog
+  acceptance_criteria:
+  - id: AC-1
+    description: Все ветки автомата покрыты зелёными тестами
+    done: false
+  - id: AC-2
+    description: В тестах автомата нет моков и I/O
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - набор тестов
+    when: dotnet test --filter FullyQualifiedName~FunnelDialog
+    then:
+    - все зелёные
+    verification:
+    - automated
+    level: unit
+- id: T012
+  title: 'Лимиты: 3 лида в сутки на пользователя и 1 сообщение/с на чат'
+  description: Реализовать скользящую квоту лидов и ограничитель исходящих сообщений в памяти
+  context: Защита от спама и флуда в Telegram API
+  story_ref: US1
+  requirement_refs:
+  - FR-008
+  depends_on: []
+  parallelizable: true
+  entity_refs:
+  - lead-quota
+  contract_refs:
+  - funnel-dialog
+  steps:
+  - order: 1
+    action: Квота
+    detail: 'backend/MomSite.Infrastructure/TelegramBot/LeadQuota.cs: ILeadQuota.TryReserve(userId) на IMemoryCache, ключ quota:{userId}, времена за 24 ч, лимит 3; TimeProvider для тестов'
+  - order: 2
+    action: Лимит чата
+    detail: 'backend/MomSite.Infrastructure/TelegramBot/ChatSendGate.cs: не более 1 исходящего сообщения/с на chatId'
+  - order: 3
+    action: Тесты
+    detail: 'backend/MomSite.Tests/TelegramBot/LeadQuotaTests.cs: 3 прохода, 4-й отказ, освобождение через 24 ч (FakeTimeProvider)'
+  technical_notes:
+  - path: backend/MomSite.Tests/MomSite.Tests.csproj
+    note: Проверить наличие Microsoft.Extensions.TimeProvider.Testing; при отсутствии - свой TimeProvider-стаб
+  acceptance_criteria:
+  - id: AC-1
+    description: 4-я заявка за 24 ч от одного пользователя отклоняется
+    done: false
+  - id: AC-2
+    description: Через 24 ч квота освобождается
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - 3 лида от userId=1
+    when: TryReserve для userId=1
+    then:
+    - 'false'
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - 3 лида, прошло 24 ч + 1 с
+    when: TryReserve
+    then:
+    - 'true'
+    verification:
+    - automated
+    level: unit
+- id: T013
+  title: 'FunnelPollingService: приём апдейтов и исполнение ответов'
+  description: 'BackgroundService с long polling: апдейт в BotInput, вызов FunnelDialog, исполнение Replies и Lead'
+  context: Связывает Telegram, автомат и общий сервис лидов
+  story_ref: US1
+  requirement_refs:
+  - FR-001
+  - FR-006
+  - FR-008
+  - FR-011
+  depends_on:
+  - T004
+  - T007
+  - T009
+  - T010
+  - T012
+  parallelizable: false
+  entity_refs:
+  - funnel-state
+  - lead-quota
+  - contact-message
+  contract_refs:
+  - bot-api-client
+  - funnel-dialog
+  - lead-service
+  steps:
+  - order: 1
+    action: Отключение
+    detail: 'backend/MomSite.Infrastructure/TelegramBot/FunnelPollingService.cs: при пустом FUNNEL_BOT_TOKEN ExecuteAsync пишет одно предупреждение и завершается'
+  - order: 2
+    action: Цикл
+    detail: getUpdates(offset=last+1, timeout=50); сетевая ошибка - пауза 5 с; 429 - ждать retry_after; исключения не роняют сервис
+  - order: 3
+    action: Фильтр
+    detail: Игнорировать апдейты, где chat.type != "private"
+  - order: 4
+    action: Перевод в BotInput
+    detail: 'backend/MomSite.Infrastructure/TelegramBot/BotInputMapper.cs: /start [payload] -> Start; /cancel -> Cancel; callback_query -> Callback (+ answerCallbackQuery); contact -> Contact; text -> Text; прочее -> Unsupported'
+  - order: 5
+    action: Исполнение
+    detail: Состояние в IMemoryCache `funnel:{chatId}` (TTL 24 ч); Handle -> сохранить State -> отправить Replies через ChatSendGate -> при Lead проверить LeadQuota, создать scope (IServiceScopeFactory) и вызвать ILeadService.SubmitAsync; при ошибке БД
+      ответить «Не удалось отправить, попробуйте позже», диалог не завершать
+  - order: 6
+    action: Логи
+    detail: chatId и этап; без текста, телефона, имени, токена
+  technical_notes:
+  - path: backend/MomSite.API/Program.cs
+    note: ILeadService и DbContext scoped, сервис singleton - только через IServiceScopeFactory
+  - path: backend/MomSite.Infrastructure/TelegramBot/
+    note: Файл <= 200 строк; при росте вынести обработку апдейта в FunnelUpdateHandler.cs
+  acceptance_criteria:
+  - id: AC-1
+    description: Без токена сервис не стартует, сайт работает
+    done: false
+  - id: AC-2
+    description: Апдейты из групп игнорируются
+    done: false
+  - id: AC-3
+    description: Сбой Telegram не роняет api
+    done: false
+  - id: AC-4
+    description: Лид уходит только через ILeadService
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - токен пуст
+    when: запуск сервиса
+    then:
+    - завершается без ошибки, одно предупреждение
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - апдейт из группы
+    when: обработка
+    then:
+    - ответа и лида нет
+    verification:
+    - automated
+    level: unit
+  - id: TS-3
+    given:
+    - Bot API бросает сетевую ошибку
+    when: цикл опроса
+    then:
+    - пауза и повтор, сервис жив
+    verification:
+    - automated
+    level: unit
+- id: T014
+  title: Регистрация бота в Program.cs
+  description: Подключить HttpClient FunnelBot, IMemoryCache, квоту и FunnelPollingService в DI
+  context: Сервис должен стартовать вместе с api и брать токен из окружения
+  story_ref: US1
+  requirement_refs:
+  - FR-011
+  depends_on:
+  - T013
+  parallelizable: false
+  entity_refs: []
+  contract_refs:
+  - telegram-bot-client
+  steps:
+  - order: 1
+    action: HttpClient
+    detail: '`AddHttpClient("FunnelBot", c => c.Timeout = TimeSpan.FromSeconds(60))`; адрес с токеном собирает TelegramBotClient, не логирует'
+  - order: 2
+    action: Сервисы
+    detail: '`AddMemoryCache()`, `AddSingleton<IBotApiClient, TelegramBotClient>()`, `AddSingleton<ILeadQuota, LeadQuota>()`, `AddHostedService<FunnelPollingService>()`; оформить методом расширения AddFunnelBot в Infrastructure/TelegramBot/FunnelBotRegistration.cs,
+      чтобы не раздувать Program.cs'
+  - order: 3
+    action: Интеграционные тесты
+    detail: WebApplicationFactory-тесты стартуют без FUNNEL_BOT_TOKEN, polling отключён
+  - order: 4
+    action: Прогнать
+    detail: '`cd backend && dotnet build && dotnet test`'
+  technical_notes:
+  - path: backend/MomSite.API/Program.cs
+    note: Блок AddHttpClient/AddScoped notifier'ов ~строки 158-165
+  - path: backend/MomSite.Tests/AdminEnvIntegrationCollection.cs
+    note: Интеграционные тесты поднимают приложение без Telegram-переменных
+  acceptance_criteria:
+  - id: AC-1
+    description: api стартует без FUNNEL_BOT_TOKEN
+    done: false
+  - id: AC-2
+    description: С токеном в логе нет строк с токеном
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - WebApplicationFactory без FUNNEL_BOT_TOKEN
+    when: старт приложения
+    then:
+    - старт без ошибок, polling не запущен
+    verification:
+    - automated
+    level: integration
+- id: T015
+  title: 'Интеграционный тест: диалог до заявки в БД и вызова notifier'
+  description: Прогнать сценарий через FunnelPollingService с фейковым Bot API и реальным LeadService
+  context: Проверить, что заявка из бота сохраняется и уведомляет тем же механизмом, а сбой уведомления её не теряет
+  story_ref: US2
+  requirement_refs:
+  - FR-004
+  - FR-005
+  - FR-006
+  depends_on:
+  - T014
+  parallelizable: false
+  entity_refs:
+  - contact-message
+  - funnel-state
+  contract_refs:
+  - lead-service
+  - bot-api-client
+  - feedback-notifier
+  steps:
+  - order: 1
+    action: Стенд
+    detail: 'backend/MomSite.Tests/TelegramBot/FunnelEndToEndTests.cs: SQLite in-memory, фейковый HttpMessageHandler с последовательностью апдейтов, Mock<IFeedbackNotifier> (IsEnabled=true)'
+  - order: 2
+    action: Успех
+    detail: Апдейты /start, цель, размер, тема, бюджет, контакт, имя -> 1 ContactMessage в БД (Phone, UtmSource=telegram_bot); NotifyAsync ровно 1 раз; отправлено подтверждение
+  - order: 3
+    action: Сбой уведомления
+    detail: notifier бросает -> заявка в БД, подтверждение отправлено
+  - order: 4
+    action: Квота
+    detail: 4 лида от одного пользователя -> в БД 3, четвёртому отказ
+  technical_notes:
+  - path: backend/MomSite.Tests/TelegramBot/
+    note: Стенд по образцу backend/MomSite.Tests/PublicControllerTests.cs
+  - path: backend/MomSite.Tests/AdminMessagesControllerTests.cs
+    note: Образец работы с ContactMessages в тестах
+  acceptance_criteria:
+  - id: AC-1
+    description: Заявка из бота в таблице ContactMessages со статусом New
+    done: false
+  - id: AC-2
+    description: Notifier вызван один раз
+    done: false
+  - id: AC-3
+    description: Сбой notifier'а не влияет на подтверждение
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - фейковый Bot API
+    when: пройден полный сценарий
+    then:
+    - заявка в БД, уведомление вызвано один раз
+    verification:
+    - automated
+    level: integration
+  - id: TS-2
+    given:
+    - notifier бросает исключение
+    when: сценарий завершён
+    then:
+    - заявка в БД, подтверждение получено
+    verification:
+    - automated
+    level: integration
+- id: T016
+  title: 'Админка «Заявки»: телефон и Telegram, пустой email'
+  description: 'Обновить типы и UI заявок: Email может быть пустым, показать Телефон и Telegram'
+  context: Лиды из бота без email не должны ломать список и должны позволять ответить клиенту
+  story_ref: US2
+  requirement_refs:
+  - FR-004
+  depends_on:
+  - T002
+  parallelizable: true
+  entity_refs:
+  - contact-message
+  contract_refs: []
+  steps:
+  - order: 1
+    action: Типы
+    detail: 'frontend/lib/api.ts, админ-заявка: email?: string | null, phone?, telegramUsername?, telegramUserId?'
+  - order: 2
+    action: Список
+    detail: 'components/MessagesList.tsx: поиск без undefined (message.email ?? ''''), mailto только при email; показать tel: и https://t.me/<username> либо tg://user?id='
+  - order: 3
+    action: Детали
+    detail: 'app/admin/messages/page.tsx (~строка 61): то же для открытой заявки'
+  - order: 4
+    action: Тесты
+    detail: 'components/MessagesList.test.tsx: заявка без email, с телефоном и username'
+  technical_notes:
+  - path: frontend/components/MessagesList.tsx
+    note: email используется ~строки 75 (поиск) и 160-161 (mailto)
+  - path: frontend/app/admin/messages/page.tsx
+    note: mailto ~строки 61-62
+  - path: frontend/lib/api.ts
+    note: 'ПЕРЕСЕЧЕНИЕ с 008: он тоже трогает типы контактов; админ-типы отдельные, файл общий'
+  acceptance_criteria:
+  - id: AC-1
+    description: Заявка из бота отображается без ошибок
+    done: false
+  - id: AC-2
+    description: Счётчик непрочитанных не сломан
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - заявка без email с телефоном и username
+    when: рендер MessagesList
+    then:
+    - нет mailto, видны телефон и ссылка t.me
+    verification:
+    - automated
+    level: unit
+- id: T017
+  title: Эндпоинт GET /api/public/privacy
+  description: Добавить публичный эндпоинт с текстом политики из PageContent privacy/body
+  context: Страница /privacy берёт текст из админки, при его отсутствии - встроенный шаблон
+  story_ref: US4
+  requirement_refs:
+  - FR-009
+  depends_on: []
+  parallelizable: true
+  entity_refs:
+  - page-content-privacy
+  contract_refs:
+  - public-privacy
+  steps:
+  - order: 1
+    action: DTO
+    detail: 'В backend/MomSite.API/DTOs/PublicDtos.cs: `PrivacyDto(string? Text, DateTime? UpdatedAt)`'
+  - order: 2
+    action: Action
+    detail: 'В PublicController `[HttpGet("privacy")]`: запись PageContents где PageKey=="privacy", ContentKey=="body", IsActive; нет записи или пустой текст -> 200 { text: null }'
+  - order: 3
+    action: Тесты
+    detail: 'PublicControllerTests.cs: с записью, без записи, с неактивной записью'
+  technical_notes:
+  - path: backend/MomSite.API/Controllers/PublicController.cs
+    note: 'Образец - actions about/contacts/footer; ПЕРЕСЕЧЕНИЕ: файл правят T005 и 008'
+  - path: backend/MomSite.API/DTOs/PublicDtos.cs
+    note: Публичные DTO
+  - path: backend/MomSite.Core/Models/PageContent.cs
+    note: 'TextContent ограничен MaxLength(2000): длинная политика через админку не влезет; полный текст остаётся во встроенном шаблоне'
+  acceptance_criteria:
+  - id: AC-1
+    description: Эндпоинт отдаёт text и updatedAt или text = null
+    done: false
+  - id: AC-2
+    description: Схема БД не менялась
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - запись privacy/body активна
+    when: GET /api/public/privacy
+    then:
+    - 200, text и updatedAt заполнены
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - записи нет
+    when: GET /api/public/privacy
+    then:
+    - 200, text = null
+    verification:
+    - automated
+    level: unit
+- id: T018
+  title: Редактирование политики в /admin/pages
+  description: Добавить раздел privacy в список страниц админки
+  context: Без этого текст политики нельзя править из админки (P9)
+  story_ref: US4
+  requirement_refs:
+  - FR-009
+  depends_on: []
+  parallelizable: true
+  entity_refs:
+  - page-content-privacy
+  contract_refs:
+  - public-privacy
+  steps:
+  - order: 1
+    action: Поля
+    detail: 'В frontend/app/admin/pages/page.tsx: в pageFields добавить privacy с полем body (textarea, подсказка «пусто = текст по умолчанию»)'
+  - order: 2
+    action: Название
+    detail: 'В pageNames: privacy: «Политика конфиденциальности»'
+  - order: 3
+    action: Проверить
+    detail: Сохранение создаёт PageContent privacy/body существующим эндпоинтом
+  technical_notes:
+  - path: frontend/app/admin/pages/page.tsx
+    note: pageFields и pageNames, ~строки 28-86
+  - path: backend/MomSite.API/Controllers/AdminController.cs
+    note: Эндпоинты page-content уже есть, менять не нужно
+  acceptance_criteria:
+  - id: AC-1
+    description: В /admin/pages есть пункт «Политика конфиденциальности» с полем текста
+    done: false
+  - id: AC-2
+    description: Сохранённый текст создаёт PageContent privacy/body
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - админка открыта
+    when: выбран раздел «Политика конфиденциальности»
+    then:
+    - отображается поле текста
+    verification:
+    - manual
+    level: e2e
+- id: T019
+  title: Текст политики по умолчанию и загрузка данных
+  description: Создать шаблон политики 152-ФЗ с реквизитами оператора и getPrivacyData
+  context: Страница должна работать до того, как текст заведён в админке
+  story_ref: US4
+  requirement_refs:
+  - FR-009
+  depends_on:
+  - T017
+  parallelizable: true
+  entity_refs:
+  - page-content-privacy
+  contract_refs:
+  - public-privacy
+  steps:
+  - order: 1
+    action: Шаблон
+    detail: 'frontend/data/privacyPolicy.ts: DEFAULT_PRIVACY_POLICY (секции {heading, paragraphs}): оператор - Моисеенко Анжела Валерьевна; ответственный за обработку и приём отзыва согласия - Сухоруких Кирилл Всеволодович, suhorukih@mail.ru; состав данных,
+      цели, срок хранения, порядок отзыва согласия'
+  - order: 2
+    action: Загрузка
+    detail: 'frontend/hooks/useApi.ts: getPrivacyData() (GET /api/public/privacy, как getAboutData); тип PrivacyData в lib/api.ts'
+  - order: 3
+    action: Выбор источника
+    detail: 'frontend/lib/privacy.ts: resolvePrivacy(data) -> текст из админки (абзацы по пустым строкам) либо шаблон'
+  - order: 4
+    action: Тесты
+    detail: 'frontend/lib/privacy.test.ts: нет данных -> шаблон с реквизитами; есть текст -> абзацы и дата'
+  technical_notes:
+  - path: frontend/data/
+    note: Уже содержит biography.ts - образец статических данных
+  - path: frontend/hooks/useApi.ts
+    note: getAboutData, getContactsData, getFooterData
+  - path: frontend/lib/api.ts
+    note: Интерфейсы публичных данных
+  acceptance_criteria:
+  - id: AC-1
+    description: Шаблон содержит оператора, состав данных, цели, срок, способ отзыва, контакт ответственного
+    done: false
+  - id: AC-2
+    description: Без данных от API страница получает шаблон
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - текст не задан в админке
+    when: resolvePrivacy(null)
+    then:
+    - шаблон с реквизитами оператора
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - API вернул text
+    when: resolvePrivacy({text,updatedAt})
+    then:
+    - абзацы из админки и дата
+    verification:
+    - automated
+    level: unit
+- id: T020
+  title: SSR-страница /privacy
+  description: Создать app/privacy/page.tsx с generateMetadata и ISR
+  context: Посетитель, бот и площадки видят политику по постоянному адресу
+  story_ref: US4
+  requirement_refs:
+  - FR-009
+  depends_on:
+  - T019
+  parallelizable: false
+  entity_refs:
+  - page-content-privacy
+  contract_refs:
+  - public-privacy
+  steps:
+  - order: 1
+    action: Страница
+    detail: 'frontend/app/privacy/page.tsx - серверный компонент, `revalidate = 3600`; данные через loadOrBuildFallback(getPrivacyData, { text: null, updatedAt: null }) как в app/about/page.tsx; h1 «Политика конфиденциальности»; абзацы <p> без dangerouslySetInnerHTML'
+  - order: 2
+    action: Метаданные
+    detail: 'generateMetadata: title, description, alternates.canonical ''/privacy'', openGraph'
+  - order: 3
+    action: Инвалидация
+    detail: Проверить, нужна ли запись /privacy в AdminCacheInvalidationMiddleware; иначе страница обновится по revalidate
+  - order: 4
+    action: Тесты
+    detail: 'frontend/app/privacy/page.test.tsx: рендер шаблона и текста из админки'
+  technical_notes:
+  - path: frontend/app/about/page.tsx
+    note: Образец generateMetadata + loadOrBuildFallback + revalidate
+  - path: backend/MomSite.API
+    note: Найти AdminCacheInvalidationMiddleware или аналог grep'ом (`git grep -il invalidat backend`) перед правкой
+  acceptance_criteria:
+  - id: AC-1
+    description: /privacy отдаётся сервером с h1, метаданными и реквизитами
+    done: false
+  - id: AC-2
+    description: Правка в админке отображается на странице
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - текст не задан
+    when: рендер /privacy
+    then:
+    - показан шаблон с реквизитами
+    verification:
+    - automated
+    level: unit
+- id: T021
+  title: Ссылка на /privacy в футере
+  description: Добавить ссылку «Политика конфиденциальности» в нижний блок Footer
+  context: Политика доступна со всех страниц
+  story_ref: US4
+  requirement_refs:
+  - FR-010
+  depends_on:
+  - T020
+  parallelizable: true
+  entity_refs: []
+  contract_refs: []
+  steps:
+  - order: 1
+    action: Ссылка
+    detail: 'В frontend/components/Footer.tsx, блок «Bottom Section» рядом с копирайтом: Link на /privacy «Политика конфиденциальности»'
+  - order: 2
+    action: Тест
+    detail: 'components/Footer.test.tsx: ссылка есть и ведёт на /privacy'
+  technical_notes:
+  - path: frontend/components/Footer.tsx
+    note: Блок Bottom Section в конце файла; возможное пересечение с 008 локально
+  - path: frontend/components/Footer.test.tsx
+    note: Существующий тест футера
+  acceptance_criteria:
+  - id: AC-1
+    description: Ссылка видна на всех страницах и ведёт на /privacy
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - рендер Footer
+    when: поиск ссылки по тексту
+    then:
+    - href="/privacy"
+    verification:
+    - automated
+    level: unit
+- id: T022
+  title: Строка согласия под формой контактов
+  description: Добавить текст согласия со ссылкой на /privacy под кнопкой отправки
+  context: Форма собирает персональные данные, согласие должно быть явным
+  story_ref: US4
+  requirement_refs:
+  - FR-010
+  depends_on:
+  - T020
+  parallelizable: true
+  entity_refs: []
+  contract_refs:
+  - public-contact-message
+  steps:
+  - order: 1
+    action: Строка
+    detail: 'В frontend/app/contacts/ContactsClientPage.tsx под кнопкой submit (~строки 232-240): «Отправляя форму, вы соглашаетесь с политикой конфиденциальности» со ссылкой на /privacy'
+  - order: 2
+    action: Тест
+    detail: 'ContactsClientPage.test.tsx: строка и ссылка есть; тесты отправки не менять'
+  technical_notes:
+  - path: frontend/app/contacts/ContactsClientPage.tsx
+    note: 'ПЕРЕСЕЧЕНИЕ с 008: он правит эту же форму (поле «Телефон», кнопка). Вставка локальная после кнопки; мерджить после 008 или ребейзить'
+  - path: frontend/app/contacts/ContactsClientPage.test.tsx
+    note: Тесты формы
+  acceptance_criteria:
+  - id: AC-1
+    description: Под формой есть строка согласия со ссылкой на /privacy
+    done: false
+  - id: AC-2
+    description: Отправка формы работает как раньше
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - страница контактов
+    when: рендер формы
+    then:
+    - ссылка на /privacy под кнопкой
+    verification:
+    - automated
+    level: unit
+- id: T023
+  title: Добавить /privacy в sitemap
+  description: Включить страницу политики в sitemap.xml
+  context: 'SEO (P7): все публичные страницы в карте сайта'
+  story_ref: US4
+  requirement_refs:
+  - FR-010
+  depends_on:
+  - T020
+  parallelizable: true
+  entity_refs: []
+  contract_refs: []
+  steps:
+  - order: 1
+    action: Запись
+    detail: 'В frontend/app/sitemap.ts, массив staticPages: url /privacy, changeFrequency ''yearly'', priority 0.3'
+  - order: 2
+    action: Тест
+    detail: 'app/sitemap.test.ts: URL /privacy присутствует'
+  technical_notes:
+  - path: frontend/app/sitemap.ts
+    note: staticPages; ПЕРЕСЕЧЕНИЕ с 008 (он правит sitemap), добавление независимое
+  - path: frontend/app/sitemap.test.ts
+    note: Существующий тест
+  acceptance_criteria:
+  - id: AC-1
+    description: /sitemap.xml содержит https://angelamoiseenko.ru/privacy
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - сборка sitemap
+    when: вызов sitemap()
+    then:
+    - есть запись /privacy
+    verification:
+    - automated
+    level: unit
+- id: T024
+  title: 'E2E: переход из футера на /privacy'
+  description: Playwright-тест открытия политики из футера и формы
+  context: Сквозная проверка пути посетителя
+  story_ref: US4
+  requirement_refs:
+  - FR-009
+  - FR-010
+  depends_on:
+  - T020
+  - T021
+  - T022
+  parallelizable: false
+  entity_refs: []
+  contract_refs: []
+  steps:
+  - order: 1
+    action: Тест
+    detail: 'frontend/e2e/privacy.spec.ts: открыть /, клик по ссылке в футере, ожидать URL /privacy и h1'
+  - order: 2
+    action: Реквизиты
+    detail: Проверить «Моисеенко Анжела Валерьевна» на странице
+  - order: 3
+    action: Форма
+    detail: Открыть /contacts, проверить ссылку согласия на /privacy
+  - order: 4
+    action: Запуск
+    detail: '`cd frontend && npx playwright test e2e/privacy.spec.ts`'
+  technical_notes:
+  - path: frontend/e2e/blog.spec.ts
+    note: Образец структуры spec
+  - path: frontend/playwright.config.ts
+    note: baseURL и webServer
+  acceptance_criteria:
+  - id: AC-1
+    description: Тест зелёный на мобильном viewport 360x740
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - сайт запущен
+    when: переход из футера на /privacy
+    then:
+    - страница открыта, заголовок «Политика конфиденциальности»
+    verification:
+    - automated
+    level: e2e
+- id: T025
+  title: Строка согласия со ссылкой на /privacy в боте
+  description: Показывать перед шагом «Контакт» согласие на обработку данных со ссылкой
+  context: Бот собирает телефон и Telegram-данные, согласие обязательно
+  story_ref: US4
+  requirement_refs:
+  - FR-010
+  depends_on:
+  - T010
+  parallelizable: false
+  entity_refs:
+  - funnel-state
+  contract_refs:
+  - funnel-dialog
+  steps:
+  - order: 1
+    action: Текст
+    detail: 'В FunnelTexts.cs: ConsentLine «Нажимая кнопку, вы соглашаетесь на обработку персональных данных: https://angelamoiseenko.ru/privacy»; базовый URL сайта - константа SiteUrl'
+  - order: 2
+    action: Шаг Contact
+    detail: При переходе в Contact первый reply содержит ConsentLine и клавиатуру контакта
+  - order: 3
+    action: Тест
+    detail: 'FunnelDialogTests: сообщение шага Contact содержит /privacy'
+  technical_notes:
+  - path: backend/MomSite.Infrastructure/TelegramBot/FunnelTexts.cs
+    note: Тексты и URL в одном месте
+  - path: specs/007-funnel-bot/spec.yaml
+    note: 'US4: согласие в боте'
+  acceptance_criteria:
+  - id: AC-1
+    description: Сообщение запроса контакта содержит ссылку на /privacy
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - диалог дошёл до шага Contact
+    when: формируется ответ
+    then:
+    - в тексте есть ссылка на /privacy
+    verification:
+    - automated
+    level: unit
+- id: T026
+  title: Разбор deep-link payload
+  description: 'Реализовать разбор параметра /start: art_<id>, mk, interior, прочее, пустое'
+  context: По параметру бот понимает контекст работы или кампанию
+  story_ref: US3
+  requirement_refs:
+  - FR-007
+  depends_on:
+  - T008
+  parallelizable: true
+  entity_refs:
+  - funnel-state
+  contract_refs:
+  - funnel-dialog
+  steps:
+  - order: 1
+    action: Парсер
+    detail: 'backend/MomSite.Infrastructure/TelegramBot/StartPayload.cs: Parse(string? raw) -> record (Kind: Artwork|Masterclass|Interior|Campaign|None, ArtworkId?, Raw); допустимо только [A-Za-z0-9_-]{1,64}; art_<число> в пределах int; невалидное -> None'
+  - order: 2
+    action: Тесты
+    detail: 'backend/MomSite.Tests/TelegramBot/StartPayloadTests.cs: art_12, art_999999, mk, interior, abc-promo, пустое, null, 100 символов, art_abc, недопустимые символы - без исключений'
+  technical_notes:
+  - path: backend/MomSite.Infrastructure/TelegramBot/
+    note: Новый файл StartPayload.cs; результат хранится в FunnelState
+  acceptance_criteria:
+  - id: AC-1
+    description: Работа, МК и интерьер распознаются; прочее - кампания
+    done: false
+  - id: AC-2
+    description: Невалидный ввод не бросает исключений
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - art_12, art_999999, mk, interior, abc-promo, пусто
+    when: Parse
+    then:
+    - корректный контекст для каждого
+    verification:
+    - automated
+    level: unit
+- id: T027
+  title: 'Контекст работы в сценарии: фото, цель «Купить», пропуск шагов'
+  description: Подгрузить работу по art_<id>, сократить сценарий, сохранить источник в лиде
+  context: Контекст работы сокращает путь и показывает художнице, о какой картине речь
+  story_ref: US3
+  requirement_refs:
+  - FR-007
+  depends_on:
+  - T013
+  - T026
+  parallelizable: false
+  entity_refs:
+  - funnel-state
+  - artwork
+  - contact-message
+  contract_refs:
+  - funnel-dialog
+  steps:
+  - order: 1
+    action: Поиск работы
+    detail: 'В FunnelPollingService при Start с Kind=Artwork через IServiceScopeFactory: ApplicationDbContext.Artworks.Visible() и Id == id -> ArtworkInfo(Id, Title, ThumbnailPath); не найдена -> context.Artwork = null'
+  - order: 2
+    action: Автомат
+    detail: 'Работа найдена: sendPhoto (ThumbnailPath, подпись Title), цель Buy, шаги Detail/Theme/Budget пропускаются, сразу Contact; mk -> Masterclass; interior -> Interior; не найдена -> полный сценарий'
+  - order: 3
+    action: Лид
+    detail: 'Message содержит «Работа: <Title> https://angelamoiseenko.ru/gallery/artwork-<id>» (фронт резолвит по хвостовому id); UtmSource=telegram_bot, UtmCampaign=Raw'
+  - order: 4
+    action: Тесты
+    detail: 'backend/MomSite.Tests/TelegramBot/FunnelDialogPayloadTests.cs: art_<существующий>, art_999999, mk, interior, abc-promo'
+  technical_notes:
+  - path: backend/MomSite.Infrastructure/Data/ArtworkQueryExtensions.cs
+    note: Visible() - единый фильтр; 005 добавит условие публикации, использовать его, не писать свой (скрытая работа не показывается)
+  - path: backend/MomSite.Core/Models/Artwork.cs
+    note: 'Title, ThumbnailPath: проверить, хранится ли абсолютный URL; иначе собрать так же, как в MappingExtensions'
+  - path: frontend/lib/artworkSlug.ts
+    note: Slug <translit>-<id>, разбор по хвостовому id - ссылка artwork-<id> рабочая
+  - path: frontend/app/gallery
+    note: Deep-link CTA на карточке работы вне скоупа 007
+  acceptance_criteria:
+  - id: AC-1
+    description: Для существующей работы бот показывает фото и название и сразу просит контакт
+    done: false
+  - id: AC-2
+    description: Для несуществующей или скрытой - обычный сценарий без ошибки
+    done: false
+  - id: AC-3
+    description: Кампания сохраняется в UtmCampaign
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - ссылка с art_<id> существующей работы
+    when: /start
+    then:
+    - фото и название, цель Buy, шаг Contact
+    verification:
+    - automated
+    level: integration
+  - id: TS-2
+    given:
+    - ссылка с art_999999
+    when: /start
+    then:
+    - обычный сценарий без исключения
+    verification:
+    - automated
+    level: integration
+  - id: TS-3
+    given:
+    - ссылка с abc-promo
+    when: заявка завершена
+    then:
+    - UtmCampaign = abc-promo
+    verification:
+    - automated
+    level: unit
+- id: T028
+  title: Проверка размера файлов и чистоты логов
+  description: Убедиться, что новые файлы <= 200 строк, а токен и ПДн не попадают в логи
+  context: P3 и P4 (NON-NEGOTIABLE)
+  story_ref: US1
+  requirement_refs:
+  - FR-011
+  depends_on:
+  - T014
+  parallelizable: true
+  entity_refs: []
+  contract_refs: []
+  steps:
+  - order: 1
+    action: Размер
+    detail: '`find backend/MomSite.Infrastructure/TelegramBot backend/MomSite.Tests/TelegramBot -name ''*.cs'' | xargs wc -l`: ни один файл > 200; иначе разделить'
+  - order: 2
+    action: Логи
+    detail: Запустить api с тестовым токеном, пройти диалог; `grep -c "bot[0-9]*:"` по логам = 0, телефонов и текстов нет
+  - order: 3
+    action: Секреты
+    detail: '`git grep -n "FUNNEL_BOT_TOKEN="` - только в compose без значения'
+  technical_notes:
+  - path: backend/MomSite.API/Program.cs
+    note: Serilog пишет в консоль и файл - проверять оба
+  acceptance_criteria:
+  - id: AC-1
+    description: Нет файлов длиннее 200 строк
+    done: false
+  - id: AC-2
+    description: В логах нет токена и ПДн
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - пройден диалог с тестовым токеном
+    when: grep по логам
+    then:
+    - 0 вхождений токена
+    verification:
+    - manual
+    level: integration
+- id: T029
+  title: Полный прогон тестов и ручные сценарии quickstart
+  description: Запустить backend и frontend тесты, пройти сценарии quickstart.md и ручную проверку с телефона
+  context: Закрытие фичи только после подтверждения владельца (P5)
+  story_ref: US1
+  requirement_refs:
+  - FR-001
+  - FR-002
+  - FR-005
+  - FR-009
+  depends_on:
+  - T003
+  - T005
+  - T006
+  - T011
+  - T015
+  - T016
+  - T018
+  - T024
+  - T025
+  - T027
+  - T028
+  parallelizable: false
+  entity_refs: []
+  contract_refs: []
+  steps:
+  - order: 1
+    action: Backend
+    detail: '`cd backend && dotnet test`'
+  - order: 2
+    action: Frontend
+    detail: '`cd frontend && npm test && npx tsc --noEmit && npx playwright test e2e/privacy.spec.ts`'
+  - order: 3
+    action: BotFather
+    detail: 'Вручную: /setjoingroups -> Disable, /setcommands: start, cancel'
+  - order: 4
+    action: Сценарии
+    detail: Пройти specs/007-funnel-bot/quickstart.md и прод-проверку после деплоя; лид приходит во все TELEGRAM_CHAT_IDS и в /admin/messages
+  - order: 5
+    action: Закрытие
+    detail: Не закрывать без «добро» владельца
+  technical_notes:
+  - path: specs/007-funnel-bot/quickstart.md
+    note: Таблица сценариев и прод-шаги
+  - path: .github/workflows
+    note: CI гоняет dotnet test, tsc и jest - должны быть зелёными
+  acceptance_criteria:
+  - id: AC-1
+    description: Все автотесты зелёные
+    done: false
+  - id: AC-2
+    description: Сценарии quickstart пройдены
+    done: false
+  - id: AC-3
+    description: Реальный бот проходит сценарий с телефона
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - реальный бот на проде
+    when: сценарий пройден с телефона
+    then:
+    - подтверждение получено, лид в Telegram и /admin/messages
+    verification:
+    - manual
+    level: e2e
