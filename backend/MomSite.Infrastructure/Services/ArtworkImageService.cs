@@ -49,13 +49,7 @@ public class ArtworkImageService : IArtworkImageService
         foreach (var file in files)
         {
             var (path, thumb) = await StoreAsync(file);
-            artwork.Images.Add(new ArtworkImage
-            {
-                ImagePath = path,
-                ThumbnailPath = thumb,
-                SortOrder = artwork.Images.Count,
-                CreatedAt = DateTime.UtcNow
-            });
+            artwork.Images.Add(NewImage(path, thumb, artwork.Images.Count));
         }
 
         await FinalizeAsync(artwork);
@@ -70,8 +64,7 @@ public class ArtworkImageService : IArtworkImageService
 
         if (artwork.Images.Count <= 1) return ArtworkImageResult.BadRequest(LastImageMessage);
 
-        _imageService.DeleteImage(image.ImagePath);
-        _imageService.DeleteImage(image.ThumbnailPath);
+        DeleteFiles(image.ImagePath, image.ThumbnailPath);
         artwork.Images.Remove(image);
         _context.ArtworkImages.Remove(image);
 
@@ -100,13 +93,12 @@ public class ArtworkImageService : IArtworkImageService
     public async Task SetCoverAsync(Artwork artwork, IFormFile file)
     {
         var cover = artwork.Images.OrderBy(i => i.SortOrder).FirstOrDefault();
-        if (!string.IsNullOrEmpty(artwork.ImagePath)) _imageService.DeleteImage(artwork.ImagePath);
-        if (!string.IsNullOrEmpty(artwork.ThumbnailPath)) _imageService.DeleteImage(artwork.ThumbnailPath);
+        DeleteFiles(artwork.ImagePath, artwork.ThumbnailPath);
 
         var (path, thumb) = await StoreAsync(file);
         if (cover == null)
         {
-            artwork.Images.Add(new ArtworkImage { ImagePath = path, ThumbnailPath = thumb, SortOrder = 0, CreatedAt = DateTime.UtcNow });
+            artwork.Images.Add(NewImage(path, thumb, 0));
         }
         else
         {
@@ -123,24 +115,40 @@ public class ArtworkImageService : IArtworkImageService
             .SelectMany(i => new[] { i.ImagePath, i.ThumbnailPath })
             .Append(artwork.ImagePath)
             .Append(artwork.ThumbnailPath)
-            .Where(p => !string.IsNullOrEmpty(p))
             .Distinct();
-        foreach (var path in paths) _imageService.DeleteImage(path);
+        DeleteFiles(paths.ToArray());
     }
 
     private static string? ValidateFiles(IReadOnlyList<IFormFile> files, int existing)
     {
         if (files.Count == 0) return "Не выбрано ни одного файла";
-        foreach (var file in files)
-        {
-            if (file.Length == 0) return $"Файл «{file.FileName}» пустой";
-            if (file.ContentType == null || !file.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
-                return $"Файл «{file.FileName}» не является изображением";
-            if (file.Length > MaxFileSizeBytes) return $"Файл «{file.FileName}» больше 15 МБ";
-        }
+        var fileError = files.Select(ValidateFile).FirstOrDefault(e => e != null);
+        if (fileError != null) return fileError;
         if (existing + files.Count > MaxImagesPerArtwork)
             return $"У работы может быть не более {MaxImagesPerArtwork} фото";
         return null;
+    }
+
+    private static string? ValidateFile(IFormFile file)
+    {
+        if (file.Length == 0) return $"Файл «{file.FileName}» пустой";
+        if (file.ContentType == null || !file.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+            return $"Файл «{file.FileName}» не является изображением";
+        if (file.Length > MaxFileSizeBytes) return $"Файл «{file.FileName}» больше 15 МБ";
+        return null;
+    }
+
+    private static ArtworkImage NewImage(string path, string thumb, int sortOrder) => new()
+    {
+        ImagePath = path,
+        ThumbnailPath = thumb,
+        SortOrder = sortOrder,
+        CreatedAt = DateTime.UtcNow
+    };
+
+    private void DeleteFiles(params string[] paths)
+    {
+        foreach (var path in paths.Where(p => !string.IsNullOrEmpty(p))) _imageService.DeleteImage(path);
     }
 
     private async Task<(string Path, string Thumb)> StoreAsync(IFormFile file)
@@ -156,13 +164,7 @@ public class ArtworkImageService : IArtworkImageService
         var artwork = await _context.Artworks.Include(a => a.Images).FirstOrDefaultAsync(a => a.Id == artworkId);
         if (artwork != null && artwork.Images.Count == 0 && !string.IsNullOrEmpty(artwork.ImagePath))
         {
-            artwork.Images.Add(new ArtworkImage
-            {
-                ImagePath = artwork.ImagePath,
-                ThumbnailPath = artwork.ThumbnailPath,
-                SortOrder = 0,
-                CreatedAt = DateTime.UtcNow
-            });
+            artwork.Images.Add(NewImage(artwork.ImagePath, artwork.ThumbnailPath, 0));
         }
         return artwork;
     }
