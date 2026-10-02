@@ -1,14 +1,16 @@
 import { Metadata } from 'next';
+import { loadOrBuildFallback } from '@/lib/buildPhase';
+import type { ContactsData } from '@/lib/api';
 import { getContactsData } from '@/hooks/useApi';
 import ContactsClientPage from './ContactsClientPage';
 import { maxProfileUrl } from '@/lib/social';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 // Generate dynamic metadata for SEO
 export async function generateMetadata(): Promise<Metadata> {
   try {
-    const contactsData = await getContactsData();
+    const contactsData = await loadOrBuildFallback(getContactsData, { socialLinks: {}, email: '', phone: '0000000000', address: '', bannerTitle: '', bannerDescription: '', faq: [] });
     
     if (!contactsData) {
       return {
@@ -56,18 +58,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const ContactsPage = async () => {
-  const contactsData = await getContactsData();
+  const contactsData = await loadOrBuildFallback(getContactsData, { socialLinks: {}, email: '', phone: '0000000000', address: '', bannerTitle: '', bannerDescription: '', faq: [] });
 
-  if (!contactsData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Ошибка загрузки</h2>
-          <p className="text-gray-600 mb-4">Не удалось загрузить данные</p>
-        </div>
-      </div>
-    );
-  }
 
   const jsonLd = {
     '@context': 'https://schema.org',

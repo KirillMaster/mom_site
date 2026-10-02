@@ -3,6 +3,8 @@ import { getHomeData, getGalleryData, getAboutData, getContactsData, getVideosDa
 import { artworksForSale } from '@/lib/gallery';
 import { buildArtworkSlug } from '@/lib/artworkSlug';
 
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://angelamoiseenko.ru';
   
