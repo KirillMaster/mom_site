@@ -6,6 +6,7 @@ import { reachGoal, Goals } from '@/lib/analytics';
 
 jest.mock('@/hooks/useApi', () => ({
   getGalleryData: jest.fn(),
+  getContactsData: jest.fn(),
   getImageUrl: (path: string) => path,
 }));
 
@@ -549,5 +550,40 @@ describe('@US8-AS1 the page title heading is wrapped in guillemets once', () => 
     render(await ArtworkPage({ params: { slug: 'utro-3' } }));
 
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('«Утро»');
+  });
+});
+
+describe('@US2 page wires contact channels and mobile bar', () => {
+  const contacts = { socialLinks: { telegram: 'https://t.me/a' }, phone: '+7 (978) 545-86-50' };
+  const { getContactsData } = jest.requireMock('@/hooks/useApi');
+
+  it('@US2-AS1 whatsapp link carries prefilled text with normalized title', async () => {
+    getContactsData.mockResolvedValue(contacts);
+    mockedGetGalleryData.mockResolvedValue(gallery([{ id: 7, title: '"Утро в Коктебеле"', isForSale: true }]));
+    render(await ArtworkPage({ params: { slug: buildArtworkSlug('"Утро в Коктебеле"', 7) } }));
+    const wa = screen.getByLabelText('Написать в WhatsApp');
+    const text = decodeURIComponent(wa.getAttribute('href')!.split('?text=')[1]);
+    expect(text).toContain('«Утро в Коктебеле»');
+    expect(text).toContain('/gallery/');
+    expect(screen.getByTestId('mobile-contact-bar')).toBeInTheDocument();
+  });
+
+  it('@US2-EC2 sold artwork keeps channels and similar-order button', async () => {
+    getContactsData.mockResolvedValue(contacts);
+    mockedGetGalleryData.mockResolvedValue(gallery([{ id: 8, title: 'Закат', isForSale: false, status: 'Sold' }]));
+    render(await ArtworkPage({ params: { slug: buildArtworkSlug('Закат', 8) } }));
+    expect(screen.getByTestId('contact-channels')).toBeInTheDocument();
+    expect(screen.getByText('Заказать похожую')).toBeInTheDocument();
+  });
+
+  it('@US2-EC3 exhibition photo has no channels and no bar', async () => {
+    getContactsData.mockResolvedValue(contacts);
+    const { EXHIBITION_PHOTOS_CATEGORY_NAME } = jest.requireActual('@/lib/gallery');
+    mockedGetGalleryData.mockResolvedValue(
+      gallery([{ id: 9, title: 'Выставка', categoryId: 1 }], [{ id: 1, name: EXHIBITION_PHOTOS_CATEGORY_NAME }])
+    );
+    render(await ArtworkPage({ params: { slug: buildArtworkSlug('Выставка', 9) } }));
+    expect(screen.queryByTestId('contact-channels')).toBeNull();
+    expect(screen.queryByTestId('mobile-contact-bar')).toBeNull();
   });
 });

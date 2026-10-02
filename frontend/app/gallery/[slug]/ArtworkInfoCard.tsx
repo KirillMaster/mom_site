@@ -5,6 +5,8 @@ import { resolveStatus } from '@/lib/artworkStatus';
 import type { ArtworkDto, GalleryData } from '@/lib/api';
 import AskPriceButton from './AskPriceButton';
 import ArtworkSpecs from './ArtworkSpecs';
+import ContactChannels from './ContactChannels';
+import type { ContactChannel } from '@/lib/contactChannels';
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat('ru-RU', {
@@ -17,6 +19,7 @@ interface Props {
   artwork: ArtworkDto;
   categoryName?: string;
   categories: GalleryData['categories'];
+  channels?: ContactChannel[];
 }
 
 const priceLabelOf = (artwork: ArtworkDto, available: boolean) => {
@@ -24,7 +27,7 @@ const priceLabelOf = (artwork: ArtworkDto, available: boolean) => {
   return artwork.price ? formatPrice(artwork.price) : 'цена по запросу';
 };
 
-const ArtworkInfoCard = ({ artwork, categoryName, categories }: Props) => {
+const ArtworkInfoCard = ({ artwork, categoryName, categories, channels = [] }: Props) => {
   const isExhibition = isExhibitionPhoto(artwork, categories);
   const available = resolveStatus(artwork) === 'Available';
   const priceLabel = priceLabelOf(artwork, available);
@@ -51,6 +54,7 @@ const ArtworkInfoCard = ({ artwork, categoryName, categories }: Props) => {
               id={artwork.id}
               variant={available ? 'price' : 'similar'}
             />
+            <ContactChannels channels={channels} artwork={normalizeTitle(artwork.title)} />
           </div>
         )}
 
