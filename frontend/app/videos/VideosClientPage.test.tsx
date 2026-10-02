@@ -10,24 +10,6 @@ jest.mock('react-player', () => ({
   default: () => null,
 }));
 
-jest.mock('framer-motion', () => ({
-  motion: new Proxy(
-    {},
-    {
-      get: () => {
-        const Component = ({ children, ...rest }: any) => <div {...stripMotionProps(rest)}>{children}</div>;
-        return Component;
-      },
-    }
-  ),
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}));
-
-function stripMotionProps(props: Record<string, unknown>) {
-  const { initial, animate, exit, transition, variants, whileHover, whileTap, whileInView, viewport, layout, ...rest } =
-    props;
-  return rest;
-}
 
 const videosData = {
   videos: [

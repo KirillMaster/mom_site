@@ -2,7 +2,6 @@
 
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
-import { motion } from 'framer-motion';
 import {
   Mail,
   Phone,
@@ -82,11 +81,8 @@ const ContactsForm = ({ contactsData }: { contactsData: ContactsData }) => {
         {/* Hero Section */}
         <section className="pt-24 pb-16 bg-gradient-to-r from-purple-100 via-pink-100 to-yellow-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-center"
+            <div
+              className="rise-in text-center"
             >
               <h1 className="text-5xl md:text-6xl font-serif font-bold text-gray-900 mb-6">
                 {contactsData.bannerTitle || "Свяжитесь со мной"}
@@ -94,7 +90,7 @@ const ContactsForm = ({ contactsData }: { contactsData: ContactsData }) => {
               <p className="text-xl text-gray-700 max-w-3xl mx-auto">
                 {contactsData.bannerDescription || "Буду рада ответить на ваши вопросы и обсудить идеи!"}
               </p>
-            </motion.div>
+            </div>
           </div>
         </section>
 
@@ -103,12 +99,8 @@ const ContactsForm = ({ contactsData }: { contactsData: ContactsData }) => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
               {/* Contact Details */}
-              <motion.div
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
-                viewport={{ once: true, amount: 0.3 }}
-                className="bg-gray-50 p-8 rounded-lg shadow-lg"
+              <div
+                className="reveal bg-gray-50 p-8 rounded-lg shadow-lg"
               >
                 <h2 className="text-3xl md:text-4xl font-serif font-bold mb-8 text-gray-900">
                   Мои контакты
@@ -145,15 +137,11 @@ const ContactsForm = ({ contactsData }: { contactsData: ContactsData }) => {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
               {/* Contact Form */}
-              <motion.div
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
-                viewport={{ once: true, amount: 0.3 }}
-                className="bg-white p-8 rounded-lg shadow-xl"
+              <div
+                className="reveal bg-white p-8 rounded-lg shadow-xl"
               >
                 <h3 className="text-3xl font-serif font-bold mb-6 text-gray-900">
                   Напишите мне сообщение
@@ -255,7 +243,7 @@ const ContactsForm = ({ contactsData }: { contactsData: ContactsData }) => {
                     <p className="text-red-600 text-center mt-4">{errorMessage}</p>
                   )}
                 </form>
-              </motion.div>
+              </div>
             </div>
           </div>
         </section>
@@ -263,12 +251,8 @@ const ContactsForm = ({ contactsData }: { contactsData: ContactsData }) => {
         {/* Social Media */}
         <section className="py-20 bg-gradient-to-r from-blue-50 to-indigo-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true, amount: 0.3 }}
-              className="text-center mb-16"
+            <div
+              className="reveal text-center mb-16"
             >
               <h2 className="text-4xl md:text-5xl font-serif font-bold text-gray-900 mb-6">
                 Мои социальные сети
@@ -276,98 +260,74 @@ const ContactsForm = ({ contactsData }: { contactsData: ContactsData }) => {
               <p className="text-xl text-gray-700 max-w-3xl mx-auto">
                 Следите за моим творчеством и будьте в курсе новостей!
               </p>
-            </motion.div>
+            </div>
 
             <div className="flex flex-wrap justify-center gap-8">
               {contactsData.socialLinks.instagram && (
-                <motion.a
+                <a
                   href={contactsData.socialLinks.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5 }}
-                  viewport={{ once: true }}
-                  className="flex flex-col items-center space-y-2 text-gray-700 hover:text-pink-600 transition-colors"
+                  className="reveal flex flex-col items-center space-y-2 text-gray-700 hover:text-pink-600 transition-colors"
                 >
                   <FaInstagram className="w-12 h-12" />
                   <span className="text-lg font-medium">Instagram</span>
-                </motion.a>
+                </a>
               )}
               {contactsData.socialLinks.vk && (
-                <motion.a
+                <a
                   href={contactsData.socialLinks.vk}
                   target="_blank"
                   rel="noopener noreferrer"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                  viewport={{ once: true }}
-                  className="flex flex-col items-center space-y-2 text-gray-700 hover:text-blue-600 transition-colors"
+                  className="reveal flex flex-col items-center space-y-2 text-gray-700 hover:text-blue-600 transition-colors"
                 >
                   <FaVk className="w-12 h-12" />
                   <span className="text-lg font-medium">ВКонтакте</span>
-                </motion.a>
+                </a>
               )}
               {contactsData.socialLinks.telegram && (
-                <motion.a
+                <a
                   href={contactsData.socialLinks.telegram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                  viewport={{ once: true }}
-                  className="flex flex-col items-center space-y-2 text-gray-700 hover:text-blue-400 transition-colors"
+                  className="reveal flex flex-col items-center space-y-2 text-gray-700 hover:text-blue-400 transition-colors"
                 >
                   <FaTelegram className="w-12 h-12" />
                   <span className="text-lg font-medium">Telegram</span>
-                </motion.a>
+                </a>
               )}
               {contactsData.socialLinks.whatsapp && (
-                <motion.a
+                <a
                   href={contactsData.socialLinks.whatsapp}
                   target="_blank"
                   rel="noopener noreferrer"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                  viewport={{ once: true }}
-                  className="flex flex-col items-center space-y-2 text-gray-700 hover:text-green-500 transition-colors"
+                  className="reveal flex flex-col items-center space-y-2 text-gray-700 hover:text-green-500 transition-colors"
                 >
                   <FaWhatsapp className="w-12 h-12" />
                   <span className="text-lg font-medium">WhatsApp</span>
-                </motion.a>
+                </a>
               )}
               {contactsData.socialLinks.youtube && (
-                <motion.a
+                <a
                   href={contactsData.socialLinks.youtube}
                   target="_blank"
                   rel="noopener noreferrer"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 0.4 }}
-                  viewport={{ once: true }}
-                  className="flex flex-col items-center space-y-2 text-gray-700 hover:text-red-600 transition-colors"
+                  className="reveal flex flex-col items-center space-y-2 text-gray-700 hover:text-red-600 transition-colors"
                 >
                   <FaYoutube className="w-12 h-12" />
                   <span className="text-lg font-medium">YouTube</span>
-                </motion.a>
+                </a>
               )}
               {maxProfileUrl(contactsData.socialLinks.max, contactsData.phone) && (
-                <motion.a
+                <a
                   href={maxProfileUrl(contactsData.socialLinks.max, contactsData.phone)!}
                   target="_blank"
                   rel="noopener noreferrer"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 0.5 }}
-                  viewport={{ once: true }}
-                  className="flex flex-col items-center space-y-2 text-gray-700 hover:text-indigo-500 transition-colors"
+                  className="reveal flex flex-col items-center space-y-2 text-gray-700 hover:text-indigo-500 transition-colors"
                 >
                   <MaxIcon className="w-12 h-12" />
                   <span className="text-lg font-medium">MAX</span>
-                </motion.a>
+                </a>
               )}
             </div>
           </div>
@@ -376,27 +336,19 @@ const ContactsForm = ({ contactsData }: { contactsData: ContactsData }) => {
         {/* FAQ Section */}
         <section className="py-20 bg-gray-50">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true, amount: 0.3 }}
-              className="text-center mb-16"
+            <div
+              className="reveal text-center mb-16"
             >
               <h2 className="text-4xl md:text-5xl font-serif font-bold text-gray-900 mb-6">
                 Часто задаваемые вопросы
               </h2>
-            </motion.div>
+            </div>
 
             <div className="space-y-8">
               {contactsData.faq.map((item, index) => (
-                <motion.div
+                <div
                   key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  className="bg-white p-8 rounded-lg shadow-md"
+                  className="reveal bg-white p-8 rounded-lg shadow-md"
                 >
                   <h3 className="text-xl font-semibold text-gray-900 mb-4">
                     {item.question}
@@ -404,7 +356,7 @@ const ContactsForm = ({ contactsData }: { contactsData: ContactsData }) => {
                   <p className="text-gray-700 leading-relaxed">
                     {item.answer}
                   </p>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>

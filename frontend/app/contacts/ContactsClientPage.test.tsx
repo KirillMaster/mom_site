@@ -5,24 +5,6 @@ import { ContactsData } from '@/lib/api';
 
 jest.mock('@/components/Navigation', () => () => <div data-testid="navigation" />);
 jest.mock('@/components/Footer', () => () => <div data-testid="footer" />);
-jest.mock('framer-motion', () => {
-  const React = require('react');
-  const passthrough = (Tag: any) => ({ children, ...props }: any) => {
-    const {
-      initial, animate, whileInView, transition, viewport, exit, ...rest
-    } = props;
-    return React.createElement(Tag, rest, children);
-  };
-  return {
-    motion: new Proxy(
-      {},
-      {
-        get: (_target, tag: string) => passthrough(tag),
-      }
-    ),
-    AnimatePresence: ({ children }: any) => <>{children}</>,
-  };
-});
 jest.mock('@/hooks/useApi', () => ({
   sendContactMessage: jest.fn(),
 }));
