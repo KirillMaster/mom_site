@@ -24,6 +24,22 @@ public class Artwork
     public decimal? Price { get; set; }
     
     public bool IsForSale { get; set; } = true;
+
+    public ArtworkStatus Status { get; set; } = ArtworkStatus.Available;
+
+    [Range(1, 1000)]
+    public int? WidthCm { get; set; }
+
+    [Range(1, 1000)]
+    public int? HeightCm { get; set; }
+
+    public int? Year { get; set; }
+
+    [MaxLength(100)]
+    public string? Support { get; set; }
+
+    [MaxLength(100)]
+    public string? Technique { get; set; }
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     

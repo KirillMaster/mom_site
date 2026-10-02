@@ -1,12 +1,19 @@
 'use client';
 
 import { slugifyTitle } from '@/lib/artworkSlug';
+import type { ArtworkStatus } from '@/lib/artworkStatus';
+import ArtworkSpecsFields from './ArtworkSpecsFields';
 
 export interface ArtworkFormState {
   title: string;
   description: string;
   price: string;
-  isForSale: boolean;
+  status: ArtworkStatus;
+  widthCm: string;
+  heightCm: string;
+  year: string;
+  support: string;
+  technique: string;
   categoryId: string;
 }
 
@@ -47,11 +54,7 @@ const ArtworkFormFields = ({ state, categories, artworkId, onChange }: Props) =>
         {categories?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
       </select>
     </div>
-    <div className="flex items-center">
-      <input type="checkbox" id="isForSale" name="isForSale" checked={state.isForSale} onChange={onChange}
-        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-      <label htmlFor="isForSale" className="ml-2 block text-sm text-gray-900">В продаже</label>
-    </div>
+    <ArtworkSpecsFields state={state} onChange={onChange} />
   </>
 );
 

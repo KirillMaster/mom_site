@@ -105,3 +105,29 @@ describe('@US1-EC8 повтор после частичного сбоя соз�
     expect(upload).toHaveBeenLastCalledWith(9, [b]);
   });
 });
+
+describe('@US1-BE4 admin form sends the catalog characteristics', () => {
+  it('puts size, technique, support, year and status into the payload', async () => {
+    createMutateAsync.mockResolvedValue({ id: 9 });
+    upload.mockResolvedValue([]);
+    render(<ArtworkForm artwork={null} categories={cats} onSaved={jest.fn()} />);
+    fireEvent.change(screen.getByLabelText('Название'), { target: { value: 'Новая' } });
+    fireEvent.change(screen.getByLabelText('Категория'), { target: { value: '1' } });
+    fireEvent.change(screen.getByLabelText('Ширина (см)'), { target: { value: '60' } });
+    fireEvent.change(screen.getByLabelText('Высота (см)'), { target: { value: '80' } });
+    fireEvent.change(screen.getByLabelText('Год'), { target: { value: '2024' } });
+    fireEvent.change(screen.getByLabelText('Основа'), { target: { value: 'холст' } });
+    fireEvent.change(screen.getByLabelText('Техника'), { target: { value: 'масло' } });
+    fireEvent.change(screen.getByLabelText('Статус'), { target: { value: 'Sold' } });
+    pick([file('a.png')]);
+    fireEvent.click(screen.getByText('Добавить картину'));
+    await waitFor(() => expect(createMutateAsync).toHaveBeenCalled());
+    const fd: FormData = createMutateAsync.mock.calls[0][0];
+    expect(fd.get('widthCm')).toBe('60');
+    expect(fd.get('heightCm')).toBe('80');
+    expect(fd.get('year')).toBe('2024');
+    expect(fd.get('support')).toBe('холст');
+    expect(fd.get('technique')).toBe('масло');
+    expect(fd.get('status')).toBe('Sold');
+  });
+});

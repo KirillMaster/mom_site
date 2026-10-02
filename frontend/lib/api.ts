@@ -1,3 +1,4 @@
+import type { ArtworkStatus } from '@/lib/artworkStatus';
 import axios from 'axios';
 
 // Server-side uses internal docker network URL for faster/reliable SSR
@@ -50,6 +51,12 @@ export interface Artwork {
   thumbnailPath: string;
   price?: number;
   isForSale: boolean;
+  status?: ArtworkStatus;
+  widthCm?: number | null;
+  heightCm?: number | null;
+  year?: number | null;
+  support?: string | null;
+  technique?: string | null;
   createdAt: string;
   updatedAt: string;
   categoryId: number;

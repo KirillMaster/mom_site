@@ -36,6 +36,8 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.ImagePath).IsRequired().HasMaxLength(500);
             entity.Property(e => e.ThumbnailPath).IsRequired().HasMaxLength(500);
             entity.Property(e => e.Price).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.Support).HasMaxLength(100);
+            entity.Property(e => e.Technique).HasMaxLength(100);
             entity.HasOne(e => e.Category)
                   .WithMany(c => c.Artworks)
                   .HasForeignKey(e => e.CategoryId)
