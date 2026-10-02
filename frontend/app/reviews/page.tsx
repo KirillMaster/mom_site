@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { getReviewsData, getGalleryData } from '@/hooks/useApi';
 import ReviewsClientPage, { ReviewArtwork } from './ReviewsClientPage';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 const SITE_URL = 'https://angelamoiseenko.ru';
 const ARTIST_NAME = 'Анжела Моисеенко';
@@ -30,9 +30,9 @@ export async function generateMetadata(): Promise<Metadata> {
 const average = (values: number[]) => values.reduce((sum, value) => sum + value, 0) / values.length;
 
 const ReviewsPage = async () => {
-  const reviews = await getReviewsData().catch(() => []);
+  const reviews = await getReviewsData();
 
-  const galleryData = await getGalleryData().catch(() => null);
+  const galleryData = await getGalleryData();
   const artworksById: Record<number, ReviewArtwork> = {};
   (galleryData?.artworks || []).forEach((artwork: any) => {
     artworksById[artwork.id] = { id: artwork.id, title: artwork.title };
