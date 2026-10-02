@@ -4,7 +4,9 @@ import { Metadata } from 'next';
 import { getGalleryData, getImageUrl } from '@/hooks/useApi';
 import { resolveArtworkBySlug } from '@/lib/artworkSlug';
 import { isExhibitionPhoto } from '@/lib/gallery';
-import AskPriceButton from './AskPriceButton';
+import ArtworkInfoCard from './ArtworkInfoCard';
+import { normalizeTitle } from '@/lib/normalizeTitle';
+import { resolveStatus } from '@/lib/artworkStatus';
 import ArtworkGallery from './ArtworkGallery';
 import RelatedWorks from './RelatedWorks';
 import {
@@ -81,13 +83,6 @@ export async function generateMetadata({ params }: ArtworkPageProps): Promise<Me
   };
 }
 
-const formatPrice = (price: number) =>
-  new Intl.NumberFormat('ru-RU', {
-    style: 'currency',
-    currency: 'RUB',
-    minimumFractionDigits: 0,
-  }).format(price);
-
 const categoryIdOf = (artwork: any) => artwork.category?.id ?? artwork.categoryId;
 
 const categoryNameOf = (artwork: any, categories: any[]) =>
@@ -110,12 +105,7 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
   }
 
   const categories = galleryData?.categories || [];
-  const showPriceCta = artwork.isForSale && !isExhibitionPhoto(artwork, categories);
-  const priceLabel = artwork.isForSale
-    ? artwork.price
-      ? formatPrice(artwork.price)
-      : 'цена по запросу'
-    : null;
+  const displayTitle = normalizeTitle(artwork.title);
 
   const categoryName = categoryNameOf(artwork, categories);
   const photos = getArtworkPhotos(artwork);
@@ -126,7 +116,7 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
   const relatedWorks = (galleryData?.artworks || []).filter(
     (candidate: any) =>
       candidate.id !== artwork.id &&
-      candidate.isForSale &&
+      resolveStatus(candidate) === 'Available' &&
       !isExhibitionPhoto(candidate, categories) &&
       categoryIdOf(candidate) === categoryIdOf(artwork)
   );
@@ -150,49 +140,16 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
           <span aria-hidden="true">/</span>
           <Link href="/gallery" className="transition-colors hover:text-primary-600">Галерея</Link>
           <span aria-hidden="true">/</span>
-          <span className="text-gray-900">{artwork.title}</span>
+          <span className="text-gray-900">{displayTitle}</span>
         </nav>
 
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:items-start">
           <ArtworkGallery
             photos={photos.map((photo) => ({ src: getImageUrl(photo.path), thumb: getImageUrl(photo.thumbPath) }))}
-            title={artwork.title}
+            title={displayTitle}
           />
 
-          <aside className="lg:sticky lg:top-28">
-            <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5 md:p-8">
-              {categoryName && (
-                <p className="mb-2 text-sm font-medium uppercase tracking-wide text-primary-600">
-                  {categoryName}
-                </p>
-              )}
-
-              <h1 className="font-serif text-3xl font-bold text-gray-900 md:text-4xl">
-                {artwork.title}
-              </h1>
-
-              {artwork.description && (
-                <p className="mt-4 leading-relaxed text-gray-600">{artwork.description}</p>
-              )}
-
-              {priceLabel && (
-                <p className="mt-6 text-2xl font-bold text-gray-900">{priceLabel}</p>
-              )}
-
-              {showPriceCta && (
-                <div className="mt-6">
-                  <AskPriceButton title={artwork.title} id={artwork.id} />
-                </div>
-              )}
-
-              <Link
-                href="/gallery"
-                className="mt-6 inline-block text-sm font-medium text-primary-600 transition-colors hover:text-primary-700"
-              >
-                ← Вернуться в галерею
-              </Link>
-            </div>
-          </aside>
+          <ArtworkInfoCard artwork={artwork} categoryName={categoryName} categories={categories} />
         </div>
 
         <RelatedWorks works={relatedWorks} />

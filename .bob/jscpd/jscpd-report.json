@@ -2,18 +2,18 @@
   "duplicates": [
     {
       "firstFile": {
-        "end": 498,
+        "end": 611,
         "endLoc": {
           "column": 1,
-          "line": 498,
-          "position": 15942
+          "line": 611,
+          "position": 19170
         },
         "name": "MomSite.API\\Controllers\\AdminController.cs",
-        "start": 493,
+        "start": 606,
         "startLoc": {
           "column": 4,
-          "line": 493,
-          "position": 15723
+          "line": 606,
+          "position": 18951
         }
       },
       "format": "csharp",
@@ -22,36 +22,36 @@
       "kind": "exact",
       "lines": 6,
       "secondFile": {
-        "end": 545,
+        "end": 658,
         "endLoc": {
           "column": 1,
-          "line": 545,
-          "position": 17373
+          "line": 658,
+          "position": 20601
         },
         "name": "MomSite.API\\Controllers\\AdminController.cs",
-        "start": 540,
+        "start": 653,
         "startLoc": {
           "column": 4,
-          "line": 540,
-          "position": 17154
+          "line": 653,
+          "position": 20382
         }
       },
       "tokens": 55
     },
     {
       "firstFile": {
-        "end": 69,
+        "end": 78,
         "endLoc": {
           "column": 29,
-          "line": 69,
-          "position": 2712
+          "line": 78,
+          "position": 3134
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 59,
+        "start": 68,
         "startLoc": {
           "column": 8,
-          "line": 59,
-          "position": 2334
+          "line": 68,
+          "position": 2756
         }
       },
       "format": "csharp",
@@ -60,36 +60,36 @@
       "kind": "exact",
       "lines": 11,
       "secondFile": {
-        "end": 352,
+        "end": 370,
         "endLoc": {
           "column": 29,
-          "line": 352,
-          "position": 14635
+          "line": 370,
+          "position": 15473
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 342,
+        "start": 360,
         "startLoc": {
           "column": 8,
-          "line": 342,
-          "position": 14257
+          "line": 360,
+          "position": 15095
         }
       },
       "tokens": 59
     },
     {
       "firstFile": {
-        "end": 69,
+        "end": 78,
         "endLoc": {
           "column": 20,
-          "line": 69,
-          "position": 2703
+          "line": 78,
+          "position": 3125
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 60,
+        "start": 69,
         "startLoc": {
           "column": 8,
-          "line": 60,
-          "position": 2381
+          "line": 69,
+          "position": 2803
         }
       },
       "format": "csharp",
@@ -98,36 +98,36 @@
       "kind": "exact",
       "lines": 10,
       "secondFile": {
-        "end": 213,
+        "end": 228,
         "endLoc": {
           "column": 20,
-          "line": 213,
-          "position": 9647
+          "line": 228,
+          "position": 10363
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 204,
+        "start": 219,
         "startLoc": {
           "column": 8,
-          "line": 204,
-          "position": 9325
+          "line": 219,
+          "position": 10041
         }
       },
       "tokens": 56
     },
     {
       "firstFile": {
-        "end": 70,
+        "end": 79,
         "endLoc": {
           "column": 32,
-          "line": 70,
-          "position": 2745
+          "line": 79,
+          "position": 3167
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 61,
+        "start": 70,
         "startLoc": {
           "column": 12,
-          "line": 61,
-          "position": 2443
+          "line": 70,
+          "position": 2865
         }
       },
       "format": "csharp",
@@ -136,74 +136,74 @@
       "kind": "exact",
       "lines": 10,
       "secondFile": {
-        "end": 353,
+        "end": 371,
         "endLoc": {
           "column": 30,
-          "line": 353,
-          "position": 14666
+          "line": 371,
+          "position": 15504
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 344,
+        "start": 362,
         "startLoc": {
           "column": 12,
-          "line": 344,
-          "position": 14366
+          "line": 362,
+          "position": 15204
         }
       },
       "tokens": 51
     },
     {
       "firstFile": {
-        "end": 107,
+        "end": 119,
         "endLoc": {
           "column": 9,
-          "line": 107,
-          "position": 4087
+          "line": 119,
+          "position": 4631
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 73,
+        "start": 82,
         "startLoc": {
           "column": 39,
-          "line": 73,
-          "position": 2871
+          "line": 82,
+          "position": 3293
         }
       },
       "format": "csharp",
-      "fragment": "                    contactsData.Phone = contact.TextContent;\n                    break;\n                case \"address\":\n                    contactsData.Address = contact.TextContent;\n                    break;\n            }\n        }\n\n        // Get social links from social page\n        var socialContent = await _context.PageContents\n            .Where(pc => pc.PageKey == \"social\" && pc.IsActive)\n            .OrderBy(pc => pc.DisplayOrder)\n            .ToListAsync();\n\n        foreach (var social in socialContent)\n        {\n            switch (social.ContentKey)\n            {\n                case \"instagram\":\n                    contactsData.SocialLinks.Instagram = social.LinkUrl;\n                    break;\n                case \"vk\":\n                    contactsData.SocialLinks.Vk = social.LinkUrl;\n                    break;\n                case \"telegram\":\n                    contactsData.SocialLinks.Telegram = social.LinkUrl;\n                    break;\n                case \"whatsapp\":\n                    contactsData.SocialLinks.Whatsapp = social.LinkUrl;\n                    break;\n                case \"youtube\":\n                    contactsData.SocialLinks.Youtube = social.LinkUrl;\n                    break;\n            }\n        }",
+      "fragment": "                    contactsData.Phone = contact.TextContent;\n                    break;\n                case \"address\":\n                    contactsData.Address = contact.TextContent;\n                    break;\n            }\n        }\n\n        // Get social links from social page\n        var socialContent = await _context.PageContents\n            .Where(pc => pc.PageKey == \"social\" && pc.IsActive)\n            .OrderBy(pc => pc.DisplayOrder)\n            .ToListAsync();\n\n        foreach (var social in socialContent)\n        {\n            switch (social.ContentKey)\n            {\n                case \"instagram\":\n                    contactsData.SocialLinks.Instagram = social.LinkUrl;\n                    break;\n                case \"vk\":\n                    contactsData.SocialLinks.Vk = social.LinkUrl;\n                    break;\n                case \"telegram\":\n                    contactsData.SocialLinks.Telegram = social.LinkUrl;\n                    break;\n                case \"whatsapp\":\n                    contactsData.SocialLinks.Whatsapp = social.LinkUrl;\n                    break;\n                case \"youtube\":\n                    contactsData.SocialLinks.Youtube = social.LinkUrl;\n                    break;\n                case \"max\":\n                    contactsData.SocialLinks.Max = social.LinkUrl;\n                    break;\n            }\n        }",
       "isNew": false,
       "kind": "exact",
-      "lines": 35,
+      "lines": 38,
       "secondFile": {
-        "end": 251,
+        "end": 269,
         "endLoc": {
           "column": 9,
-          "line": 251,
-          "position": 11031
+          "line": 269,
+          "position": 11869
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 217,
+        "start": 232,
         "startLoc": {
           "column": 39,
-          "line": 217,
-          "position": 9815
+          "line": 232,
+          "position": 10531
         }
       },
-      "tokens": 155
+      "tokens": 170
     },
     {
       "firstFile": {
-        "end": 91,
+        "end": 100,
         "endLoc": {
           "column": 33,
-          "line": 91,
-          "position": 3449
+          "line": 100,
+          "position": 3871
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 76,
+        "start": 85,
         "startLoc": {
           "column": 41,
-          "line": 76,
-          "position": 2994
+          "line": 85,
+          "position": 3416
         }
       },
       "format": "csharp",
@@ -212,74 +212,112 @@
       "kind": "exact",
       "lines": 16,
       "secondFile": {
-        "end": 371,
+        "end": 389,
         "endLoc": {
           "column": 33,
-          "line": 371,
-          "position": 15245
+          "line": 389,
+          "position": 16083
         },
         "name": "MomSite.API\\Controllers\\PublicController.cs",
-        "start": 356,
+        "start": 374,
         "startLoc": {
           "column": 37,
-          "line": 356,
-          "position": 14790
+          "line": 374,
+          "position": 15628
         }
       },
       "tokens": 68
     },
     {
       "firstFile": {
-        "end": 15,
+        "end": 24,
         "endLoc": {
           "column": 50,
-          "line": 15,
-          "position": 617
+          "line": 24,
+          "position": 1028
         },
         "name": "MomSite.API\\DTOs\\ArtworkAdminDto.cs",
-        "start": 4,
+        "start": 6,
         "startLoc": {
           "column": 4,
-          "line": 4,
-          "position": 66
+          "line": 6,
+          "position": 136
         }
       },
       "format": "csharp",
-      "fragment": "    {\n        public int Id { get; set; }\n        public string Title { get; set; } = string.Empty;\n        public string? Description { get; set; }\n        public string ImagePath { get; set; } = string.Empty;\n        public string ThumbnailPath { get; set; } = string.Empty;\n        public decimal? Price { get; set; }\n        public bool IsForSale { get; set; }\n        public DateTime CreatedAt { get; set; }\n        public DateTime UpdatedAt { get; set; }\n        public int CategoryId { get; set; }\n        public CategoryDto? Category { get; set; } // Включаем DTO категории",
+      "fragment": "    {\n        public int Id { get; set; }\n        public string Title { get; set; } = string.Empty;\n        public string? Description { get; set; }\n        public string ImagePath { get; set; } = string.Empty;\n        public string ThumbnailPath { get; set; } = string.Empty;\n        public decimal? Price { get; set; }\n        public bool IsForSale { get; set; }\n        [JsonConverter(typeof(JsonStringEnumConverter))]\n        public ArtworkStatus Status { get; set; }\n        public int? WidthCm { get; set; }\n        public int? HeightCm { get; set; }\n        public int? Year { get; set; }\n        public string? Support { get; set; }\n        public string? Technique { get; set; }\n        public DateTime CreatedAt { get; set; }\n        public DateTime UpdatedAt { get; set; }\n        public int CategoryId { get; set; }\n        public CategoryDto? Category { get; set; } // Включаем DTO категории",
       "isNew": false,
       "kind": "exact",
-      "lines": 12,
+      "lines": 19,
       "secondFile": {
-        "end": 15,
+        "end": 24,
         "endLoc": {
           "column": 50,
-          "line": 15,
-          "position": 612
+          "line": 24,
+          "position": 1023
         },
         "name": "MomSite.API\\DTOs\\ArtworkDto.cs",
-        "start": 4,
+        "start": 6,
         "startLoc": {
           "column": 4,
-          "line": 4,
-          "position": 61
+          "line": 6,
+          "position": 131
         }
       },
-      "tokens": 118
+      "tokens": 186
     },
     {
       "firstFile": {
-        "end": 74,
+        "end": 30,
         "endLoc": {
-          "column": 48,
-          "line": 74,
-          "position": 2755
+          "column": 10,
+          "line": 30,
+          "position": 754
         },
-        "name": "MomSite.API\\DTOs\\PublicDtos.cs",
-        "start": 68,
+        "name": "MomSite.API\\DTOs\\ArtworkUpsertDto.cs",
+        "start": 14,
         "startLoc": {
           "column": 4,
-          "line": 68,
-          "position": 2449
+          "line": 14,
+          "position": 389
+        }
+      },
+      "format": "csharp",
+      "fragment": "    public ArtworkStatus Status { get; set; } = ArtworkStatus.Available;\n\n    [Range(1, 1000)]\n    public int? WidthCm { get; set; }\n\n    [Range(1, 1000)]\n    public int? HeightCm { get; set; }\n\n    public int? Year { get; set; }\n\n    [MaxLength(100)]\n    public string? Support { get; set; }\n\n    [MaxLength(100)]\n    public string? Technique { get; set; }\n\n    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 17,
+      "secondFile": {
+        "end": 44,
+        "endLoc": {
+          "column": 10,
+          "line": 44,
+          "position": 1017
+        },
+        "name": "MomSite.Core\\Models\\Artwork.cs",
+        "start": 28,
+        "startLoc": {
+          "column": 4,
+          "line": 28,
+          "position": 632
+        }
+      },
+      "tokens": 93
+    },
+    {
+      "firstFile": {
+        "end": 81,
+        "endLoc": {
+          "column": 48,
+          "line": 81,
+          "position": 3200
+        },
+        "name": "MomSite.API\\DTOs\\PublicDtos.cs",
+        "start": 75,
+        "startLoc": {
+          "column": 4,
+          "line": 75,
+          "position": 2894
         }
       },
       "format": "csharp",
@@ -306,18 +344,18 @@
     },
     {
       "firstFile": {
-        "end": 75,
+        "end": 82,
         "endLoc": {
           "column": 5,
-          "line": 75,
-          "position": 2761
+          "line": 82,
+          "position": 3206
         },
         "name": "MomSite.API\\DTOs\\PublicDtos.cs",
-        "start": 68,
+        "start": 75,
         "startLoc": {
           "column": 4,
-          "line": 68,
-          "position": 2449
+          "line": 75,
+          "position": 2894
         }
       },
       "format": "csharp",
@@ -344,18 +382,56 @@
     },
     {
       "firstFile": {
+        "end": 119,
+        "endLoc": {
+          "column": 14,
+          "line": 119,
+          "position": 4461
+        },
+        "name": "MomSite.API\\DTOs\\PublicDtos.cs",
+        "start": 112,
+        "startLoc": {
+          "column": 4,
+          "line": 112,
+          "position": 4153
+        }
+      },
+      "format": "csharp",
+      "fragment": "    {\n        public int Id { get; set; }\n        public string AuthorName { get; set; } = string.Empty;\n        public string? AuthorCity { get; set; }\n        public string Text { get; set; } = string.Empty;\n        public int Rating { get; set; }\n        public DateTime CreatedAt { get; set; }\n        public int SortOrder { get; set; }",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 8,
+      "secondFile": {
+        "end": 11,
+        "endLoc": {
+          "column": 14,
+          "line": 11,
+          "position": 373
+        },
+        "name": "MomSite.API\\DTOs\\ReviewAdminDto.cs",
+        "start": 4,
+        "startLoc": {
+          "column": 4,
+          "line": 4,
+          "position": 65
+        }
+      },
+      "tokens": 67
+    },
+    {
+      "firstFile": {
         "end": 16,
         "endLoc": {
           "column": 5,
           "line": 16,
-          "position": 310
+          "position": 325
         },
         "name": "MomSite.Core\\Models\\Artwork.cs",
         "start": 6,
         "startLoc": {
           "column": 0,
           "line": 6,
-          "position": 99
+          "position": 104
         }
       },
       "format": "csharp",
@@ -379,6 +455,44 @@
         }
       },
       "tokens": 50
+    },
+    {
+      "firstFile": {
+        "end": 24,
+        "endLoc": {
+          "column": 10,
+          "line": 24,
+          "position": 540
+        },
+        "name": "MomSite.Core\\Models\\Artwork.cs",
+        "start": 14,
+        "startLoc": {
+          "column": 31,
+          "line": 14,
+          "position": 299
+        }
+      },
+      "format": "csharp",
+      "fragment": "    public string? Description { get; set; }\n    \n    [Required]\n    [MaxLength(500)]\n    public string ImagePath { get; set; } = string.Empty;\n    \n    [Required]\n    [MaxLength(500)]\n    public string ThumbnailPath { get; set; } = string.Empty;\n    \n    public decimal? Price { get; set; }",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 11,
+      "secondFile": {
+        "end": 20,
+        "endLoc": {
+          "column": 10,
+          "line": 20,
+          "position": 425
+        },
+        "name": "MomSite.Core\\Models\\ArtworkImage.cs",
+        "start": 10,
+        "startLoc": {
+          "column": 28,
+          "line": 10,
+          "position": 206
+        }
+      },
+      "tokens": 53
     },
     {
       "firstFile": {
@@ -534,18 +648,18 @@
     },
     {
       "firstFile": {
-        "end": 31,
+        "end": 36,
         "endLoc": {
           "column": 35,
-          "line": 31,
-          "position": 1049
+          "line": 36,
+          "position": 1366
         },
         "name": "MomSite.Infrastructure\\Data\\ApplicationDbContext.cs",
-        "start": 26,
+        "start": 31,
         "startLoc": {
           "column": 35,
-          "line": 26,
-          "position": 812
+          "line": 31,
+          "position": 1124
         }
       },
       "format": "csharp",
@@ -554,36 +668,36 @@
       "kind": "exact",
       "lines": 6,
       "secondFile": {
-        "end": 57,
+        "end": 77,
         "endLoc": {
           "column": 35,
-          "line": 57,
-          "position": 2102
+          "line": 77,
+          "position": 3156
         },
         "name": "MomSite.Infrastructure\\Data\\ApplicationDbContext.cs",
-        "start": 52,
+        "start": 72,
         "startLoc": {
           "column": 33,
-          "line": 52,
-          "position": 1865
+          "line": 72,
+          "position": 2914
         }
       },
       "tokens": 65
     },
     {
       "firstFile": {
-        "end": 47,
+        "end": 67,
         "endLoc": {
           "column": 11,
-          "line": 47,
-          "position": 1789
+          "line": 67,
+          "position": 2833
         },
         "name": "MomSite.Infrastructure\\Data\\ApplicationDbContext.cs",
-        "start": 41,
+        "start": 61,
         "startLoc": {
           "column": 36,
-          "line": 41,
-          "position": 1525
+          "line": 61,
+          "position": 2563
         }
       },
       "format": "csharp",
@@ -592,21 +706,59 @@
       "kind": "exact",
       "lines": 7,
       "secondFile": {
-        "end": 72,
+        "end": 92,
         "endLoc": {
           "column": 11,
-          "line": 72,
-          "position": 2762
+          "line": 92,
+          "position": 3831
         },
         "name": "MomSite.Infrastructure\\Data\\ApplicationDbContext.cs",
-        "start": 66,
+        "start": 86,
         "startLoc": {
           "column": 41,
-          "line": 66,
-          "position": 2498
+          "line": 86,
+          "position": 3561
         }
       },
       "tokens": 75
+    },
+    {
+      "firstFile": {
+        "end": 61,
+        "endLoc": {
+          "column": 31,
+          "line": 61,
+          "position": 2405
+        },
+        "name": "MomSite.Infrastructure\\Notifications\\TelegramNotifier.cs",
+        "start": 43,
+        "startLoc": {
+          "column": 36,
+          "line": 43,
+          "position": 1700
+        }
+      },
+      "format": "csharp",
+      "fragment": "        var text = BuildText(message);\n\n        var client = _httpClientFactory.CreateClient(nameof(TelegramNotifier));\n        var token = BotToken;\n\n        foreach (var chatId in ChatIds)\n        {\n            var url = $\"https://api.telegram.org/bot{token}/sendMessage\";\n            var response = await client.PostAsJsonAsync(url, new { chat_id = chatId, text }, cts.Token);\n\n            if (!response.IsSuccessStatusCode)\n            {\n                var body = await response.Content.ReadAsStringAsync(cts.Token);\n                throw new InvalidOperationException(\n                    $\"Telegram sendMessage to chat {chatId} failed with {(int)response.StatusCode}: {body}\");\n            }\n        }\n\n        _logger.LogInformation(\"Contact message notification sent to Telegram chats {ChatIds}\", string.Join(\",\", ChatIds));",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 19,
+      "secondFile": {
+        "end": 87,
+        "endLoc": {
+          "column": 31,
+          "line": 87,
+          "position": 3484
+        },
+        "name": "MomSite.Infrastructure\\Notifications\\TelegramNotifier.cs",
+        "start": 69,
+        "startLoc": {
+          "column": 41,
+          "line": 69,
+          "position": 2779
+        }
+      },
+      "tokens": 95
     },
     {
       "firstFile": {
@@ -762,6 +914,82 @@
     },
     {
       "firstFile": {
+        "end": 187,
+        "endLoc": {
+          "column": 26,
+          "line": 187,
+          "position": 8685
+        },
+        "name": "MomSite.Tests\\AdminMessagesAuthorizationIntegrationTests.cs",
+        "start": 169,
+        "startLoc": {
+          "column": 16,
+          "line": 169,
+          "position": 8002
+        }
+      },
+      "format": "csharp",
+      "fragment": "                var descriptorsToRemove = services\n                    .Where(d => d.ServiceType == typeof(ApplicationDbContext)\n                             || (d.ServiceType.IsGenericType\n                                 && d.ServiceType.GetGenericArguments().Contains(typeof(ApplicationDbContext))))\n                    .ToList();\n\n                foreach (var descriptor in descriptorsToRemove)\n                {\n                    services.Remove(descriptor);\n                }\n\n                services.AddDbContext<ApplicationDbContext>(options =>\n                {\n                    options.UseSqlite(_connection);\n                });\n            });\n        }\n\n        public async Task<string> GetAdminTokenAsync(HttpClient client)",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 19,
+      "secondFile": {
+        "end": 212,
+        "endLoc": {
+          "column": 26,
+          "line": 212,
+          "position": 8610
+        },
+        "name": "MomSite.Tests\\AdminReviewsControllerTests.cs",
+        "start": 194,
+        "startLoc": {
+          "column": 16,
+          "line": 194,
+          "position": 7927
+        }
+      },
+      "tokens": 96
+    },
+    {
+      "firstFile": {
+        "end": 260,
+        "endLoc": {
+          "column": 1,
+          "line": 260,
+          "position": 11521
+        },
+        "name": "MomSite.Tests\\AdminMessagesAuthorizationIntegrationTests.cs",
+        "start": 242,
+        "startLoc": {
+          "column": 8,
+          "line": 242,
+          "position": 11030
+        }
+      },
+      "format": "csharp",
+      "fragment": "        }\n\n        protected override void Dispose(bool disposing)\n        {\n            base.Dispose(disposing);\n            if (disposing)\n            {\n                _connection.Dispose();\n                Environment.SetEnvironmentVariable(\"JWT__Secret\", null);\n                Environment.SetEnvironmentVariable(\"AdminPassword\", null);\n            }\n        }\n\n        private sealed class LoginResponse\n        {\n            public string Token { get; set; } = string.Empty;\n        }\n    }\n}",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 19,
+      "secondFile": {
+        "end": 271,
+        "endLoc": {
+          "column": 1,
+          "line": 271,
+          "position": 10945
+        },
+        "name": "MomSite.Tests\\AdminReviewsControllerTests.cs",
+        "start": 253,
+        "startLoc": {
+          "column": 8,
+          "line": 253,
+          "position": 10454
+        }
+      },
+      "tokens": 70
+    },
+    {
+      "firstFile": {
         "end": 129,
         "endLoc": {
           "column": 19,
@@ -797,6 +1025,272 @@
         }
       },
       "tokens": 55
+    },
+    {
+      "firstFile": {
+        "end": 271,
+        "endLoc": {
+          "column": 1,
+          "line": 271,
+          "position": 10945
+        },
+        "name": "MomSite.Tests\\AdminReviewsControllerTests.cs",
+        "start": 252,
+        "startLoc": {
+          "column": 53,
+          "line": 252,
+          "position": 10443
+        }
+      },
+      "format": "csharp",
+      "fragment": "            return await context.Reviews.FindAsync(id);\n        }\n\n        protected override void Dispose(bool disposing)\n        {\n            base.Dispose(disposing);\n            if (disposing)\n            {\n                _connection.Dispose();\n                Environment.SetEnvironmentVariable(\"JWT__Secret\", null);\n                Environment.SetEnvironmentVariable(\"AdminPassword\", null);\n            }\n        }\n\n        private sealed class LoginResponse\n        {\n            public string Token { get; set; } = string.Empty;\n        }\n    }\n}",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 20,
+      "secondFile": {
+        "end": 128,
+        "endLoc": {
+          "column": 1,
+          "line": 128,
+          "position": 5825
+        },
+        "name": "MomSite.Tests\\ArtworkImageTestSupport.cs",
+        "start": 112,
+        "startLoc": {
+          "column": 96,
+          "line": 112,
+          "position": 5351
+        }
+      },
+      "tokens": 72
+    },
+    {
+      "firstFile": {
+        "end": 35,
+        "endLoc": {
+          "column": 32,
+          "line": 35,
+          "position": 1473
+        },
+        "name": "MomSite.Tests\\ArtworkImagesAccessEndpointsTests.cs",
+        "start": 30,
+        "startLoc": {
+          "column": 52,
+          "line": 30,
+          "position": 1257
+        }
+      },
+      "format": "csharp",
+      "fragment": "            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);\n            var count = await _factory.WithDbAsync(c => c.ArtworkImages.CountAsync(i => i.ArtworkId == art.Id));\n            Assert.Equal(2, count);\n        }\n\n        [Fact, Trait(\"scenario\", \"US1-BE7\")]",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 6,
+      "secondFile": {
+        "end": 105,
+        "endLoc": {
+          "column": 32,
+          "line": 105,
+          "position": 5280
+        },
+        "name": "MomSite.Tests\\ArtworkImagesMutationEndpointsTests.cs",
+        "start": 100,
+        "startLoc": {
+          "column": 50,
+          "line": 100,
+          "position": 5064
+        }
+      },
+      "tokens": 54
+    },
+    {
+      "firstFile": {
+        "end": 64,
+        "endLoc": {
+          "column": 32,
+          "line": 64,
+          "position": 2650
+        },
+        "name": "MomSite.Tests\\ArtworkImagesBoundaryEndpointsTests.cs",
+        "start": 57,
+        "startLoc": {
+          "column": 47,
+          "line": 57,
+          "position": 2414
+        }
+      },
+      "format": "csharp",
+      "fragment": "                new { imageIds = new[] { id } });\n\n            Assert.Equal(HttpStatusCode.OK, response.StatusCode);\n            var images = (await Json(response)).GetProperty(\"images\");\n            Assert.Single(images.EnumerateArray());\n        }\n\n        [Fact, Trait(\"scenario\", \"US1-BE2\")]",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 8,
+      "secondFile": {
+        "end": 92,
+        "endLoc": {
+          "column": 32,
+          "line": 92,
+          "position": 3922
+        },
+        "name": "MomSite.Tests\\ArtworkImagesBoundaryEndpointsTests.cs",
+        "start": 85,
+        "startLoc": {
+          "column": 109,
+          "line": 85,
+          "position": 3686
+        }
+      },
+      "tokens": 50
+    },
+    {
+      "firstFile": {
+        "end": 89,
+        "endLoc": {
+          "column": 19,
+          "line": 89,
+          "position": 3846
+        },
+        "name": "MomSite.Tests\\ArtworkImagesBoundaryEndpointsTests.cs",
+        "start": 82,
+        "startLoc": {
+          "column": 34,
+          "line": 82,
+          "position": 3502
+        }
+      },
+      "format": "csharp",
+      "fragment": "            var art = await Seed(2);\n            var client = await _factory.CreateAuthorizedClientAsync();\n\n            var response = await client.DeleteAsync($\"/api/admin/artworks/{art.Id}/images/{art.Images[1].Id}\");\n\n            Assert.Equal(HttpStatusCode.OK, response.StatusCode);\n            var images = (await Json(response)).GetProperty(\"images\");\n            Assert.Single(images.EnumerateArray());",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 8,
+      "secondFile": {
+        "end": 64,
+        "endLoc": {
+          "column": 19,
+          "line": 64,
+          "position": 3358
+        },
+        "name": "MomSite.Tests\\ArtworkImagesMutationEndpointsTests.cs",
+        "start": 57,
+        "startLoc": {
+          "column": 34,
+          "line": 57,
+          "position": 3014
+        }
+      },
+      "tokens": 55
+    },
+    {
+      "firstFile": {
+        "end": 130,
+        "endLoc": {
+          "column": 27,
+          "line": 130,
+          "position": 5678
+        },
+        "name": "MomSite.Tests\\CacheInvalidationTests.cs",
+        "start": 123,
+        "startLoc": {
+          "column": 70,
+          "line": 123,
+          "position": 5438
+        }
+      },
+      "format": "csharp",
+      "fragment": "        public async Task NonQualifyingRequests_DoNotInvokeInvalidator(string method, string path, int status)\n        {\n            Assert.Equal(0, await RunAsync(method, path, status, new RecordingInvalidator()));\n        }\n\n        [Theory]\n        [Trait(\"Scenario\", \"US2-BE2\")]\n        [InlineData(\"POST\", \"/api/admin/login\", 200)]",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 8,
+      "secondFile": {
+        "end": 141,
+        "endLoc": {
+          "column": 27,
+          "line": 141,
+          "position": 6179
+        },
+        "name": "MomSite.Tests\\CacheInvalidationTests.cs",
+        "start": 134,
+        "startLoc": {
+          "column": 70,
+          "line": 134,
+          "position": 5939
+        }
+      },
+      "tokens": 50
+    },
+    {
+      "firstFile": {
+        "end": 197,
+        "endLoc": {
+          "column": 19,
+          "line": 197,
+          "position": 8805
+        },
+        "name": "MomSite.Tests\\CacheInvalidationTests.cs",
+        "start": 191,
+        "startLoc": {
+          "column": 60,
+          "line": 191,
+          "position": 8511
+        }
+      },
+      "format": "csharp",
+      "fragment": "        public async Task Various2xxStatuses_SucceedSilently(HttpStatusCode status)\n        {\n            var h = new StubHandler((_, _) => Task.FromResult(new HttpResponseMessage(status)));\n            var log = new ListLogger<FrontendCacheInvalidator>();\n            await Make(h, Config(\"http://x/y\", \"s\"), log).InvalidateAsync();\n\n            Assert.Equal(1, h.Calls);",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 7,
+      "secondFile": {
+        "end": 267,
+        "endLoc": {
+          "column": 19,
+          "line": 267,
+          "position": 11767
+        },
+        "name": "MomSite.Tests\\CacheInvalidationTests.cs",
+        "start": 261,
+        "startLoc": {
+          "column": 59,
+          "line": 261,
+          "position": 11473
+        }
+      },
+      "tokens": 62
+    },
+    {
+      "firstFile": {
+        "end": 251,
+        "endLoc": {
+          "column": 9,
+          "line": 251,
+          "position": 10981
+        },
+        "name": "MomSite.Tests\\CacheInvalidationTests.cs",
+        "start": 244,
+        "startLoc": {
+          "column": 86,
+          "line": 244,
+          "position": 10737
+        }
+      },
+      "format": "csharp",
+      "fragment": "            var h = new StubHandler((_, _) => throw new HttpRequestException(\"refused\"));\n            var log = new ListLogger<FrontendCacheInvalidator>();\n            await Make(h, Config(\"http://x/y\", \"s\"), log).InvalidateAsync();\n\n            Assert.Contains(log.Entries, e => e.Level == LogLevel.Warning);\n        }\n\n        [Theory]",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 8,
+      "secondFile": {
+        "end": 315,
+        "endLoc": {
+          "column": 9,
+          "line": 315,
+          "position": 13586
+        },
+        "name": "MomSite.Tests\\CacheInvalidationTests.cs",
+        "start": 307,
+        "startLoc": {
+          "column": 86,
+          "line": 307,
+          "position": 13341
+        }
+      },
+      "tokens": 56
     },
     {
       "firstFile": {
@@ -876,626 +1370,1272 @@
     },
     {
       "firstFile": {
-        "end": 107,
+        "end": 931,
         "endLoc": {
-          "column": 11,
-          "line": 107,
-          "position": 3556
+          "column": 78,
+          "line": 931,
+          "position": 41742
         },
-        "name": "app\\HomeClientPage.tsx",
-        "start": 94,
+        "name": "MomSite.Tests\\PublicControllerTests.cs",
+        "start": 921,
         "startLoc": {
-          "column": 19,
-          "line": 94,
-          "position": 3084
+          "column": 50,
+          "line": 921,
+          "position": 41351
         }
       },
-      "format": "tsx",
-      "fragment": "          </motion.div>\n        </div>\n      </section>\n\n    {/* Artwork Carousel Section */}\n      <section className=\"py-20 bg-gray-100\">\n        <div className=\"max-w-7xl mx-auto px-4 text-center\">\n          <motion.h2\n            initial={{ opacity: 0, y: 30 }}\n            whileInView={{ opacity: 1, y: 0 }}\n            transition={{ duration: 0.8 }}\n            viewport={{ once: true }}\n            className=\"text-4xl md:text-5xl font-serif font-bold mb-12 text-gradient\"\n          >",
+      "format": "csharp",
+      "fragment": "                TextContent = new string('W', 200),\n                IsActive = true\n            });\n            await context.SaveChangesAsync();\n\n            var controller = CreateController(context, Array.Empty<IFeedbackNotifier>());\n\n            var result = await controller.GetHomeData();\n\n            var ok = Assert.IsType<OkObjectResult>(result.Result);\n            var homeData = Assert.IsType<MomSite.API.DTOs.HomeData>(ok.Value);",
       "isNew": false,
       "kind": "exact",
-      "lines": 14,
+      "lines": 11,
       "secondFile": {
-        "end": 199,
+        "end": 968,
         "endLoc": {
-          "column": 11,
-          "line": 199,
-          "position": 7313
+          "column": 78,
+          "line": 968,
+          "position": 43455
         },
-        "name": "app\\HomeClientPage.tsx",
-        "start": 186,
+        "name": "MomSite.Tests\\PublicControllerTests.cs",
+        "start": 958,
         "startLoc": {
-          "column": 12,
-          "line": 186,
-          "position": 6849
+          "column": 141,
+          "line": 958,
+          "position": 43056
         }
       },
-      "tokens": 82
+      "tokens": 77
     },
     {
       "firstFile": {
-        "end": 213,
+        "end": 931,
         "endLoc": {
-          "column": 15,
-          "line": 213,
-          "position": 7994
+          "column": 78,
+          "line": 931,
+          "position": 41742
         },
-        "name": "app\\HomeClientPage.tsx",
-        "start": 205,
+        "name": "MomSite.Tests\\PublicControllerTests.cs",
+        "start": 921,
         "startLoc": {
-          "column": 39,
-          "line": 205,
-          "position": 7567
+          "column": 50,
+          "line": 921,
+          "position": 41351
         }
       },
-      "format": "tsx",
-      "fragment": "                href={homeData.contacts.socialLinks.instagram}\n                target=\"_blank\"\n                rel=\"noopener noreferrer\"\n                initial={{ opacity: 0, scale: 0.8 }}\n                whileInView={{ opacity: 1, scale: 1 }}\n                transition={{ duration: 0.5 }}\n                viewport={{ once: true }}\n                className=\"flex flex-col items-center space-y-2 text-gray-700 hover:text-pink-600 transition-colors\"\n              >",
+      "format": "csharp",
+      "fragment": "                TextContent = new string('W', 200),\n                IsActive = true\n            });\n            await context.SaveChangesAsync();\n\n            var controller = CreateController(context, Array.Empty<IFeedbackNotifier>());\n\n            var result = await controller.GetHomeData();\n\n            var ok = Assert.IsType<OkObjectResult>(result.Result);\n            var homeData = Assert.IsType<MomSite.API.DTOs.HomeData>(ok.Value);",
       "isNew": false,
       "kind": "exact",
-      "lines": 9,
+      "lines": 11,
       "secondFile": {
-        "end": 272,
+        "end": 993,
         "endLoc": {
-          "column": 17,
-          "line": 272,
-          "position": 12199
+          "column": 78,
+          "line": 993,
+          "position": 44604
         },
-        "name": "app\\contacts\\ContactsClientPage.tsx",
-        "start": 264,
+        "name": "MomSite.Tests\\PublicControllerTests.cs",
+        "start": 983,
         "startLoc": {
-          "column": 36,
-          "line": 264,
-          "position": 11756
+          "column": 32,
+          "line": 983,
+          "position": 44213
         }
       },
-      "tokens": 59
+      "tokens": 77
     },
     {
       "firstFile": {
-        "end": 228,
+        "end": 49,
         "endLoc": {
-          "column": 15,
-          "line": 228,
-          "position": 8707
+          "column": 94,
+          "line": 49,
+          "position": 2470
         },
-        "name": "app\\HomeClientPage.tsx",
-        "start": 220,
-        "startLoc": {
-          "column": 39,
-          "line": 220,
-          "position": 8275
-        }
-      },
-      "format": "tsx",
-      "fragment": "                href={homeData.contacts.socialLinks.vk}\n                target=\"_blank\"\n                rel=\"noopener noreferrer\"\n                initial={{ opacity: 0, scale: 0.8 }}\n                whileInView={{ opacity: 1, scale: 1 }}\n                transition={{ duration: 0.5, delay: 0.1 }}\n                viewport={{ once: true }}\n                className=\"flex flex-col items-center space-y-2 text-gray-700 hover:text-blue-600 transition-colors\"\n              >",
-      "isNew": false,
-      "kind": "exact",
-      "lines": 9,
-      "secondFile": {
-        "end": 287,
-        "endLoc": {
-          "column": 17,
-          "line": 287,
-          "position": 12932
-        },
-        "name": "app\\contacts\\ContactsClientPage.tsx",
-        "start": 279,
-        "startLoc": {
-          "column": 36,
-          "line": 279,
-          "position": 12484
-        }
-      },
-      "tokens": 63
-    },
-    {
-      "firstFile": {
-        "end": 243,
-        "endLoc": {
-          "column": 15,
-          "line": 243,
-          "position": 9434
-        },
-        "name": "app\\HomeClientPage.tsx",
-        "start": 235,
-        "startLoc": {
-          "column": 39,
-          "line": 235,
-          "position": 8996
-        }
-      },
-      "format": "tsx",
-      "fragment": "                href={homeData.contacts.socialLinks.telegram}\n                target=\"_blank\"\n                rel=\"noopener noreferrer\"\n                initial={{ opacity: 0, scale: 0.8 }}\n                whileInView={{ opacity: 1, scale: 1 }}\n                transition={{ duration: 0.5, delay: 0.2 }}\n                viewport={{ once: true }}\n                className=\"flex flex-col items-center space-y-2 text-gray-700 hover:text-blue-400 transition-colors\"\n              >",
-      "isNew": false,
-      "kind": "exact",
-      "lines": 9,
-      "secondFile": {
-        "end": 302,
-        "endLoc": {
-          "column": 17,
-          "line": 302,
-          "position": 13679
-        },
-        "name": "app\\contacts\\ContactsClientPage.tsx",
-        "start": 294,
-        "startLoc": {
-          "column": 36,
-          "line": 294,
-          "position": 13225
-        }
-      },
-      "tokens": 63
-    },
-    {
-      "firstFile": {
-        "end": 258,
-        "endLoc": {
-          "column": 15,
-          "line": 258,
-          "position": 10158
-        },
-        "name": "app\\HomeClientPage.tsx",
-        "start": 250,
-        "startLoc": {
-          "column": 39,
-          "line": 250,
-          "position": 9719
-        }
-      },
-      "format": "tsx",
-      "fragment": "                href={homeData.contacts.socialLinks.whatsapp}\n                target=\"_blank\"\n                rel=\"noopener noreferrer\"\n                initial={{ opacity: 0, scale: 0.8 }}\n                whileInView={{ opacity: 1, scale: 1 }}\n                transition={{ duration: 0.5, delay: 0.3 }}\n                viewport={{ once: true }}\n                className=\"flex flex-col items-center space-y-2 text-gray-700 hover:text-green-500 transition-colors\"\n              >",
-      "isNew": false,
-      "kind": "exact",
-      "lines": 9,
-      "secondFile": {
-        "end": 317,
-        "endLoc": {
-          "column": 17,
-          "line": 317,
-          "position": 14423
-        },
-        "name": "app\\contacts\\ContactsClientPage.tsx",
-        "start": 309,
-        "startLoc": {
-          "column": 36,
-          "line": 309,
-          "position": 13968
-        }
-      },
-      "tokens": 63
-    },
-    {
-      "firstFile": {
-        "end": 273,
-        "endLoc": {
-          "column": 15,
-          "line": 273,
-          "position": 10878
-        },
-        "name": "app\\HomeClientPage.tsx",
-        "start": 265,
-        "startLoc": {
-          "column": 39,
-          "line": 265,
-          "position": 10442
-        }
-      },
-      "format": "tsx",
-      "fragment": "                href={homeData.contacts.socialLinks.youtube}\n                target=\"_blank\"\n                rel=\"noopener noreferrer\"\n                initial={{ opacity: 0, scale: 0.8 }}\n                whileInView={{ opacity: 1, scale: 1 }}\n                transition={{ duration: 0.5, delay: 0.4 }}\n                viewport={{ once: true }}\n                className=\"flex flex-col items-center space-y-2 text-gray-700 hover:text-red-600 transition-colors\"\n              >",
-      "isNew": false,
-      "kind": "exact",
-      "lines": 9,
-      "secondFile": {
-        "end": 332,
-        "endLoc": {
-          "column": 17,
-          "line": 332,
-          "position": 15163
-        },
-        "name": "app\\contacts\\ContactsClientPage.tsx",
-        "start": 324,
-        "startLoc": {
-          "column": 36,
-          "line": 324,
-          "position": 14711
-        }
-      },
-      "tokens": 63
-    },
-    {
-      "firstFile": {
-        "end": 24,
-        "endLoc": {
-          "column": 89,
-          "line": 24,
-          "position": 835
-        },
-        "name": "app\\about\\AboutClientPage.tsx",
-        "start": 11,
-        "startLoc": {
-          "column": 2,
-          "line": 11,
-          "position": 346
-        }
-      },
-      "format": "tsx",
-      "fragment": "  return (\n    <div className=\"min-h-screen\">\n      <Navigation />\n      \n      {/* Hero Section */}\n      <section className=\"pt-24 pb-16 gradient-bg\">\n        <div className=\"max-w-7xl mx-auto px-4\">\n          <motion.div\n            initial={{ opacity: 0, y: 30 }}\n            animate={{ opacity: 1, y: 0 }}\n            transition={{ duration: 0.8 }}\n            className=\"text-center\"\n          >\n            <h1 className=\"text-5xl md:text-6xl font-serif font-bold mb-6 text-gradient\">",
-      "isNew": false,
-      "kind": "exact",
-      "lines": 14,
-      "secondFile": {
-        "end": 55,
-        "endLoc": {
-          "column": 89,
-          "line": 55,
-          "position": 1911
-        },
-        "name": "app\\videos\\VideosClientPage.tsx",
-        "start": 42,
-        "startLoc": {
-          "column": 2,
-          "line": 42,
-          "position": 1428
-        }
-      },
-      "tokens": 81
-    },
-    {
-      "firstFile": {
-        "end": 25,
-        "endLoc": {
-          "column": 15,
-          "line": 25,
-          "position": 851
-        },
-        "name": "app\\about\\AboutClientPage.tsx",
-        "start": 13,
-        "startLoc": {
-          "column": 19,
-          "line": 13,
-          "position": 409
-        }
-      },
-      "format": "tsx",
-      "fragment": "      <Navigation />\n      \n      {/* Hero Section */}\n      <section className=\"pt-24 pb-16 gradient-bg\">\n        <div className=\"max-w-7xl mx-auto px-4\">\n          <motion.div\n            initial={{ opacity: 0, y: 30 }}\n            animate={{ opacity: 1, y: 0 }}\n            transition={{ duration: 0.8 }}\n            className=\"text-center\"\n          >\n            <h1 className=\"text-5xl md:text-6xl font-serif font-bold mb-6 text-gradient\">\n              {aboutData.bannerTitle || \"Обо мне\"}",
-      "isNew": false,
-      "kind": "exact",
-      "lines": 13,
-      "secondFile": {
-        "end": 56,
-        "endLoc": {
-          "column": 15,
-          "line": 56,
-          "position": 1939
-        },
-        "name": "app\\gallery\\GalleryClientPage.tsx",
+        "name": "__tests__\\ArtworkForm.test.tsx",
         "start": 44,
         "startLoc": {
-          "column": 33,
+          "column": 65,
           "line": 44,
-          "position": 1503
-        }
-      },
-      "tokens": 71
-    },
-    {
-      "firstFile": {
-        "end": 103,
-        "endLoc": {
-          "column": 26,
-          "line": 103,
-          "position": 4246
-        },
-        "name": "app\\about\\AboutClientPage.tsx",
-        "start": 96,
-        "startLoc": {
-          "column": 70,
-          "line": 96,
-          "position": 4012
+          "position": 2090
         }
       },
       "format": "tsx",
-      "fragment": "        <div className=\"max-w-4xl mx-auto px-4 text-center text-white\">\n          <motion.div\n            initial={{ opacity: 0, y: 30 }}\n            whileInView={{ opacity: 1, y: 0 }}\n            transition={{ duration: 0.8 }}\n            viewport={{ once: true }}\n          >\n            <h2 className=\"text-4xl md:text-5xl font-serif font-bold mb-8\">",
-      "isNew": false,
-      "kind": "exact",
-      "lines": 8,
-      "secondFile": {
-        "end": 125,
-        "endLoc": {
-          "column": 26,
-          "line": 125,
-          "position": 5040
-        },
-        "name": "app\\about\\AboutClientPage.tsx",
-        "start": 118,
-        "startLoc": {
-          "column": 59,
-          "line": 118,
-          "position": 4806
-        }
-      },
-      "tokens": 56
-    },
-    {
-      "firstFile": {
-        "end": 101,
-        "endLoc": {
-          "column": 37,
-          "line": 101,
-          "position": 4207
-        },
-        "name": "app\\about\\AboutClientPage.tsx",
-        "start": 96,
-        "startLoc": {
-          "column": 70,
-          "line": 96,
-          "position": 4012
-        }
-      },
-      "format": "tsx",
-      "fragment": "        <div className=\"max-w-4xl mx-auto px-4 text-center text-white\">\n          <motion.div\n            initial={{ opacity: 0, y: 30 }}\n            whileInView={{ opacity: 1, y: 0 }}\n            transition={{ duration: 0.8 }}\n            viewport={{ once: true }}",
+      "fragment": "  it('first file becomes the cover, others uploaded after create', async () => {\n    createMutateAsync.mockResolvedValue({ id: 9 });\n    upload.mockResolvedValue([]);\n    render(<ArtworkForm artwork={null} categories={cats} onSaved={jest.fn()} />);\n    fireEvent.change(screen.getByLabelText('Название'), { target: { value: 'Новая' } });\n    fireEvent.change(screen.getByLabelText('Категория'), { target: { value: '1' } });",
       "isNew": false,
       "kind": "exact",
       "lines": 6,
       "secondFile": {
-        "end": 242,
+        "end": 115,
         "endLoc": {
-          "column": 37,
-          "line": 242,
-          "position": 9680
+          "column": 94,
+          "line": 115,
+          "position": 6200
         },
-        "name": "app\\videos\\VideosClientPage.tsx",
-        "start": 237,
+        "name": "__tests__\\ArtworkForm.test.tsx",
+        "start": 110,
         "startLoc": {
-          "column": 47,
-          "line": 237,
-          "position": 9485
+          "column": 70,
+          "line": 110,
+          "position": 5820
         }
       },
-      "tokens": 50
+      "tokens": 96
     },
     {
       "firstFile": {
-        "end": 77,
+        "end": 40,
         "endLoc": {
-          "column": 12,
-          "line": 77,
-          "position": 2979
+          "column": 9,
+          "line": 40,
+          "position": 1411
         },
-        "name": "app\\about\\page.tsx",
-        "start": 64,
+        "name": "__tests__\\ArtworkGallery.boundary.test.tsx",
+        "start": 1,
         "startLoc": {
-          "column": 16,
-          "line": 64,
-          "position": 2546
+          "column": 0,
+          "line": 1,
+          "position": 0
         }
       },
       "format": "tsx",
-      "fragment": "  if (!aboutData) {\n    return (\n      <div className=\"min-h-screen flex items-center justify-center\">\n        <div className=\"text-center\">\n          <h2 className=\"text-2xl font-bold text-gray-900 mb-4\">Ошибка загрузки</h2>\n          <p className=\"text-gray-600 mb-4\">Не удалось загрузить данные</p>\n        </div>\n      </div>\n    );\n  }\n\n  const jsonLd = {\n    '@context': 'https://schema.org',\n    '@type': 'Person',",
+      "fragment": "import { render, screen, fireEvent, within } from '@testing-library/react';\nimport { TextEncoder as NodeTextEncoder } from 'util';\nimport ArtworkGallery from '@/app/gallery/[slug]/ArtworkGallery';\n\njest.mock('@/lib/analytics', () => ({\n  reachGoal: jest.fn(),\n  Goals: { ArtworkView: 'artwork_view' },\n}));\njest.mock('yet-another-react-lightbox/styles.css', () => ({}), { virtual: true });\njest.mock('yet-another-react-lightbox/plugins/zoom', () => ({ __esModule: true, default: {} }));\njest.mock('yet-another-react-lightbox', () => ({\n  __esModule: true,\n  default: ({ open, index, slides, close, on, render: r }: any) => {\n    if (!open) return null;\n    const move = (d: number) => on?.view?.({ index: (index + d + slides.length) % slides.length });\n    return (\n      <div\n        data-testid=\"lightbox\"\n        data-index={index}\n        data-slides={slides.length}\n        tabIndex={0}\n        onKeyDown={(e) => {\n          if (e.key === 'ArrowRight') move(1);\n          if (e.key === 'ArrowLeft') move(-1);\n          if (e.key === 'Escape') close();\n        }}\n      >\n        {r?.buttonNext ? 'no-arrows' : 'arrows'}\n      </div>\n    );\n  },\n}));\n\nconst photos = (n: number) =>\n  Array.from({ length: n }, (_, i) => ({ src: `/full/${i + 1}.jpg`, thumb: `/t/${i + 1}.jpg` }));\n\nconst main = (container: HTMLElement) =>\n  container.querySelector('[data-active=\"true\"] img') as HTMLImageElement;\n\ndescribe('@US2-AS8 ArtworkGallery scroll edge cases', () => {",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 40,
+      "secondFile": {
+        "end": 40,
+        "endLoc": {
+          "column": 9,
+          "line": 40,
+          "position": 1411
+        },
+        "name": "__tests__\\ArtworkGallery.test.tsx",
+        "start": 1,
+        "startLoc": {
+          "column": 0,
+          "line": 1,
+          "position": 0
+        }
+      },
+      "tokens": 344
+    },
+    {
+      "firstFile": {
+        "end": 14,
+        "endLoc": {
+          "column": 9,
+          "line": 14,
+          "position": 632
+        },
+        "name": "__tests__\\ArtworkImagesManager.boundary.test.tsx",
+        "start": 1,
+        "startLoc": {
+          "column": 0,
+          "line": 1,
+          "position": 0
+        }
+      },
+      "format": "tsx",
+      "fragment": "import { render, screen, fireEvent, waitFor } from '@testing-library/react';\nimport ArtworkImagesManager from '@/components/admin/ArtworkImagesManager';\nimport { deleteArtworkImage, reorderArtworkImages } from '@/lib/artworkImagesApi';\n\njest.mock('@/lib/artworkImagesApi');\njest.mock('@/hooks/useApi', () => ({ getImageUrl: (p: string) => p }));\n\nconst mk = (n: number) => Array.from({ length: n }, (_, i) => ({ id: i + 1, imagePath: `p${i}`, thumbnailPath: `t${i}`, sortOrder: i }));\nconst reorder = reorderArtworkImages as jest.Mock;\nconst del = deleteArtworkImage as jest.Mock;\n\nbeforeEach(() => jest.clearAllMocks());\n\ndescribe('@US1-AS2 граничные перемещения', () => {",
       "isNew": false,
       "kind": "exact",
       "lines": 14,
       "secondFile": {
+        "end": 14,
+        "endLoc": {
+          "column": 9,
+          "line": 14,
+          "position": 632
+        },
+        "name": "__tests__\\ArtworkImagesManager.test.tsx",
+        "start": 1,
+        "startLoc": {
+          "column": 0,
+          "line": 1,
+          "position": 0
+        }
+      },
+      "tokens": 142
+    },
+    {
+      "firstFile": {
         "end": 72,
         "endLoc": {
-          "column": 12,
+          "column": 42,
           "line": 72,
-          "position": 2914
+          "position": 3625
         },
-        "name": "app\\contacts\\page.tsx",
-        "start": 59,
+        "name": "__tests__\\ArtworkImagesManager.boundary.test.tsx",
+        "start": 67,
         "startLoc": {
-          "column": 19,
-          "line": 59,
-          "position": 2481
-        }
-      },
-      "tokens": 64
-    },
-    {
-      "firstFile": {
-        "end": 77,
-        "endLoc": {
-          "column": 12,
-          "line": 77,
-          "position": 2979
-        },
-        "name": "app\\about\\page.tsx",
-        "start": 64,
-        "startLoc": {
-          "column": 16,
-          "line": 64,
-          "position": 2546
+          "column": 64,
+          "line": 67,
+          "position": 3412
         }
       },
       "format": "tsx",
-      "fragment": "  if (!aboutData) {\n    return (\n      <div className=\"min-h-screen flex items-center justify-center\">\n        <div className=\"text-center\">\n          <h2 className=\"text-2xl font-bold text-gray-900 mb-4\">Ошибка загрузки</h2>\n          <p className=\"text-gray-600 mb-4\">Не удалось загрузить данные</p>\n        </div>\n      </div>\n    );\n  }\n\n  const jsonLd = {\n    '@context': 'https://schema.org',\n    '@type': 'Person',",
+      "fragment": "  it('with 2 images: first can move right, second can move left', async () => {\n    reorder.mockResolvedValue(mk(2));\n    render(<ArtworkImagesManager artworkId={7} images={mk(2)} onChange={jest.fn()} />);\n\n    // First can move right\n    fireEvent.click(screen.getByLabelText('Переместить фото 1 вправо'));",
       "isNew": false,
       "kind": "exact",
-      "lines": 14,
+      "lines": 6,
       "secondFile": {
-        "end": 42,
+        "end": 86,
         "endLoc": {
-          "column": 12,
-          "line": 42,
-          "position": 1747
+          "column": 42,
+          "line": 86,
+          "position": 4253
         },
-        "name": "app\\gallery\\page.tsx",
-        "start": 29,
+        "name": "__tests__\\ArtworkImagesManager.boundary.test.tsx",
+        "start": 83,
         "startLoc": {
-          "column": 18,
-          "line": 29,
-          "position": 1314
-        }
-      },
-      "tokens": 64
-    },
-    {
-      "firstFile": {
-        "end": 73,
-        "endLoc": {
-          "column": 3,
-          "line": 73,
-          "position": 2908
-        },
-        "name": "app\\about\\page.tsx",
-        "start": 64,
-        "startLoc": {
-          "column": 16,
-          "line": 64,
-          "position": 2546
-        }
-      },
-      "format": "tsx",
-      "fragment": "  if (!aboutData) {\n    return (\n      <div className=\"min-h-screen flex items-center justify-center\">\n        <div className=\"text-center\">\n          <h2 className=\"text-2xl font-bold text-gray-900 mb-4\">Ошибка загрузки</h2>\n          <p className=\"text-gray-600 mb-4\">Не удалось загрузить данные</p>\n        </div>\n      </div>\n    );\n  }",
-      "isNew": false,
-      "kind": "exact",
-      "lines": 10,
-      "secondFile": {
-        "end": 97,
-        "endLoc": {
-          "column": 3,
-          "line": 97,
-          "position": 3789
-        },
-        "name": "app\\page.tsx",
-        "start": 88,
-        "startLoc": {
-          "column": 15,
-          "line": 88,
-          "position": 3427
+          "column": 52,
+          "line": 83,
+          "position": 4069
         }
       },
       "tokens": 54
     },
     {
       "firstFile": {
-        "end": 77,
+        "end": 97,
         "endLoc": {
-          "column": 12,
-          "line": 77,
-          "position": 2979
+          "column": 4,
+          "line": 97,
+          "position": 4694
         },
-        "name": "app\\about\\page.tsx",
-        "start": 64,
+        "name": "__tests__\\ArtworkImagesManager.boundary.test.tsx",
+        "start": 92,
         "startLoc": {
-          "column": 16,
-          "line": 64,
-          "position": 2546
+          "column": 44,
+          "line": 92,
+          "position": 4508
         }
       },
       "format": "tsx",
-      "fragment": "  if (!aboutData) {\n    return (\n      <div className=\"min-h-screen flex items-center justify-center\">\n        <div className=\"text-center\">\n          <h2 className=\"text-2xl font-bold text-gray-900 mb-4\">Ошибка загрузки</h2>\n          <p className=\"text-gray-600 mb-4\">Не удалось загрузить данные</p>\n        </div>\n      </div>\n    );\n  }\n\n  const jsonLd = {\n    '@context': 'https://schema.org',\n    '@type': 'Person',",
+      "fragment": "  it('delete button hidden for single photo', () => {\n    render(<ArtworkImagesManager artworkId={7} images={mk(1)} onChange={jest.fn()} />);\n    expect(screen.queryByLabelText('Удалить фото 1')).toBeNull();\n  });\n\n  it('delete button visible for 2 photos', () => {",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 6,
+      "secondFile": {
+        "end": 69,
+        "endLoc": {
+          "column": 1,
+          "line": 69,
+          "position": 3265
+        },
+        "name": "__tests__\\ArtworkImagesManager.test.tsx",
+        "start": 65,
+        "startLoc": {
+          "column": 38,
+          "line": 65,
+          "position": 3083
+        }
+      },
+      "tokens": 52
+    },
+    {
+      "firstFile": {
+        "end": 166,
+        "endLoc": {
+          "column": 23,
+          "line": 166,
+          "position": 7831
+        },
+        "name": "__tests__\\ArtworkImagesManager.boundary.test.tsx",
+        "start": 161,
+        "startLoc": {
+          "column": 35,
+          "line": 161,
+          "position": 7594
+        }
+      },
+      "format": "tsx",
+      "fragment": "    reorder.mockResolvedValue(mk(3));\n    render(<ArtworkImagesManager artworkId={7} images={mk(3)} onChange={jest.fn()} />);\n    const items = screen.getAllByTestId('managed-image');\n    fireEvent.dragStart(items[0]);\n    fireEvent.drop(items[1]);\n    await waitFor(() => expect(reorder).toHaveBeenCalledWith(7, [2, 1, 3]));",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 6,
+      "secondFile": {
+        "end": 192,
+        "endLoc": {
+          "column": 23,
+          "line": 192,
+          "position": 8869
+        },
+        "name": "__tests__\\ArtworkImagesManager.boundary.test.tsx",
+        "start": 187,
+        "startLoc": {
+          "column": 73,
+          "line": 187,
+          "position": 8632
+        }
+      },
+      "tokens": 68
+    },
+    {
+      "firstFile": {
+        "end": 193,
+        "endLoc": {
+          "column": 58,
+          "line": 193,
+          "position": 8930
+        },
+        "name": "__tests__\\ArtworkImagesManager.boundary.test.tsx",
+        "start": 187,
+        "startLoc": {
+          "column": 72,
+          "line": 187,
+          "position": 8631
+        }
+      },
+      "format": "tsx",
+      "fragment": "    reorder.mockRejectedValue({ response: { data: 'Ошибка БД' } });\n    render(<ArtworkImagesManager artworkId={7} images={mk(3)} onChange={jest.fn()} />);\n    const items = screen.getAllByTestId('managed-image');\n    fireEvent.dragStart(items[0]);\n    fireEvent.drop(items[1]);\n    await waitFor(() => {\n      expect(screen.getByRole('alert')).toHaveTextContent('Ошибка БД');",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 7,
+      "secondFile": {
+        "end": 204,
+        "endLoc": {
+          "column": 58,
+          "line": 204,
+          "position": 9402
+        },
+        "name": "__tests__\\ArtworkImagesManager.boundary.test.tsx",
+        "start": 198,
+        "startLoc": {
+          "column": 57,
+          "line": 198,
+          "position": 9103
+        }
+      },
+      "tokens": 82
+    },
+    {
+      "firstFile": {
+        "end": 256,
+        "endLoc": {
+          "column": 23,
+          "line": 256,
+          "position": 11640
+        },
+        "name": "__tests__\\ArtworkImagesManager.boundary.test.tsx",
+        "start": 251,
+        "startLoc": {
+          "column": 59,
+          "line": 251,
+          "position": 11440
+        }
+      },
+      "format": "tsx",
+      "fragment": "    render(<ArtworkImagesManager artworkId={7} images={mk(3)} onChange={onChange} />);\n    const items = screen.getAllByTestId('managed-image');\n    fireEvent.dragStart(items[0]);\n    fireEvent.drop(items[1]);\n    await waitFor(() => {\n      expect(onChange).not.toHaveBeenCalled();",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 6,
+      "secondFile": {
+        "end": 327,
+        "endLoc": {
+          "column": 23,
+          "line": 327,
+          "position": 14766
+        },
+        "name": "__tests__\\ArtworkImagesManager.boundary.test.tsx",
+        "start": 322,
+        "startLoc": {
+          "column": 59,
+          "line": 322,
+          "position": 14566
+        }
+      },
+      "tokens": 53
+    },
+    {
+      "firstFile": {
+        "end": 11,
+        "endLoc": {
+          "column": 31,
+          "line": 11,
+          "position": 385
+        },
+        "name": "__tests__\\MultiImageDropzone.boundary.test.tsx",
+        "start": 2,
+        "startLoc": {
+          "column": 32,
+          "line": 2,
+          "position": 100
+        }
+      },
+      "format": "tsx",
+      "fragment": "import { useState } from 'react';\nimport MultiImageDropzone from '@/components/admin/MultiImageDropzone';\n\nconst img = (name: string, size = 1000, type = 'image/png') => {\n  const f = new File(['x'], name, { type });\n  Object.defineProperty(f, 'size', { value: size });\n  return f;\n};\n\nconst Harness = ({ existing = 0, disabled = false }: { existing?: number; disabled?: boolean }) => {",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 10,
+      "secondFile": {
+        "end": 11,
+        "endLoc": {
+          "column": 31,
+          "line": 11,
+          "position": 385
+        },
+        "name": "__tests__\\MultiImageDropzone.test.tsx",
+        "start": 2,
+        "startLoc": {
+          "column": 66,
+          "line": 2,
+          "position": 100
+        }
+      },
+      "tokens": 69
+    },
+    {
+      "firstFile": {
+        "end": 28,
+        "endLoc": {
+          "column": 10,
+          "line": 28,
+          "position": 1147
+        },
+        "name": "__tests__\\MultiImageDropzone.boundary.test.tsx",
+        "start": 23,
+        "startLoc": {
+          "column": 33,
+          "line": 23,
+          "position": 927
+        }
+      },
+      "format": "tsx",
+      "fragment": "    render(<Harness existing={7} />);\n    fireEvent.change(screen.getByLabelText('Выбрать фото'), {\n      target: { files: [img('a.png'), img('b.png')] },\n    });\n    expect(screen.getAllByTestId('queued-preview')).toHaveLength(2);\n    expect(screen.queryByRole('alert')).toBeNull();",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 6,
+      "secondFile": {
+        "end": 220,
+        "endLoc": {
+          "column": 13,
+          "line": 220,
+          "position": 8731
+        },
+        "name": "__tests__\\MultiImageDropzone.boundary.test.tsx",
+        "start": 214,
+        "startLoc": {
+          "column": 20,
+          "line": 214,
+          "position": 8507
+        }
+      },
+      "tokens": 52
+    },
+    {
+      "firstFile": {
+        "end": 67,
+        "endLoc": {
+          "column": 41,
+          "line": 67,
+          "position": 2873
+        },
+        "name": "__tests__\\MultiImageDropzone.boundary.test.tsx",
+        "start": 59,
+        "startLoc": {
+          "column": 54,
+          "line": 59,
+          "position": 2471
+        }
+      },
+      "format": "tsx",
+      "fragment": "    const { rerender } = render(<Harness existing={9} />);\n    fireEvent.change(screen.getByLabelText('Выбрать фото'), {\n      target: { files: [img('first.png')] },\n    });\n    expect(screen.getAllByTestId('queued-preview')).toHaveLength(1);\n\n    // Now add more files - existing (9) + queued (1) = 10, so next should be rejected\n    fireEvent.change(screen.getByLabelText('Выбрать фото'), {\n      target: { files: [img('second.png')] },",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 9,
+      "secondFile": {
+        "end": 257,
+        "endLoc": {
+          "column": 41,
+          "line": 257,
+          "position": 10413
+        },
+        "name": "__tests__\\MultiImageDropzone.boundary.test.tsx",
+        "start": 249,
+        "startLoc": {
+          "column": 20,
+          "line": 249,
+          "position": 10028
+        }
+      },
+      "tokens": 69
+    },
+    {
+      "firstFile": {
+        "end": 187,
+        "endLoc": {
+          "column": 38,
+          "line": 187,
+          "position": 7381
+        },
+        "name": "__tests__\\MultiImageDropzone.boundary.test.tsx",
+        "start": 181,
+        "startLoc": {
+          "column": 60,
+          "line": 181,
+          "position": 7133
+        }
+      },
+      "format": "tsx",
+      "fragment": "  it('clears errors when valid files are added after errors', () => {\n    render(<Harness />);\n    // First: add invalid file\n    fireEvent.change(screen.getByLabelText('Выбрать фото'), {\n      target: { files: [img('bad.txt', 1000, 'text/plain')] },\n    });\n    expect(screen.getByRole('alert')).toBeInTheDocument();",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 7,
+      "secondFile": {
+        "end": 202,
+        "endLoc": {
+          "column": 38,
+          "line": 202,
+          "position": 7943
+        },
+        "name": "__tests__\\MultiImageDropzone.boundary.test.tsx",
+        "start": 197,
+        "startLoc": {
+          "column": 42,
+          "line": 197,
+          "position": 7726
+        }
+      },
+      "tokens": 55
+    },
+    {
+      "firstFile": {
+        "end": 81,
+        "endLoc": {
+          "column": 16,
+          "line": 81,
+          "position": 3726
+        },
+        "name": "__tests__\\RelatedWorks.boundary.test.tsx",
+        "start": 75,
+        "startLoc": {
+          "column": 103,
+          "line": 75,
+          "position": 3292
+        }
+      },
+      "format": "tsx",
+      "fragment": "    const works = [artwork(5, 'Пятая'), artwork(2, 'Вторая'), artwork(10, 'Десятая')];\n    render(<RelatedWorks works={works} />);\n    const section = screen.getByRole('heading', { name: 'Другие работы этой категории' }).parentElement;\n    if (!section) throw new Error('Section not found');\n    const items = within(section).getAllByRole('link').filter(l => (l as HTMLAnchorElement).href.includes('/gallery/')) as HTMLAnchorElement[];\n    // First links should match the order\n    expect(items[0].href).toContain('-5');",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 7,
+      "secondFile": {
+        "end": 100,
+        "endLoc": {
+          "column": 16,
+          "line": 100,
+          "position": 4773
+        },
+        "name": "__tests__\\RelatedWorks.boundary.test.tsx",
+        "start": 95,
+        "startLoc": {
+          "column": 98,
+          "line": 95,
+          "position": 4381
+        }
+      },
+      "tokens": 82
+    },
+    {
+      "firstFile": {
+        "end": 12,
+        "endLoc": {
+          "column": 5,
+          "line": 12,
+          "position": 351
+        },
+        "name": "__tests__\\ssr-cache\\buildPhase-boundaries.test.ts",
+        "start": 4,
+        "startLoc": {
+          "column": 41,
+          "line": 4,
+          "position": 146
+        }
+      },
+      "format": "typescript",
+      "fragment": "describe('boundary: NEXT_PHASE detection', () => {\n  const old = process.env.NEXT_PHASE;\n  afterEach(() => {\n    if (old === undefined) delete process.env.NEXT_PHASE;\n    else process.env.NEXT_PHASE = old;\n    jest.restoreAllMocks();\n  });\n\n  it('US1-AS2: isBuildPhase returns true only for exact \"phase-production-build\"', () => {",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 9,
+      "secondFile": {
+        "end": 51,
+        "endLoc": {
+          "column": 5,
+          "line": 51,
+          "position": 1616
+        },
+        "name": "__tests__\\ssr-cache\\buildPhase-boundaries.test.ts",
+        "start": 43,
+        "startLoc": {
+          "column": 50,
+          "line": 43,
+          "position": 1411
+        }
+      },
+      "tokens": 53
+    },
+    {
+      "firstFile": {
+        "end": 12,
+        "endLoc": {
+          "column": 5,
+          "line": 12,
+          "position": 351
+        },
+        "name": "__tests__\\ssr-cache\\buildPhase-boundaries.test.ts",
+        "start": 4,
+        "startLoc": {
+          "column": 41,
+          "line": 4,
+          "position": 146
+        }
+      },
+      "format": "typescript",
+      "fragment": "describe('boundary: NEXT_PHASE detection', () => {\n  const old = process.env.NEXT_PHASE;\n  afterEach(() => {\n    if (old === undefined) delete process.env.NEXT_PHASE;\n    else process.env.NEXT_PHASE = old;\n    jest.restoreAllMocks();\n  });\n\n  it('US1-AS2: isBuildPhase returns true only for exact \"phase-production-build\"', () => {",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 9,
+      "secondFile": {
+        "end": 114,
+        "endLoc": {
+          "column": 5,
+          "line": 114,
+          "position": 4297
+        },
+        "name": "__tests__\\ssr-cache\\buildPhase-boundaries.test.ts",
+        "start": 106,
+        "startLoc": {
+          "column": 40,
+          "line": 106,
+          "position": 4092
+        }
+      },
+      "tokens": 53
+    },
+    {
+      "firstFile": {
+        "end": 12,
+        "endLoc": {
+          "column": 5,
+          "line": 12,
+          "position": 351
+        },
+        "name": "__tests__\\ssr-cache\\buildPhase-boundaries.test.ts",
+        "start": 4,
+        "startLoc": {
+          "column": 41,
+          "line": 4,
+          "position": 146
+        }
+      },
+      "format": "typescript",
+      "fragment": "describe('boundary: NEXT_PHASE detection', () => {\n  const old = process.env.NEXT_PHASE;\n  afterEach(() => {\n    if (old === undefined) delete process.env.NEXT_PHASE;\n    else process.env.NEXT_PHASE = old;\n    jest.restoreAllMocks();\n  });\n\n  it('US1-AS2: isBuildPhase returns true only for exact \"phase-production-build\"', () => {",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 9,
+      "secondFile": {
+        "end": 155,
+        "endLoc": {
+          "column": 5,
+          "line": 155,
+          "position": 6053
+        },
+        "name": "__tests__\\ssr-cache\\buildPhase-boundaries.test.ts",
+        "start": 147,
+        "startLoc": {
+          "column": 44,
+          "line": 147,
+          "position": 5848
+        }
+      },
+      "tokens": 53
+    },
+    {
+      "firstFile": {
+        "end": 12,
+        "endLoc": {
+          "column": 5,
+          "line": 12,
+          "position": 351
+        },
+        "name": "__tests__\\ssr-cache\\buildPhase-boundaries.test.ts",
+        "start": 4,
+        "startLoc": {
+          "column": 41,
+          "line": 4,
+          "position": 146
+        }
+      },
+      "format": "typescript",
+      "fragment": "describe('boundary: NEXT_PHASE detection', () => {\n  const old = process.env.NEXT_PHASE;\n  afterEach(() => {\n    if (old === undefined) delete process.env.NEXT_PHASE;\n    else process.env.NEXT_PHASE = old;\n    jest.restoreAllMocks();\n  });\n\n  it('US1-AS2: isBuildPhase returns true only for exact \"phase-production-build\"', () => {",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 9,
+      "secondFile": {
+        "end": 12,
+        "endLoc": {
+          "column": 5,
+          "line": 12,
+          "position": 339
+        },
+        "name": "__tests__\\ssr-cache\\buildPhase.test.ts",
+        "start": 4,
+        "startLoc": {
+          "column": 43,
+          "line": 4,
+          "position": 134
+        }
+      },
+      "tokens": 53
+    },
+    {
+      "firstFile": {
+        "end": 71,
+        "endLoc": {
+          "column": 16,
+          "line": 71,
+          "position": 2425
+        },
+        "name": "__tests__\\ssr-cache\\cacheWarmup-boundaries.test.ts",
+        "start": 60,
+        "startLoc": {
+          "column": 40,
+          "line": 60,
+          "position": 2163
+        }
+      },
+      "format": "typescript",
+      "fragment": "        return new Response(sitemapWith3, { status: 200 });\n      }\n      active++;\n      max = Math.max(max, active);\n      await new Promise((r) => setTimeout(r, 2));\n      active--;\n      return new Response('ok');\n    }) as any;\n\n    const { done } = startWarmup();\n    await done;\n    expect(max).toBeLessThanOrEqual(3);",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 12,
+      "secondFile": {
+        "end": 92,
+        "endLoc": {
+          "column": 16,
+          "line": 92,
+          "position": 3031
+        },
+        "name": "__tests__\\ssr-cache\\cacheWarmup-boundaries.test.ts",
+        "start": 81,
+        "startLoc": {
+          "column": 38,
+          "line": 81,
+          "position": 2769
+        }
+      },
+      "tokens": 71
+    },
+    {
+      "firstFile": {
+        "end": 120,
+        "endLoc": {
+          "column": 28,
+          "line": 120,
+          "position": 3813
+        },
+        "name": "__tests__\\ssr-cache\\cacheWarmup-boundaries.test.ts",
+        "start": 107,
+        "startLoc": {
+          "column": 27,
+          "line": 107,
+          "position": 3439
+        }
+      },
+      "format": "typescript",
+      "fragment": "    delete process.env.PORT;\n    let sitemapUrl = '';\n    global.fetch = jest.fn(async (input: any) => {\n      const url = String(input);\n      if (url.includes('/sitemap.xml')) {\n        sitemapUrl = url;\n        return new Response(sitemap(0), { status: 200 });\n      }\n      return new Response('ok');\n    }) as any;\n\n    const { done } = startWarmup();\n    await done;\n    expect(sitemapUrl).toBe('http://127.0.0.1:3000/sitemap.xml');",
       "isNew": false,
       "kind": "exact",
       "lines": 14,
       "secondFile": {
-        "end": 72,
+        "end": 137,
         "endLoc": {
-          "column": 12,
-          "line": 72,
-          "position": 2937
+          "column": 28,
+          "line": 137,
+          "position": 4318
         },
-        "name": "app\\videos\\page.tsx",
-        "start": 59,
+        "name": "__tests__\\ssr-cache\\cacheWarmup-boundaries.test.ts",
+        "start": 124,
         "startLoc": {
-          "column": 17,
-          "line": 59,
-          "position": 2504
+          "column": 29,
+          "line": 124,
+          "position": 3944
         }
       },
-      "tokens": 64
+      "tokens": 92
     },
     {
       "firstFile": {
-        "end": 190,
+        "end": 184,
         "endLoc": {
-          "column": 49,
-          "line": 190,
-          "position": 7505
+          "column": 28,
+          "line": 184,
+          "position": 5834
         },
-        "name": "app\\admin\\page.tsx",
-        "start": 181,
+        "name": "__tests__\\ssr-cache\\cacheWarmup-boundaries.test.ts",
+        "start": 176,
         "startLoc": {
-          "column": 43,
-          "line": 181,
-          "position": 7169
+          "column": 57,
+          "line": 176,
+          "position": 5540
         }
       },
-      "format": "tsx",
-      "fragment": "              <Link href=\"/admin/artworks\" className=\"btn-primary w-full text-center\">\n                Управлять\n              </Link>\n            </motion.div>\n\n            {/* Page Content Management */}\n            <motion.div\n              initial={{ opacity: 0, y: 30 }}\n              animate={{ opacity: 1, y: 0 }}\n              transition={{ duration: 0.8, delay: 0.2 }}",
+      "format": "typescript",
+      "fragment": "  it('US3-AS8: extracts URLs with whitespace in loc tags', async () => {\n    const urlsRequested: string[] = [];\n    global.fetch = jest.fn(async (input: any) => {\n      const url = String(input);\n      if (!url.endsWith('/sitemap.xml')) {\n        urlsRequested.push(url);\n      }\n      if (url.includes('/sitemap.xml')) {\n        return new Response(",
       "isNew": false,
       "kind": "exact",
-      "lines": 10,
+      "lines": 9,
       "secondFile": {
-        "end": 211,
+        "end": 206,
         "endLoc": {
-          "column": 49,
-          "line": 211,
-          "position": 8600
+          "column": 28,
+          "line": 206,
+          "position": 6524
         },
-        "name": "app\\admin\\page.tsx",
-        "start": 202,
+        "name": "__tests__\\ssr-cache\\cacheWarmup-boundaries.test.ts",
+        "start": 198,
         "startLoc": {
-          "column": 40,
-          "line": 202,
-          "position": 8270
+          "column": 67,
+          "line": 198,
+          "position": 6230
         }
       },
-      "tokens": 60
+      "tokens": 73
     },
     {
       "firstFile": {
-        "end": 190,
+        "end": 39,
         "endLoc": {
-          "column": 49,
-          "line": 190,
-          "position": 7505
+          "column": 73,
+          "line": 39,
+          "position": 1613
         },
-        "name": "app\\admin\\page.tsx",
-        "start": 181,
+        "name": "__tests__\\useArtworkSave.boundary.test.ts",
+        "start": 32,
         "startLoc": {
-          "column": 43,
-          "line": 181,
-          "position": 7169
+          "column": 86,
+          "line": 32,
+          "position": 1381
         }
       },
-      "format": "tsx",
-      "fragment": "              <Link href=\"/admin/artworks\" className=\"btn-primary w-full text-center\">\n                Управлять\n              </Link>\n            </motion.div>\n\n            {/* Page Content Management */}\n            <motion.div\n              initial={{ opacity: 0, y: 30 }}\n              animate={{ opacity: 1, y: 0 }}\n              transition={{ duration: 0.8, delay: 0.2 }}",
+      "format": "typescript",
+      "fragment": "    const { result } = renderHook(() => useArtworkSave(null, state, [file('cover.png')], onSaved));\n\n    await act(async () => {\n      const event = { preventDefault: jest.fn() } as any;\n      await result.current.submit(event);\n    });\n\n    expect(mockCreateArtwork).toHaveBeenCalledWith(expect.any(FormData));",
       "isNew": false,
       "kind": "exact",
-      "lines": 10,
+      "lines": 8,
       "secondFile": {
-        "end": 232,
+        "end": 56,
         "endLoc": {
-          "column": 49,
-          "line": 232,
-          "position": 9671
+          "column": 73,
+          "line": 56,
+          "position": 2358
         },
-        "name": "app\\admin\\page.tsx",
-        "start": 223,
+        "name": "__tests__\\useArtworkSave.boundary.test.ts",
+        "start": 49,
+        "startLoc": {
+          "column": 83,
+          "line": 49,
+          "position": 2126
+        }
+      },
+      "tokens": 57
+    },
+    {
+      "firstFile": {
+        "end": 69,
+        "endLoc": {
+          "column": 90,
+          "line": 69,
+          "position": 2846
+        },
+        "name": "__tests__\\useArtworkSave.boundary.test.ts",
+        "start": 61,
+        "startLoc": {
+          "column": 47,
+          "line": 61,
+          "position": 2509
+        }
+      },
+      "format": "typescript",
+      "fragment": "  it('shows error when creating without photos', async () => {\n    const { result } = renderHook(() => useArtworkSave(null, state, [], jest.fn()));\n\n    await act(async () => {\n      const event = { preventDefault: jest.fn() } as any;\n      await result.current.submit(event);\n    });\n\n    expect(result.current.error).toBe('Добавьте хотя бы одно фото');",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 9,
+      "secondFile": {
+        "end": 80,
+        "endLoc": {
+          "column": 90,
+          "line": 80,
+          "position": 3288
+        },
+        "name": "__tests__\\useArtworkSave.boundary.test.ts",
+        "start": 73,
         "startLoc": {
           "column": 41,
-          "line": 223,
-          "position": 9331
+          "line": 73,
+          "position": 2953
         }
       },
-      "tokens": 60
+      "tokens": 83
     },
     {
       "firstFile": {
-        "end": 190,
+        "end": 69,
         "endLoc": {
-          "column": 49,
-          "line": 190,
-          "position": 7505
+          "column": 38,
+          "line": 69,
+          "position": 2794
         },
-        "name": "app\\admin\\page.tsx",
-        "start": 181,
+        "name": "__tests__\\useArtworkSave.boundary.test.ts",
+        "start": 62,
+        "startLoc": {
+          "column": 69,
+          "line": 62,
+          "position": 2595
+        }
+      },
+      "format": "typescript",
+      "fragment": "    const { result } = renderHook(() => useArtworkSave(null, state, [], jest.fn()));\n\n    await act(async () => {\n      const event = { preventDefault: jest.fn() } as any;\n      await result.current.submit(event);\n    });\n\n    expect(result.current.error).toBe('Добавьте хотя бы одно фото');",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 8,
+      "secondFile": {
+        "end": 149,
+        "endLoc": {
+          "column": 38,
+          "line": 149,
+          "position": 5776
+        },
+        "name": "__tests__\\useArtworkSave.boundary.test.ts",
+        "start": 142,
+        "startLoc": {
+          "column": 82,
+          "line": 142,
+          "position": 5577
+        }
+      },
+      "tokens": 57
+    },
+    {
+      "firstFile": {
+        "end": 69,
+        "endLoc": {
+          "column": 38,
+          "line": 69,
+          "position": 2794
+        },
+        "name": "__tests__\\useArtworkSave.boundary.test.ts",
+        "start": 62,
+        "startLoc": {
+          "column": 59,
+          "line": 62,
+          "position": 2585
+        }
+      },
+      "format": "typescript",
+      "fragment": "    const { result } = renderHook(() => useArtworkSave(null, state, [], jest.fn()));\n\n    await act(async () => {\n      const event = { preventDefault: jest.fn() } as any;\n      await result.current.submit(event);\n    });\n\n    expect(result.current.error).toBe('Добавьте хотя бы одно фото');",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 8,
+      "secondFile": {
+        "end": 161,
+        "endLoc": {
+          "column": 38,
+          "line": 161,
+          "position": 6202
+        },
+        "name": "__tests__\\useArtworkSave.boundary.test.ts",
+        "start": 154,
+        "startLoc": {
+          "column": 62,
+          "line": 154,
+          "position": 5993
+        }
+      },
+      "tokens": 61
+    },
+    {
+      "firstFile": {
+        "end": 106,
+        "endLoc": {
+          "column": 19,
+          "line": 106,
+          "position": 4181
+        },
+        "name": "__tests__\\useArtworkSave.boundary.test.ts",
+        "start": 98,
+        "startLoc": {
+          "column": 73,
+          "line": 98,
+          "position": 3912
+        }
+      },
+      "format": "typescript",
+      "fragment": "    const { result } = renderHook(() => useArtworkSave(artwork, state, [], onSaved));\n\n    await act(async () => {\n      const event = { preventDefault: jest.fn() } as any;\n      await result.current.submit(event);\n    });\n\n    expect(mockUpdateArtwork).toHaveBeenCalledWith({ id: 5, data: expect.any(FormData) });\n    expect(upload).not.toHaveBeenCalled();",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 9,
+      "secondFile": {
+        "end": 121,
+        "endLoc": {
+          "column": 19,
+          "line": 121,
+          "position": 4746
+        },
+        "name": "__tests__\\useArtworkSave.boundary.test.ts",
+        "start": 113,
+        "startLoc": {
+          "column": 77,
+          "line": 113,
+          "position": 4477
+        }
+      },
+      "tokens": 69
+    },
+    {
+      "firstFile": {
+        "end": 149,
+        "endLoc": {
+          "column": 38,
+          "line": 149,
+          "position": 5776
+        },
+        "name": "__tests__\\useArtworkSave.boundary.test.ts",
+        "start": 141,
+        "startLoc": {
+          "column": 79,
+          "line": 141,
+          "position": 5490
+        }
+      },
+      "format": "typescript",
+      "fragment": "    mockCreateArtwork.mockRejectedValue({ response: { data: 'Title too long' } });\n    const { result } = renderHook(() => useArtworkSave(null, state, [file('a.png')], jest.fn()));\n\n    await act(async () => {\n      const event = { preventDefault: jest.fn() } as any;\n      await result.current.submit(event);\n    });\n\n    expect(result.current.error).toBe('Title too long');",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 9,
+      "secondFile": {
+        "end": 203,
+        "endLoc": {
+          "column": 38,
+          "line": 203,
+          "position": 7892
+        },
+        "name": "__tests__\\useArtworkSave.boundary.test.ts",
+        "start": 195,
+        "startLoc": {
+          "column": 4,
+          "line": 195,
+          "position": 7606
+        }
+      },
+      "tokens": 81
+    },
+    {
+      "firstFile": {
+        "end": 149,
+        "endLoc": {
+          "column": 38,
+          "line": 149,
+          "position": 5776
+        },
+        "name": "__tests__\\useArtworkSave.boundary.test.ts",
+        "start": 142,
+        "startLoc": {
+          "column": 81,
+          "line": 142,
+          "position": 5576
+        }
+      },
+      "format": "typescript",
+      "fragment": "    const { result } = renderHook(() => useArtworkSave(null, state, [file('a.png')], jest.fn()));\n\n    await act(async () => {\n      const event = { preventDefault: jest.fn() } as any;\n      await result.current.submit(event);\n    });\n\n    expect(result.current.error).toBe('Title too long');",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 8,
+      "secondFile": {
+        "end": 174,
+        "endLoc": {
+          "column": 38,
+          "line": 174,
+          "position": 6812
+        },
+        "name": "__tests__\\useArtworkSave.boundary.test.ts",
+        "start": 167,
+        "startLoc": {
+          "column": 96,
+          "line": 167,
+          "position": 6612
+        }
+      },
+      "tokens": 58
+    },
+    {
+      "firstFile": {
+        "end": 147,
+        "endLoc": {
+          "column": 7,
+          "line": 147,
+          "position": 5734
+        },
+        "name": "__tests__\\useArtworkSave.boundary.test.ts",
+        "start": 142,
+        "startLoc": {
+          "column": 66,
+          "line": 142,
+          "position": 5561
+        }
+      },
+      "format": "typescript",
+      "fragment": "    const { result } = renderHook(() => useArtworkSave(null, state, [file('a.png')], jest.fn()));\n\n    await act(async () => {\n      const event = { preventDefault: jest.fn() } as any;\n      await result.current.submit(event);\n    });",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 6,
+      "secondFile": {
+        "end": 243,
+        "endLoc": {
+          "column": 7,
+          "line": 243,
+          "position": 9145
+        },
+        "name": "__tests__\\useArtworkSave.boundary.test.ts",
+        "start": 238,
+        "startLoc": {
+          "column": 70,
+          "line": 238,
+          "position": 8972
+        }
+      },
+      "tokens": 52
+    },
+    {
+      "firstFile": {
+        "end": 174,
+        "endLoc": {
+          "column": 33,
+          "line": 174,
+          "position": 6807
+        },
+        "name": "__tests__\\useArtworkSave.boundary.test.ts",
+        "start": 166,
+        "startLoc": {
+          "column": 67,
+          "line": 166,
+          "position": 6511
+        }
+      },
+      "format": "typescript",
+      "fragment": "    upload.mockRejectedValue({ response: { data: 'Upload failed' } });\n    const { result } = renderHook(() => useArtworkSave(null, state, [file('a.png'), file('b.png')], jest.fn()));\n\n    await act(async () => {\n      const event = { preventDefault: jest.fn() } as any;\n      await result.current.submit(event);\n    });\n\n    expect(result.current.error).toBe('Upload failed');",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 9,
+      "secondFile": {
+        "end": 187,
+        "endLoc": {
+          "column": 33,
+          "line": 187,
+          "position": 7289
+        },
+        "name": "__tests__\\useArtworkSave.boundary.test.ts",
+        "start": 179,
+        "startLoc": {
+          "column": 30,
+          "line": 179,
+          "position": 6993
+        }
+      },
+      "tokens": 84
+    },
+    {
+      "firstFile": {
+        "end": 203,
+        "endLoc": {
+          "column": 38,
+          "line": 203,
+          "position": 7892
+        },
+        "name": "__tests__\\useArtworkSave.boundary.test.ts",
+        "start": 193,
         "startLoc": {
           "column": 43,
-          "line": 181,
-          "position": 7169
+          "line": 193,
+          "position": 7588
+        }
+      },
+      "format": "typescript",
+      "fragment": "        data: { message: 'Duplicate title' },\n      },\n    });\n    const { result } = renderHook(() => useArtworkSave(null, state, [file('a.png')], jest.fn()));\n\n    await act(async () => {\n      const event = { preventDefault: jest.fn() } as any;\n      await result.current.submit(event);\n    });\n\n    expect(result.current.error).toBe('Duplicate title');",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 11,
+      "secondFile": {
+        "end": 219,
+        "endLoc": {
+          "column": 38,
+          "line": 219,
+          "position": 8393
+        },
+        "name": "__tests__\\useArtworkSave.boundary.test.ts",
+        "start": 209,
+        "startLoc": {
+          "column": 42,
+          "line": 209,
+          "position": 8089
+        }
+      },
+      "tokens": 85
+    },
+    {
+      "firstFile": {
+        "end": 246,
+        "endLoc": {
+          "column": 18,
+          "line": 246,
+          "position": 9229
+        },
+        "name": "__tests__\\useArtworkSave.boundary.test.ts",
+        "start": 236,
+        "startLoc": {
+          "column": 17,
+          "line": 236,
+          "position": 8891
+        }
+      },
+      "format": "typescript",
+      "fragment": "      price: '50',\n    };\n    const { result } = renderHook(() => useArtworkSave(null, testState, [file('a.png')], jest.fn()));\n\n    await act(async () => {\n      const event = { preventDefault: jest.fn() } as any;\n      await result.current.submit(event);\n    });\n\n    const fd: FormData = mockCreateArtwork.mock.calls[0][0];\n    expect(fd.get('title')).toBe('MyTitle');",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 11,
+      "secondFile": {
+        "end": 279,
+        "endLoc": {
+          "column": 18,
+          "line": 279,
+          "position": 10363
+        },
+        "name": "__tests__\\useArtworkSave.boundary.test.ts",
+        "start": 269,
+        "startLoc": {
+          "column": 18,
+          "line": 269,
+          "position": 10025
+        }
+      },
+      "tokens": 93
+    },
+    {
+      "firstFile": {
+        "end": 192,
+        "endLoc": {
+          "column": 49,
+          "line": 192,
+          "position": 7677
+        },
+        "name": "app\\admin\\page.tsx",
+        "start": 183,
+        "startLoc": {
+          "column": 43,
+          "line": 183,
+          "position": 7341
         }
       },
       "format": "tsx",
@@ -1504,36 +2644,112 @@
       "kind": "exact",
       "lines": 10,
       "secondFile": {
-        "end": 253,
+        "end": 213,
         "endLoc": {
           "column": 49,
-          "line": 253,
-          "position": 10758
+          "line": 213,
+          "position": 8772
         },
         "name": "app\\admin\\page.tsx",
-        "start": 244,
+        "start": 204,
+        "startLoc": {
+          "column": 40,
+          "line": 204,
+          "position": 8442
+        }
+      },
+      "tokens": 60
+    },
+    {
+      "firstFile": {
+        "end": 192,
+        "endLoc": {
+          "column": 49,
+          "line": 192,
+          "position": 7677
+        },
+        "name": "app\\admin\\page.tsx",
+        "start": 183,
+        "startLoc": {
+          "column": 43,
+          "line": 183,
+          "position": 7341
+        }
+      },
+      "format": "tsx",
+      "fragment": "              <Link href=\"/admin/artworks\" className=\"btn-primary w-full text-center\">\n                Управлять\n              </Link>\n            </motion.div>\n\n            {/* Page Content Management */}\n            <motion.div\n              initial={{ opacity: 0, y: 30 }}\n              animate={{ opacity: 1, y: 0 }}\n              transition={{ duration: 0.8, delay: 0.2 }}",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 10,
+      "secondFile": {
+        "end": 234,
+        "endLoc": {
+          "column": 49,
+          "line": 234,
+          "position": 9843
+        },
+        "name": "app\\admin\\page.tsx",
+        "start": 225,
+        "startLoc": {
+          "column": 41,
+          "line": 225,
+          "position": 9503
+        }
+      },
+      "tokens": 60
+    },
+    {
+      "firstFile": {
+        "end": 192,
+        "endLoc": {
+          "column": 49,
+          "line": 192,
+          "position": 7677
+        },
+        "name": "app\\admin\\page.tsx",
+        "start": 183,
+        "startLoc": {
+          "column": 43,
+          "line": 183,
+          "position": 7341
+        }
+      },
+      "format": "tsx",
+      "fragment": "              <Link href=\"/admin/artworks\" className=\"btn-primary w-full text-center\">\n                Управлять\n              </Link>\n            </motion.div>\n\n            {/* Page Content Management */}\n            <motion.div\n              initial={{ opacity: 0, y: 30 }}\n              animate={{ opacity: 1, y: 0 }}\n              transition={{ duration: 0.8, delay: 0.2 }}",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 10,
+      "secondFile": {
+        "end": 255,
+        "endLoc": {
+          "column": 49,
+          "line": 255,
+          "position": 10930
+        },
+        "name": "app\\admin\\page.tsx",
+        "start": 246,
         "startLoc": {
           "column": 51,
-          "line": 244,
-          "position": 10426
+          "line": 246,
+          "position": 10598
         }
       },
       "tokens": 60
     },
     {
       "firstFile": {
-        "end": 190,
+        "end": 192,
         "endLoc": {
           "column": 49,
-          "line": 190,
-          "position": 7505
+          "line": 192,
+          "position": 7677
         },
         "name": "app\\admin\\page.tsx",
-        "start": 181,
+        "start": 183,
         "startLoc": {
           "column": 43,
-          "line": 181,
-          "position": 7169
+          "line": 183,
+          "position": 7341
         }
       },
       "format": "tsx",
@@ -1542,21 +2758,211 @@
       "kind": "exact",
       "lines": 10,
       "secondFile": {
-        "end": 281,
+        "end": 283,
         "endLoc": {
           "column": 49,
-          "line": 281,
-          "position": 12136
+          "line": 283,
+          "position": 12305
         },
         "name": "app\\admin\\page.tsx",
-        "start": 272,
+        "start": 274,
         "startLoc": {
           "column": 43,
-          "line": 272,
-          "position": 11802
+          "line": 274,
+          "position": 11974
         }
       },
       "tokens": 60
+    },
+    {
+      "firstFile": {
+        "end": 192,
+        "endLoc": {
+          "column": 49,
+          "line": 192,
+          "position": 7677
+        },
+        "name": "app\\admin\\page.tsx",
+        "start": 183,
+        "startLoc": {
+          "column": 43,
+          "line": 183,
+          "position": 7341
+        }
+      },
+      "format": "tsx",
+      "fragment": "              <Link href=\"/admin/artworks\" className=\"btn-primary w-full text-center\">\n                Управлять\n              </Link>\n            </motion.div>\n\n            {/* Page Content Management */}\n            <motion.div\n              initial={{ opacity: 0, y: 30 }}\n              animate={{ opacity: 1, y: 0 }}\n              transition={{ duration: 0.8, delay: 0.2 }}",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 10,
+      "secondFile": {
+        "end": 314,
+        "endLoc": {
+          "column": 49,
+          "line": 314,
+          "position": 13793
+        },
+        "name": "app\\admin\\page.tsx",
+        "start": 305,
+        "startLoc": {
+          "column": 42,
+          "line": 305,
+          "position": 13459
+        }
+      },
+      "tokens": 60
+    },
+    {
+      "firstFile": {
+        "end": 192,
+        "endLoc": {
+          "column": 49,
+          "line": 192,
+          "position": 7677
+        },
+        "name": "app\\admin\\page.tsx",
+        "start": 183,
+        "startLoc": {
+          "column": 43,
+          "line": 183,
+          "position": 7341
+        }
+      },
+      "format": "tsx",
+      "fragment": "              <Link href=\"/admin/artworks\" className=\"btn-primary w-full text-center\">\n                Управлять\n              </Link>\n            </motion.div>\n\n            {/* Page Content Management */}\n            <motion.div\n              initial={{ opacity: 0, y: 30 }}\n              animate={{ opacity: 1, y: 0 }}\n              transition={{ duration: 0.8, delay: 0.2 }}",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 10,
+      "secondFile": {
+        "end": 335,
+        "endLoc": {
+          "column": 49,
+          "line": 335,
+          "position": 14813
+        },
+        "name": "app\\admin\\page.tsx",
+        "start": 326,
+        "startLoc": {
+          "column": 45,
+          "line": 326,
+          "position": 14496
+        }
+      },
+      "tokens": 60
+    },
+    {
+      "firstFile": {
+        "end": 13,
+        "endLoc": {
+          "column": 4,
+          "line": 13,
+          "position": 365
+        },
+        "name": "app\\admin\\reviews\\page.test.tsx",
+        "start": 3,
+        "startLoc": {
+          "column": 27,
+          "line": 3,
+          "position": 138
+        }
+      },
+      "format": "tsx",
+      "fragment": "import { auth, ReviewAdmin } from '@/lib/api';\n\nconst replace = jest.fn();\n\njest.mock('next/navigation', () => ({\n  useRouter: () => ({ replace: (url: string) => replace(url) }),\n}));\n\njest.mock('@/lib/api', () => ({\n  auth: { getToken: jest.fn() },\n}));",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 11,
+      "secondFile": {
+        "end": 13,
+        "endLoc": {
+          "column": 4,
+          "line": 13,
+          "position": 345
+        },
+        "name": "components\\AdminAuthGuard.test.tsx",
+        "start": 3,
+        "startLoc": {
+          "column": 14,
+          "line": 3,
+          "position": 118
+        }
+      },
+      "tokens": 77
+    },
+    {
+      "firstFile": {
+        "end": 35,
+        "endLoc": {
+          "column": 5,
+          "line": 35,
+          "position": 773
+        },
+        "name": "app\\admin\\reviews\\page.test.tsx",
+        "start": 18,
+        "startLoc": {
+          "column": 33,
+          "line": 18,
+          "position": 470
+        }
+      },
+      "format": "tsx",
+      "fragment": "  text: 'старый текст',\n  rating: 5,\n  createdAt: '2026-01-01T00:00:00Z',\n  isPublished: true,\n  sortOrder: 0,\n};\n\nconst unpublished: ReviewAdmin = {\n  id: 2,\n  authorName: 'Иван',\n  text: 'Хорошая выставка',\n  rating: 4,\n  createdAt: '2026-01-02T00:00:00Z',\n  isPublished: false,\n  sortOrder: 1,\n};\n\nconst mutateAsync = jest.fn().mockResolvedValue(undefined);",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 18,
+      "secondFile": {
+        "end": 25,
+        "endLoc": {
+          "column": 5,
+          "line": 25,
+          "position": 567
+        },
+        "name": "components\\ReviewsList.test.tsx",
+        "start": 8,
+        "startLoc": {
+          "column": 43,
+          "line": 8,
+          "position": 264
+        }
+      },
+      "tokens": 56
+    },
+    {
+      "firstFile": {
+        "end": 86,
+        "endLoc": {
+          "column": 5,
+          "line": 86,
+          "position": 2729
+        },
+        "name": "app\\admin\\reviews\\page.test.tsx",
+        "start": 77,
+        "startLoc": {
+          "column": 82,
+          "line": 77,
+          "position": 2264
+        }
+      },
+      "format": "tsx",
+      "fragment": "    await waitFor(() => expect(screen.getByText('Ольга')).toBeInTheDocument());\n    expect(screen.getByText('Иван')).toBeInTheDocument();\n    expect(screen.getByTestId('review-status-1')).toHaveTextContent('Опубликован');\n    expect(screen.getByTestId('review-status-2')).toHaveTextContent('Не опубликован');\n  });\n\n  // @S5-AS5: editing opens a form pre-filled with the review's current\n  // text; saving calls the update API with the new text and the change\n  // shows up in the list without a page reload.\n  it('[S5-AS5] edits a review through the modal and reflects the new text', async () => {",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 10,
+      "secondFile": {
+        "end": 53,
+        "endLoc": {
+          "column": 5,
+          "line": 53,
+          "position": 1637
+        },
+        "name": "components\\ReviewsList.test.tsx",
+        "start": 45,
+        "startLoc": {
+          "column": 61,
+          "line": 45,
+          "position": 1211
+        }
+      },
+      "tokens": 51
     },
     {
       "firstFile": {
@@ -1712,170 +3118,550 @@
     },
     {
       "firstFile": {
-        "end": 253,
+        "end": 9,
         "endLoc": {
-          "column": 91,
-          "line": 253,
-          "position": 11267
+          "column": 20,
+          "line": 9,
+          "position": 445
         },
-        "name": "app\\contacts\\ContactsClientPage.tsx",
-        "start": 245,
+        "name": "app\\contacts\\ContactsClientPage.test.tsx",
+        "start": 4,
         "startLoc": {
-          "column": 65,
-          "line": 245,
-          "position": 10899
+          "column": 22,
+          "line": 4,
+          "position": 207
         }
       },
       "format": "tsx",
-      "fragment": "          <div className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\">\n            <motion.div\n              initial={{ opacity: 0, y: 30 }}\n              whileInView={{ opacity: 1, y: 0 }}\n              transition={{ duration: 0.8 }}\n              viewport={{ once: true, amount: 0.3 }}\n              className=\"text-center mb-16\"\n            >\n              <h2 className=\"text-4xl md:text-5xl font-serif font-bold text-gray-900 mb-6\">",
+      "fragment": "import { ContactsData } from '@/lib/api';\n\njest.mock('@/components/Navigation', () => () => <div data-testid=\"navigation\" />);\njest.mock('@/components/Footer', () => () => <div data-testid=\"footer\" />);\njest.mock('@/hooks/useApi', () => ({\n  sendContactMessage: jest.fn(),",
       "isNew": false,
       "kind": "exact",
-      "lines": 9,
+      "lines": 6,
       "secondFile": {
-        "end": 351,
+        "end": 9,
         "endLoc": {
-          "column": 91,
-          "line": 351,
-          "position": 15898
+          "column": 14,
+          "line": 9,
+          "position": 436
         },
-        "name": "app\\contacts\\ContactsClientPage.tsx",
-        "start": 343,
+        "name": "app\\reviews\\ReviewsClientPage.test.tsx",
+        "start": 4,
         "startLoc": {
-          "column": 65,
-          "line": 343,
-          "position": 15530
+          "column": 19,
+          "line": 4,
+          "position": 204
         }
       },
-      "tokens": 65
+      "tokens": 57
     },
     {
       "firstFile": {
-        "end": 81,
+        "end": 12,
         "endLoc": {
-          "column": 13,
-          "line": 81,
-          "position": 3204
-        },
-        "name": "app\\gallery\\GalleryClientPage.tsx",
-        "start": 60,
-        "startLoc": {
           "column": 12,
-          "line": 60,
-          "position": 2374
+          "line": 12,
+          "position": 396
+        },
+        "name": "app\\gallery\\GalleryClientPage.test.tsx",
+        "start": 3,
+        "startLoc": {
+          "column": 50,
+          "line": 3,
+          "position": 171
         }
       },
       "format": "tsx",
-      "fragment": "            </p>\n          </motion.div>\n        </div>\n      </section>\n\n      {/* Filters */}\n      <section className=\"py-8 bg-white border-b\">\n        <div className=\"max-w-7xl mx-auto px-4\">\n          <div className=\"flex flex-wrap items-center gap-4\">\n            <div className=\"flex items-center space-x-2\">\n              <Filter className=\"w-5 h-5 text-gray-600\" />\n              <span className=\"font-medium text-gray-700\">Фильтр:</span>\n            </div>\n            \n            <button\n              onClick={() => setSelectedCategory(null)}\n              className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${\n                selectedCategory === null\n                  ? 'bg-primary-600 text-white'\n                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'\n              }`}\n            >",
+      "fragment": "import { reachGoal, Goals } from '@/lib/analytics';\n\njest.mock('@/lib/analytics', () => ({\n  reachGoal: jest.fn(),\n  Goals: { ContactClick: 'contact_click', ArtworkView: 'artwork_view' },\n}));\n\njest.mock('yet-another-react-lightbox', () => ({\n  __esModule: true,\n  default: () => null,",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 10,
+      "secondFile": {
+        "end": 25,
+        "endLoc": {
+          "column": 12,
+          "line": 25,
+          "position": 738
+        },
+        "name": "app\\gallery\\[slug]\\page.test.tsx",
+        "start": 16,
+        "startLoc": {
+          "column": 3,
+          "line": 16,
+          "position": 513
+        }
+      },
+      "tokens": 54
+    },
+    {
+      "firstFile": {
+        "end": 19,
+        "endLoc": {
+          "column": 5,
+          "line": 19,
+          "position": 600
+        },
+        "name": "app\\gallery\\GalleryClientPage.test.tsx",
+        "start": 12,
+        "startLoc": {
+          "column": 21,
+          "line": 12,
+          "position": 405
+        }
+      },
+      "format": "tsx",
+      "fragment": "  default: () => null,\n}));\n\njest.mock('yet-another-react-lightbox/plugins/zoom', () => ({ __esModule: true, default: {} }));\njest.mock('yet-another-react-lightbox/styles.css', () => ({}), { virtual: true });\n\n\nconst artwork = (overrides: Record<string, unknown> = {}) => ({",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 8,
+      "secondFile": {
+        "end": 30,
+        "endLoc": {
+          "column": 5,
+          "line": 30,
+          "position": 1009
+        },
+        "name": "app\\gallery\\[slug]\\page.test.tsx",
+        "start": 25,
+        "startLoc": {
+          "column": 90,
+          "line": 25,
+          "position": 816
+        }
+      },
+      "tokens": 50
+    },
+    {
+      "firstFile": {
+        "end": 104,
+        "endLoc": {
+          "column": 13,
+          "line": 104,
+          "position": 4262
+        },
+        "name": "app\\gallery\\GalleryClientPage.tsx",
+        "start": 83,
+        "startLoc": {
+          "column": 12,
+          "line": 83,
+          "position": 3439
+        }
+      },
+      "format": "tsx",
+      "fragment": "            </p>\n          </div>\n        </div>\n      </section>\n\n      {/* Filters */}\n      <section className=\"py-8 bg-white border-b\">\n        <div className=\"max-w-7xl mx-auto px-4\">\n          <div className=\"flex flex-wrap items-center gap-4\">\n            <div className=\"flex items-center space-x-2\">\n              <Filter className=\"w-5 h-5 text-gray-600\" />\n              <span className=\"font-medium text-gray-700\">Фильтр:</span>\n            </div>\n            \n            <button\n              onClick={() => setSelectedCategory(null)}\n              className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${\n                selectedCategory === null\n                  ? 'bg-primary-600 text-white'\n                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'\n              }`}\n            >",
       "isNew": false,
       "kind": "exact",
       "lines": 22,
       "secondFile": {
-        "end": 81,
+        "end": 77,
         "endLoc": {
           "column": 13,
-          "line": 81,
-          "position": 3035
+          "line": 77,
+          "position": 2842
         },
         "name": "app\\videos\\VideosClientPage.tsx",
-        "start": 60,
+        "start": 56,
         "startLoc": {
           "column": 12,
-          "line": 60,
-          "position": 2205
+          "line": 56,
+          "position": 2019
         }
       },
-      "tokens": 105
+      "tokens": 103
     },
     {
       "firstFile": {
-        "end": 114,
+        "end": 132,
         "endLoc": {
           "column": 15,
-          "line": 114,
-          "position": 4438
+          "line": 132,
+          "position": 5300
         },
         "name": "app\\gallery\\GalleryClientPage.tsx",
-        "start": 85,
+        "start": 108,
         "startLoc": {
           "column": 91,
-          "line": 85,
-          "position": 3365
+          "line": 108,
+          "position": 4423
         }
       },
       "format": "tsx",
-      "fragment": "            {galleryData.categories && Array.isArray(galleryData.categories) && galleryData.categories.map((category) => (\n              <button\n                key={category.id}\n                onClick={() => setSelectedCategory(category.id)}\n                className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${\n                  selectedCategory === category.id\n                    ? 'bg-primary-600 text-white'\n                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'\n                }`}\n              >\n                {category.name}\n              </button>\n            ))}\n          </div>\n        </div>\n      </section>\n\n      {/* Gallery Grid */}\n      <section className=\"py-16 bg-gray-50\">\n        <div className=\"max-w-7xl mx-auto px-4\">\n          <AnimatePresence mode=\"wait\">\n            <motion.div\n              key={selectedCategory || 'all'}\n              initial={{ opacity: 0 }}\n              animate={{ opacity: 1 }}\n              exit={{ opacity: 0 }}\n              transition={{ duration: 0.3 }}\n              className=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8\"\n            >\n              {artworksToDisplay.map((artwork, index) => (",
+      "fragment": "            {galleryData.categories && Array.isArray(galleryData.categories) && galleryData.categories.map((category) => (\n              <button\n                key={category.id}\n                onClick={() => setSelectedCategory(category.id)}\n                className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${\n                  selectedCategory === category.id\n                    ? 'bg-primary-600 text-white'\n                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'\n                }`}\n              >\n                {category.name}\n              </button>\n            ))}\n          </div>\n        </div>\n      </section>\n\n      {/* Gallery Grid */}\n      <section className=\"py-16 bg-gray-50\">\n        <div className=\"max-w-7xl mx-auto px-4\">\n          <div\n            key={selectedCategory || 'all'}\n            className=\"animate-fade-in grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8\"\n            >\n              {artworksToDisplay.map((artwork, index) => (",
       "isNew": false,
       "kind": "exact",
-      "lines": 30,
+      "lines": 25,
       "secondFile": {
-        "end": 114,
+        "end": 105,
         "endLoc": {
           "column": 15,
-          "line": 114,
-          "position": 4263
+          "line": 105,
+          "position": 3874
         },
         "name": "app\\videos\\VideosClientPage.tsx",
-        "start": 85,
+        "start": 81,
         "startLoc": {
           "column": 88,
-          "line": 85,
-          "position": 3191
+          "line": 81,
+          "position": 2998
         }
       },
-      "tokens": 155
+      "tokens": 110
     },
     {
       "firstFile": {
-        "end": 43,
+        "end": 27,
         "endLoc": {
           "column": 9,
-          "line": 43,
-          "position": 1775
+          "line": 27,
+          "position": 969
         },
-        "name": "app\\gallery\\page.tsx",
-        "start": 32,
+        "name": "app\\gallery\\[slug]\\ArtworkSpecs.test.tsx",
+        "start": 18,
         "startLoc": {
-          "column": 23,
-          "line": 32,
-          "position": 1424
+          "column": 55,
+          "line": 18,
+          "position": 587
         }
       },
       "format": "tsx",
-      "fragment": "        <div className=\"text-center\">\n          <h2 className=\"text-2xl font-bold text-gray-900 mb-4\">Ошибка загрузки</h2>\n          <p className=\"text-gray-600 mb-4\">Не удалось загрузить данные</p>\n        </div>\n      </div>\n    );\n  }\n\n  const jsonLd = {\n    '@context': 'https://schema.org',\n    '@type': 'CollectionPage',\n    name: 'Галерея работ',",
+      "fragment": "    expect(container.querySelector('dl')).not.toBeNull();\n    expect(screen.getByText('80 × 70 см')).toBeInTheDocument();\n    expect(screen.getByText('масло')).toBeInTheDocument();\n    expect(screen.getByText('холст на подрамнике')).toBeInTheDocument();\n    expect(screen.getByText('2026')).toBeInTheDocument();\n    expect(screen.getByText('В наличии')).toBeInTheDocument();\n  });\n});\n\ndescribe('@US1-AS2 empty specs are not rendered', () => {",
       "isNew": false,
       "kind": "exact",
-      "lines": 12,
+      "lines": 10,
       "secondFile": {
-        "end": 73,
+        "end": 488,
         "endLoc": {
           "column": 9,
-          "line": 73,
-          "position": 2965
+          "line": 488,
+          "position": 18731
         },
-        "name": "app\\videos\\page.tsx",
-        "start": 62,
+        "name": "app\\gallery\\[slug]\\page.test.tsx",
+        "start": 478,
         "startLoc": {
-          "column": 23,
-          "line": 62,
-          "position": 2614
+          "column": 67,
+          "line": 478,
+          "position": 18357
         }
       },
-      "tokens": 53
+      "tokens": 80
     },
     {
       "firstFile": {
-        "end": 21,
+        "end": 41,
+        "endLoc": {
+          "column": 20,
+          "line": 41,
+          "position": 1520
+        },
+        "name": "app\\gallery\\[slug]\\page.test.tsx",
+        "start": 35,
+        "startLoc": {
+          "column": 46,
+          "line": 35,
+          "position": 1277
+        }
+      },
+      "format": "tsx",
+      "fragment": "  it('renders the artwork matched by the slug', async () => {\n    mockedGetGalleryData.mockResolvedValue(\n      gallery([{ id: 7, title: 'Осенний сад', isForSale: false }])\n    );\n\n    const element = await ArtworkPage({ params: { slug: 'osenniy-sad-7' } });\n    render(element);",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 7,
+      "secondFile": {
+        "end": 262,
+        "endLoc": {
+          "column": 20,
+          "line": 262,
+          "position": 9909
+        },
+        "name": "app\\gallery\\[slug]\\page.test.tsx",
+        "start": 256,
+        "startLoc": {
+          "column": 74,
+          "line": 256,
+          "position": 9666
+        }
+      },
+      "tokens": 52
+    },
+    {
+      "firstFile": {
+        "end": 145,
+        "endLoc": {
+          "column": 20,
+          "line": 145,
+          "position": 5594
+        },
+        "name": "app\\gallery\\[slug]\\page.test.tsx",
+        "start": 140,
+        "startLoc": {
+          "column": 4,
+          "line": 140,
+          "position": 5358
+        }
+      },
+      "format": "tsx",
+      "fragment": "    mockedGetGalleryData.mockResolvedValue(\n      gallery([{ id: 7, title: 'Осенний сад', isForSale: true, price: 45000 }])\n    );\n\n    const element = await ArtworkPage({ params: { slug: 'osenniy-sad-7' } });\n    render(element);",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 6,
+      "secondFile": {
+        "end": 187,
+        "endLoc": {
+          "column": 20,
+          "line": 187,
+          "position": 7362
+        },
+        "name": "app\\gallery\\[slug]\\page.test.tsx",
+        "start": 182,
+        "startLoc": {
+          "column": 4,
+          "line": 182,
+          "position": 7126
+        }
+      },
+      "tokens": 50
+    },
+    {
+      "firstFile": {
+        "end": 376,
+        "endLoc": {
+          "column": 9,
+          "line": 376,
+          "position": 14197
+        },
+        "name": "app\\gallery\\[slug]\\page.test.tsx",
+        "start": 368,
+        "startLoc": {
+          "column": 6,
+          "line": 368,
+          "position": 13879
+        }
+      },
+      "format": "tsx",
+      "fragment": "      ])\n    );\n\n    const element = await ArtworkPage({ params: { slug: 'osenniy-sad-7' } });\n    const { container } = render(element);\n\n    const scripts = Array.from(container.querySelectorAll('script[type=\"application/ld+json\"]'));\n    const jsonBlocks = scripts.map((script) => JSON.parse(script.innerHTML));\n    const artworkBlock = jsonBlocks.find(",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 9,
+      "secondFile": {
+        "end": 425,
+        "endLoc": {
+          "column": 9,
+          "line": 425,
+          "position": 16196
+        },
+        "name": "app\\gallery\\[slug]\\page.test.tsx",
+        "start": 417,
+        "startLoc": {
+          "column": 74,
+          "line": 417,
+          "position": 15878
+        }
+      },
+      "tokens": 68
+    },
+    {
+      "firstFile": {
+        "end": 381,
+        "endLoc": {
+          "column": 24,
+          "line": 381,
+          "position": 14386
+        },
+        "name": "app\\gallery\\[slug]\\page.test.tsx",
+        "start": 371,
+        "startLoc": {
+          "column": 72,
+          "line": 371,
+          "position": 13962
+        }
+      },
+      "format": "tsx",
+      "fragment": "    const element = await ArtworkPage({ params: { slug: 'osenniy-sad-7' } });\n    const { container } = render(element);\n\n    const scripts = Array.from(container.querySelectorAll('script[type=\"application/ld+json\"]'));\n    const jsonBlocks = scripts.map((script) => JSON.parse(script.innerHTML));\n    const artworkBlock = jsonBlocks.find(\n      (block) => block['@type'] === 'VisualArtwork' || block['@type'] === 'Product'\n    );\n\n    expect(artworkBlock).toBeDefined();\n    expect(artworkBlock.name).toBe('Осенний сад');",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 11,
+      "secondFile": {
+        "end": 410,
+        "endLoc": {
+          "column": 24,
+          "line": 410,
+          "position": 15582
+        },
+        "name": "app\\gallery\\[slug]\\page.test.tsx",
+        "start": 400,
+        "startLoc": {
+          "column": 68,
+          "line": 400,
+          "position": 15158
+        }
+      },
+      "tokens": 89
+    },
+    {
+      "firstFile": {
+        "end": 442,
+        "endLoc": {
+          "column": 20,
+          "line": 442,
+          "position": 16917
+        },
+        "name": "app\\gallery\\[slug]\\page.test.tsx",
+        "start": 434,
+        "startLoc": {
+          "column": 74,
+          "line": 434,
+          "position": 16621
+        }
+      },
+      "format": "tsx",
+      "fragment": "  it('shows the lightbox on the explicit button and reports the view goal', async () => {\n    mockedGetGalleryData.mockResolvedValue(\n      gallery([\n        { id: 7, title: 'Осенний сад', isForSale: false, imagePath: '/full/osenniy-sad.jpg' },\n      ])\n    );\n\n    const element = await ArtworkPage({ params: { slug: 'osenniy-sad-7' } });\n    render(element);",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 9,
+      "secondFile": {
+        "end": 460,
+        "endLoc": {
+          "column": 20,
+          "line": 460,
+          "position": 17648
+        },
+        "name": "app\\gallery\\[slug]\\page.test.tsx",
+        "start": 452,
+        "startLoc": {
+          "column": 56,
+          "line": 452,
+          "position": 17352
+        }
+      },
+      "tokens": 57
+    },
+    {
+      "firstFile": {
+        "end": 50,
+        "endLoc": {
+          "column": 75,
+          "line": 50,
+          "position": 1999
+        },
+        "name": "app\\reviews\\page.test.tsx",
+        "start": 43,
+        "startLoc": {
+          "column": 52,
+          "line": 43,
+          "position": 1658
+        }
+      },
+      "format": "tsx",
+      "fragment": "    mockedGetReviewsData.mockResolvedValue([review()]);\n    mockedGetGalleryData.mockResolvedValue({ artworks: [], categories: [] });\n\n    const element = await ReviewsPage();\n    const { container } = render(element);\n\n    const scripts = Array.from(container.querySelectorAll('script[type=\"application/ld+json\"]'));\n    const payloads = scripts.map((script) => JSON.parse(script.innerHTML));",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 8,
+      "secondFile": {
+        "end": 75,
+        "endLoc": {
+          "column": 75,
+          "line": 75,
+          "position": 3227
+        },
+        "name": "app\\reviews\\page.test.tsx",
+        "start": 68,
+        "startLoc": {
+          "column": 44,
+          "line": 68,
+          "position": 2886
+        }
+      },
+      "tokens": 74
+    },
+    {
+      "firstFile": {
+        "end": 35,
+        "endLoc": {
+          "column": 43,
+          "line": 35,
+          "position": 1111
+        },
+        "name": "app\\sitemap.test.ts",
+        "start": 28,
+        "startLoc": {
+          "column": 6,
+          "line": 28,
+          "position": 910
+        }
+      },
+      "format": "typescript",
+      "fragment": "      ])\n    );\n    mockedGetVideosData.mockResolvedValue({ videos: [] });\n\n    const result = await sitemap();\n    const urls = result.map((entry) => entry.url);\n\n    expect(urls.some((url) => url.endsWith('/gallery/osenniy-sad-7'))).toBe(true);",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 8,
+      "secondFile": {
+        "end": 53,
+        "endLoc": {
+          "column": 43,
+          "line": 53,
+          "position": 1875
+        },
+        "name": "app\\sitemap.test.ts",
+        "start": 45,
+        "startLoc": {
+          "column": 56,
+          "line": 45,
+          "position": 1667
+        }
+      },
+      "tokens": 54
+    },
+    {
+      "firstFile": {
+        "end": 143,
+        "endLoc": {
+          "column": 111,
+          "line": 143,
+          "position": 5295
+        },
+        "name": "components\\MessagesList.tsx",
+        "start": 136,
+        "startLoc": {
+          "column": 8,
+          "line": 136,
+          "position": 4870
+        }
+      },
+      "format": "tsx",
+      "fragment": "        </div>\n      ) : (\n        <div className=\"overflow-x-auto\">\n          <table className=\"min-w-full divide-y divide-gray-200\">\n            <thead className=\"bg-gray-50\">\n              <tr>\n                <th className=\"px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider\">Дата</th>\n                <th className=\"px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider\">Контакт</th>",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 8,
+      "secondFile": {
+        "end": 52,
+        "endLoc": {
+          "column": 111,
+          "line": 52,
+          "position": 1551
+        },
+        "name": "components\\ReviewsList.tsx",
+        "start": 45,
+        "startLoc": {
+          "column": 8,
+          "line": 45,
+          "position": 1126
+        }
+      },
+      "tokens": 50
+    },
+    {
+      "firstFile": {
+        "end": 22,
         "endLoc": {
           "column": 21,
-          "line": 21,
-          "position": 1320
+          "line": 22,
+          "position": 1369
         },
         "name": "components\\StructuredData.tsx",
-        "start": 15,
+        "start": 16,
         "startLoc": {
           "column": 235,
-          "line": 15,
-          "position": 843
+          "line": 16,
+          "position": 892
         }
       },
       "format": "tsx",
@@ -1884,36 +3670,74 @@
       "kind": "exact",
       "lines": 7,
       "secondFile": {
-        "end": 77,
+        "end": 73,
         "endLoc": {
           "column": 21,
-          "line": 77,
-          "position": 3984
+          "line": 73,
+          "position": 3838
         },
         "name": "components\\StructuredData.tsx",
-        "start": 71,
+        "start": 67,
         "startLoc": {
           "column": 17,
-          "line": 71,
-          "position": 3507
+          "line": 67,
+          "position": 3361
         }
       },
       "tokens": 82
     },
     {
       "firstFile": {
-        "end": 151,
+        "end": 10,
+        "endLoc": {
+          "column": 3,
+          "line": 10,
+          "position": 374
+        },
+        "name": "e2e\\admin.spec.ts",
+        "start": 4,
+        "startLoc": {
+          "column": 38,
+          "line": 4,
+          "position": 125
+        }
+      },
+      "format": "typescript",
+      "fragment": "  test.beforeEach(async ({ page }) => {\n    await page.goto('/admin');\n    await page.getByLabel('Username').fill('admin');\n    await page.getByLabel('Password').fill('admin');\n    await page.getByRole('button', { name: 'Login' }).click();\n    await expect(page).toHaveURL('/admin');\n  });",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 7,
+      "secondFile": {
+        "end": 19,
+        "endLoc": {
+          "column": 1,
+          "line": 19,
+          "position": 651
+        },
+        "name": "e2e\\blog.spec.ts",
+        "start": 13,
+        "startLoc": {
+          "column": 33,
+          "line": 13,
+          "position": 414
+        }
+      },
+      "tokens": 65
+    },
+    {
+      "firstFile": {
+        "end": 161,
         "endLoc": {
           "column": 15,
-          "line": 151,
-          "position": 4317
+          "line": 161,
+          "position": 4719
         },
         "name": "hooks\\useApi.ts",
-        "start": 141,
+        "start": 151,
         "startLoc": {
           "column": 57,
-          "line": 141,
-          "position": 4087
+          "line": 151,
+          "position": 4489
         }
       },
       "format": "typescript",
@@ -1922,36 +3746,36 @@
       "kind": "exact",
       "lines": 11,
       "secondFile": {
-        "end": 165,
+        "end": 175,
         "endLoc": {
           "column": 15,
-          "line": 165,
-          "position": 4882
+          "line": 175,
+          "position": 5284
         },
         "name": "hooks\\useApi.ts",
-        "start": 155,
+        "start": 165,
         "startLoc": {
           "column": 62,
-          "line": 155,
-          "position": 4652
+          "line": 165,
+          "position": 5054
         }
       },
       "tokens": 51
     },
     {
       "firstFile": {
-        "end": 205,
+        "end": 215,
         "endLoc": {
           "column": 15,
-          "line": 205,
-          "position": 6066
+          "line": 215,
+          "position": 6468
         },
         "name": "hooks\\useApi.ts",
-        "start": 191,
+        "start": 201,
         "startLoc": {
           "column": 62,
-          "line": 191,
-          "position": 5702
+          "line": 201,
+          "position": 6104
         }
       },
       "format": "typescript",
@@ -1960,36 +3784,36 @@
       "kind": "exact",
       "lines": 15,
       "secondFile": {
-        "end": 223,
+        "end": 233,
         "endLoc": {
           "column": 15,
-          "line": 223,
-          "position": 6617
+          "line": 233,
+          "position": 7019
         },
         "name": "hooks\\useApi.ts",
-        "start": 209,
+        "start": 219,
         "startLoc": {
           "column": 60,
-          "line": 209,
-          "position": 6301
+          "line": 219,
+          "position": 6703
         }
       },
       "tokens": 63
     },
     {
       "firstFile": {
-        "end": 317,
+        "end": 327,
         "endLoc": {
           "column": 15,
-          "line": 317,
-          "position": 9113
+          "line": 327,
+          "position": 9515
         },
         "name": "hooks\\useApi.ts",
-        "start": 303,
+        "start": 313,
         "startLoc": {
           "column": 53,
-          "line": 303,
-          "position": 8795
+          "line": 313,
+          "position": 9197
         }
       },
       "format": "typescript",
@@ -1998,67 +3822,105 @@
       "kind": "exact",
       "lines": 15,
       "secondFile": {
-        "end": 335,
+        "end": 345,
         "endLoc": {
           "column": 15,
-          "line": 335,
-          "position": 9660
+          "line": 345,
+          "position": 10062
         },
         "name": "hooks\\useApi.ts",
-        "start": 321,
+        "start": 331,
         "startLoc": {
           "column": 58,
-          "line": 321,
-          "position": 9342
+          "line": 331,
+          "position": 9744
         }
       },
       "tokens": 63
     },
     {
       "firstFile": {
-        "end": 119,
+        "end": 135,
         "endLoc": {
           "column": 16,
-          "line": 119,
-          "position": 2757
+          "line": 135,
+          "position": 3278
         },
         "name": "lib\\api.ts",
-        "start": 105,
+        "start": 120,
         "startLoc": {
           "column": 28,
-          "line": 105,
-          "position": 2461
+          "line": 120,
+          "position": 2941
         }
       },
       "format": "typescript",
-      "fragment": "export interface ArtworkDto {\n  id: number;\n  title: string;\n  description?: string;\n  imagePath: string;\n  thumbnailPath: string;\n  price?: number;\n  isForSale: boolean;\n  createdAt: string;\n  updatedAt: string;\n  categoryId: number;\n  category?: CategoryDto; // Ссылка на DTO категории\n}\n\nexport interface CategoryDto {",
+      "fragment": "export interface ArtworkDto {\n  id: number;\n  title: string;\n  description?: string;\n  imagePath: string;\n  thumbnailPath: string;\n  price?: number;\n  isForSale: boolean;\n  createdAt: string;\n  updatedAt: string;\n  categoryId: number;\n  category?: CategoryDto; // Ссылка на DTO категории\n  images: ArtworkImage[];\n}\n\nexport interface CategoryDto {",
       "isNew": false,
       "kind": "exact",
-      "lines": 15,
+      "lines": 16,
       "secondFile": {
-        "end": 143,
+        "end": 160,
         "endLoc": {
           "column": 16,
-          "line": 143,
-          "position": 3204
+          "line": 160,
+          "position": 3776
         },
         "name": "lib\\api.ts",
-        "start": 127,
+        "start": 143,
         "startLoc": {
           "column": 33,
-          "line": 127,
-          "position": 2907
+          "line": 143,
+          "position": 3436
         }
       },
-      "tokens": 51
+      "tokens": 57
     },
     {
       "firstFile": {
-        "end": 46,
+        "end": 8,
+        "endLoc": {
+          "column": 88,
+          "line": 8,
+          "position": 327
+        },
+        "name": "lib\\artworkImagesApi.boundary.test.ts",
+        "start": 1,
+        "startLoc": {
+          "column": 0,
+          "line": 1,
+          "position": 0
+        }
+      },
+      "format": "typescript",
+      "fragment": "import { api } from '@/lib/api';\nimport { deleteArtworkImage, reorderArtworkImages, uploadArtworkImages } from '@/lib/artworkImagesApi';\n\njest.mock('@/lib/api', () => ({\n  api: { post: jest.fn(), delete: jest.fn(), put: jest.fn() },\n}));\n\nconst mocked = api as unknown as { post: jest.Mock; delete: jest.Mock; put: jest.Mock };",
+      "isNew": false,
+      "kind": "exact",
+      "lines": 8,
+      "secondFile": {
+        "end": 8,
+        "endLoc": {
+          "column": 88,
+          "line": 8,
+          "position": 327
+        },
+        "name": "lib\\artworkImagesApi.test.ts",
+        "start": 1,
+        "startLoc": {
+          "column": 0,
+          "line": 1,
+          "position": 0
+        }
+      },
+      "tokens": 88
+    },
+    {
+      "firstFile": {
+        "end": 53,
         "endLoc": {
           "column": 5,
-          "line": 46,
-          "position": 1379
+          "line": 53,
+          "position": 1661
         },
         "name": "package-lock.json",
         "start": 9,
@@ -2069,16 +3931,16 @@
         }
       },
       "format": "json",
-      "fragment": "      \"version\": \"0.1.0\",\n      \"dependencies\": {\n        \"@tanstack/react-query\": \"^5.84.1\",\n        \"@tanstack/react-query-devtools\": \"^5.84.1\",\n        \"axios\": \"^1.11.0\",\n        \"framer-motion\": \"^10.16.0\",\n        \"lucide-react\": \"^0.292.0\",\n        \"react\": \"^18\",\n        \"react-dom\": \"^18\",\n        \"react-hot-toast\": \"^2.6.0\",\n        \"react-icons\": \"^5.5.0\",\n        \"react-player\": \"^2.13.0\",\n        \"react-slick\": \"^0.31.0\",\n        \"slick-carousel\": \"^1.8.1\",\n        \"yet-another-react-lightbox\": \"^3.4.0\"\n      },\n      \"devDependencies\": {\n        \"@playwright/test\": \"^1.54.2\",\n        \"@testing-library/jest-dom\": \"^6.6.4\",\n        \"@testing-library/react\": \"^16.3.0\",\n        \"@types/jest\": \"^30.0.0\",\n        \"@types/node\": \"^20\",\n        \"@types/react\": \"^18\",\n        \"@types/react-dom\": \"^18\",\n        \"@types/react-slick\": \"^0.23.13\",\n        \"autoprefixer\": \"^10.0.1\",\n        \"eslint\": \"^8\",\n        \"eslint-config-next\": \"14.0.0\",\n        \"jest\": \"^30.0.5\",\n        \"jest-environment-jsdom\": \"^30.0.5\",\n        \"next\": \"14.0.0\",\n        \"playwright\": \"^1.54.2\",\n        \"postcss\": \"^8\",\n        \"tailwindcss\": \"^3.3.0\",\n        \"ts-jest\": \"^29.4.1\",\n        \"typescript\": \"^5\"\n      }\n    },",
+      "fragment": "      \"version\": \"0.1.0\",\n      \"dependencies\": {\n        \"@tanstack/react-query\": \"^5.84.1\",\n        \"@tanstack/react-query-devtools\": \"^5.84.1\",\n        \"@tiptap/extension-image\": \"^2.27.3\",\n        \"@tiptap/extension-link\": \"^2.27.3\",\n        \"@tiptap/extension-placeholder\": \"^2.27.3\",\n        \"@tiptap/pm\": \"^2.27.3\",\n        \"@tiptap/react\": \"^2.27.3\",\n        \"@tiptap/starter-kit\": \"^2.27.3\",\n        \"axios\": \"^1.11.0\",\n        \"framer-motion\": \"^10.16.0\",\n        \"lucide-react\": \"^0.292.0\",\n        \"react\": \"^18\",\n        \"react-dom\": \"^18\",\n        \"react-hot-toast\": \"^2.6.0\",\n        \"react-icons\": \"^5.5.0\",\n        \"react-player\": \"^2.13.0\",\n        \"react-slick\": \"^0.31.0\",\n        \"sharp\": \"^0.33.5\",\n        \"slick-carousel\": \"^1.8.1\",\n        \"yet-another-react-lightbox\": \"^3.4.0\"\n      },\n      \"devDependencies\": {\n        \"@playwright/test\": \"^1.54.2\",\n        \"@testing-library/jest-dom\": \"^6.6.4\",\n        \"@testing-library/react\": \"^16.3.0\",\n        \"@types/jest\": \"^30.0.0\",\n        \"@types/node\": \"^20\",\n        \"@types/react\": \"^18\",\n        \"@types/react-dom\": \"^18\",\n        \"@types/react-slick\": \"^0.23.13\",\n        \"autoprefixer\": \"^10.0.1\",\n        \"eslint\": \"^8\",\n        \"eslint-config-next\": \"14.0.0\",\n        \"jest\": \"^30.0.5\",\n        \"jest-environment-jsdom\": \"^30.0.5\",\n        \"next\": \"14.0.0\",\n        \"playwright\": \"^1.54.2\",\n        \"postcss\": \"^8\",\n        \"tailwindcss\": \"^3.3.0\",\n        \"ts-jest\": \"^29.4.1\",\n        \"typescript\": \"^5\"\n      }\n    },",
       "isNew": false,
       "kind": "exact",
-      "lines": 38,
+      "lines": 45,
       "secondFile": {
-        "end": 49,
+        "end": 56,
         "endLoc": {
           "column": 1,
-          "line": 49,
-          "position": 1290
+          "line": 56,
+          "position": 1544
         },
         "name": "package.json",
         "start": 12,
@@ -2088,22 +3950,22 @@
           "position": 243
         }
       },
-      "tokens": 137
+      "tokens": 165
     },
     {
       "firstFile": {
-        "end": 1421,
+        "end": 1824,
         "endLoc": {
           "column": 6,
-          "line": 1421,
-          "position": 51760
+          "line": 1824,
+          "position": 64137
         },
         "name": "package-lock.json",
-        "start": 1401,
+        "start": 1804,
         "startLoc": {
           "column": 52,
-          "line": 1401,
-          "position": 51113
+          "line": 1804,
+          "position": 63490
         }
       },
       "format": "json",
@@ -2112,36 +3974,36 @@
       "kind": "exact",
       "lines": 21,
       "secondFile": {
-        "end": 6377,
+        "end": 7286,
         "endLoc": {
           "column": 6,
-          "line": 6377,
-          "position": 228092
+          "line": 7286,
+          "position": 260649
         },
         "name": "package-lock.json",
-        "start": 6357,
+        "start": 7266,
         "startLoc": {
           "column": 48,
-          "line": 6357,
-          "position": 227445
+          "line": 7266,
+          "position": 260002
         }
       },
       "tokens": 67
     },
     {
       "firstFile": {
-        "end": 1421,
+        "end": 1824,
         "endLoc": {
           "column": 6,
-          "line": 1421,
-          "position": 51760
+          "line": 1824,
+          "position": 64137
         },
         "name": "package-lock.json",
-        "start": 1401,
+        "start": 1804,
         "startLoc": {
           "column": 52,
-          "line": 1401,
-          "position": 51113
+          "line": 1804,
+          "position": 63490
         }
       },
       "format": "json",
@@ -2150,36 +4012,36 @@
       "kind": "exact",
       "lines": 21,
       "secondFile": {
-        "end": 6932,
+        "end": 7841,
         "endLoc": {
           "column": 6,
-          "line": 6932,
-          "position": 248512
+          "line": 7841,
+          "position": 281069
         },
         "name": "package-lock.json",
-        "start": 6912,
+        "start": 7821,
         "startLoc": {
           "column": 49,
-          "line": 6912,
-          "position": 247865
+          "line": 7821,
+          "position": 280422
         }
       },
       "tokens": 67
     },
     {
       "firstFile": {
-        "end": 1421,
+        "end": 1824,
         "endLoc": {
           "column": 6,
-          "line": 1421,
-          "position": 51760
+          "line": 1824,
+          "position": 64137
         },
         "name": "package-lock.json",
-        "start": 1401,
+        "start": 1804,
         "startLoc": {
           "column": 52,
-          "line": 1401,
-          "position": 51113
+          "line": 1804,
+          "position": 63490
         }
       },
       "format": "json",
@@ -2188,36 +4050,36 @@
       "kind": "exact",
       "lines": 21,
       "secondFile": {
-        "end": 9585,
+        "end": 10833,
         "endLoc": {
           "column": 6,
-          "line": 9585,
-          "position": 342584
+          "line": 10833,
+          "position": 388976
         },
         "name": "package-lock.json",
-        "start": 9565,
+        "start": 10813,
         "startLoc": {
           "column": 44,
-          "line": 9565,
-          "position": 341937
+          "line": 10813,
+          "position": 388329
         }
       },
       "tokens": 67
     },
     {
       "firstFile": {
-        "end": 10497,
+        "end": 11775,
         "endLoc": {
           "column": 6,
-          "line": 10497,
-          "position": 374055
+          "line": 11775,
+          "position": 421798
         },
         "name": "package-lock.json",
-        "start": 10481,
+        "start": 11759,
         "startLoc": {
           "column": 6,
-          "line": 10481,
-          "position": 373517
+          "line": 11759,
+          "position": 421260
         }
       },
       "format": "json",
@@ -2226,122 +4088,122 @@
       "kind": "exact",
       "lines": 17,
       "secondFile": {
-        "end": 10516,
+        "end": 11794,
         "endLoc": {
           "column": 6,
-          "line": 10516,
-          "position": 374663
+          "line": 11794,
+          "position": 422406
         },
         "name": "package-lock.json",
-        "start": 10500,
+        "start": 11778,
         "startLoc": {
           "column": 6,
-          "line": 10500,
-          "position": 374125
+          "line": 11778,
+          "position": 421868
         }
       },
       "tokens": 53
     }
   ],
   "statistics": {
-    "detectionDate": "2026-09-18T20:55:33.225Z",
+    "detectionDate": "2026-10-02T20:48:18.316Z",
     "formats": {
       "csharp": {
-        "clones": 23,
-        "duplicatedLines": 271,
-        "duplicatedTokens": 1752,
-        "lines": 5161,
+        "clones": 38,
+        "duplicatedLines": 484,
+        "duplicatedTokens": 2862,
+        "lines": 10661,
         "newClones": 0,
         "newDuplicatedLines": 0,
-        "percentage": 5.25092036427049,
-        "percentageTokens": 5.89006555723651,
-        "sources": 33,
-        "tokens": 29745
+        "percentage": 4.53991182815871,
+        "percentageTokens": 4.069040036396724,
+        "sources": 88,
+        "tokens": 70336
       },
       "css": {
         "clones": 0,
         "duplicatedLines": 0,
         "duplicatedTokens": 0,
-        "lines": 55,
+        "lines": 98,
         "newClones": 0,
         "newDuplicatedLines": 0,
         "percentage": 0.0,
         "percentageTokens": 0.0,
         "sources": 1,
-        "tokens": 367
+        "tokens": 964
       },
       "javascript": {
         "clones": 0,
         "duplicatedLines": 0,
         "duplicatedTokens": 0,
-        "lines": 108,
+        "lines": 116,
         "newClones": 0,
         "newDuplicatedLines": 0,
         "percentage": 0.0,
         "percentageTokens": 0.0,
         "sources": 3,
-        "tokens": 413
+        "tokens": 457
       },
       "json": {
         "clones": 5,
-        "duplicatedLines": 113,
-        "duplicatedTokens": 391,
-        "lines": 10819,
+        "duplicatedLines": 125,
+        "duplicatedTokens": 419,
+        "lines": 12108,
         "newClones": 0,
         "newDuplicatedLines": 0,
-        "percentage": 1.0444588224420002,
-        "percentageTokens": 1.1385143988585738,
+        "percentage": 1.0323752890650808,
+        "percentageTokens": 1.0951099030344216,
         "sources": 5,
-        "tokens": 34343
+        "tokens": 38261
       },
       "markup": {
         "clones": 0,
         "duplicatedLines": 0,
         "duplicatedTokens": 0,
-        "lines": 67,
+        "lines": 34,
         "newClones": 0,
         "newDuplicatedLines": 0,
         "percentage": 0.0,
         "percentageTokens": 0.0,
-        "sources": 2,
-        "tokens": 943
+        "sources": 1,
+        "tokens": 717
       },
       "tsx": {
-        "clones": 27,
-        "duplicatedLines": 301,
-        "duplicatedTokens": 1894,
-        "lines": 4833,
+        "clones": 40,
+        "duplicatedLines": 431,
+        "duplicatedTokens": 3035,
+        "lines": 11208,
         "newClones": 0,
         "newDuplicatedLines": 0,
-        "percentage": 6.228015725222429,
-        "percentageTokens": 6.834584295612009,
-        "sources": 32,
-        "tokens": 27712
+        "percentage": 3.845467523197716,
+        "percentageTokens": 3.972097162600775,
+        "sources": 106,
+        "tokens": 76408
       },
       "typescript": {
-        "clones": 4,
-        "duplicatedLines": 52,
-        "duplicatedTokens": 228,
-        "lines": 890,
+        "clones": 25,
+        "duplicatedLines": 247,
+        "duplicatedTokens": 1669,
+        "lines": 5109,
         "newClones": 0,
         "newDuplicatedLines": 0,
-        "percentage": 5.842696629213483,
-        "percentageTokens": 5.114401076716016,
-        "sources": 6,
-        "tokens": 4458
+        "percentage": 4.8346055979643765,
+        "percentageTokens": 4.752548550600832,
+        "sources": 60,
+        "tokens": 35118
       }
     },
     "total": {
-      "clones": 59,
-      "duplicatedLines": 737,
-      "duplicatedTokens": 4265,
-      "lines": 21933,
+      "clones": 108,
+      "duplicatedLines": 1287,
+      "duplicatedTokens": 7985,
+      "lines": 39334,
       "newClones": 0,
       "newDuplicatedLines": 0,
-      "percentage": 3.3602334381981485,
-      "percentageTokens": 4.352884742960369,
-      "sources": 82,
-      "tokens": 97981
+      "percentage": 3.2719784410433723,
+      "percentageTokens": 3.592623087271271,
+      "sources": 264,
+      "tokens": 222261
     }
   }
 }

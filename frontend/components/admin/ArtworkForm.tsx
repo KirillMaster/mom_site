@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { ArtworkImage } from '@/lib/api';
+import { resolveStatus } from '@/lib/artworkStatus';
 import ArtworkFormFields, { ArtworkFormState } from './ArtworkFormFields';
 import ArtworkImagesManager from './ArtworkImagesManager';
 import MultiImageDropzone from './MultiImageDropzone';
@@ -18,7 +19,12 @@ const initialState = (a: any | null): ArtworkFormState => ({
   title: a?.title ?? '',
   description: a?.description || '',
   price: a?.price ? String(a.price) : '',
-  isForSale: a ? a.isForSale : true,
+  status: a ? resolveStatus(a) : 'Available',
+  widthCm: a?.widthCm ? String(a.widthCm) : '',
+  heightCm: a?.heightCm ? String(a.heightCm) : '',
+  year: a?.year ? String(a.year) : '',
+  support: a?.support ?? '',
+  technique: a?.technique ?? '',
   categoryId: a ? String(a.categoryId) : '',
 });
 
