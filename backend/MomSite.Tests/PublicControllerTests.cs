@@ -48,7 +48,8 @@ namespace MomSite.Tests
                 context,
                 notifiers,
                 Mock.Of<ILogger<PublicController>>(),
-                rateLimiter ?? new AlwaysAllowRateLimiter());
+                rateLimiter ?? new AlwaysAllowRateLimiter(),
+                new MomSite.Infrastructure.Services.LeadService(context, notifiers, Mock.Of<ILogger<MomSite.Infrastructure.Services.LeadService>>()));
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -740,7 +741,8 @@ namespace MomSite.Tests
                 context,
                 Array.Empty<IFeedbackNotifier>(),
                 Mock.Of<ILogger<PublicController>>(),
-                limiter);
+                limiter,
+                new MomSite.Infrastructure.Services.LeadService(context, Array.Empty<IFeedbackNotifier>(), Mock.Of<ILogger<MomSite.Infrastructure.Services.LeadService>>()));
             controller1.ControllerContext = new ControllerContext { HttpContext = httpContext1 };
 
             // Second IP: 203.0.113.2
@@ -751,7 +753,8 @@ namespace MomSite.Tests
                 context,
                 Array.Empty<IFeedbackNotifier>(),
                 Mock.Of<ILogger<PublicController>>(),
-                limiter);
+                limiter,
+                new MomSite.Infrastructure.Services.LeadService(context, Array.Empty<IFeedbackNotifier>(), Mock.Of<ILogger<MomSite.Infrastructure.Services.LeadService>>()));
             controller2.ControllerContext = new ControllerContext { HttpContext = httpContext2 };
 
             var msg1A = ValidMessage();

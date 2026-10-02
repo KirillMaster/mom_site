@@ -163,6 +163,7 @@ builder.Services.AddHttpClient(MomSite.Infrastructure.Blog.IndexNowClient.HttpCl
 builder.Services.AddSingleton<IIndexNowClient, MomSite.Infrastructure.Blog.IndexNowClient>();
 builder.Services.AddScoped<IFeedbackNotifier, EmailNotifier>();
 builder.Services.AddScoped<IFeedbackNotifier, TelegramNotifier>();
+builder.Services.AddScoped<ILeadService, MomSite.Infrastructure.Services.LeadService>();
 
 // Behind nginx, the app only ever sees the proxy's own address unless we
 // trust and apply X-Forwarded-For. Required so RemoteIpAddress (used both

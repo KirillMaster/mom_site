@@ -15,13 +15,16 @@ public class PublicController : ControllerBase
     private readonly IEnumerable<IFeedbackNotifier> _notifiers;
     private readonly ILogger<PublicController> _logger;
     private readonly IContactRateLimiter _rateLimiter;
+    private readonly ILeadService _leadService;
 
     public PublicController(
         ApplicationDbContext context,
         IEnumerable<IFeedbackNotifier> notifiers,
         ILogger<PublicController> logger,
-        IContactRateLimiter rateLimiter)
+        IContactRateLimiter rateLimiter,
+        ILeadService leadService)
     {
+        _leadService = leadService;
         _context = context;
         _notifiers = notifiers;
         _logger = logger;
@@ -438,14 +441,17 @@ public class PublicController : ControllerBase
 
         var entity = BuildContactMessageEntity(message);
 
-        if (!await TryPersistContactMessageAsync(entity, message.Email ?? message.Phone))
+        // Persistence happens before notification inside the lead service, so
+        // the lead is never lost even if every notification channel fails.
+        try
         {
+            await _leadService.SubmitAsync(entity);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to persist contact message from {FromEmail}", message.Email ?? message.Phone);
             return StatusCode(500, new { message = "Ошибка при отправке сообщения. Попробуйте позже." });
         }
-
-        // Persistence has already succeeded at this point, so the lead is
-        // never lost even if every notification channel below fails.
-        await NotifyContactMessageAsync(entity);
 
         return Ok(ContactMessageAccepted);
     }
@@ -469,41 +475,6 @@ public class PublicController : ControllerBase
             CreatedAt = DateTime.UtcNow,
             Status = ContactMessageStatus.New
         };
-
-    private async Task<bool> TryPersistContactMessageAsync(ContactMessage entity, string? fromEmail)
-    {
-        try
-        {
-            _context.ContactMessages.Add(entity);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to persist contact message from {FromEmail}", fromEmail);
-            return false;
-        }
-    }
-
-    private async Task NotifyContactMessageAsync(ContactMessage entity)
-    {
-        foreach (var notifier in _notifiers)
-        {
-            if (!notifier.IsEnabled)
-            {
-                continue;
-            }
-
-            try
-            {
-                await notifier.NotifyAsync(entity);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Notifier {Notifier} failed to deliver contact message {Id}", notifier.GetType().Name, entity.Id);
-            }
-        }
-    }
 
     [HttpGet("reviews")]
     public async Task<ActionResult<List<ReviewDto>>> GetReviews()
