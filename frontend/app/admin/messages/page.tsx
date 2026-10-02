@@ -58,9 +58,20 @@ const MessagesPageContent = () => {
               <h2 className="text-xl font-semibold mb-2">{selected.subject}</h2>
               <p className="text-sm text-gray-500 mb-1">
                 {selected.name} ·{' '}
-                <a href={`mailto:${selected.email}`} className="text-indigo-600 hover:text-indigo-900">
-                  {selected.email}
-                </a>{' '}
+                {selected.email && (
+                  <>
+                    <a href={`mailto:${selected.email}`} className="text-indigo-600 hover:text-indigo-900">
+                      {selected.email}
+                    </a>{' '}
+                  </>
+                )}
+                {selected.phone && (
+                  <>
+                    <a href={`tel:${selected.phone}`} className="text-indigo-600 hover:text-indigo-900">
+                      {selected.phone}
+                    </a>{' '}
+                  </>
+                )}
                 · {formatDate(selected.createdAt)}
               </p>
               <p className="text-xs text-gray-500 mb-4">

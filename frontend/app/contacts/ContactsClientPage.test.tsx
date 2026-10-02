@@ -98,7 +98,7 @@ describe('ContactsClientPage prefill from a painting', () => {
 
     render(<ContactsClientPage contactsData={contactsData} />);
 
-    expect(screen.getByLabelText(/Тема/)).toHaveValue('Вопрос о картине «Осенний сад»');
+    expect(screen.getByLabelText(/Тема/)).toHaveValue('Картина «Осенний сад»');
     expect(screen.getByLabelText(/Сообщение/)).toHaveValue(
       'Здравствуйте! Интересует картина «Осенний сад». Подскажите, пожалуйста, стоимость и условия покупки.'
     );

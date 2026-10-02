@@ -254,3 +254,16 @@ describe('MessagesList', () => {
     expect(screen.getByText(longSubject)).toBeInTheDocument();
   });
 });
+
+describe('MessagesList phone (@US3-BE4)', () => {
+  it('@US3-BE4 shows the phone and tolerates a missing email', () => {
+    const messages = [makeMessage({ id: 7, email: null, phone: '+7 900 111-22-33' })];
+
+    renderList({ messages });
+
+    const row = screen.getByTestId('message-row-7');
+    expect(row).toHaveTextContent('+7 900 111-22-33');
+    expect(row.querySelector('a[href^="mailto:"]')).toBeNull();
+    expect(row.querySelector('a[href="tel:+7 900 111-22-33"]')).not.toBeNull();
+  });
+});

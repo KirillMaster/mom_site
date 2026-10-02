@@ -34,7 +34,6 @@ public class EmailNotifier : IFeedbackNotifier
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         cts.CancelAfter(SendTimeout);
 
-        var enc = HtmlEncoder.Default;
         var fromAddr = Environment.GetEnvironmentVariable("EMAIL_FROM") ?? "noreply@angelamoiseenko.ru";
         var toAddr = Environment.GetEnvironmentVariable("EMAIL_TO") ?? "karangela@narod.ru";
 
@@ -48,20 +47,8 @@ public class EmailNotifier : IFeedbackNotifier
             email.ReplyTo.Add(new MailboxAddress(message.Name, message.Email));
         }
 
-        var bodyBuilder = new BodyBuilder
-        {
-            HtmlBody = $@"
-                <h2>Новое сообщение с сайта</h2>
-                <p><strong>Имя:</strong> {enc.Encode(message.Name)}</p>
-                <p><strong>Email:</strong> {enc.Encode(message.Email)}</p>
-                <p><strong>Тема:</strong> {enc.Encode(message.Subject)}</p>
-                <p><strong>Источник:</strong> {enc.Encode(LeadSource.Describe(message))}</p>
-                <p><strong>Сообщение:</strong></p>
-                <p>{enc.Encode(message.Message).Replace("\n", "<br>")}</p>
-            ",
-            TextBody = $"Имя: {message.Name}\nEmail: {message.Email}\nТема: {message.Subject}\n" +
-                       $"Источник: {LeadSource.Describe(message)}\n\n{message.Message}"
-        };
+        var (html, text) = BuildBodies(message);
+        var bodyBuilder = new BodyBuilder { HtmlBody = html, TextBody = text };
         email.Body = bodyBuilder.ToMessageBody();
 
         var port = int.Parse(Environment.GetEnvironmentVariable("EMAIL_SMTP_PORT") ?? "587");
@@ -83,7 +70,28 @@ public class EmailNotifier : IFeedbackNotifier
         await smtp.SendAsync(email, cts.Token);
         await smtp.DisconnectAsync(true, cts.Token);
 
-        _logger.LogInformation("Contact message notification emailed to {To} from {FromEmail}", toAddr, message.Email);
+        _logger.LogInformation("Contact message notification emailed to {To} from {FromEmail}", toAddr, message.Email ?? message.Phone);
+    }
+
+    private static string Dash(string? value) => string.IsNullOrWhiteSpace(value) ? "—" : value;
+
+    public static (string Html, string Text) BuildBodies(ContactMessage message)
+    {
+        var enc = HtmlEncoder.Default;
+        var html = $@"
+                <h2>Новое сообщение с сайта</h2>
+                <p><strong>Имя:</strong> {enc.Encode(message.Name)}</p>
+                <p><strong>Email:</strong> {enc.Encode(Dash(message.Email))}</p>
+                <p><strong>Телефон/мессенджер:</strong> {enc.Encode(Dash(message.Phone))}</p>
+                <p><strong>Тема:</strong> {enc.Encode(message.Subject)}</p>
+                <p><strong>Источник:</strong> {enc.Encode(LeadSource.Describe(message))}</p>
+                <p><strong>Сообщение:</strong></p>
+                <p>{enc.Encode(message.Message).Replace("\n", "<br>")}</p>
+            ";
+        var text = $"Имя: {message.Name}\nEmail: {Dash(message.Email)}\n" +
+                   $"Телефон/мессенджер: {Dash(message.Phone)}\n" +
+                   $"Тема: {message.Subject}\nИсточник: {LeadSource.Describe(message)}\n\n{message.Message}";
+        return (html, text);
     }
 
     /// <summary>

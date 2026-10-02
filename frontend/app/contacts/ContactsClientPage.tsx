@@ -10,7 +10,9 @@ import {
 import { FaInstagram, FaVk, FaTelegram, FaWhatsapp, FaYoutube } from 'react-icons/fa';
 import MaxIcon from '@/components/MaxIcon';
 import { maxProfileUrl } from '@/lib/social';
-import { ContactsData, ContactMessage } from '@/lib/api';
+import { ContactsData } from '@/lib/api';
+import ContactFormFields, { ContactFormState } from './ContactFormFields';
+import { buildArtworkPrefill } from '@/lib/contactPrefill';
 import { sendContactMessage } from '@/hooks/useApi';
 import { getStoredUtm } from '@/lib/utm';
 import { Goals, reachGoal } from '@/lib/analytics';
@@ -27,19 +29,19 @@ const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) =>
 
 const ContactsForm = ({ contactsData }: { contactsData: ContactsData }) => {
   const searchParams = useSearchParams();
-  const artworkTitle = searchParams.get('artwork');
+  const prefill = buildArtworkPrefill(searchParams.get('artwork'));
 
-  const [formData, setFormData] = useState<ContactMessage>({
+  const [formData, setFormData] = useState<ContactFormState>({
     name: '',
     email: '',
-    subject: artworkTitle ? `Вопрос о картине «${artworkTitle}»` : '',
-    message: artworkTitle
-      ? `Здравствуйте! Интересует картина «${artworkTitle}». Подскажите, пожалуйста, стоимость и условия покупки.`
-      : '',
+    phone: '',
+    subject: prefill.subject,
+    message: prefill.message,
     website: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<'success' | 'error' | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('Произошла ошибка при отправке сообщения.');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -49,6 +51,11 @@ const ContactsForm = ({ contactsData }: { contactsData: ContactsData }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.email.trim() && !formData.phone.trim()) {
+      setValidationError('Укажите телефон, мессенджер или email');
+      return;
+    }
+    setValidationError(null);
     setIsSubmitting(true);
     setSubmissionResult(null);
 
@@ -58,7 +65,7 @@ const ContactsForm = ({ contactsData }: { contactsData: ContactsData }) => {
       reachGoal(Goals.ContactFormSubmit, { ...utm });
       setSubmissionResult('success');
       alert('Сообщение успешно отправлено!');
-      setFormData({ name: '', email: '', subject: '', message: '', website: '' });
+      setFormData({ name: '', email: '', phone: '', subject: '', message: '', website: '' });
     } catch (error: any) {
       setSubmissionResult('error');
       const status = error?.response?.status;
@@ -147,102 +154,15 @@ const ContactsForm = ({ contactsData }: { contactsData: ContactsData }) => {
                   Напишите мне сообщение
                 </h3>
                 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {/*
-                    Honeypot anti-spam field (@S3-AS1/@S3-AS2). Kept in the
-                    accessibility tree removed and out of the tab order so
-                    screen-reader/keyboard users never encounter it, but not
-                    display:none/visibility:hidden, since some bots skip
-                    fields hidden that way. Left empty by humans; any bot
-                    that fills every input trips it and the server silently
-                    discards the submission.
-                  */}
-                  <div
-                    style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' }}
-                    aria-hidden="true"
-                  >
-                    <label htmlFor="website">Website</label>
-                    <input
-                      type="text"
-                      id="website"
-                      name="website"
-                      tabIndex={-1}
-                      autoComplete="off"
-                      value={formData.website}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                        Имя *
-                      </label>
-                      <input
-                        type="text"
-                        id="name"
-                        required
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                        Email *
-                      </label>
-                      <input
-                        type="email"
-                        id="email"
-                        required
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
-                      Тема
-                    </label>
-                    <input
-                      type="text"
-                      id="subject"
-                      value={formData.subject}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                      Сообщение *
-                    </label>
-                    <textarea
-                      id="message"
-                      rows={6}
-                      required
-                      value={formData.message}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none transition-all duration-200"
-                    ></textarea>
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full bg-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-purple-700 transition-colors duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? 'Отправка...' : 'Отправить сообщение'}
-                  </button>
-                  {submissionResult === 'success' && (
-                    <p className="text-green-600 text-center mt-4">Сообщение успешно отправлено!</p>
-                  )}
-                  {submissionResult === 'error' && (
-                    <p className="text-red-600 text-center mt-4">{errorMessage}</p>
-                  )}
-                </form>
+                <ContactFormFields
+                  formData={formData}
+                  onChange={handleInputChange}
+                  onSubmit={handleSubmit}
+                  isSubmitting={isSubmitting}
+                  submissionResult={submissionResult}
+                  errorMessage={errorMessage}
+                  validationError={validationError}
+                />
               </div>
             </div>
           </div>
