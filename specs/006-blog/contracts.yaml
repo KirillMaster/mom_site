@@ -1,0 +1,149 @@
+feature: 006-blog
+contracts:
+  - id: blog-service
+    name: IBlogService (Core)
+    kind: interface
+    request:
+      - {name: operation, type: enum, required: true, enum_values: [ListPublished, GetPublishedBySlug, ListCategories, AdminList, AdminGet, Create, Update, Delete, CategoryCrud], description: Операция}
+      - {name: now, type: string, required: false, description: 'Момент для фильтра PublishedAt <= now'}
+    response_cases:
+      - outcome: ok
+        fields:
+          - {name: result, type: object, required: true, description: 'Пост / страница постов / рубрики'}
+      - outcome: not_found
+        fields: []
+      - outcome: validation_failed
+        fields:
+          - {name: errors, type: object, required: true, description: 'Поле → сообщение'}
+      - outcome: conflict
+        fields:
+          - {name: reason, type: enum, required: true, enum_values: [slug_locked_after_publish, category_not_empty], description: Причина}
+    entity_refs: [blog-post, blog-category, blog-post-artwork]
+  - id: blog-service-impl
+    name: BlogService (Infrastructure/Blog)
+    kind: implementation
+    implements_ref: blog-service
+    response_cases:
+      - outcome: same_as_interface
+        fields: []
+    entity_refs: [blog-post, blog-category, blog-post-artwork, artwork]
+  - id: public-blog-list
+    name: 'GET /api/public/blog?page=&categorySlug='
+    kind: interface
+    request:
+      - {name: page, type: number, required: false, description: 'default 1; по 12'}
+      - {name: categorySlug, type: string, required: false, description: Фильтр рубрики}
+    response_cases:
+      - outcome: '200 page'
+        fields:
+          - {name: items, type: array, required: true, description: 'slug / title / excerpt / coverImagePath / coverAlt / category / publishedAt / readingMinutes'}
+          - {name: total, type: number, required: true, description: Всего опубликованных}
+          - {name: category, type: object, required: false, description: 'name / description при фильтре'}
+      - outcome: '404 empty_or_unknown_category'
+        fields: []
+    entity_refs: [blog-post, blog-category]
+  - id: public-blog-post
+    name: 'GET /api/public/blog/{slug}'
+    kind: interface
+    request:
+      - {name: slug, type: string, required: true, description: Адрес статьи}
+    response_cases:
+      - outcome: '200 post'
+        fields:
+          - {name: post, type: object, required: true, description: 'Все поля BlogPost кроме черновых + category'}
+          - {name: artworks, type: array, required: true, description: 'Видимые работы: id / title / thumbnailPath / isForSale / slug'}
+      - outcome: '404 draft_scheduled_or_missing'
+        fields: []
+    entity_refs: [blog-post, blog-post-artwork, artwork]
+  - id: public-blog-categories
+    name: 'GET /api/public/blog/categories'
+    kind: interface
+    request: []
+    response_cases:
+      - outcome: '200 list'
+        fields:
+          - {name: items, type: array, required: true, description: 'Только непустые: slug / name / postCount'}
+    entity_refs: [blog-category]
+  - id: admin-blog
+    name: 'GET/POST/PUT/DELETE /api/admin/blog[/{id}] (Authorize)'
+    kind: interface
+    request:
+      - {name: title, type: string, required: true, description: '≤ 200'}
+      - {name: slug, type: string, required: true, description: 'Предложен фронтом через slugifyTitle; backend делает уникальным'}
+      - {name: bodyHtml, type: string, required: true, description: 'Санитизируется'}
+      - {name: excerpt, type: string, required: false, description: '≤ 300'}
+      - {name: cover, type: object, required: false, description: 'coverImagePath + coverAlt'}
+      - {name: seo, type: object, required: false, description: 'seoTitle / seoDescription'}
+      - {name: blogCategoryId, type: number, required: true, description: Рубрика}
+      - {name: artworkIds, type: array, required: false, description: 'Порядок = SortOrder'}
+      - {name: publishedAt, type: string, required: false, description: 'null = черновик; будущее = запланировано'}
+    response_cases:
+      - outcome: '200/201 saved'
+        fields:
+          - {name: post, type: object, required: true, description: 'Сохранённый пост с итоговым slug и статусом Draft|Scheduled|Published'}
+      - outcome: '400 validation'
+        fields:
+          - {name: errors, type: object, required: true, description: 'Поле → сообщение по-русски'}
+      - outcome: '409 slug_locked_after_publish'
+        fields: []
+      - outcome: '404 not_found'
+        fields: []
+      - outcome: '401 unauthorized'
+        fields: []
+    entity_refs: [blog-post, blog-post-artwork]
+  - id: admin-blog-categories
+    name: 'GET/POST/PUT/DELETE /api/admin/blog/categories[/{id}] (Authorize)'
+    kind: interface
+    request:
+      - {name: name, type: string, required: true, description: '≤ 100'}
+      - {name: slug, type: string, required: true, description: unique}
+      - {name: description, type: string, required: false, description: '≤ 1000'}
+      - {name: displayOrder, type: number, required: false, description: Порядок}
+    response_cases:
+      - outcome: '200 ok'
+        fields: []
+      - outcome: '400 validation'
+        fields: []
+      - outcome: '409 category_not_empty'
+        fields:
+          - {name: postCount, type: number, required: true, description: 'Сколько статей в рубрике'}
+      - outcome: '401 unauthorized'
+        fields: []
+    entity_refs: [blog-category]
+  - id: admin-blog-images
+    name: 'POST /api/admin/blog/images (multipart; Authorize)'
+    kind: interface
+    request:
+      - {name: file, type: object, required: true, description: 'jpeg/png/webp ≤ 10 МБ'}
+    response_cases:
+      - outcome: '200 uploaded'
+        fields:
+          - {name: url, type: string, required: true, description: 'URL в S3 (папка blog)'}
+      - outcome: '400 invalid_file'
+        fields:
+          - {name: message, type: string, required: true, description: Понятный текст}
+      - outcome: '401 unauthorized'
+        fields: []
+    entity_refs: []
+  - id: indexnow-client
+    name: IIndexNowClient.NotifyAsync(urls)
+    kind: interface
+    request:
+      - {name: urls, type: array, required: true, description: 'Абсолютные URL статьи / рубрики / /blog'}
+    response_cases:
+      - outcome: sent
+        fields: []
+      - outcome: disabled_no_key
+        fields: []
+      - outcome: failed_logged
+        fields: []
+    entity_refs: [blog-post]
+  - id: blog-rss
+    name: 'GET /blog/rss.xml (Next route handler)'
+    kind: interface
+    request: []
+    response_cases:
+      - outcome: '200 rss'
+        fields:
+          - {name: items, type: array, required: true, description: '50 последних опубликованных: title / link / pubDate / description / enclosure / content:encoded'}
+    entity_refs: [blog-post]

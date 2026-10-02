@@ -183,3 +183,19 @@ Next.js в проекте 14.0.0: metadata API, `sitemap.ts`, route handlers (д
 - [Экспорт контента в Дзен: требования к RSS-фиду](https://dzen.ru/help/ru/export-content/export.html)
 - [Разметка и подключение RSS-ленты для Дзена](https://dzen.ru/help/ru/website/site-to-channel.html)
 - [Яндекс Вордстат в 2026 (Adlook)](https://adlook.me/blog/articles/yandex-wordstat/)
+
+## 11. Решения для плана (Phase 0)
+
+| # | Decision | Rationale | Alternatives |
+|---|---|---|---|
+| R1 | Санитизация: `HtmlSanitizer` (Ganss.Xss, MIT) в `Infrastructure/Blog/BlogHtmlSanitizer`, белый список тегов из §2, атрибуты `href` (http/https/mailto, `rel="noopener"` для внешних), `src` только с хостов S3/CDN, `alt`; при каждом create/update | Проверенная библиотека, unit-тестируется на XSS-векторах | Своя регулярка — небезопасно; санитизация только на фронте — обходится |
+| R2 | Slug: фронт предлагает через существующий `slugifyTitle` (`lib/artworkSlug.ts`), backend валидирует `^[a-z0-9-]{1,120}$` и делает уникальным суффиксом `-2…`; после `PublishedAt != null` смена → 400 | Транслитерация не дублируется на C# | Генерация на backend — дубль транслита |
+| R3 | Видимость: `PublishedAt <= now` в одном extension `IQueryable<BlogPost>.Published(now)`; отложенные появляются по ISR revalidate 300 с, cron не нужен | KISS | Фоновый job публикации — лишнее |
+| R4 | Работы по теме: `BlogPostArtwork{BlogPostId, ArtworkId, SortOrder}`, выдача через `Visible()` из 005 (до 005 — фильтр не нужен, поле отсутствует); каскадное удаление связи при удалении работы | Нет дубля условия видимости | JSON-массив id — нет FK |
+| R5 | Контроллеры отдельно: `BlogPublicController` (`api/public/blog`), `BlogAdminController` (`api/admin/blog`, `[Authorize]`) | P3: `PublicController`/`AdminController` уже большие | Расширять существующие |
+| R6 | Картинки: `POST api/admin/blog/images` → `IImageService.SaveImageAsync(file, "blog")`, ответ `{url}`; TipTap вставляет URL; paste/drop перехватывается и грузится | Существующий сервис и лимиты | base64 в HTML — раздувает БД |
+| R7 | TipTap: `next/dynamic(..., {ssr:false})` только в `app/admin/blog/[id]`; спайк совместимости с Next 14.0/React 18 — первая задача | Публичный бандл не растёт | Блочная форма — запасной вариант |
+| R8 | SEO: `generateMetadata` (title/description/canonical/OG article), компонент `components/blog/BlogPostJsonLd.tsx` (BlogPosting + BreadcrumbList), `Person` в `StructuredData` получает `@id` `https://angelamoiseenko.ru/#artist` | Не раздуваем StructuredData | — |
+| R9 | RSS: `app/blog/rss.xml/route.ts`, 50 последних, полный `content:encoded`, `enclosure` обложки, `revalidate 300` | Готово для Дзена | Отдельный сервис — лишнее |
+| R10 | IndexNow: `IIndexNowClient` (HttpClient `IndexNow`, `https://yandex.com/indexnow`), ключ `INDEXNOW_KEY` из env; без ключа — no-op; вызов после commit в фоне, ошибки только в лог. Ключ-файл отдаёт `app/indexnow-key.txt/route.ts` из env, в запросе указывается `keyLocation` | Публикация не зависит от внешнего сервиса; ключ не в git | Файл в `public/` — ключ попал бы в репозиторий |
+| R11 | Автосохранение черновика редактора — `localStorage` по ключу `blog-draft:{id|new}`, try/catch | Защита от закрытия вкладки (AS-3) | Серверное автосохранение — сложнее |
