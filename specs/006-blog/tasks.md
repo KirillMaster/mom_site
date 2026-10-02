@@ -378,7 +378,7 @@ GET api/public/blog / api/public/blog/{slug} / api/public/blog/categories
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Тесты зелёные
+- [x] `AC-1` Тесты зелёные
 
 **Test Scenarios**:
 
@@ -411,7 +411,7 @@ SSR + ISR 300 с: обложка (priority) / заголовок / дата / р
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Статья открывается; один H1; блок работ и CTA на месте
+- [x] `AC-1` Статья открывается; один H1; блок работ и CTA на месте
 
 **Test Scenarios**:
 
@@ -443,7 +443,7 @@ SSR + ISR 300 с: обложка (priority) / заголовок / дата / р
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Пагинация и фильтр работают; ссылка «Блог» в меню и футере
+- [x] `AC-1` Пагинация и фильтр работают; ссылка «Блог» в меню и футере
 
 **Test Scenarios**:
 

@@ -36,7 +36,6 @@ export interface BlogRelatedArtwork {
   title: string;
   thumbnailPath: string;
   isForSale: boolean;
-  slug: string;
 }
 
 export interface BlogPublicPost {

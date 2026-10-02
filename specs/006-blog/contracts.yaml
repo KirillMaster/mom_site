@@ -51,7 +51,7 @@ contracts:
       - outcome: '200 post'
         fields:
           - {name: post, type: object, required: true, description: 'Все поля BlogPost кроме черновых + category'}
-          - {name: artworks, type: array, required: true, description: 'Видимые работы: id / title / thumbnailPath / isForSale / slug'}
+          - {name: artworks, type: array, required: true, description: 'Видимые работы: id / title / thumbnailPath / isForSale (slug строит фронт через buildArtworkSlug)'}
       - outcome: '404 draft_scheduled_or_missing'
         fields: []
     entity_refs: [blog-post, blog-post-artwork, artwork]

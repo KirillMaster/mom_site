@@ -34,4 +34,5 @@ export const Goals = {
   ArtworkView: 'artwork_view',
   ContactClick: 'contact_click',
   SocialClick: 'social_click',
+  BlogCta: 'blog_cta',
 } as const;

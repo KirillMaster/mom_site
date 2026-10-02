@@ -421,7 +421,7 @@ tasks:
     acceptance_criteria:
       - id: AC-1
         description: 'Тесты зелёные'
-        done: false
+        done: true
     test_scenarios:
       - id: TS-1
         given: ['Черновик с адресом test']
@@ -456,7 +456,7 @@ tasks:
     acceptance_criteria:
       - id: AC-1
         description: 'Статья открывается; один H1; блок работ и CTA на месте'
-        done: false
+        done: true
     test_scenarios:
       - id: TS-1
         given: ['Статья с 3 работами, одна продана']
@@ -489,7 +489,7 @@ tasks:
     acceptance_criteria:
       - id: AC-1
         description: 'Пагинация и фильтр работают; ссылка «Блог» в меню и футере'
-        done: false
+        done: true
     test_scenarios:
       - id: TS-1
         given: ['15 статей']
