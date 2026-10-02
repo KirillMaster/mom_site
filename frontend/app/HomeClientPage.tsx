@@ -6,12 +6,9 @@ import MaxIcon from '@/components/MaxIcon';
 import { maxProfileUrl } from '@/lib/social';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
 import { getImageUrl } from '@/hooks/useApi';
 import { HomeData } from '@/lib/api';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
+import ArtworkCarousel from '@/components/ArtworkCarousel';
 import { shortBio } from '@/data/biography';
 
 const homeHighlights = [
@@ -22,35 +19,6 @@ const homeHighlights = [
 ];
 
 const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 3000,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-          infinite: true,
-          dots: true
-        }
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          initialSlide: 1
-        }
-      }
-    ]
-  };
-
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero Banner - Full Screen */}
@@ -66,91 +34,46 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
         <div className="absolute inset-0 bg-black/40"></div>
 
         <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-5xl md:text-7xl font-serif font-bold mb-6"
+          <h1
+            className="rise-in text-5xl md:text-7xl font-serif font-bold mb-6"
           >
             Анжела Моисеенко
-          </motion.h1>
+          </h1>
           
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-xl md:text-2xl mb-8 text-balance"
+          <p
+            className="rise-in [animation-delay:100ms] text-xl md:text-2xl mb-8 text-balance"
           >
             Художник-импрессионист
-          </motion.p>
+          </p>
           
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          >
+          <div className="rise-in [animation-delay:200ms]">
             <Link href="/gallery" className="btn-primary inline-flex items-center space-x-2">
               <span>Смотреть галерею</span>
               <ArrowRight className="w-5 h-5" />
             </Link>
-          </motion.div>
+          </div>
         </div>
         
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="w-6 h-10 border-2 border-white rounded-full flex justify-center"
+          <div
+            className="scroll-hint w-6 h-10 border-2 border-white rounded-full flex justify-center"
           >
             <div className="w-1 h-3 bg-white rounded-full mt-2"></div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
     {/* Artwork Carousel Section */}
       <section className="py-20 bg-gray-100">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-4xl md:text-5xl font-serif font-bold mb-12 text-gradient"
-          >
+          <h2
+            className="reveal text-4xl md:text-5xl font-serif font-bold mb-12 text-gradient">
                         Исследуйте мою галерею
 
-          </motion.h2>
+          </h2>
 
           {homeData.artworks && homeData.artworks.length > 0 ? (
-            <div className="relative">
-              <Slider {...settings}>
-                {homeData.artworks.map((artwork, index) => (
-                  <div key={artwork.id} className="px-2">
-                    <Link href="/gallery">
-                      <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: index * 0.1 }}
-                        viewport={{ once: true }}
-                        className="card p-4"
-                      >
-                        {/* Same square frame as the gallery cards, so a tall
-                            canvas is shown whole instead of cropped to a strip. */}
-                        <div className="aspect-square bg-neutral-100 rounded-lg overflow-hidden mb-4">
-                          <img
-                            src={getImageUrl(artwork.imagePath)}
-                            alt={artwork.title}
-                            className="w-full h-full object-contain"
-                          />
-                        </div>
-                        <h3 className="text-lg font-semibold text-gray-900">{artwork.title}</h3>
-                        <p className="text-sm text-gray-600">{artwork.category?.name}</p>
-                      </motion.div>
-                    </Link>
-                  </div>
-                ))}
-              </Slider>
-            </div>
+            <ArtworkCarousel artworks={homeData.artworks} />
           ) : (
             <p className="text-xl text-gray-700">
               Пока нет избранных работ для отображения.
@@ -164,13 +87,8 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center md:space-x-12">
             {/* Left: Biography Text */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="md:w-1/2 text-center md:text-left mb-8 md:mb-0"
-            >
+            <div
+              className="reveal md:w-1/2 text-center md:text-left mb-8 md:mb-0">
               <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 text-gray-900">
                 Обо мне
               </h2>
@@ -191,16 +109,11 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
                 <span>Биография и выставки</span>
                 <ArrowRight className="w-5 h-5" />
               </Link>
-            </motion.div>
+            </div>
 
             {/* Right: Author Photo */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="md:w-1/2 flex justify-center"
-            >
+            <div
+              className="reveal md:w-1/2 flex justify-center">
               {homeData.authorPhoto ? (
                 <img
                   src={getImageUrl(homeData.authorPhoto)}
@@ -212,7 +125,7 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
                   Нет фотографии
                 </div>
               )}
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -220,118 +133,78 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
     {/* Contacts Section */}
       <section className="py-20 bg-gray-100">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-4xl md:text-5xl font-serif font-bold mb-12 text-gradient"
-          >
+          <h2
+            className="reveal text-4xl md:text-5xl font-serif font-bold mb-12 text-gradient">
             Свяжитесь со мной
-          </motion.h2>
+          </h2>
           <div className="flex flex-wrap justify-center gap-8">
             {homeData.contacts.socialLinks.instagram && (
-              <motion.a
+              <a
                 href={homeData.contacts.socialLinks.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-                viewport={{ once: true }}
-                className="flex flex-col items-center space-y-2 text-gray-700 hover:text-pink-600 transition-colors"
-              >
+                className="reveal flex flex-col items-center space-y-2 text-gray-700 hover:text-pink-600 transition-colors">
                 <FaInstagram className="w-12 h-12" />
                 <span className="text-lg font-medium">Instagram</span>
-              </motion.a>
+              </a>
             )}
             {homeData.contacts.socialLinks.vk && (
-              <motion.a
+              <a
                 href={homeData.contacts.socialLinks.vk}
                 target="_blank"
                 rel="noopener noreferrer"
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                viewport={{ once: true }}
-                className="flex flex-col items-center space-y-2 text-gray-700 hover:text-blue-600 transition-colors"
-              >
+                className="reveal flex flex-col items-center space-y-2 text-gray-700 hover:text-blue-600 transition-colors">
                 <FaVk className="w-12 h-12" />
                 <span className="text-lg font-medium">ВКонтакте</span>
-              </motion.a>
+              </a>
             )}
             {homeData.contacts.socialLinks.telegram && (
-              <motion.a
+              <a
                 href={homeData.contacts.socialLinks.telegram}
                 target="_blank"
                 rel="noopener noreferrer"
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                viewport={{ once: true }}
-                className="flex flex-col items-center space-y-2 text-gray-700 hover:text-blue-400 transition-colors"
-              >
+                className="reveal flex flex-col items-center space-y-2 text-gray-700 hover:text-blue-400 transition-colors">
                 <FaTelegram className="w-12 h-12" />
                 <span className="text-lg font-medium">Telegram</span>
-              </motion.a>
+              </a>
             )}
             {homeData.contacts.socialLinks.whatsapp && (
-              <motion.a
+              <a
                 href={homeData.contacts.socialLinks.whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                viewport={{ once: true }}
-                className="flex flex-col items-center space-y-2 text-gray-700 hover:text-green-500 transition-colors"
-              >
+                className="reveal flex flex-col items-center space-y-2 text-gray-700 hover:text-green-500 transition-colors">
                 <FaWhatsapp className="w-12 h-12" />
                 <span className="text-lg font-medium">WhatsApp</span>
-              </motion.a>
+              </a>
             )}
             {homeData.contacts.socialLinks.youtube && (
-              <motion.a
+              <a
                 href={homeData.contacts.socialLinks.youtube}
                 target="_blank"
                 rel="noopener noreferrer"
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-                viewport={{ once: true }}
-                className="flex flex-col items-center space-y-2 text-gray-700 hover:text-red-600 transition-colors"
-              >
+                className="reveal flex flex-col items-center space-y-2 text-gray-700 hover:text-red-600 transition-colors">
                 <FaYoutube className="w-12 h-12" />
                 <span className="text-lg font-medium">YouTube</span>
-              </motion.a>
+              </a>
             )}
             {maxProfileUrl(homeData.contacts.socialLinks.max, homeData.contacts.phone) && (
-              <motion.a
+              <a
                 href={maxProfileUrl(homeData.contacts.socialLinks.max, homeData.contacts.phone)!}
                 target="_blank"
                 rel="noopener noreferrer"
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.45 }}
-                viewport={{ once: true }}
-                className="flex flex-col items-center space-y-2 text-gray-700 hover:text-indigo-500 transition-colors"
-              >
+                className="reveal flex flex-col items-center space-y-2 text-gray-700 hover:text-indigo-500 transition-colors">
                 <MaxIcon className="w-12 h-12" />
                 <span className="text-lg font-medium">MAX</span>
-              </motion.a>
+              </a>
             )}
             {homeData.contacts.email && (
-              <motion.a
+              <a
                 href={`mailto:${homeData.contacts.email}`}
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-                viewport={{ once: true }}
-                className="flex flex-col items-center space-y-2 text-gray-700 hover:text-indigo-600 transition-colors"
-              >
+                className="reveal flex flex-col items-center space-y-2 text-gray-700 hover:text-indigo-600 transition-colors">
                 <FaEnvelope className="w-12 h-12" />
                 <span className="text-lg font-medium">Email</span>
-              </motion.a>
+              </a>
             )}
           </div>
         </div>

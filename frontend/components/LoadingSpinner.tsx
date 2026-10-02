@@ -1,5 +1,3 @@
-import { motion } from 'framer-motion';
-
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
@@ -14,11 +12,9 @@ const LoadingSpinner = ({ size = 'md', className = '' }: LoadingSpinnerProps) =>
 
   return (
     <div className={`flex justify-center items-center ${className}`}>
-      <motion.div
+      <div
         role="status"
-        className={`${sizeClasses[size]} border-2 border-gray-300 border-t-primary-600 rounded-full`}
-        animate={{ rotate: 360 }}
-        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+        className={`${sizeClasses[size]} border-2 border-gray-300 border-t-primary-600 rounded-full animate-spin`}
       />
     </div>
   );

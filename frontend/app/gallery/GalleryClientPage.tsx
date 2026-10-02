@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { Filter, Eye, ArrowRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import Lightbox from 'yet-another-react-lightbox';
 import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import 'yet-another-react-lightbox/styles.css';
@@ -73,11 +72,8 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
       {/* Header */}
       <section className="pt-24 pb-16 gradient-bg">
         <div className="max-w-7xl mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
+          <div
+            className="rise-in text-center"
           >
             <h1 className="text-5xl md:text-6xl font-serif font-bold mb-6 text-gradient">
               {galleryData.bannerTitle || "Галерея работ"}
@@ -85,7 +81,7 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
             <p className="text-xl text-gray-700 max-w-3xl mx-auto">
               {galleryData.bannerDescription || "Исследуйте коллекцию уникальных работ в стиле импрессионизма. Каждая картина создана с любовью и передает особую атмосферу."}
             </p>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -129,22 +125,14 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
       {/* Gallery Grid */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={selectedCategory || 'all'}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          <div
+            key={selectedCategory || 'all'}
+            className="animate-fade-in grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
             >
               {artworksToDisplay.map((artwork, index) => (
-                <motion.div
+                <div
                   key={artwork.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="card group"
+                  className="rise-in card group"
                 >
                   {/* A square frame with the whole painting inside it: a fixed
                       height cropped tall canvases down to a letterbox strip and
@@ -229,21 +217,18 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
                       )}
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
-            </motion.div>
-          </AnimatePresence>
+            </div>
           
           {artworksToDisplay.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-16"
+            <div
+              className="rise-in text-center py-16"
             >
               <p className="text-xl text-gray-500">
                 В выбранной категории пока нет работ
               </p>
-            </motion.div>
+            </div>
           )}
         </div>
       </section>
