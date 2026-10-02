@@ -5,7 +5,8 @@ import { getGalleryData, getImageUrl } from '@/hooks/useApi';
 import { resolveArtworkBySlug, buildArtworkSlug } from '@/lib/artworkSlug';
 import { isExhibitionPhoto } from '@/lib/gallery';
 import AskPriceButton from './AskPriceButton';
-import ArtworkViewer from './ArtworkViewer';
+import ArtworkGallery from './ArtworkGallery';
+import { getArtworkPhotos } from '@/lib/artworkPhotos';
 
 export const dynamic = 'force-dynamic';
 
@@ -105,6 +106,7 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
     : null;
 
   const categoryName = categoryNameOf(artwork, categories);
+  const photos = getArtworkPhotos(artwork);
 
   // schema.org markup (S3-AS4/S3-AS5/S3-AS6): the artwork block only gets an
   // "offers" entry when it is actually for sale with a known price — an
@@ -114,7 +116,7 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
     '@context': 'https://schema.org',
     '@type': 'VisualArtwork',
     name: artwork.title,
-    image: getImageUrl(artwork.imagePath),
+    image: photos.map((photo) => getImageUrl(photo.path)),
     description: artwork.description || categoryName || artwork.title,
     creator: {
       '@type': 'Person',
@@ -178,8 +180,8 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
         </nav>
 
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:items-start">
-          <ArtworkViewer
-            src={getImageUrl(artwork.imagePath)}
+          <ArtworkGallery
+            photos={photos.map((photo) => ({ src: getImageUrl(photo.path), thumb: getImageUrl(photo.thumbPath) }))}
             title={artwork.title}
           />
 
