@@ -13,5 +13,6 @@ namespace MomSite.API.DTOs
         public DateTime UpdatedAt { get; set; }
         public int CategoryId { get; set; }
         public CategoryDto? Category { get; set; } // Включаем DTO категории
+        public List<ArtworkImageDto> Images { get; set; } = new();
     }
 }

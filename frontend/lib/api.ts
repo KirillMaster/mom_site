@@ -35,6 +35,13 @@ if (typeof window !== 'undefined' && auth.getToken()) {
 }
 
 // Backend Models (for reference, not directly used in frontend data fetching)
+export interface ArtworkImage {
+  id: number;
+  imagePath: string;
+  thumbnailPath: string;
+  sortOrder: number;
+}
+
 export interface Artwork {
   id: number;
   title: string;
@@ -47,6 +54,7 @@ export interface Artwork {
   updatedAt: string;
   categoryId: number;
   category?: Category; // Original backend model might have this
+  images: ArtworkImage[];
 }
 
 export interface Category {
@@ -114,6 +122,7 @@ export interface ArtworkDto {
   updatedAt: string;
   categoryId: number;
   category?: CategoryDto; // Ссылка на DTO категории
+  images: ArtworkImage[];
 }
 
 export interface CategoryDto {
@@ -136,6 +145,7 @@ export interface ArtworkAdminDto {
   updatedAt: string;
   categoryId: number;
   category?: CategoryDto; // Включаем DTO категории
+  images: ArtworkImage[];
 }
 
 

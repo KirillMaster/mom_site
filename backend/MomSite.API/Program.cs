@@ -33,6 +33,7 @@ builder.Services.AddControllers(options =>
 }).AddJsonOptions(options =>
 {
     // options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
 });
 
 // Configure form options for file uploads
@@ -153,6 +154,7 @@ builder.Services.AddAuthorization();
 // Add custom services
 builder.Services.AddScoped<IS3Service, S3Service>();
 builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IArtworkImageService, ArtworkImageService>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IFeedbackNotifier, EmailNotifier>();
 builder.Services.AddScoped<IFeedbackNotifier, TelegramNotifier>();

@@ -31,4 +31,6 @@ public class Artwork
     
     public int CategoryId { get; set; }
     public Category Category { get; set; } = null!;
+
+    public List<ArtworkImage> Images { get; set; } = new();
 } 
