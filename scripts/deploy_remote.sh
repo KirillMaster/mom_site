@@ -40,8 +40,7 @@ log "ensuring REVALIDATE_SECRET in .env"
 if ! grep -qE '^REVALIDATE_SECRET=.+' "$REPO_DIR/.env" 2>/dev/null; then
   touch "$REPO_DIR/.env"
   [ -n "$(tail -c1 "$REPO_DIR/.env")" ] && echo >> "$REPO_DIR/.env"
-  printf 'REVALIDATE_SECRET=%s
-' "$(openssl rand -hex 32)" >> "$REPO_DIR/.env"
+  printf 'REVALIDATE_SECRET=%s\n' "$(openssl rand -hex 32)" >> "$REPO_DIR/.env"
   echo "REVALIDATE_SECRET generated"
 else
   echo "REVALIDATE_SECRET present"
@@ -114,11 +113,8 @@ fi
 log "warming up cache from sitemap"
 warm_urls=$(curl -fsS --max-time 30 "${PUBLIC_URL%/}/sitemap.xml" 2>/dev/null | grep -o '<loc>[^<]*</loc>' | sed -e 's#<loc>##' -e 's#</loc>##' || true)
 if [ -n "$warm_urls" ]; then
-  echo "warming $(printf '%s
-' "$warm_urls" | wc -l | tr -d ' ') URLs"
-  printf '%s
-' "$warm_urls" | xargs -P 3 -n 1 curl -s -o /dev/null --max-time 30 -w '%{http_code} %{url_effective}
-' || true
+  echo "warming $(printf '%s\n' "$warm_urls" | wc -l | tr -d ' ') URLs"
+  printf '%s\n' "$warm_urls" | xargs -P 3 -n 1 curl -s -o /dev/null --max-time 30 -w '%{http_code} %{url_effective}\n' || true
 else
   echo "no sitemap URLs found, skipping warmup"
 fi
