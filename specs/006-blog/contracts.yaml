@@ -114,7 +114,7 @@ contracts:
     name: 'POST /api/admin/blog/images (multipart; Authorize)'
     kind: interface
     request:
-      - {name: file, type: object, required: true, description: 'jpeg/png/webp ≤ 15 МБ (iPhone отдаёт JPEG через input accept=image/*); крупное уменьшается существующим ресайзом'}
+      - {name: file, type: object, required: true, description: 'jpeg/png/webp ≤ 15 МБ (iPhone отдаёт JPEG через input accept=image/*); BlogImageProcessor: поворот по EXIF, ≤ 1920 px, JPEG 82, затем существующий SaveImageAsync'}
     response_cases:
       - outcome: '200 uploaded'
         fields:

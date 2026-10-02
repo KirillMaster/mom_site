@@ -18,6 +18,9 @@ public class ApplicationDbContext : DbContext
     public DbSet<PageContent> PageContents { get; set; }
     public DbSet<ContactMessage> ContactMessages { get; set; }
     public DbSet<Review> Reviews { get; set; }
+    public DbSet<BlogPost> BlogPosts { get; set; }
+    public DbSet<BlogCategory> BlogCategories { get; set; }
+    public DbSet<BlogPostArtwork> BlogPostArtworks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -118,11 +121,57 @@ public class ApplicationDbContext : DbContext
             entity.HasIndex(e => e.SortOrder);
         });
 
+        ConfigureBlog(modelBuilder);
+
         // Seed data was removed in migration 20260427120500_RemoveSeedData.
         // The rows from the original seed have long since been edited
         // through the admin UI and are now real production content; we no
         // longer want EF to manage them. New deployments still get the
         // schema, just no seeded rows.
+    }
+
+    private static void ConfigureBlog(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<BlogCategory>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Slug).IsRequired().HasMaxLength(80);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Description).HasMaxLength(1000);
+            entity.HasIndex(e => e.Slug).IsUnique();
+        });
+
+        modelBuilder.Entity<BlogPost>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Slug).IsRequired().HasMaxLength(120);
+            entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Excerpt).HasMaxLength(300);
+            entity.Property(e => e.BodyHtml).IsRequired();
+            entity.Property(e => e.CoverImagePath).HasMaxLength(500);
+            entity.Property(e => e.CoverAlt).HasMaxLength(200);
+            entity.Property(e => e.SeoTitle).HasMaxLength(70);
+            entity.Property(e => e.SeoDescription).HasMaxLength(200);
+            entity.HasIndex(e => e.Slug).IsUnique();
+            entity.HasIndex(e => e.PublishedAt);
+            entity.HasOne(e => e.BlogCategory)
+                  .WithMany(c => c.Posts)
+                  .HasForeignKey(e => e.BlogCategoryId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<BlogPostArtwork>(entity =>
+        {
+            entity.HasKey(e => new { e.BlogPostId, e.ArtworkId });
+            entity.HasOne(e => e.BlogPost)
+                  .WithMany(p => p.Artworks)
+                  .HasForeignKey(e => e.BlogPostId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Artwork)
+                  .WithMany()
+                  .HasForeignKey(e => e.ArtworkId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
     }
 
     public override int SaveChanges()

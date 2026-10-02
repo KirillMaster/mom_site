@@ -27,7 +27,7 @@
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` npm run build проходит; версии TipTap записаны в research.md
+- [x] `AC-1` npm run build проходит; версии TipTap записаны в research.md
 
 **Test Scenarios**:
 
@@ -59,7 +59,7 @@
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` dotnet build зелёный с новым пакетом
+- [x] `AC-1` dotnet build зелёный с новым пакетом
 
 **Test Scenarios**:
 
@@ -92,7 +92,7 @@
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` В решении ровно одно определение Visible() для Artwork
+- [x] `AC-1` В решении ровно одно определение Visible() для Artwork
 
 **Test Scenarios**:
 
@@ -127,7 +127,7 @@ BlogPost / BlogCategory / BlogPostArtwork в Core/Models, DbSet и конфиг�
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Миграция применяется на чистую БД; 6 рубрик созданы
+- [x] `AC-1` Миграция применяется на чистую БД; 6 рубрик созданы
 
 **Test Scenarios**:
 
@@ -160,7 +160,7 @@ BlogHtmlSanitizer (белый список) и BlogSlug (валидация + у
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Все тесты санитайзера и адреса зелёные
+- [x] `AC-1` Все тесты санитайзера и адреса зелёные
 
 **Test Scenarios**:
 
@@ -199,7 +199,7 @@ BlogHtmlSanitizer (белый список) и BlogSlug (валидация + у
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Все кейсы шага 1 зелёные
+- [x] `AC-1` Все кейсы шага 1 зелёные
 
 **Test Scenarios**:
 
@@ -224,18 +224,18 @@ api/admin/blog CRUD, api/admin/blog/categories CRUD, POST api/admin/blog/images;
 
 1. **DTO** — backend/MomSite.API/DTOs/Blog/: BlogPostAdminDto / BlogPostSaveDto (DataAnnotations по длинам) / BlogCategoryDto; статус Draft|Scheduled|Published вычисляется
 2. **Контроллер** — backend/MomSite.API/Controllers/BlogAdminController.cs [Route("api/admin/blog")] [Authorize]; маппинг outcome → 200/201/400/404/409; ошибки по-русски
-3. **Загрузка фото** — POST images: проверка content-type jpeg/png/webp и ≤ 15 МБ → 400 с понятным текстом; затем _imageService.SaveImageAsync(file, "blog") — ресайз уже внутри; вернуть {url}; лимит запроса [RequestSizeLimit(16_000_000)]
+3. **Загрузка фото** — POST images: проверка content-type jpeg/png/webp и ≤ 15 МБ → 400 с понятным текстом; затем BlogImageProcessor.PrepareAsync (null → 400 «не похоже на фото») и _imageService.SaveImageAsync(prepared, "blog"); вернуть {url}; лимит запроса [RequestSizeLimit(16_000_000)]
 4. **Интеграционные тесты** — Tests/Blog/BlogAdminControllerTests.cs по образцу AdminMessagesAuthorizationIntegrationTests: 401 без JWT; создание → 201 и итоговый адрес; дубль заголовка → -2; 409 при смене адреса опубликованной; 400 на .gif
 
 **Technical Notes**:
 
 - `backend/MomSite.API/Controllers/AdminController.cs`: Образец [Authorize]; не раздувать его — новый контроллер
-- `backend/MomSite.Infrastructure/Services/ImageService.cs`: IImageService.SaveImageAsync(IFormFile / folder) с ресайзом через ImageSharp
+- `backend/MomSite.Infrastructure/Services/ImageService.cs`: IImageService.SaveImageAsync(IFormFile / folder) грузит как есть (ресайза нет) — уменьшение делает Infrastructure/Blog/BlogImageProcessor (сделан в T005)
 - `nginx`: Проверить client_max_body_size ≥ 16m для /api/admin/blog/images
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Интеграционные тесты зелёные; 401 без токена на всех методах
+- [x] `AC-1` Интеграционные тесты зелёные; 401 без токена на всех методах
 
 **Test Scenarios**:
 
@@ -273,7 +273,7 @@ frontend/types/blog.ts и frontend/lib/blogApi.ts (публичные и адм�
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` tsc --noEmit и jest blogApi зелёные
+- [x] `AC-1` tsc --noEmit и jest blogApi зелёные
 
 **Test Scenarios**:
 
@@ -308,7 +308,7 @@ components/blog/admin/RichTextEditor.tsx на TipTap в простом режи�
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Только 7 кнопок; HTML-режима нет; фото загружается в хранилище, не base64
+- [x] `AC-1` Только 7 кнопок; HTML-режима нет; фото загружается в хранилище, не base64
 
 **Test Scenarios**:
 
@@ -346,7 +346,7 @@ app/admin/blog (список со статусами) и app/admin/blog/[id] (ф
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Новость публикуется только с заголовком и текстом; на 360px кнопки видны; восстановление черновика работает
+- [x] `AC-1` Новость публикуется только с заголовком и текстом; на 360px кнопки видны; восстановление черновика работает
 
 **Test Scenarios**:
 

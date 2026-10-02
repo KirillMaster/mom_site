@@ -153,6 +153,8 @@ builder.Services.AddAuthorization();
 // Add custom services
 builder.Services.AddScoped<IS3Service, S3Service>();
 builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddSingleton(new MomSite.Infrastructure.Blog.BlogHtmlSanitizer(new[] { "s3.twcstorage.ru" }, "angelamoiseenko.ru"));
+builder.Services.AddScoped<IBlogService, MomSite.Infrastructure.Blog.BlogService>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IFeedbackNotifier, EmailNotifier>();
 builder.Services.AddScoped<IFeedbackNotifier, TelegramNotifier>();

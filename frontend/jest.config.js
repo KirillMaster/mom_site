@@ -8,6 +8,7 @@ module.exports = {
     '^@/hooks/(.*)$': '<rootDir>/hooks/$1',
     '^@/app/(.*)$': '<rootDir>/app/$1',
     '^@/data/(.*)$': '<rootDir>/data/$1',
+    '^@/types/(.*)$': '<rootDir>/types/$1',
   },
   transform: {
     '^.+\.(ts|tsx)$': 'ts-jest',
