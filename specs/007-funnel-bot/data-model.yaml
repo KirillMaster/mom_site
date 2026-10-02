@@ -1,0 +1,61 @@
+feature: 007-funnel-bot
+entities:
+  - id: contact-message
+    name: ContactMessage
+    description: Существующая сущность обращения. Изменения — Email nullable, новые nullable-поля Phone, TelegramUsername, TelegramUserId. Остальные поля без изменений.
+    fields:
+      - {name: Id, type: number, required: true, description: PK (существует)}
+      - {name: Name, type: string, required: true, description: Имя клиента (существует; из бота — first_name или ввод)}
+      - {name: Email, type: string, required: false, description: 'ИЗМЕНЕНИЕ: nullable. Для формы сайта по-прежнему обязателен на уровне ContactMessageDto'}
+      - {name: Phone, type: string, required: false, description: 'НОВОЕ: телефон из request_contact или ввода, ≤ 32'}
+      - {name: TelegramUsername, type: string, required: false, description: 'НОВОЕ: @username без @, ≤ 64'}
+      - {name: TelegramUserId, type: number, required: false, description: 'НОВОЕ: bigint, для ссылки tg://user?id= и лимита лидов'}
+      - {name: Subject, type: string, required: true, description: 'Существует; из бота — «Telegram-бот: <цель>»'}
+      - {name: Message, type: string, required: true, description: 'Существует; из бота — ответы сценария построчно (размер, тема, формат, бюджет, работа + ссылка, свободный текст)'}
+      - {name: UtmSource, type: string, required: false, description: Существует; из бота — telegram_bot}
+      - {name: UtmCampaign, type: string, required: false, description: Существует; из бота — deep-link payload}
+      - {name: Status, type: enum, required: true, enum_values: [New, Read, Archived], description: Существует без изменений}
+      - {name: CreatedAt, type: string, required: true, description: Существует (UTC)}
+    relationships: []
+  - id: funnel-state
+    name: FunnelState
+    description: Временное состояние сценария по chatId в IMemoryCache (TTL 24 ч), не в БД.
+    fields:
+      - {name: ChatId, type: number, required: true, description: Telegram chat.id (= user.id в приватном чате)}
+      - {name: Step, type: enum, required: true, enum_values: [Goal, Detail, Theme, Budget, Contact, Name, Done], description: Текущий шаг}
+      - {name: History, type: array, required: true, description: Стек пройденных шагов для «Назад»}
+      - {name: Goal, type: enum, required: false, enum_values: [Buy, Interior, Commission, Masterclass, Other], description: Выбранная цель}
+      - {name: Detail, type: string, required: false, description: Размер или формат мастер-класса}
+      - {name: Theme, type: string, required: false, description: Тема/стиль или свободный текст «Другой вопрос»}
+      - {name: Budget, type: string, required: false, description: Вилка бюджета}
+      - {name: Phone, type: string, required: false, description: Телефон}
+      - {name: Name, type: string, required: false, description: Имя}
+      - {name: Payload, type: object, required: false, description: Разобранный deep-link (тип art/mk/interior/other + raw)}
+      - {name: ArtworkId, type: id_ref, required: false, description: Работа из deep-link art_<id>}
+    relationships:
+      - {field: ArtworkId, target_entity_ref: artwork, cardinality: one}
+  - id: artwork
+    name: Artwork
+    description: Существующая сущность работы, только чтение (Title, фото, slug для ссылки). Без изменений.
+    fields:
+      - {name: Id, type: number, required: true, description: PK}
+      - {name: Title, type: string, required: true, description: Название}
+      - {name: IsPublished, type: boolean, required: true, description: Только опубликованные используются в deep-link}
+    relationships: []
+  - id: lead-quota
+    name: LeadQuota
+    description: Счётчик лидов на TelegramUserId за скользящие 24 ч (IMemoryCache), лимит 3.
+    fields:
+      - {name: TelegramUserId, type: number, required: true, description: Ключ}
+      - {name: SubmittedAt, type: array, required: true, description: Время отправленных лидов за 24 ч}
+    relationships: []
+  - id: page-content-privacy
+    name: PageContent (privacy)
+    description: Существующая PageContent без изменений схемы; запись PageKey=privacy, ContentKey=body, текст политики. Нет записи → встроенный шаблон на фронте.
+    fields:
+      - {name: PageKey, type: string, required: true, description: privacy}
+      - {name: ContentKey, type: string, required: true, description: body}
+      - {name: TextContent, type: string, required: false, description: Текст политики (Markdown/HTML как в остальных PageContent)}
+      - {name: IsActive, type: boolean, required: true, description: Неактивная → шаблон}
+      - {name: UpdatedAt, type: string, required: true, description: Дата редакции (показывается на странице)}
+    relationships: []
