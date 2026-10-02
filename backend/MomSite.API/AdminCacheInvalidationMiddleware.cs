@@ -26,20 +26,15 @@ public class AdminCacheInvalidationMiddleware
 
         if (!ShouldInvalidate(context)) return;
 
+        TryStartInvalidation(context);
+    }
+
+    private void TryStartInvalidation(HttpContext context)
+    {
         try
         {
             var invalidator = context.RequestServices.GetRequiredService<ICacheInvalidator>();
-            _ = Task.Run(async () =>
-            {
-                try
-                {
-                    await invalidator.InvalidateAsync();
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogWarning(ex, "Cache invalidation failed");
-                }
-            });
+            _ = Task.Run(() => InvalidateSafelyAsync(invalidator));
         }
         catch (Exception ex)
         {
@@ -47,18 +42,33 @@ public class AdminCacheInvalidationMiddleware
         }
     }
 
+    private async Task InvalidateSafelyAsync(ICacheInvalidator invalidator)
+    {
+        try
+        {
+            await invalidator.InvalidateAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Cache invalidation failed");
+        }
+    }
+
     private static bool ShouldInvalidate(HttpContext context)
     {
         var request = context.Request;
-        if (!(HttpMethods.IsPost(request.Method) || HttpMethods.IsPut(request.Method)
-              || HttpMethods.IsPatch(request.Method) || HttpMethods.IsDelete(request.Method)))
-            return false;
-
-        var path = request.Path;
-        if (!path.StartsWithSegments(AdminPrefix, StringComparison.OrdinalIgnoreCase)) return false;
-        if (path.StartsWithSegments(LoginPath, StringComparison.OrdinalIgnoreCase)) return false;
-
-        var status = context.Response.StatusCode;
-        return status >= 200 && status < 300;
+        return IsMutating(request.Method)
+            && IsInvalidatingAdminPath(request.Path)
+            && IsSuccess(context.Response.StatusCode);
     }
+
+    private static bool IsMutating(string method) =>
+        HttpMethods.IsPost(method) || HttpMethods.IsPut(method)
+        || HttpMethods.IsPatch(method) || HttpMethods.IsDelete(method);
+
+    private static bool IsInvalidatingAdminPath(PathString path) =>
+        path.StartsWithSegments(AdminPrefix, StringComparison.OrdinalIgnoreCase)
+        && !path.StartsWithSegments(LoginPath, StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsSuccess(int status) => status >= 200 && status < 300;
 }
