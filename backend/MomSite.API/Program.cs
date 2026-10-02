@@ -153,6 +153,7 @@ builder.Services.AddAuthorization();
 // Add custom services
 builder.Services.AddScoped<IS3Service, S3Service>();
 builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IArtworkImageService, ArtworkImageService>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IFeedbackNotifier, EmailNotifier>();
 builder.Services.AddScoped<IFeedbackNotifier, TelegramNotifier>();
