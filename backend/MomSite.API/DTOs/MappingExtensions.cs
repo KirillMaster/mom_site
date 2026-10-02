@@ -132,6 +132,8 @@ namespace MomSite.API.DTOs
                 Name = message.Name,
                 Email = message.Email,
                 Phone = message.Phone,
+                TelegramUsername = message.TelegramUsername,
+                TelegramUserId = message.TelegramUserId,
                 Subject = message.Subject,
                 Message = message.Message,
                 IpAddress = message.IpAddress,
