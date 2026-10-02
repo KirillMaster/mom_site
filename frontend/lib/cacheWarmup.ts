@@ -1,4 +1,7 @@
 const CONCURRENCY = 3;
+const REQUEST_TIMEOUT_MS = 30_000;
+
+const timeoutSignal = () => AbortSignal.timeout(REQUEST_TIMEOUT_MS);
 
 let running: Promise<void> | null = null;
 
@@ -18,7 +21,7 @@ export function toLocalUrl(loc: string, origin: string): string {
 }
 
 async function fetchSitemapUrls(origin: string): Promise<string[]> {
-  const response = await fetch(`${origin}/sitemap.xml`);
+  const response = await fetch(`${origin}/sitemap.xml`, { signal: timeoutSignal() });
   if (!response.ok) {
     throw new Error(`sitemap status ${response.status}`);
   }
@@ -27,7 +30,7 @@ async function fetchSitemapUrls(origin: string): Promise<string[]> {
 
 async function warmUrl(url: string): Promise<void> {
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, { signal: timeoutSignal() });
     await res.arrayBuffer();
   } catch (error) {
     console.error('Cache warmup request failed:', url, error);
