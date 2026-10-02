@@ -1,7 +1,15 @@
 import { getImageUrl } from '@/hooks/useApi';
 import { buildArtworkSlug } from '@/lib/artworkSlug';
+import { normalizeTitle } from '@/lib/normalizeTitle';
 
-const RelatedWorks = ({ works }: { works: any[] }) => {
+export const MAX_RELATED = 8;
+
+interface RelatedWorksProps {
+  works: any[];
+  categoryId?: number | null;
+}
+
+const RelatedWorks = ({ works, categoryId }: RelatedWorksProps) => {
   if (works.length === 0) {
     return null;
   }
@@ -12,7 +20,7 @@ const RelatedWorks = ({ works }: { works: any[] }) => {
             Другие работы этой категории
           </h2>
           <ul className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
-            {works.map((related: any) => (
+            {works.slice(0, MAX_RELATED).map((related: any) => (
               <li key={related.id}>
                 <a
                   href={`/gallery/${buildArtworkSlug(related.title, related.id)}`}
@@ -27,12 +35,20 @@ const RelatedWorks = ({ works }: { works: any[] }) => {
                     />
                   </div>
                   <span className="block p-3 text-sm font-medium text-gray-900">
-                    {related.title}
+                    {normalizeTitle(related.title)}
                   </span>
                 </a>
               </li>
             ))}
           </ul>
+          {categoryId != null && (
+            <a
+              href={`/gallery?category=${categoryId}`}
+              className="mt-6 inline-block font-medium text-primary-700 hover:text-primary-800"
+            >
+              Смотреть все
+            </a>
+          )}
         </section>
   );
 };

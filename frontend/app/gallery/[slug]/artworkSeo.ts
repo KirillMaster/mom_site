@@ -1,6 +1,7 @@
 import { getImageUrl } from '@/hooks/useApi';
 import { buildArtworkSlug } from '@/lib/artworkSlug';
 import type { ArtworkPhoto } from '@/lib/artworkPhotos';
+import { normalizeTitle } from '@/lib/normalizeTitle';
 
 export const SITE_URL = 'https://angelamoiseenko.ru';
 export const ARTIST_NAME = 'Анжела Моисеенко';
@@ -10,11 +11,11 @@ export const artworkPageUrl = (artwork: any) => `${SITE_URL}/gallery/${buildArtw
 // SEO title/description are per-artwork (S3-AS1): unique, contain the
 // artwork title and the commercial term "купить", kept close to the usual
 // <title>/<meta description> length budgets.
-export const buildSeoTitle = (artwork: any) => `Купить картину «${artwork.title}» — ${ARTIST_NAME}`;
+export const buildSeoTitle = (artwork: any) => `Купить картину «${normalizeTitle(artwork.title)}» — ${ARTIST_NAME}`;
 
 export const buildSeoDescription = (artwork: any) => {
   const details = artwork.description ? `${artwork.description}. ` : '';
-  const text = `«${artwork.title}» — ${details}Купить картину художника ${ARTIST_NAME} с доставкой.`;
+  const text = `«${normalizeTitle(artwork.title)}» — ${details}Купить картину художника ${ARTIST_NAME} с доставкой.`;
   return text.length > 160 ? `${text.slice(0, 157)}...` : text;
 };
 
@@ -26,9 +27,9 @@ export const buildArtworkSchema = (artwork: any, photos: ArtworkPhoto[], categor
   const schema: Record<string, any> = {
     '@context': 'https://schema.org',
     '@type': 'VisualArtwork',
-    name: artwork.title,
+    name: normalizeTitle(artwork.title),
     image: photos.map((photo) => getImageUrl(photo.path)),
-    description: artwork.description || categoryName || artwork.title,
+    description: artwork.description || categoryName || normalizeTitle(artwork.title),
     creator: {
       '@type': 'Person',
       name: ARTIST_NAME,
@@ -55,6 +56,6 @@ export const buildBreadcrumbSchema = (artwork: any) => ({
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Главная', item: SITE_URL },
     { '@type': 'ListItem', position: 2, name: 'Галерея', item: `${SITE_URL}/gallery` },
-    { '@type': 'ListItem', position: 3, name: artwork.title, item: artworkPageUrl(artwork) },
+    { '@type': 'ListItem', position: 3, name: normalizeTitle(artwork.title), item: artworkPageUrl(artwork) },
   ],
 });

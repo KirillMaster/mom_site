@@ -4,15 +4,16 @@ import { Metadata } from 'next';
 import { loadOrBuildFallback } from '@/lib/buildPhase';
 import type { GalleryData } from '@/lib/api';
 import { artworksForSale } from '@/lib/gallery';
+import { normalizeTitle } from '@/lib/normalizeTitle';
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'Галерея Работ | Анжела Моисеенко',
+  title: 'Купить картины маслом — галерея Анжелы Моисеенко',
   description: 'Исследуйте коллекцию уникальных работ в стиле импрессионизма. Каждая картина создана с любовью и передает особую атмосферу.',
   alternates: { canonical: '/gallery' },
   openGraph: {
-    title: 'Галерея Работ Анжелы Моисеенко',
+    title: 'Купить картины маслом — галерея Анжелы Моисеенко',
     description: 'Коллекция работ в стиле импрессионизма.',
     type: 'website',
     url: 'https://angelamoiseenko.ru/gallery', // Замените на реальный URL
@@ -46,7 +47,7 @@ const GalleryPage = async () => {
         position: index + 1,
         item: {
           '@type': 'ImageObject',
-          name: artwork.title,
+          name: normalizeTitle(artwork.title),
           description: artwork.description,
           contentUrl: getImageUrl(artwork.imagePath),
           thumbnailUrl: getImageUrl(artwork.thumbnailPath),
