@@ -17,7 +17,7 @@ jest.mock('@/hooks/useApi', () => ({
 const upload = uploadArtworkImages as jest.Mock;
 
 const file = (name: string) => new File(['x'], name, { type: 'image/png' });
-const state: ArtworkFormState = { title: 'Test', categoryId: '1', description: 'Desc', price: '100', status: 'Available', widthCm: '', heightCm: '', year: '', support: '', technique: '' };
+const state: ArtworkFormState = { title: 'Test', categoryId: '1', description: 'Desc', price: '100', status: 'Available', widthCm: '', heightCm: '', year: '', support: '', technique: '', shortDescription: '', isFeatured: false, needsReshoot: false, isPublished: true };
 const artwork = { id: 5, ...state };
 
 beforeEach(() => {
@@ -232,6 +232,7 @@ describe('@US1-BE4 @US1 FormData construction', () => {
       year: '2024',
       support: 'холст',
       technique: 'масло',
+      shortDescription: '', isFeatured: false, needsReshoot: false, isPublished: true,
       description: 'MyDesc',
       price: '50',
     };
@@ -265,6 +266,7 @@ describe('@US1-BE4 @US1 FormData construction', () => {
       year: '',
       support: '',
       technique: '',
+      shortDescription: '', isFeatured: false, needsReshoot: false, isPublished: true,
       description: 'Desc',
       price: '200',
     };
@@ -400,6 +402,7 @@ describe('@US1-EC11 spec field boundaries in FormData construction', () => {
       year: '',
       support: '',
       technique: '',
+      shortDescription: '', isFeatured: false, needsReshoot: false, isPublished: true,
       description: 'Desc',
       price: '100',
     };
@@ -434,5 +437,23 @@ describe('@US1-EC11 spec field boundaries in FormData construction', () => {
       const fd: FormData = mockCreateArtwork.mock.calls[0][0];
       expect(fd.get('status')).toBe(status);
     }
+  });
+});
+
+describe('@T028 клиентская валидация каталога', () => {
+  it('blocks save when width out of range and sends booleans otherwise', async () => {
+    const onSaved = jest.fn();
+    const bad = { ...state, widthCm: '1001' };
+    const { result } = renderHook(() => useArtworkSave(artwork, bad, [], onSaved));
+    await act(async () => { await result.current.submit({ preventDefault: jest.fn() } as any); });
+    expect(mockUpdateArtwork).not.toHaveBeenCalled();
+    expect(result.current.error).toMatch(/Ширина/);
+
+    const ok = { ...state, isFeatured: true, needsReshoot: true };
+    const hook = renderHook(() => useArtworkSave(artwork, ok, [], onSaved));
+    mockUpdateArtwork.mockResolvedValue({});
+    await act(async () => { await hook.result.current.submit({ preventDefault: jest.fn() } as any); });
+    const fd: FormData = mockUpdateArtwork.mock.calls[0][0].data;
+    expect([fd.get('isFeatured'), fd.get('needsReshoot'), fd.get('isPublished')]).toEqual(['true', 'true', 'true']);
   });
 });

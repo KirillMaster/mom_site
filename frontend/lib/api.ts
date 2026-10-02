@@ -57,6 +57,8 @@ export interface Artwork {
   year?: number | null;
   support?: string | null;
   technique?: string | null;
+  shortDescription?: string | null;
+  isFeatured?: boolean;
   createdAt: string;
   updatedAt: string;
   categoryId: number;
@@ -131,6 +133,8 @@ export interface ArtworkDto {
   year?: number | null;
   support?: string | null;
   technique?: string | null;
+  shortDescription?: string | null;
+  isFeatured?: boolean;
   createdAt: string;
   updatedAt: string;
   categoryId: number;
@@ -154,6 +158,16 @@ export interface ArtworkAdminDto {
   thumbnailPath: string;
   price?: number;
   isForSale: boolean;
+  status?: ArtworkStatus;
+  widthCm?: number | null;
+  heightCm?: number | null;
+  year?: number | null;
+  support?: string | null;
+  technique?: string | null;
+  shortDescription?: string | null;
+  isFeatured?: boolean;
+  needsReshoot?: boolean;
+  isPublished?: boolean;
   createdAt: string;
   updatedAt: string;
   categoryId: number;

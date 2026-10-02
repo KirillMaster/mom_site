@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { useCreateArtwork, useUpdateArtwork } from '@/hooks/useApi';
 import { uploadArtworkImages } from '@/lib/artworkImagesApi';
 import { extractApiError } from '@/lib/artworkImageValidation';
+import { validateCatalogFields } from '@/lib/catalogLimits';
 import type { ArtworkFormState } from './ArtworkFormFields';
 
 const buildFormData = (state: ArtworkFormState, cover?: File) => {
@@ -34,6 +35,11 @@ export function useArtworkSave(artwork: any | null, state: ArtworkFormState, que
     e.preventDefault();
     if (!isEdit && queue.length === 0) {
       setError('Добавьте хотя бы одно фото');
+      return;
+    }
+    const invalid = validateCatalogFields(state);
+    if (invalid) {
+      setError(invalid);
       return;
     }
     setError(null);
