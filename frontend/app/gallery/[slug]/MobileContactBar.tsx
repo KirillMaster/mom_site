@@ -1,20 +1,23 @@
 'use client';
 
+import { FaTelegram } from 'react-icons/fa';
 import { reachGoal, Goals } from '@/lib/analytics';
+import { artworkBotLink } from '@/lib/funnelBot';
 import type { ContactChannel } from '@/lib/contactChannels';
 
 interface Props {
   channels: ContactChannel[];
   artwork: string;
+  artworkId?: number;
 }
 
 const BUTTON_CLASS =
   'flex-1 rounded-lg px-4 py-3 text-center text-sm font-medium transition-colors';
 
-const MobileContactBar = ({ channels, artwork }: Props) => {
+const MobileContactBar = ({ channels, artwork, artworkId }: Props) => {
   const write = channels.find((c) => c.channel === 'whatsapp') ?? channels.find((c) => c.channel === 'telegram');
   const call = channels.find((c) => c.channel === 'phone');
-  if (!write && !call) return null;
+  if (!write && !call && artworkId == null) return null;
 
   const track = (channel: string) => () => reachGoal(Goals.ContactClick, { channel, artwork });
 
@@ -34,6 +37,19 @@ const MobileContactBar = ({ channels, artwork }: Props) => {
           className={`${BUTTON_CLASS} bg-primary-600 text-white hover:bg-primary-700`}
         >
           Написать
+        </a>
+      )}
+      {artworkId != null && (
+        <a
+          href={artworkBotLink(artworkId)}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Спросить в Telegram"
+          data-ym-tracked="mobile-bar-bot"
+          onClick={track('telegram_bot')}
+          className="flex w-12 flex-none items-center justify-center rounded-lg bg-sky-600 text-white hover:bg-sky-700"
+        >
+          <FaTelegram className="h-6 w-6" aria-hidden="true" />
         </a>
       )}
       {call && (
