@@ -7,6 +7,8 @@ import { ReviewDto } from '@/lib/api';
 import { submitReview } from '@/hooks/useApi';
 import { buildArtworkSlug } from '@/lib/artworkSlug';
 import { normalizeTitle } from '@/lib/normalizeTitle';
+import { Button, Input, Textarea, TextLink } from '@/components/ui';
+import { fieldClasses } from '@/components/ui/Field';
 
 export interface ReviewArtwork {
   id: number;
@@ -19,6 +21,7 @@ interface ReviewsClientPageProps {
 }
 
 const TEXT_LIMIT = 2000;
+const RATING_VALUES = [1, 2, 3, 4, 5];
 
 const formatDate = (iso: string) => {
   const date = new Date(iso);
@@ -30,11 +33,11 @@ const formatDate = (iso: string) => {
 // them without depending on visual styling (@S4-AS2).
 const Stars = ({ rating }: { rating: number }) => (
   <div aria-label={`Рейтинг: ${rating} из 5`} className="flex gap-0.5" data-testid="review-stars">
-    {[1, 2, 3, 4, 5].map((position) => (
+    {RATING_VALUES.map((position) => (
       <span
         key={position}
         data-testid={position <= rating ? 'star-filled' : 'star-empty'}
-        className={position <= rating ? 'text-yellow-400' : 'text-gray-300'}
+        className={position <= rating ? 'text-ochre' : 'text-line'}
         aria-hidden="true"
       >
         ★
@@ -44,23 +47,20 @@ const Stars = ({ rating }: { rating: number }) => (
 );
 
 const ReviewCard = ({ review, artwork }: { review: ReviewDto; artwork?: ReviewArtwork }) => (
-  <article className="bg-white rounded-lg shadow-md p-6" data-testid={`review-${review.id}`}>
+  <article className="rounded-md border border-line bg-paper-50 p-6" data-testid={`review-${review.id}`}>
     <div className="flex items-baseline justify-between flex-wrap gap-2">
-      <h3 className="text-lg font-semibold text-gray-900">{review.authorName}</h3>
-      <time dateTime={review.createdAt} className="text-sm text-gray-500">
+      <h3 className="text-lg font-semibold text-ink">{review.authorName}</h3>
+      <time dateTime={review.createdAt} className="text-sm text-ink-500">
         {formatDate(review.createdAt)}
       </time>
     </div>
-    {review.authorCity && <p className="text-sm text-gray-500">{review.authorCity}</p>}
+    {review.authorCity && <p className="text-sm text-ink-500">{review.authorCity}</p>}
     <Stars rating={review.rating} />
-    <p className="mt-3 text-gray-700 whitespace-pre-line">{review.text}</p>
+    <p className="mt-3 text-ink-600 whitespace-pre-line">{review.text}</p>
     {artwork && (
-      <a
-        href={`/gallery/${buildArtworkSlug(artwork.title, artwork.id)}`}
-        className="mt-3 inline-block text-primary-600 hover:underline"
-      >
+      <TextLink href={`/gallery/${buildArtworkSlug(artwork.title, artwork.id)}`} className="mt-3 inline-block">
         {normalizeTitle(artwork.title)}
-      </a>
+      </TextLink>
     )}
   </article>
 );
@@ -119,74 +119,37 @@ const ReviewForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} aria-label="Оставить отзыв" className="space-y-4 bg-gray-50 p-6 rounded-lg">
-      <div>
-        <label htmlFor="review-author-name" className="block text-sm font-medium text-gray-700 mb-1">
-          Имя *
-        </label>
-        <input
-          id="review-author-name"
-          type="text"
-          value={authorName}
-          onChange={(e) => setAuthorName(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-        />
-      </div>
-      <div>
-        <label htmlFor="review-author-city" className="block text-sm font-medium text-gray-700 mb-1">
-          Город
-        </label>
-        <input
-          id="review-author-city"
-          type="text"
-          value={authorCity}
-          onChange={(e) => setAuthorCity(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-        />
-      </div>
-      <div>
-        <label htmlFor="review-rating" className="block text-sm font-medium text-gray-700 mb-1">
+    <form onSubmit={handleSubmit} aria-label="Оставить отзыв" className="space-y-4 rounded-md border border-line bg-paper-200 p-6">
+      <Input id="review-author-name" label="Имя *" type="text" value={authorName} onChange={(e) => setAuthorName(e.target.value)} />
+      <Input id="review-author-city" label="Город" type="text" value={authorCity} onChange={(e) => setAuthorCity(e.target.value)} />
+      <div className="flex flex-col gap-1">
+        <label htmlFor="review-rating" className="text-sm font-medium text-ink">
           Оценка
         </label>
         <select
           id="review-rating"
           value={rating}
           onChange={(e) => setRating(Number(e.target.value))}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+          className={fieldClasses}
         >
-          {[1, 2, 3, 4, 5].map((value) => (
+          {RATING_VALUES.map((value) => (
             <option key={value} value={value}>
               {value}
             </option>
           ))}
         </select>
       </div>
-      <div>
-        <label htmlFor="review-text" className="block text-sm font-medium text-gray-700 mb-1">
-          Текст отзыва *
-        </label>
-        <textarea
-          id="review-text"
-          rows={5}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-        />
-      </div>
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="bg-primary-600 text-white px-6 py-2 rounded-lg font-semibold disabled:opacity-50"
-      >
+      <Textarea id="review-text" label="Текст отзыва *" rows={5} value={text} onChange={(e) => setText(e.target.value)} />
+      <Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? 'Отправка...' : 'Отправить отзыв'}
-      </button>
+      </Button>
       {error && (
-        <p role="alert" className="text-red-600">
+        <p role="alert" className="text-red-700">
           {error}
         </p>
       )}
       {success && (
-        <p className="text-green-600">
+        <p className="text-sea">
           Спасибо! Ваш отзыв отправлен и появится на сайте после проверки модератором.
         </p>
       )}
@@ -199,10 +162,10 @@ const ReviewsClientPage = ({ reviews, artworksById }: ReviewsClientPageProps) =>
     <Navigation />
     <main className="flex-grow">
       <section className="pt-24 pb-16 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl md:text-5xl font-serif font-bold text-gray-900 mb-8">Отзывы</h1>
+        <h1 className="text-4xl md:text-5xl font-serif font-semibold text-ink mb-8">Отзывы</h1>
 
         {reviews.length === 0 ? (
-          <p className="text-lg text-gray-600 mb-12" data-testid="reviews-empty-state">
+          <p className="text-lg text-ink-500 mb-12" data-testid="reviews-empty-state">
             Отзывов пока нет — станьте первым, кто оставит отзыв о работах Анжелы!
           </p>
         ) : (
@@ -218,7 +181,7 @@ const ReviewsClientPage = ({ reviews, artworksById }: ReviewsClientPageProps) =>
         )}
 
         <div>
-          <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4">Оставить отзыв</h2>
+          <h2 className="text-2xl font-serif font-semibold text-ink mb-4">Оставить отзыв</h2>
           <ReviewForm />
         </div>
       </section>

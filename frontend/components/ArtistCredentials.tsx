@@ -16,13 +16,13 @@ const ArtistCredentials = ({ limit }: { limit?: number }) => {
       {shown.map((credential, index) => (
         <div
           key={credential.title}
-          className="reveal bg-white rounded-xl border border-gray-100 shadow-sm p-6 h-full"
+          className="reveal bg-paper-50 rounded-md border border-line p-6 h-full"
         >
-          <Award className="w-8 h-8 text-primary-600 mb-3" />
-          <h3 className="text-lg font-serif font-semibold text-gray-900 mb-2">
+          <Award className="w-8 h-8 text-ochre-700 mb-3" />
+          <h3 className="text-lg font-semibold mb-2">
             {credential.title}
           </h3>
-          <p className="text-sm text-gray-600 leading-relaxed">{credential.detail}</p>
+          <p className="text-sm text-ink-500 leading-relaxed">{credential.detail}</p>
         </div>
       ))}
     </div>

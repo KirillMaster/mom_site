@@ -45,7 +45,7 @@ describe('price boundary: priceLabel status variants', () => {
   it('returns null for exhibition mode regardless of price', () => {
     expect(priceLabel(art({ price: 45000, status: 'Available' }), true)).toBeNull();
     expect(priceLabel(art({ price: 0, status: 'Available' }), true)).toBeNull();
-    expect(priceLabel(art({ price: null, status: 'Available' }), true)).toBeNull();
+    expect(priceLabel(art({ price: null as unknown as number, status: 'Available' }), true)).toBeNull();
   });
   it('returns Sold status label for Sold artwork', () => {
     expect(priceLabel(art({ status: 'Sold', isForSale: false, price: 45000 }), false)).toBe('Продана');

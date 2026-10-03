@@ -66,7 +66,7 @@ const ArtworkCarousel = ({ artworks }: { artworks: ArtworkDto[] }) => {
             <Link href="/gallery" className="card p-4 block h-full">
               {/* Same square frame as the gallery cards, so a tall
                   canvas is shown whole instead of cropped to a strip. */}
-              <div className="aspect-square bg-neutral-100 rounded-lg overflow-hidden mb-4">
+              <div className="aspect-square bg-paper-200 rounded-md overflow-hidden mb-4">
                 <img
                   src={getImageUrl(artwork.imagePath)}
                   alt={normalizeTitle(artwork.title)}
@@ -75,8 +75,8 @@ const ArtworkCarousel = ({ artworks }: { artworks: ArtworkDto[] }) => {
                   className="w-full h-full object-contain"
                 />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">{normalizeTitle(artwork.title)}</h3>
-              <p className="text-sm text-gray-600">{artwork.category?.name}</p>
+              <h3 className="text-lg font-serif font-semibold text-ink">{normalizeTitle(artwork.title)}</h3>
+              <p className="text-sm text-ink-500">{artwork.category?.name}</p>
             </Link>
           </div>
         ))}
@@ -92,7 +92,7 @@ const ArtworkCarousel = ({ artworks }: { artworks: ArtworkDto[] }) => {
               aria-current={index === active}
               onClick={() => scrollToIndex(index)}
               className={`w-2.5 h-2.5 rounded-full transition-colors ${
-                index === active ? 'bg-gray-700' : 'bg-gray-300 hover:bg-gray-400'
+                index === active ? 'bg-sea' : 'bg-line hover:bg-ink-500'
               }`}
             />
           ))}
