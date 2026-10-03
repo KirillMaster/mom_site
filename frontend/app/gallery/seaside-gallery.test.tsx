@@ -79,3 +79,100 @@ describe('@US4-FE7 gallery and artwork page actions use Button', () => {
     expect(classes).not.toMatch(FORBIDDEN);
   });
 });
+
+describe('GalleryCard boundary: photo count badge', () => {
+  it('does not show photo badge when images.length is 0', () => {
+    render(<GalleryClientPage galleryData={data([art(1, { images: [] })])} />);
+    expect(screen.queryByTestId('photo-count-badge')).not.toBeInTheDocument();
+  });
+  it('does not show photo badge when images.length is 1', () => {
+    render(<GalleryClientPage galleryData={data([art(1, { images: [{ id: 1 }] as any })])} />);
+    expect(screen.queryByTestId('photo-count-badge')).not.toBeInTheDocument();
+  });
+  it('shows photo badge when images.length is 2', () => {
+    render(<GalleryClientPage galleryData={data([art(1, { images: [{ id: 1 }, { id: 2 }] as any })])} />);
+    expect(screen.getByTestId('photo-count-badge')).toBeInTheDocument();
+    expect(screen.getByTestId('photo-count-badge')).toHaveTextContent('📷 2');
+  });
+  it('shows correct count for many images', () => {
+    const images = Array.from({ length: 10 }, (_, i) => ({ id: i + 1 })) as any;
+    render(<GalleryClientPage galleryData={data([art(1, { images })])} />);
+    expect(screen.getByTestId('photo-count-badge')).toHaveTextContent('📷 10');
+  });
+});
+
+describe('GalleryCard boundary: missing data', () => {
+  it('renders category fallback when category is missing', () => {
+    render(<GalleryClientPage galleryData={data([art(1, { category: null })])} />);
+    expect(screen.getByText('Без категории')).toBeInTheDocument();
+  });
+  it('renders card with missing category.name', () => {
+    render(<GalleryClientPage galleryData={data([art(1, { category: { id: 1, name: null } as any })])} />);
+    expect(screen.getByText('Без категории')).toBeInTheDocument();
+  });
+  it('applies correct link structure for card', () => {
+    render(<GalleryClientPage galleryData={data([art(1)])} />);
+    const link = screen.getByRole('link', { name: 'Закат' });
+    expect(link.href).toContain('/gallery/');
+    expect(link.className).toContain('block');
+  });
+  it('applies correct image classes for responsive sizing', () => {
+    const { container } = render(<GalleryClientPage galleryData={data([art(1)])} />);
+    const image = container.querySelector('img[alt="Закат"]');
+    expect(image?.className).toContain('w-full');
+    expect(image?.className).toContain('h-full');
+    expect(image?.className).toContain('object-contain');
+  });
+});
+
+describe('GalleryCard boundary: image loading attributes', () => {
+  it('first 4 cards use eager loading', () => {
+    const many = Array.from({ length: 6 }, (_, i) => art(i + 1));
+    const { container } = render(<GalleryClientPage galleryData={data(many)} />);
+    const images = Array.from(container.querySelectorAll('img[alt]'));
+    expect(images[0].getAttribute('loading')).toBe('eager');
+    expect(images[0].getAttribute('decoding')).toBe('auto');
+    expect(images[3].getAttribute('loading')).toBe('eager');
+  });
+  it('cards after the first 4 use lazy loading', () => {
+    const many = Array.from({ length: 6 }, (_, i) => art(i + 1));
+    const { container } = render(<GalleryClientPage galleryData={data(many)} />);
+    const images = Array.from(container.querySelectorAll('img[alt]'));
+    if (images.length > 4) {
+      expect(images[4].getAttribute('loading')).toBe('lazy');
+      expect(images[4].getAttribute('decoding')).toBe('async');
+    }
+  });
+});
+
+describe('GalleryCard boundary: hover effects', () => {
+  it('card link has group class for hover coordination', () => {
+    render(<GalleryClientPage galleryData={data([art(1)])} />);
+    const link = screen.getByRole('link', { name: 'Закат' });
+    expect(link.className).toContain('group');
+  });
+  it('image has hover:scale-105 class for interaction', () => {
+    const { container } = render(<GalleryClientPage galleryData={data([art(1)])} />);
+    const image = container.querySelector('img[alt="Закат"]');
+    expect(image?.className).toContain('hover:scale-105');
+  });
+  it('card has border and rounded classes', () => {
+    render(<GalleryClientPage galleryData={data([art(1)])} />);
+    const link = screen.getByRole('link', { name: 'Закат' });
+    expect(link.className).toContain('border');
+    expect(link.className).toContain('rounded-md');
+  });
+});
+
+describe('GalleryCard boundary: aspect ratio and dimensions', () => {
+  it('aspect-square class ensures square images', () => {
+    const { container } = render(<GalleryClientPage galleryData={data([art(1)])} />);
+    const aspect = container.querySelector('.aspect-square');
+    expect(aspect).toBeInTheDocument();
+  });
+  it('overflow-hidden prevents image overflow', () => {
+    const { container } = render(<GalleryClientPage galleryData={data([art(1)])} />);
+    const parent = container.querySelector('.overflow-hidden.aspect-square');
+    expect(parent).toBeInTheDocument();
+  });
+});
