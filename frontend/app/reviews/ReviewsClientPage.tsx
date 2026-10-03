@@ -21,6 +21,7 @@ interface ReviewsClientPageProps {
 }
 
 const TEXT_LIMIT = 2000;
+const RATING_VALUES = [1, 2, 3, 4, 5];
 
 const formatDate = (iso: string) => {
   const date = new Date(iso);
@@ -32,7 +33,7 @@ const formatDate = (iso: string) => {
 // them without depending on visual styling (@S4-AS2).
 const Stars = ({ rating }: { rating: number }) => (
   <div aria-label={`Рейтинг: ${rating} из 5`} className="flex gap-0.5" data-testid="review-stars">
-    {[1, 2, 3, 4, 5].map((position) => (
+    {RATING_VALUES.map((position) => (
       <span
         key={position}
         data-testid={position <= rating ? 'star-filled' : 'star-empty'}
@@ -131,7 +132,7 @@ const ReviewForm = () => {
           onChange={(e) => setRating(Number(e.target.value))}
           className={fieldClasses}
         >
-          {[1, 2, 3, 4, 5].map((value) => (
+          {RATING_VALUES.map((value) => (
             <option key={value} value={value}>
               {value}
             </option>

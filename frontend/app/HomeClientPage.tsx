@@ -81,13 +81,11 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
         </div>
       </section>
 
-    {/* Artwork Carousel Section */}
+      {/* Artwork Carousel Section */}
       <section className="py-20 bg-paper-200">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2
-            className="reveal text-4xl md:text-5xl font-serif font-medium mb-12">
-                        Исследуйте мою галерею
-
+          <h2 className="reveal text-4xl md:text-5xl font-serif font-medium mb-12">
+            Исследуйте мою галерею
           </h2>
 
           {homeData.artworks && homeData.artworks.length > 0 ? (
@@ -100,7 +98,7 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
         </div>
       </section>
 
-    {/* Biography Section */}
+      {/* Biography Section */}
       <section className="py-20 bg-paper-50">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center md:space-x-12">
@@ -148,11 +146,10 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
         </div>
       </section>
 
-    {/* Contacts Section */}
+      {/* Contacts Section */}
       <section className="py-20 bg-paper-200">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2
-            className="reveal text-4xl md:text-5xl font-serif font-medium mb-12">
+          <h2 className="reveal text-4xl md:text-5xl font-serif font-medium mb-12">
             Свяжитесь со мной
           </h2>
           <div className="flex flex-wrap justify-center gap-8">
