@@ -10,12 +10,16 @@ const PIXEL = Buffer.from(
 
 test.use({ viewport: { width: 360, height: 740 } });
 
+const ADMIN_USER = process.env.E2E_ADMIN_USER ?? 'admin';
+const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD ?? 'admin';
+const created: number[] = [];
+
 async function login(page: Page) {
-  await page.goto('/admin');
-  await page.getByLabel('Username').fill('admin');
-  await page.getByLabel('Password').fill('admin');
-  await page.getByRole('button', { name: 'Login' }).click();
-  await expect(page).toHaveURL('/admin');
+  await page.goto('/admin', { waitUntil: 'networkidle' });
+  await page.locator('form input[type="text"]').fill(ADMIN_USER);
+  await page.locator('form input[type="password"]').fill(ADMIN_PASSWORD);
+  await page.getByRole('button', { name: 'Войти' }).click();
+  await page.waitForFunction(() => !!localStorage.getItem('token'));
 }
 
 async function writePost(page: Page, title: string) {
@@ -27,8 +31,14 @@ async function writePost(page: Page, title: string) {
   await page.keyboard.type(`Приглашаю всех на выставку. ${title}`);
 }
 
+function rememberId(page: Page) {
+  const id = Number(new URL(page.url()).pathname.split('/').pop());
+  if (id && !created.includes(id)) created.push(id);
+}
+
 async function savedSlug(page: Page) {
   await expect(page).toHaveURL(/\/admin\/blog\/\d+$/);
+  rememberId(page);
   await page.getByText('Дополнительно (можно не трогать)').click();
   const slug = await page.locator('#post-slug').inputValue();
   expect(slug).not.toBe('');
@@ -37,6 +47,14 @@ async function savedSlug(page: Page) {
 
 test.describe('Блог', () => {
   test.beforeEach(async ({ page }) => login(page));
+
+  test.afterEach(async ({ page, baseURL }) => {
+    const token = await page.evaluate(() => localStorage.getItem('token'));
+    const api = new URL('/api/admin/blog/', baseURL).toString();
+    for (const id of created.splice(0)) {
+      await page.request.delete(api + id, { headers: { Authorization: `Bearer ${token}` } });
+    }
+  });
 
   test('новость с фото публикуется и видна на сайте', async ({ page }) => {
     const title = `E2E выставка ${STAMP}`;
@@ -50,6 +68,8 @@ test.describe('Блог', () => {
 
     await page.getByRole('button', { name: 'Опубликовать', exact: true }).click();
     await expect(page.getByRole('status').filter({ hasText: 'Новость опубликована.' })).toBeVisible();
+    await expect(page).toHaveURL(/\/admin\/blog\/\d+$/);
+    rememberId(page);
     const slug = await page.locator('#post-slug').inputValue();
 
     await page.goto(`/blog/${slug}`);

@@ -25,7 +25,7 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
       <section className="relative flex items-center justify-center overflow-hidden h-screen pt-32 bg-[#3d2b1a]">
         <Image
           src={getImageUrl(homeData.bannerImage)}
-          alt=""
+          alt="Картина маслом Анжелы Моисеенко"
           fill
           priority
           sizes="100vw"

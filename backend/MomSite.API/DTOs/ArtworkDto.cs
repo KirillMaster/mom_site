@@ -13,11 +13,13 @@ namespace MomSite.API.DTOs
         public bool IsForSale { get; set; }
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ArtworkStatus Status { get; set; }
-        public int? WidthCm { get; set; }
-        public int? HeightCm { get; set; }
+        public decimal? WidthCm { get; set; }
+        public decimal? HeightCm { get; set; }
         public int? Year { get; set; }
         public string? Support { get; set; }
         public string? Technique { get; set; }
+        public string? ShortDescription { get; set; }
+        public bool IsFeatured { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public int CategoryId { get; set; }

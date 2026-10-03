@@ -43,6 +43,7 @@ public class PublicController : ControllerBase
             .FirstOrDefaultAsync();
 
         var artworks = await _context.Artworks
+            .Visible()
             .Include(a => a.Category) // Include category for display
             .Include(a => a.Images)
             .Where(a => a.Category.ShowOnHome) // Only categories opted in to home carousel
@@ -127,7 +128,7 @@ public class PublicController : ControllerBase
             BannerImage = bannerImage?.ImagePath ?? null,
             BiographyText = biographyText?.TextContent ?? "Информация о художнике",
             AuthorPhoto = authorPhoto?.ImagePath ?? null,
-            Artworks = artworks.Select(a => a.ToDto()).ToList(),
+            Artworks = artworks.Select(a => a.ToPublicDto()).ToList(),
             Contacts = contactsData, // Assign the populated contactsData
             SeoTitle = seoTitle?.TextContent ?? string.Empty,
             SeoDescription = seoDescription?.TextContent ?? string.Empty
@@ -138,7 +139,7 @@ public class PublicController : ControllerBase
     public async Task<ActionResult<GalleryData>> GetGalleryData([FromQuery] int? categoryId = null)
     {
         var query = _context.Artworks
-            .AsQueryable();
+            .Visible();
 
         if (categoryId.HasValue)
         {
@@ -167,7 +168,7 @@ public class PublicController : ControllerBase
 
         return Ok(new GalleryData
         {
-            Artworks = artworks.Select(a => a.ToDto()).ToList(),
+            Artworks = artworks.Select(a => a.ToPublicDto()).ToList(),
             Categories = categories.Select(c => c.ToDto()).ToList(),
             BannerTitle = bannerTitle?.TextContent ?? "Галерея работ",
             BannerDescription = bannerDescription?.TextContent ?? "Исследуйте коллекцию уникальных работ в стиле импрессионизма. Каждая картина создана с любовью и передает особую атмосферу."

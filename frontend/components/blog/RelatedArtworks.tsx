@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getImageUrl } from '@/hooks/useApi';
 import { buildArtworkSlug } from '@/lib/artworkSlug';
+import { normalizeTitle } from '@/lib/normalizeTitle';
 import type { BlogRelatedArtwork } from '@/types/blog';
 
 interface RelatedArtworksProps {
@@ -18,11 +19,11 @@ export default function RelatedArtworks({ artworks }: RelatedArtworksProps) {
             <Link href={`/gallery/${buildArtworkSlug(artwork.title, artwork.id)}`} className="group block">
               <img
                 src={getImageUrl(artwork.thumbnailPath)}
-                alt={artwork.title}
+                alt={normalizeTitle(artwork.title)}
                 loading="lazy"
                 className="aspect-square w-full rounded-lg object-cover transition-opacity group-hover:opacity-90"
               />
-              <span className="mt-2 block text-sm font-medium text-gray-900">{artwork.title}</span>
+              <span className="mt-2 block text-sm font-medium text-gray-900">{normalizeTitle(artwork.title)}</span>
               <span className="text-sm text-primary-600">
                 {artwork.isForSale ? 'Купить или узнать цену' : 'Работа продана'}
               </span>

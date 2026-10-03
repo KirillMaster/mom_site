@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { getImageUrl } from '@/hooks/useApi';
 import type { ArtworkDto } from '@/lib/api';
+import { normalizeTitle } from '@/lib/normalizeTitle';
 
 const AUTOPLAY_MS = 3000;
 
@@ -68,13 +69,13 @@ const ArtworkCarousel = ({ artworks }: { artworks: ArtworkDto[] }) => {
               <div className="aspect-square bg-neutral-100 rounded-lg overflow-hidden mb-4">
                 <img
                   src={getImageUrl(artwork.imagePath)}
-                  alt={artwork.title}
+                  alt={normalizeTitle(artwork.title)}
                   loading={index < 3 ? 'eager' : 'lazy'}
                   decoding="async"
                   className="w-full h-full object-contain"
                 />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">{artwork.title}</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{normalizeTitle(artwork.title)}</h3>
               <p className="text-sm text-gray-600">{artwork.category?.name}</p>
             </Link>
           </div>

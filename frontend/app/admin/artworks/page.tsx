@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { ArtworkAdminDto } from '@/lib/api'; // Добавлен импорт
 import ArtworkForm from '@/components/admin/ArtworkForm';
 import { buildArtworkSlug } from '@/lib/artworkSlug';
+import { ARTWORK_STATUS_LABELS, resolveStatus } from '@/lib/artworkStatus';
 
 const AdminArtworksPage = () => {
   const { data: artworks, isLoading, isError, refetch: refetchArtworks } = useArtworks();
@@ -93,7 +94,7 @@ const AdminArtworksPage = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Название</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Категория</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Цена</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">В продаже</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Статус</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Действия</th>
               </tr>
             </thead>
@@ -123,10 +124,14 @@ const AdminArtworksPage = () => {
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {artwork.isForSale ? (
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Да</span>
-                    ) : (
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Нет</span>
+                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                      {ARTWORK_STATUS_LABELS[resolveStatus(artwork)]}
+                    </span>
+                    {artwork.needsReshoot && (
+                      <span className="ml-1 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800">переснять</span>
+                    )}
+                    {artwork.isPublished === false && (
+                      <span className="ml-1 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">скрыта</span>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
