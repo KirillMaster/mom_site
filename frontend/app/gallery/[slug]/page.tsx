@@ -138,7 +138,7 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-paper">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(buildArtworkSchema(artwork, photos, categoryName)) }}
@@ -151,12 +151,12 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
       {/* pt-24 clears the fixed site header, which otherwise covers the top of
           the painting on this page. */}
       <div className="mx-auto max-w-7xl px-4 pt-24 pb-24 md:pb-16">
-        <nav aria-label="breadcrumbs" className="mb-6 flex flex-wrap items-center gap-2 text-sm text-gray-500">
-          <Link href="/" className="transition-colors hover:text-primary-600">Главная</Link>
+        <nav aria-label="breadcrumbs" className="mb-6 flex flex-wrap items-center gap-2 text-sm text-ink-500">
+          <Link href="/" className="transition-colors hover:text-sea">Главная</Link>
           <span aria-hidden="true">/</span>
-          <Link href="/gallery" className="transition-colors hover:text-primary-600">Галерея</Link>
+          <Link href="/gallery" className="transition-colors hover:text-sea">Галерея</Link>
           <span aria-hidden="true">/</span>
-          <span className="text-gray-900">{displayTitle}</span>
+          <span className="text-ink">{displayTitle}</span>
         </nav>
 
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:items-start">

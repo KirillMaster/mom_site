@@ -26,7 +26,7 @@ contracts:
     request:
       - {name: artwork, type: object, required: true, description: ArtworkDto}
       - {name: exhibition, type: boolean, required: false, description: 'true — без цены/статуса'}
-      - {name: as, type: enum, required: false, enum_values: [h2, h3, p], description: 'Тег названия; default p'}
+      - {name: as, type: enum, required: false, enum_values: [h1, h2, h3, p], description: 'Тег названия; default p (h1 — страница работы)'}
       - {name: size, type: enum, required: false, enum_values: [sm, md], description: 'sm — галерея/related, md — страница работы'}
     response_cases:
       - outcome: rendered

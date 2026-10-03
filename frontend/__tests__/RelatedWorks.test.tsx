@@ -33,7 +33,7 @@ describe('RelatedWorks', () => {
   it('@US8-AS3 shows a quoted title without the quotes', () => {
     render(<RelatedWorks works={[work(1, '"Утро"')]} categoryId={3} />);
 
-    expect(screen.getByText('Утро')).toBeInTheDocument();
+    expect(screen.getByText('«Утро»')).toBeInTheDocument();
     expect(screen.queryByText('"Утро"')).not.toBeInTheDocument();
   });
 });

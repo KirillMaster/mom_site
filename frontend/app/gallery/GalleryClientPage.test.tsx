@@ -130,21 +130,21 @@ describe('GalleryClientPage', () => {
     const portrait = artwork({ id: 50, title: 'Дама', categoryId: 2, category: { id: 2, name: 'Портрет' } });
     render(<GalleryClientPage galleryData={galleryData([artwork(), portrait])} />);
 
-    expect(screen.getByText('Дама')).toBeInTheDocument();
-    expect(screen.queryByText('Осенний сад')).not.toBeInTheDocument();
+    expect(screen.getByText('«Дама»')).toBeInTheDocument();
+    expect(screen.queryByText('«Осенний сад»')).not.toBeInTheDocument();
   });
 
   it('@US5-AS2 ignores a garbage ?category value', () => {
     window.history.replaceState({}, '', '/gallery?category=abc');
     render(<GalleryClientPage galleryData={galleryData([artwork()])} />);
 
-    expect(screen.getByText('Осенний сад')).toBeInTheDocument();
+    expect(screen.getByText('«Осенний сад»')).toBeInTheDocument();
   });
 
   it('@US8-AS3 shows a quoted title without the quotes', () => {
     render(<GalleryClientPage galleryData={galleryData([artwork({ title: '"Утро"' })])} />);
 
-    expect(screen.getByText('Утро')).toBeInTheDocument();
+    expect(screen.getByText('«Утро»')).toBeInTheDocument();
     expect(screen.getByAltText('Утро')).toBeInTheDocument();
     expect(screen.queryByText('"Утро"')).not.toBeInTheDocument();
   });
@@ -152,8 +152,8 @@ describe('GalleryClientPage', () => {
   it('hides exhibition photos from the all-works view but keeps paintings visible', () => {
     render(<GalleryClientPage galleryData={galleryData([artwork(), exhibitionPhoto()])} />);
 
-    expect(screen.getByText('Осенний сад')).toBeInTheDocument();
-    expect(screen.queryByText('Открытие выставки')).not.toBeInTheDocument();
+    expect(screen.getByText('«Осенний сад»')).toBeInTheDocument();
+    expect(screen.queryByText('«Открытие выставки»')).not.toBeInTheDocument();
   });
 
   it('shows exhibition photos without any price when that category is selected', () => {
@@ -161,8 +161,8 @@ describe('GalleryClientPage', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Фото с выставок' }));
 
-    expect(screen.getByText('Открытие выставки')).toBeInTheDocument();
-    expect(screen.queryByText('Осенний сад')).not.toBeInTheDocument();
+    expect(screen.getByText('«Открытие выставки»')).toBeInTheDocument();
+    expect(screen.queryByText('«Осенний сад»')).not.toBeInTheDocument();
     expect(screen.queryByText('цена по запросу')).not.toBeInTheDocument();
   });
 
@@ -183,8 +183,7 @@ describe('@T025 status badge', () => {
         ])}
       />
     );
-    const badges = screen.getAllByTestId('status-badge');
-    expect(badges).toHaveLength(1);
-    expect(badges[0]).toHaveTextContent('Продана');
+    expect(screen.getAllByText('Продана')).toHaveLength(1);
+    expect(screen.queryByText('В наличии')).not.toBeInTheDocument();
   });
 });
