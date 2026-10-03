@@ -1,100 +1,81 @@
 import Link from 'next/link';
+import type { ComponentType } from 'react';
 import { Palette, Mail, Phone } from 'lucide-react';
 import { FaInstagram, FaVk, FaTelegram, FaWhatsapp, FaYoutube } from 'react-icons/fa';
 import MaxIcon from '@/components/MaxIcon';
 import { maxProfileUrl } from '@/lib/social';
 import { useFooterData } from '@/hooks/useApi';
+import { NAV_ITEMS } from './navItems';
+
+type IconType = ComponentType<{ className?: string }>;
+
+interface SocialIconLinkProps {
+  href: string;
+  Icon: IconType;
+  external?: boolean;
+  label?: string;
+}
+
+const SocialIconLink = ({ href, Icon, external = true, label }: SocialIconLinkProps) => (
+  <a
+    href={href}
+    {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+    aria-label={label}
+    className="w-10 h-10 bg-ink-700 text-paper rounded-md flex items-center justify-center hover:bg-sea transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-paper"
+  >
+    <Icon className="w-5 h-5" />
+  </a>
+);
+
+const MUTED_LINK_CLASS = 'text-paper/80 hover:text-paper transition-colors duration-200';
+
+const ContactRow = ({ Icon, href, text }: { Icon: IconType; href: string; text: string }) => (
+  <div className="flex items-center space-x-3">
+    <Icon className="w-5 h-5 text-paper/80" />
+    <a href={href} className={MUTED_LINK_CLASS}>
+      {text}
+    </a>
+  </div>
+);
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  const { data: footerData, isLoading } = useFooterData();
+  const { data: footerData } = useFooterData();
+  const social = footerData?.socialLinks;
+  const maxUrl = maxProfileUrl(social?.max, footerData?.phone);
+
+  const socialLinks: { href?: string | null; Icon: IconType }[] = [
+    { href: social?.instagram, Icon: FaInstagram },
+    { href: social?.vk, Icon: FaVk },
+    { href: social?.telegram, Icon: FaTelegram },
+    { href: social?.whatsapp, Icon: FaWhatsapp },
+    { href: social?.youtube, Icon: FaYoutube },
+  ];
 
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="bg-ink text-paper">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Section */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
-                <Palette className="w-6 h-6 text-white" />
+              <div className="w-10 h-10 bg-sea rounded-md flex items-center justify-center">
+                <Palette className="w-6 h-6 text-paper" />
               </div>
               <span className="text-xl font-serif font-semibold">
                 Анжела Моисеенко
               </span>
             </div>
-            <p className="text-gray-300 mb-6 max-w-md">
+            <p className="text-paper/80 mb-6 max-w-md">
               {footerData?.description || "Художник-импрессионист, создающий уникальные работы в стиле импрессионизма. Специализируюсь на театральных картинах и натюрмортах."}
             </p>
             <div className="flex space-x-4">
-              {footerData?.socialLinks?.instagram && (
-                <a
-                  href={footerData.socialLinks.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
-                >
-                  <FaInstagram className="w-5 h-5" />
-                </a>
+              {socialLinks.map(({ href, Icon }) =>
+                href ? <SocialIconLink key={href} href={href} Icon={Icon} /> : null
               )}
-              {footerData?.socialLinks?.vk && (
-                <a
-                  href={footerData.socialLinks.vk}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
-                >
-                  <FaVk className="w-5 h-5" />
-                </a>
-              )}
-              {footerData?.socialLinks?.telegram && (
-                <a
-                  href={footerData.socialLinks.telegram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
-                >
-                  <FaTelegram className="w-5 h-5" />
-                </a>
-              )}
-              {footerData?.socialLinks?.whatsapp && (
-                <a
-                  href={footerData.socialLinks.whatsapp}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
-                >
-                  <FaWhatsapp className="w-5 h-5" />
-                </a>
-              )}
-              {footerData?.socialLinks?.youtube && (
-                <a
-                  href={footerData.socialLinks.youtube}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
-                >
-                  <FaYoutube className="w-5 h-5" />
-                </a>
-              )}
-              {maxProfileUrl(footerData?.socialLinks?.max, footerData?.phone) && (
-                <a
-                  href={maxProfileUrl(footerData?.socialLinks?.max, footerData?.phone)!}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="MAX"
-                  className="w-10 h-10 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
-                >
-                  <MaxIcon className="w-5 h-5" />
-                </a>
-              )}
+              {maxUrl && <SocialIconLink href={maxUrl} Icon={MaxIcon} label="MAX" />}
               {footerData?.email && (
-                <a
-                  href={`mailto:${footerData.email}`}
-                  className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
-                >
-                  <Mail className="w-5 h-5" />
-                </a>
+                <SocialIconLink href={`mailto:${footerData.email}`} Icon={Mail} external={false} />
               )}
             </div>
           </div>
@@ -103,41 +84,13 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Навигация</h3>
             <ul className="space-y-2">
-              <li>
-                <Link href="/" className="text-gray-300 hover:text-white transition-colors duration-200">
-                  Главная
-                </Link>
-              </li>
-              <li>
-                <Link href="/gallery" className="text-gray-300 hover:text-white transition-colors duration-200">
-                  Галерея
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="text-gray-300 hover:text-white transition-colors duration-200">
-                  Обо мне
-                </Link>
-              </li>
-              <li>
-                <Link href="/videos" className="text-gray-300 hover:text-white transition-colors duration-200">
-                  Видео
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="text-gray-300 hover:text-white transition-colors duration-200">
-                  Блог
-                </Link>
-              </li>
-              <li>
-                <Link href="/reviews" className="text-gray-300 hover:text-white transition-colors duration-200">
-                  Отзывы
-                </Link>
-              </li>
-              <li>
-                <Link href="/contacts" className="text-gray-300 hover:text-white transition-colors duration-200">
-                  Контакты
-                </Link>
-              </li>
+              {NAV_ITEMS.map(({ href, label }) => (
+                <li key={href}>
+                  <Link href={href} className={MUTED_LINK_CLASS}>
+                    {label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -146,38 +99,21 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Контакты</h3>
             <div className="space-y-3">
               {footerData?.email && (
-                <div className="flex items-center space-x-3">
-                  <Mail className="w-5 h-5 text-primary-400" />
-                  <a
-                    href={`mailto:${footerData.email}`}
-                    className="text-gray-300 hover:text-white transition-colors duration-200"
-                  >
-                    {footerData.email}
-                  </a>
-                </div>
+                <ContactRow Icon={Mail} href={`mailto:${footerData.email}`} text={footerData.email} />
               )}
               {footerData?.phone && (
-                <div className="flex items-center space-x-3">
-                  <Phone className="w-5 h-5 text-primary-400" />
-                  <a
-                    href={`tel:${footerData.phone}`}
-                    className="text-gray-300 hover:text-white transition-colors duration-200"
-                  >
-                    {footerData.phone}
-                  </a>
-                </div>
+                <ContactRow Icon={Phone} href={`tel:${footerData.phone}`} text={footerData.phone} />
               )}
             </div>
           </div>
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-gray-800 mt-8 pt-8">
+        <div className="border-t border-ink-600 mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm">
+            <p className="text-paper/60 text-sm">
               © {currentYear} Анжела Моисеенко. Все права защищены.
             </p>
-
           </div>
         </div>
       </div>
@@ -185,4 +121,4 @@ const Footer = () => {
   );
 };
 
-export default Footer; 
+export default Footer;
