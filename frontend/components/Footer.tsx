@@ -1,13 +1,56 @@
 import Link from 'next/link';
+import type { ComponentType } from 'react';
 import { Palette, Mail, Phone } from 'lucide-react';
 import { FaInstagram, FaVk, FaTelegram, FaWhatsapp, FaYoutube } from 'react-icons/fa';
 import MaxIcon from '@/components/MaxIcon';
 import { maxProfileUrl } from '@/lib/social';
 import { useFooterData } from '@/hooks/useApi';
+import { NAV_ITEMS } from './navItems';
+
+type IconType = ComponentType<{ className?: string }>;
+
+interface SocialIconLinkProps {
+  href: string;
+  Icon: IconType;
+  external?: boolean;
+  label?: string;
+}
+
+const SocialIconLink = ({ href, Icon, external = true, label }: SocialIconLinkProps) => (
+  <a
+    href={href}
+    {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+    aria-label={label}
+    className="w-10 h-10 bg-ink-700 text-paper rounded-md flex items-center justify-center hover:bg-sea transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-paper"
+  >
+    <Icon className="w-5 h-5" />
+  </a>
+);
+
+const MUTED_LINK_CLASS = 'text-paper/80 hover:text-paper transition-colors duration-200';
+
+const ContactRow = ({ Icon, href, text }: { Icon: IconType; href: string; text: string }) => (
+  <div className="flex items-center space-x-3">
+    <Icon className="w-5 h-5 text-paper/80" />
+    <a href={href} className={MUTED_LINK_CLASS}>
+      {text}
+    </a>
+  </div>
+);
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const { data: footerData, isLoading } = useFooterData();
+  const social = footerData?.socialLinks;
+  const maxUrl = maxProfileUrl(social?.max, footerData?.phone);
+
+  const socialLinks: { href?: string | null; Icon: IconType }[] = [
+    { href: social?.instagram, Icon: FaInstagram },
+    { href: social?.vk, Icon: FaVk },
+    { href: social?.telegram, Icon: FaTelegram },
+    { href: social?.whatsapp, Icon: FaWhatsapp },
+    { href: social?.youtube, Icon: FaYoutube },
+  ];
 
   return (
     <footer className="bg-ink text-paper">
@@ -27,74 +70,12 @@ const Footer = () => {
               {footerData?.description || "Художник-импрессионист, создающий уникальные работы в стиле импрессионизма. Специализируюсь на театральных картинах и натюрмортах."}
             </p>
             <div className="flex space-x-4">
-              {footerData?.socialLinks?.instagram && (
-                <a
-                  href={footerData.socialLinks.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 bg-ink-700 text-paper rounded-md flex items-center justify-center hover:bg-sea transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-paper"
-                >
-                  <FaInstagram className="w-5 h-5" />
-                </a>
+              {socialLinks.map(({ href, Icon }) =>
+                href ? <SocialIconLink key={href} href={href} Icon={Icon} /> : null
               )}
-              {footerData?.socialLinks?.vk && (
-                <a
-                  href={footerData.socialLinks.vk}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 bg-ink-700 text-paper rounded-md flex items-center justify-center hover:bg-sea transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-paper"
-                >
-                  <FaVk className="w-5 h-5" />
-                </a>
-              )}
-              {footerData?.socialLinks?.telegram && (
-                <a
-                  href={footerData.socialLinks.telegram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 bg-ink-700 text-paper rounded-md flex items-center justify-center hover:bg-sea transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-paper"
-                >
-                  <FaTelegram className="w-5 h-5" />
-                </a>
-              )}
-              {footerData?.socialLinks?.whatsapp && (
-                <a
-                  href={footerData.socialLinks.whatsapp}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 bg-ink-700 text-paper rounded-md flex items-center justify-center hover:bg-sea transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-paper"
-                >
-                  <FaWhatsapp className="w-5 h-5" />
-                </a>
-              )}
-              {footerData?.socialLinks?.youtube && (
-                <a
-                  href={footerData.socialLinks.youtube}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 bg-ink-700 text-paper rounded-md flex items-center justify-center hover:bg-sea transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-paper"
-                >
-                  <FaYoutube className="w-5 h-5" />
-                </a>
-              )}
-              {maxProfileUrl(footerData?.socialLinks?.max, footerData?.phone) && (
-                <a
-                  href={maxProfileUrl(footerData?.socialLinks?.max, footerData?.phone)!}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="MAX"
-                  className="w-10 h-10 bg-ink-700 text-paper rounded-md flex items-center justify-center hover:bg-sea transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-paper"
-                >
-                  <MaxIcon className="w-5 h-5" />
-                </a>
-              )}
+              {maxUrl && <SocialIconLink href={maxUrl} Icon={MaxIcon} label="MAX" />}
               {footerData?.email && (
-                <a
-                  href={`mailto:${footerData.email}`}
-                  className="w-10 h-10 bg-ink-700 text-paper rounded-md flex items-center justify-center hover:bg-sea transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-paper"
-                >
-                  <Mail className="w-5 h-5" />
-                </a>
+                <SocialIconLink href={`mailto:${footerData.email}`} Icon={Mail} external={false} />
               )}
             </div>
           </div>
@@ -103,41 +84,13 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Навигация</h3>
             <ul className="space-y-2">
-              <li>
-                <Link href="/" className="text-paper/80 hover:text-paper transition-colors duration-200">
-                  Главная
-                </Link>
-              </li>
-              <li>
-                <Link href="/gallery" className="text-paper/80 hover:text-paper transition-colors duration-200">
-                  Галерея
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="text-paper/80 hover:text-paper transition-colors duration-200">
-                  Обо мне
-                </Link>
-              </li>
-              <li>
-                <Link href="/videos" className="text-paper/80 hover:text-paper transition-colors duration-200">
-                  Видео
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="text-paper/80 hover:text-paper transition-colors duration-200">
-                  Блог
-                </Link>
-              </li>
-              <li>
-                <Link href="/reviews" className="text-paper/80 hover:text-paper transition-colors duration-200">
-                  Отзывы
-                </Link>
-              </li>
-              <li>
-                <Link href="/contacts" className="text-paper/80 hover:text-paper transition-colors duration-200">
-                  Контакты
-                </Link>
-              </li>
+              {NAV_ITEMS.map(({ href, label }) => (
+                <li key={href}>
+                  <Link href={href} className={MUTED_LINK_CLASS}>
+                    {label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -146,26 +99,10 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Контакты</h3>
             <div className="space-y-3">
               {footerData?.email && (
-                <div className="flex items-center space-x-3">
-                  <Mail className="w-5 h-5 text-paper/80" />
-                  <a
-                    href={`mailto:${footerData.email}`}
-                    className="text-paper/80 hover:text-paper transition-colors duration-200"
-                  >
-                    {footerData.email}
-                  </a>
-                </div>
+                <ContactRow Icon={Mail} href={`mailto:${footerData.email}`} text={footerData.email} />
               )}
               {footerData?.phone && (
-                <div className="flex items-center space-x-3">
-                  <Phone className="w-5 h-5 text-paper/80" />
-                  <a
-                    href={`tel:${footerData.phone}`}
-                    className="text-paper/80 hover:text-paper transition-colors duration-200"
-                  >
-                    {footerData.phone}
-                  </a>
-                </div>
+                <ContactRow Icon={Phone} href={`tel:${footerData.phone}`} text={footerData.phone} />
               )}
             </div>
           </div>
@@ -177,7 +114,6 @@ const Footer = () => {
             <p className="text-paper/60 text-sm">
               © {currentYear} Анжела Моисеенко. Все права защищены.
             </p>
-
           </div>
         </div>
       </div>
@@ -185,4 +121,4 @@ const Footer = () => {
   );
 };
 
-export default Footer; 
+export default Footer;

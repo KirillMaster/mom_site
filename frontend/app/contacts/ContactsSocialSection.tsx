@@ -39,7 +39,7 @@ const ContactsSocialSection = ({ contactsData }: { contactsData: ContactsData })
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className={`reveal flex flex-col items-center space-y-2 text-ink-600 hover:text-sea transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sea`}
+              className="reveal flex flex-col items-center space-y-2 text-ink-600 hover:text-sea transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sea"
             >
               <Icon className="w-12 h-12" />
               <span className="text-lg font-medium">{label}</span>

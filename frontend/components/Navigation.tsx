@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, Palette } from 'lucide-react';
 import PhoneLink from './PhoneLink';
+import { NAV_ITEMS } from './navItems';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,16 +20,6 @@ const Navigation = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const navItems = [
-    { href: '/', label: 'Главная' },
-    { href: '/gallery', label: 'Галерея' },
-    { href: '/about', label: 'Обо мне' },
-    { href: '/videos', label: 'Видео' },
-    { href: '/blog', label: 'Блог' },
-    { href: '/reviews', label: 'Отзывы' },
-    { href: '/contacts', label: 'Контакты' },
-  ];
 
   const isActive = (href: string) => {
     if (href === '/') {
@@ -57,7 +48,7 @@ const Navigation = () => {
 
           {/* Desktop Navigation */}
           <div data-testid="desktop-nav" className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
+            {NAV_ITEMS.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -105,7 +96,7 @@ const Navigation = () => {
             className="animate-fade-in md:hidden bg-paper border-t border-line shadow-md"
           >
             <div className="px-4 pt-2 pb-3 space-y-1">
-              {navItems.map((item) => (
+              {NAV_ITEMS.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
