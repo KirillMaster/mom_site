@@ -1,0 +1,1 @@
+S1 architect review: no findings. lib has no components imports (SITE_PHONE moved to lib/site.ts, PhoneLink re-exports); single formatPrice in lib/price.ts; ui primitives generic. jest 700 pass, tsc 0.
