@@ -8,24 +8,14 @@ import ContactsSocialSection from './ContactsSocialSection';
 import ContactsFaqSection from './ContactsFaqSection';
 import ContactFormFields from './ContactFormFields';
 import { useContactForm } from './useContactForm';
-import { buildArtworkPrefill } from '@/lib/contactPrefill';
+import { buildArtworkPrefill, type ContactPrefill } from '@/lib/contactPrefill';
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-// useSearchParams requires a Suspense boundary, otherwise Next.js fails the
-// production build with "missing suspense boundary" for this route.
-const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) => (
-  <Suspense fallback={null}>
-    <ContactsForm contactsData={contactsData} />
-  </Suspense>
-);
-
-const ContactsForm = ({ contactsData }: { contactsData: ContactsData }) => {
-  const searchParams = useSearchParams();
-  const prefill = buildArtworkPrefill(searchParams.get('artwork'));
-
-  const form = useContactForm(prefill);
-
+// Only the form reads the query string, so only it sits behind Suspense: the
+// rest of the page (heading, contacts, FAQ) stays in the server-rendered HTML
+// that search engines index.
+const ContactsClientPage = ({ contactsData }: { contactsData: ContactsData }) => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
@@ -39,24 +29,9 @@ const ContactsForm = ({ contactsData }: { contactsData: ContactsData }) => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
               <ContactDetailsCard email={contactsData.email} phone={contactsData.phone} />
 
-              {/* Contact Form */}
-              <div
-                className="reveal bg-paper-50 border border-line p-8 rounded-md"
-              >
-                <h3 className="text-3xl font-serif font-semibold mb-6 text-ink">
-                  Напишите мне сообщение
-                </h3>
-                
-                <ContactFormFields
-                  formData={form.formData}
-                  onChange={form.handleInputChange}
-                  onSubmit={form.handleSubmit}
-                  isSubmitting={form.isSubmitting}
-                  submissionResult={form.submissionResult}
-                  errorMessage={form.errorMessage}
-                  validationError={form.validationError}
-                />
-              </div>
+              <Suspense fallback={<ContactFormCard prefill={EMPTY_PREFILL} />}>
+                <PrefilledContactForm />
+              </Suspense>
             </div>
           </div>
         </section>
@@ -66,6 +41,31 @@ const ContactsForm = ({ contactsData }: { contactsData: ContactsData }) => {
         <ContactsFaqSection faq={contactsData.faq} />
       </main>
 
+    </div>
+  );
+};
+
+const EMPTY_PREFILL = buildArtworkPrefill(null);
+
+const PrefilledContactForm = () => {
+  const searchParams = useSearchParams();
+  return <ContactFormCard prefill={buildArtworkPrefill(searchParams.get('artwork'))} />;
+};
+
+const ContactFormCard = ({ prefill }: { prefill: ContactPrefill }) => {
+  const form = useContactForm(prefill);
+  return (
+    <div className="reveal bg-paper-50 border border-line p-8 rounded-md">
+      <h2 className="text-3xl font-serif font-semibold mb-6 text-ink">Напишите мне сообщение</h2>
+      <ContactFormFields
+        formData={form.formData}
+        onChange={form.handleInputChange}
+        onSubmit={form.handleSubmit}
+        isSubmitting={form.isSubmitting}
+        submissionResult={form.submissionResult}
+        errorMessage={form.errorMessage}
+        validationError={form.validationError}
+      />
     </div>
   );
 };

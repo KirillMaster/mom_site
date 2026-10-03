@@ -75,7 +75,9 @@ const ContactsPage = async () => {
       telephone: contactsData.phone,
       address: {
         '@type': 'PostalAddress',
-        addressLocality: contactsData.address
+        addressLocality: contactsData.address || 'Севастополь',
+        addressRegion: 'Крым',
+        addressCountry: 'RU'
       },
       sameAs: [
         contactsData.socialLinks.instagram,

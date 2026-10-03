@@ -1,3 +1,4 @@
+import { normalizeTitle } from '@/lib/normalizeTitle';
 import { getImageUrl } from '@/hooks/useApi';
 import { buildArtworkSlug } from '@/lib/artworkSlug';
 import MuseumLabel from '@/components/artwork/MuseumLabel';
@@ -32,8 +33,8 @@ const RelatedWorks = ({ works, categoryId }: RelatedWorksProps) => {
                 <div className="aspect-square overflow-hidden bg-paper-200">
                   <img
                     src={getImageUrl(related.thumbnailPath || related.imagePath)}
-                    alt=""
-                    aria-hidden="true"
+                    alt={normalizeTitle(related.title)}
+                    loading="lazy"
                     className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>

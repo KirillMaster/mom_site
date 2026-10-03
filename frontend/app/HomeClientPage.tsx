@@ -59,6 +59,7 @@ const HomeClientPage = ({ homeData, reviews }: { homeData: HomeData; reviews?: R
             className="rise-in text-5xl md:text-7xl font-serif font-medium mb-6 text-white"
           >
             Анжела Моисеенко
+            <span className="block mt-3 text-2xl md:text-3xl">художник, картины маслом — Севастополь</span>
           </h1>
           
           <p

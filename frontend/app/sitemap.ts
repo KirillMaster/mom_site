@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { getHomeData, getGalleryData, getAboutData, getContactsData, getVideosData } from '@/hooks/useApi';
+import { getGalleryData } from '@/hooks/useApi';
 import { artworksForSale } from '@/lib/gallery';
 import { buildArtworkSlug } from '@/lib/artworkSlug';
 import { getBlogCategories, getLatestBlogPosts } from '@/lib/blogApi';
@@ -81,16 +81,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     }));
 
-    // Get dynamic data for videos
-    const videosData = await getVideosData();
-    const videoPages = videosData?.videos?.map((video) => ({
-      url: `${baseUrl}/videos?video=${video.id}`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.6,
-    })) || [];
-
-    return [...staticPages, ...blogPages, ...artworkPages, ...videoPages];
+    // Video query URLs (/videos?video=N) canonicalise to /videos, so listing
+    // them would only feed search engines non-canonical duplicates.
+    return [...staticPages, ...blogPages, ...artworkPages];
   } catch (error) {
     console.error('Error generating sitemap:', error);
     return [...staticPages, ...blogPages];

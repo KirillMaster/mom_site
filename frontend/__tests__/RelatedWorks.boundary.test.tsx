@@ -64,11 +64,12 @@ describe('@US4-AS12 RelatedWorks edge cases', () => {
     expect(img?.src).toContain('img.jpg');
   });
 
-  it('marks images as aria-hidden decorative', () => {
+  it('gives images a descriptive alt for search indexing', () => {
     const works = [artwork(1, 'Картина')];
     const { container } = render(<RelatedWorks works={works} />);
     const img = container.querySelector('img');
-    expect(img).toHaveAttribute('aria-hidden', 'true');
+    expect(img).not.toHaveAttribute('aria-hidden');
+    expect(img?.getAttribute('alt')).toContain('Картина');
   });
 
   it('preserves work order in display', () => {
