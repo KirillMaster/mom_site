@@ -3,7 +3,7 @@ import GalleryClientPage from './GalleryClientPage';
 import { Metadata } from 'next';
 import { loadOrBuildFallback } from '@/lib/buildPhase';
 import type { GalleryData } from '@/lib/api';
-import { artworksForSale } from '@/lib/gallery';
+import { artworksForSale, slimGalleryData } from '@/lib/gallery';
 import { normalizeTitle } from '@/lib/normalizeTitle';
 
 export const revalidate = 3600;
@@ -81,7 +81,7 @@ const GalleryPage = async () => {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <GalleryClientPage galleryData={galleryData} />
+      <GalleryClientPage galleryData={slimGalleryData(galleryData)} />
     </>
   );
 };
