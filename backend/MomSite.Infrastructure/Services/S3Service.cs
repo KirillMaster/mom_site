@@ -6,8 +6,11 @@ using System.Text;
 
 namespace MomSite.Infrastructure.Services
 {
+    public record StorageObject(string Key, DateTime LastModified);
+
     public interface IS3Service
     {
+        Task<IReadOnlyList<StorageObject>> ListObjectsAsync(string prefix);
         Task<string> UploadFileAsync(Stream fileStream, string fileName, string contentType);
         Task<bool> DeleteFileAsync(string fileUrl);
         Task<string> GetFileUrlAsync(string fileName);
@@ -53,6 +56,24 @@ namespace MomSite.Infrastructure.Services
             Console.WriteLine($"Using region: ru-1 (configured via ForcePathStyle)");
             Console.WriteLine($"Bucket: {_bucketName}");
             Console.WriteLine($"Base URL: {_baseUrl}");
+        }
+
+        public async Task<IReadOnlyList<StorageObject>> ListObjectsAsync(string prefix)
+        {
+            var result = new List<StorageObject>();
+            string? token = null;
+            do
+            {
+                var response = await _s3Client.ListObjectsV2Async(new ListObjectsV2Request
+                {
+                    BucketName = _bucketName,
+                    Prefix = prefix,
+                    ContinuationToken = token
+                });
+                result.AddRange(response.S3Objects.Select(o => new StorageObject(o.Key, o.LastModified.ToUniversalTime())));
+                token = response.IsTruncated ? response.NextContinuationToken : null;
+            } while (token != null);
+            return result;
         }
 
         public async Task<bool> TestConnectionAsync()

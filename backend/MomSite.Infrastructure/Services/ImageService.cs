@@ -23,6 +23,7 @@ public interface IImageService
 
 public class ImageService : IImageService
 {
+    private const string WatermarkText = "angelamoiseenko.ru";
     private readonly string _uploadPath;
     private readonly string _watermarkText;
     private readonly IS3Service _s3Service;
@@ -157,9 +158,6 @@ public class ImageService : IImageService
                         // Resize image
                         originalImage.Mutate(x => x.Resize(targetWidth, targetHeight));
 
-                        // Add simple watermark - corner overlay
-                        AddCornerWatermark(originalImage, targetWidth, targetHeight);
-
                         // Save the thumbnail
                         var format = GetImageFormat(System.IO.Path.GetExtension(tempImagePath));
                         await originalImage.SaveAsync(tempThumbnailPath, format);
@@ -227,9 +225,6 @@ public class ImageService : IImageService
 
             // Resize image
             originalImage.Mutate(x => x.Resize(targetWidth, targetHeight));
-
-                // Add simple watermark - corner overlay
-                AddCornerWatermark(originalImage, targetWidth, targetHeight);
 
             // Save the thumbnail
                 var format = GetImageFormat(System.IO.Path.GetExtension(fullPath));
@@ -350,108 +345,47 @@ public class ImageService : IImageService
 
     private void AddCornerWatermark(Image image, int width, int height)
     {
-            var watermarkText = "angelamoiseenko.ru";
-        
-        // Calculate font size based on image dimensions - doubled size
-        var fontSize = Math.Max(24, Math.Min(width, height) / 15); // Doubled from /30 to /15
-        fontSize = Math.Min(fontSize, 48); // Doubled cap from 24 to 48
-        
-        // Calculate padding from edges
-        var padding = Math.Max(20, Math.Min(width, height) / 25); // Increased padding
-        
+        var layout = WatermarkGeometry.Compute(width, height);
         try
         {
-            // Get available fonts
-            var availableFonts = SystemFonts.Collection.Families.ToList();
-            Console.WriteLine($"Available fonts: {string.Join(", ", availableFonts.Select(f => f.Name))}");
-            
-            if (availableFonts.Any())
+            var families = SystemFonts.Collection.Families.ToList();
+            if (families.Count == 0)
             {
-                // Try to find a suitable font
-                var fontFamily = availableFonts.FirstOrDefault(f => 
-                    f.Name.Contains("DejaVu", StringComparison.OrdinalIgnoreCase) || 
-                    f.Name.Contains("Arial", StringComparison.OrdinalIgnoreCase) || 
-                    f.Name.Contains("Sans", StringComparison.OrdinalIgnoreCase));
-                
-                if (fontFamily == null)
-                {
-                    fontFamily = availableFonts.First();
-                }
-                
-                Console.WriteLine($"Using font: {fontFamily.Name}");
-                
-                var font = fontFamily.CreateFont(fontSize);
-                
-                // Create text options for positioning - center bottom
-                var textOptions = new RichTextOptions(font)
-                {
-                    Origin = new PointF(width / 2, height - padding),
-                    KerningMode = KerningMode.Standard,
-                    WrappingLength = 0,
-                    LineSpacing = 1.0f,
-                    HorizontalAlignment = HorizontalAlignment.Center
-                };
-                
-                // Create semi-transparent white text
-                var textColor = Color.FromRgba(255, 255, 255, 180);
-                
-                // Draw text with slight shadow for better visibility
-                var shadowColor = Color.FromRgba(0, 0, 0, 120);
-                var shadowOffset = 1;
-                
-                // Create shadow text options
-                var shadowTextOptions = new RichTextOptions(font)
-                {
-                    Origin = new PointF(width / 2 + shadowOffset, height - padding + shadowOffset),
-                    KerningMode = KerningMode.Standard,
-                    WrappingLength = 0,
-                    LineSpacing = 1.0f,
-                    HorizontalAlignment = HorizontalAlignment.Center
-                };
-                
-                image.Mutate(x => x
-                    .DrawText(shadowTextOptions, watermarkText, shadowColor)
-                    .DrawText(textOptions, watermarkText, textColor));
-                
-                Console.WriteLine("Text watermark applied successfully");
+                CreateFallbackWatermark(image, layout);
+                return;
             }
-            else
+
+            var preferred = families.Where(f =>
+                f.Name.Contains("DejaVu", StringComparison.OrdinalIgnoreCase) ||
+                f.Name.Contains("Arial", StringComparison.OrdinalIgnoreCase) ||
+                f.Name.Contains("Sans", StringComparison.OrdinalIgnoreCase)).ToList();
+            var fontFamily = preferred.Count > 0 ? preferred[0] : families[0];
+
+            var font = fontFamily.CreateFont(layout.FontSize);
+            RichTextOptions Options(float dx, float dy) => new(font)
             {
-                Console.WriteLine("No fonts available, using fallback watermark");
-                CreateFallbackWatermark(image, width, height, watermarkText, fontSize, padding);
-            }
+                Origin = new PointF(layout.OriginX + dx, layout.OriginY + dy),
+                KerningMode = KerningMode.Standard,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Bottom
+            };
+
+            image.Mutate(x => x
+                .DrawText(Options(1, 1), WatermarkText, Color.FromRgba(0, 0, 0, (byte)(layout.Alpha * 0.8)))
+                .DrawText(Options(0, 0), WatermarkText, Color.FromRgba(255, 255, 255, layout.Alpha)));
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error applying text watermark: {ex.Message}");
-            CreateFallbackWatermark(image, width, height, watermarkText, fontSize, padding);
+            CreateFallbackWatermark(image, layout);
         }
     }
-    
-    private void CreateFallbackWatermark(Image image, int width, int height, string watermarkText, float fontSize, float padding)
+
+    private static void CreateFallbackWatermark(Image image, WatermarkLayout layout)
     {
-        // Create a simple text-like watermark with rectangles - centered
-        var textWidth = watermarkText.Length * fontSize * 0.6f;
-        var textHeight = fontSize;
-        
-        var textRect = new RectangleF(
-            (width - textWidth) / 2, // Center horizontally
-            height - padding - textHeight, 
-            textWidth, 
-            textHeight);
-        
-        // Semi-transparent background
-        image.Mutate(x => x.Fill(Color.FromRgba(0, 0, 0, 100), textRect));
-        
-        // Semi-transparent white overlay
-        var innerRect = new RectangleF(
-            textRect.X + 2, 
-            textRect.Y + 2, 
-            textRect.Width - 4, 
-            textRect.Height - 4);
-        image.Mutate(x => x.Fill(Color.FromRgba(255, 255, 255, 150), innerRect));
-        
-        Console.WriteLine("Fallback watermark applied");
+        var textWidth = WatermarkText.Length * layout.FontSize * 0.6f;
+        var rect = new RectangleF(layout.OriginX - textWidth, layout.OriginY - layout.FontSize, textWidth, layout.FontSize);
+        image.Mutate(x => x.Fill(Color.FromRgba(255, 255, 255, layout.Alpha), rect));
     }
 
     private IImageEncoder GetImageFormat(string extension)
