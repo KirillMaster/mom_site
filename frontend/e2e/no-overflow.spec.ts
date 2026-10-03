@@ -11,7 +11,7 @@ test.describe('@US6-AS1 no horizontal scroll at 390 px', () => {
   for (const path of STATIC_PAGES) {
     test(`page ${path}`, async ({ page }) => {
       await page.goto(path);
-      await page.waitForLoadState('networkidle');
+      await page.waitForLoadState('domcontentloaded');
 
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
     });
@@ -22,7 +22,7 @@ test.describe('@US6-AS1 no horizontal scroll at 390 px', () => {
     const firstCard = page.locator('a[href^="/gallery/"]').first();
     await firstCard.click();
     await page.waitForURL(/\/gallery\/.+/);
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   });

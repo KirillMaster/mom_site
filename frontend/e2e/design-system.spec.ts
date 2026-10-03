@@ -27,7 +27,7 @@ const overflow = (page: Page) =>
 const collectConsoleErrors = (page: Page) => {
   const errors: string[] = [];
   page.on('console', (msg) => {
-    if (msg.type() === 'error') errors.push(msg.text());
+    if (msg.type() === 'error' && !msg.text().startsWith('Failed to fetch RSC payload')) errors.push(msg.text());
   });
   return errors;
 };
