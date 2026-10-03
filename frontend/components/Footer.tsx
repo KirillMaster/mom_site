@@ -40,7 +40,7 @@ const ContactRow = ({ Icon, href, text }: { Icon: IconType; href: string; text: 
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  const { data: footerData, isLoading } = useFooterData();
+  const { data: footerData } = useFooterData();
   const social = footerData?.socialLinks;
   const maxUrl = maxProfileUrl(social?.max, footerData?.phone);
 
