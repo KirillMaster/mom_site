@@ -8,6 +8,7 @@ using MomSite.Core.Interfaces;
 using MomSite.Infrastructure.Data;
 using MomSite.Infrastructure.Notifications;
 using MomSite.Infrastructure.Services;
+using MomSite.Infrastructure.TelegramBot;
 using Microsoft.Extensions.FileProviders;
 using Serilog;
 using Serilog.Events;
@@ -164,6 +165,7 @@ builder.Services.AddSingleton<IIndexNowClient, MomSite.Infrastructure.Blog.Index
 builder.Services.AddScoped<IFeedbackNotifier, EmailNotifier>();
 builder.Services.AddScoped<IFeedbackNotifier, TelegramNotifier>();
 builder.Services.AddScoped<ILeadService, MomSite.Infrastructure.Services.LeadService>();
+builder.Services.AddFunnelBot();
 
 // Behind nginx, the app only ever sees the proxy's own address unless we
 // trust and apply X-Forwarded-For. Required so RemoteIpAddress (used both
