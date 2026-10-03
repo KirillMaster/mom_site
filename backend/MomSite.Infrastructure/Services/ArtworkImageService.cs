@@ -48,8 +48,8 @@ public class ArtworkImageService : IArtworkImageService
 
         foreach (var file in files)
         {
-            var (path, thumb) = await StoreAsync(file);
-            artwork.Images.Add(NewImage(path, thumb, artwork.Images.Count));
+            var (path, thumb, original) = await StoreAsync(file);
+            artwork.Images.Add(NewImage(path, thumb, artwork.Images.Count, original));
         }
 
         await FinalizeAsync(artwork);
@@ -95,15 +95,16 @@ public class ArtworkImageService : IArtworkImageService
         var cover = artwork.Images.OrderBy(i => i.SortOrder).FirstOrDefault();
         DeleteFiles(artwork.ImagePath, artwork.ThumbnailPath);
 
-        var (path, thumb) = await StoreAsync(file);
+        var (path, thumb, original) = await StoreAsync(file);
         if (cover == null)
         {
-            artwork.Images.Add(NewImage(path, thumb, 0));
+            artwork.Images.Add(NewImage(path, thumb, 0, original));
         }
         else
         {
             cover.ImagePath = path;
             cover.ThumbnailPath = thumb;
+            cover.OriginalPath = original;
         }
         artwork.ImagePath = path;
         artwork.ThumbnailPath = thumb;
@@ -138,10 +139,11 @@ public class ArtworkImageService : IArtworkImageService
         return null;
     }
 
-    private static ArtworkImage NewImage(string path, string thumb, int sortOrder) => new()
+    private static ArtworkImage NewImage(string path, string thumb, int sortOrder, string? original = null) => new()
     {
         ImagePath = path,
         ThumbnailPath = thumb,
+        OriginalPath = original,
         SortOrder = sortOrder,
         CreatedAt = DateTime.UtcNow
     };
@@ -151,12 +153,12 @@ public class ArtworkImageService : IArtworkImageService
         foreach (var path in paths.Where(p => !string.IsNullOrEmpty(p))) _imageService.DeleteImage(path);
     }
 
-    private async Task<(string Path, string Thumb)> StoreAsync(IFormFile file)
+    private async Task<(string Path, string Thumb, string Original)> StoreAsync(IFormFile file)
     {
         var path = await _imageService.SaveImageAsync(file, "artworks");
         var thumb = await _imageService.CreateThumbnailAsync(path, 300, 300);
         var watermarked = await _imageService.AddWatermarkAsync(path, _imageService.GetWatermarkText());
-        return (watermarked, thumb);
+        return (watermarked, thumb, path);
     }
 
     private async Task<Artwork?> LoadAsync(int artworkId)

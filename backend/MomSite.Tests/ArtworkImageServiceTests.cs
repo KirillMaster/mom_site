@@ -1,8 +1,30 @@
+using Moq;
 
 namespace MomSite.Tests
 {
     public partial class ArtworkImageServiceTests
     {
+        [Fact, Trait("scenario", "US7-AS1")]
+        public async Task US7_AS1_AddImages_StoresOriginalPath_DeleteKeepsOriginal()
+        {
+            var ctx = new ApplicationDbContext(AdminTestHelpers.CreateDbOptions(Guid.NewGuid().ToString()));
+            var mock = ImageServiceMock(_deleted);
+            mock.Setup(m => m.AddWatermarkAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync((string p, string _) => p.Replace("/artworks/", "/artworks/watermarked_"));
+            var svc = new ArtworkImageService(ctx, mock.Object);
+            var art = await SeedArtworkAsync(ctx, 1);
+
+            var result = await svc.AddImagesAsync(art.Id, new[] { Image("o.jpg") });
+
+            var added = result.Images[1];
+            Assert.False(string.IsNullOrEmpty(added.OriginalPath));
+            Assert.EndsWith("_o.jpg", added.OriginalPath);
+            Assert.Equal(added.OriginalPath, (await ImagesOf(ctx, art.Id))[1].OriginalPath);
+
+            await svc.DeleteImageAsync(art.Id, added.Id);
+            Assert.DoesNotContain(added.OriginalPath, _deleted);
+        }
+
         [Fact, Trait("scenario", "US1-BE1")]
         public async Task US1_BE1_AddImages_AppendsInSendOrder_KeepsCover()
         {
