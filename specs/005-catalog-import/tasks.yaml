@@ -1,0 +1,1837 @@
+feature: 005-catalog-import
+tasks:
+- id: T001
+  title: Подключить ClosedXML в Infrastructure
+  description: Добавить пакет ClosedXML (MIT) в MomSite.Infrastructure и создать каталоги модуля
+  context: Парсер xlsx нужен всем историям импорта; пакета в проекте ещё нет (R1)
+  story_ref: US1
+  requirement_refs:
+  - FR-001
+  depends_on: []
+  parallelizable: true
+  entity_refs: []
+  contract_refs: []
+  steps:
+  - order: 1
+    action: Добавить пакет
+    detail: cd backend && dotnet add MomSite.Infrastructure package ClosedXML
+  - order: 2
+    action: Создать каталоги
+    detail: backend/MomSite.Infrastructure/Catalog/ и backend/MomSite.Tests/Catalog/
+  - order: 3
+    action: Собрать решение
+    detail: cd backend && dotnet build
+  technical_notes:
+  - path: backend/MomSite.Infrastructure/MomSite.Infrastructure.csproj
+    note: Сейчас нет ClosedXML
+  - path: backend/MomSite.Tests/MomSite.Tests.csproj
+    note: Тесты net9.0; Infrastructure приходит транзитивно
+  acceptance_criteria:
+  - id: AC-1
+    description: dotnet build зелёный с ClosedXML
+    done: false
+  - id: AC-2
+    description: Версия пакета записана в research.md R1
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Пакет добавлен
+    when: dotnet build
+    then:
+    - 0 ошибок
+    verification:
+    - automated
+    level: unit
+- id: T002
+  title: Проверить/добавить поля характеристик Artwork (условная, после merge 008)
+  description: Убедиться, что после merge 008-conversion-quick-wins в Artwork есть Status (ArtworkStatus), WidthCm, HeightCm, Year, Support, Technique и ApplyStatus; если чего-то нет, добавить по data-model 005
+  context: 008 вводит эти поля по тому же data-model; дублировать модель и миграцию нельзя, но без полей импорту нечего писать
+  story_ref: US1
+  requirement_refs:
+  - FR-014
+  - FR-002
+  depends_on: []
+  parallelizable: false
+  entity_refs:
+  - artwork
+  contract_refs: []
+  steps:
+  - order: 1
+    action: Проверить наличие
+    detail: grep по backend/MomSite.Core/Models/Artwork.cs и ArtworkStatus.cs на Status, WidthCm, HeightCm, Year, Support, Technique, ApplyStatus; ls backend/MomSite.Infrastructure/Data/Migrations
+  - order: 2
+    action: Если поля есть, сверить типы
+    detail: WidthCm/HeightCm в 005 это decimal numeric(6,1) (допускается 50,5); в 008 заявлены целыми. Если в БД int, приведение типа делается в миграции T003 (AlterColumn), не отдельной миграцией
+  - order: 3
+    action: Если полей нет, добавить
+    detail: 'enum ArtworkStatus (Available, Sold, PrivateCollection, Unavailable, NotForSale, NotMine) в Core/Models/ArtworkStatus.cs; в Artwork: Status (default Available), WidthCm/HeightCm decimal?, Year int?, Support/Technique string? (до 100); ApplyStatus(status) выставляет Status и IsForSale = Status == Available'
+  - order: 4
+    action: Сконфигурировать в контексте
+    detail: 'ApplicationDbContext: Status HasConversion<int>, WidthCm/HeightCm numeric(6,1), Support/Technique HasMaxLength(100)'
+  - order: 5
+    action: Миграция при отсутствии полей
+    detail: 'dotnet ef migrations add AddArtworkCharacteristics -p MomSite.Infrastructure -s MomSite.API -o Data/Migrations; data-migration Status = IsForSale ? Available : NotForSale. Если 008 уже мигрировала, шаг пропустить и отметить в research.md R3'
+  technical_notes:
+  - path: backend/MomSite.Core/Models/Artwork.cs
+    note: 'Сейчас: Id/Title/Description(1000)/ImagePath/ThumbnailPath/Price/IsForSale/CreatedAt/UpdatedAt/CategoryId/Images'
+  - path: backend/MomSite.Infrastructure/Data/ApplicationDbContext.cs
+    note: Блок конфигурации Artwork
+  - path: backend/MomSite.Infrastructure/Data/Migrations/
+    note: Последняя миграция AddBlog
+  - path: specs/008-conversion-quick-wins/data-model.yaml
+    note: Источник полей в 008 (ветка не в main)
+  acceptance_criteria:
+  - id: AC-1
+    description: В Artwork есть все поля, WidthCm/HeightCm допускают дробь
+    done: false
+  - id: AC-2
+    description: ApplyStatus держит IsForSale == (Status == Available)
+    done: false
+  - id: AC-3
+    description: Нет двух миграций с одинаковыми колонками
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Артворк со Status=Sold
+    when: ApplyStatus(Available), затем ApplyStatus(NotMine)
+    then:
+    - IsForSale true, затем false
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - Чистая БД
+    when: dotnet ef database update
+    then:
+    - Колонки созданы, Status выведен из IsForSale
+    verification:
+    - automated
+    level: integration
+- id: T003
+  title: Доп. поля Artwork и миграция AddArtworkCatalogFields
+  description: Добавить ShortDescription, IsFeatured, NeedsReshoot, IsPublished, расширить Description до 5000, при необходимости привести WidthCm/HeightCm к numeric(6,1); единые лимиты ArtworkFieldRules
+  context: Эти поля есть только в 005; общие лимиты нужны и импорту, и форме админки
+  story_ref: US1
+  requirement_refs:
+  - FR-013
+  - FR-002
+  depends_on:
+  - T002
+  parallelizable: false
+  entity_refs:
+  - artwork
+  contract_refs: []
+  steps:
+  - order: 1
+    action: Добавить поля
+    detail: 'Artwork: ShortDescription string? [MaxLength(300)], IsFeatured=false, NeedsReshoot=false, IsPublished=true; Description [MaxLength(5000)]'
+  - order: 2
+    action: Единые лимиты
+    detail: 'backend/MomSite.Core/Models/ArtworkFieldRules.cs: TitleMax=200, DescriptionMax=5000, ShortDescriptionMax=300, SupportMax=100, TechniqueMax=100, SizeMin=1, SizeMax=1000, YearMin=1950, IsYearValid(int, DateTime now)'
+  - order: 3
+    action: Настроить контекст
+    detail: 'ApplicationDbContext: Description HasMaxLength(5000), ShortDescription HasMaxLength(300), IsPublished HasDefaultValue(true); при int-колонках WidthCm/HeightCm AlterColumn до numeric(6,1)'
+  - order: 4
+    action: Миграция
+    detail: dotnet ef migrations add AddArtworkCatalogFields -p MomSite.Infrastructure -s MomSite.API -o Data/Migrations; существующие работы IsPublished=true
+  - order: 5
+    action: Проверить
+    detail: dotnet build && dotnet test
+  technical_notes:
+  - path: backend/MomSite.Core/Models/Artwork.cs
+    note: Description сейчас [MaxLength(1000)]
+  - path: backend/MomSite.Infrastructure/Data/ApplicationDbContext.cs
+    note: Description HasMaxLength(1000) заменить на 5000
+  - path: backend/MomSite.Core/Models/ArtworkFieldRules.cs
+    note: Новый файл, до 200 строк (P3)
+  acceptance_criteria:
+  - id: AC-1
+    description: Миграция применяется на БД с данными, текущие работы IsPublished=true
+    done: false
+  - id: AC-2
+    description: Description принимает 5000 символов, ShortDescription 300
+    done: false
+  - id: AC-3
+    description: ArtworkFieldRules единственное место лимитов
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - БД с 3 работами
+    when: Применить миграцию
+    then:
+    - Все 3 с IsPublished=true, IsFeatured=false, NeedsReshoot=false
+    verification:
+    - automated
+    level: integration
+  - id: TS-2
+    given:
+    - Годы 1949, 1950, текущий+1
+    when: IsYearValid
+    then:
+    - false, true, false
+    verification:
+    - automated
+    level: unit
+- id: T004
+  title: Единый фильтр видимости Visible() для публичных выборок
+  description: 'Расширить существующий IQueryable<Artwork>.Visible(): IsPublished && Status != NotMine; применить в публичных запросах'
+  context: Скрытые работы не должны попадать в галерею, главную, sitemap и ссылки блога; фильтр один на весь сайт (R7)
+  story_ref: US4
+  requirement_refs:
+  - FR-011
+  - FR-008
+  depends_on:
+  - T003
+  parallelizable: false
+  entity_refs:
+  - artwork
+  contract_refs:
+  - public-artworks
+  steps:
+  - order: 1
+    action: Расширить расширение
+    detail: 'ArtworkQueryExtensions.Visible: .Where(a => a.IsPublished && a.Status != ArtworkStatus.NotMine); убрать комментарий «005 добавит»; второе определение не создавать'
+  - order: 2
+    action: Применить в PublicController
+    detail: 'Запрос главной (~строка 42) и GetGalleryData (~строка 137): _context.Artworks.Visible()'
+  - order: 3
+    action: Проверить остальные места
+    detail: 'grep Artworks по backend/MomSite.API и Infrastructure: публичные выборки идут через Visible() (BlogQueries уже), админские нет'
+  - order: 4
+    action: Тесты
+    detail: 'backend/MomSite.Tests/PublicControllerTests.cs: скрытые работы отсутствуют'
+  technical_notes:
+  - path: backend/MomSite.Infrastructure/Data/ArtworkQueryExtensions.cs
+    note: Сейчас Visible() => query (создан в 006)
+  - path: backend/MomSite.API/Controllers/PublicController.cs
+    note: Home и gallery читают _context.Artworks без фильтра
+  - path: backend/MomSite.Infrastructure/Blog/BlogQueries.cs
+    note: Уже использует Visible(), менять не нужно
+  acceptance_criteria:
+  - id: AC-1
+    description: В решении одно определение Visible() для Artwork
+    done: false
+  - id: AC-2
+    description: /api/public/gallery и главная не возвращают IsPublished=false и NotMine
+    done: false
+  - id: AC-3
+    description: Админский список видит все работы
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - 'Работы: опубликованная, черновик, NotMine'
+    when: GET /api/public/gallery
+    then:
+    - Только опубликованная
+    verification:
+    - automated
+    level: integration
+  - id: TS-2
+    given:
+    - Те же работы
+    when: GET /api/admin/artworks
+    then:
+    - Все три
+    verification:
+    - automated
+    level: integration
+- id: T005
+  title: Журнал импорта и контракт сервиса в Core
+  description: CatalogImportLog, ICatalogImportService, типы отчёта ImportReport/RowReport/ImportSummary, миграция AddCatalogImportLog
+  context: Сервису, контроллеру и откату нужны общие типы отчёта и журнал снимков
+  story_ref: US1
+  requirement_refs:
+  - FR-005
+  - FR-006
+  depends_on:
+  - T003
+  parallelizable: false
+  entity_refs:
+  - catalog-import-log
+  - import-report
+  contract_refs:
+  - catalog-import-service
+  steps:
+  - order: 1
+    action: Модель журнала
+    detail: 'backend/MomSite.Core/Models/CatalogImportLog.cs: Id, CreatedAt (UTC), UserName, FileName, FileSha256, Summary (jsonb), Snapshot (jsonb [{artworkId, field, oldValue}]), CreatedIds (jsonb int[]), RolledBackAt?'
+  - order: 2
+    action: Типы отчёта
+    detail: 'backend/MomSite.Core/Models/Catalog/ImportReport.cs (records): ImportSummary, RowReport{Row,Sheet,Id,Title,Changes[{Field,Old,New}],Issues[{Level,Column,Message}],Comment}, ImportReport{Summary,Rows,LogId}, FileError enum (not_xlsx, file_unreadable, sheet_missing, required_header_missing, too_many_rows)'
+  - order: 3
+    action: Интерфейс
+    detail: 'backend/MomSite.Core/Interfaces/ICatalogImportService.cs: ImportAsync(Stream file, string fileName, bool dryRun, string userName, CancellationToken) и RollbackLastAsync(CancellationToken); результат Report | FileInvalid(error) | Busy'
+  - order: 4
+    action: DbSet и конфигурация
+    detail: 'ApplicationDbContext: DbSet<CatalogImportLog>; jsonb для Snapshot/CreatedIds/Summary с конвертером, совместимым с тестовыми провайдерами; индекс CreatedAt'
+  - order: 5
+    action: Миграция
+    detail: dotnet ef migrations add AddCatalogImportLog -p MomSite.Infrastructure -s MomSite.API -o Data/Migrations
+  technical_notes:
+  - path: backend/MomSite.Core/Interfaces/
+    note: Рядом IBlogService.cs, стиль интерфейсов
+  - path: backend/MomSite.Infrastructure/Data/ApplicationDbContext.cs
+    note: Тесты на InMemory/Sqlite, jsonb делать совместимо
+  acceptance_criteria:
+  - id: AC-1
+    description: Таблица CatalogImportLog создаётся миграцией
+    done: false
+  - id: AC-2
+    description: Типы Core не зависят от ClosedXML/EF
+    done: false
+  - id: AC-3
+    description: Каждый файл до 200 строк
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Чистая БД
+    when: dotnet ef database update
+    then:
+    - Таблица CatalogImportLog существует
+    verification:
+    - automated
+    level: integration
+  - id: TS-2
+    given:
+    - Лог со Snapshot из 2 элементов
+    when: Сохранить и прочитать
+    then:
+    - Snapshot и CreatedIds восстановлены
+    verification:
+    - automated
+    level: integration
+- id: T006
+  title: 'HeaderMap: нормализация заголовков и поиск колонок'
+  description: 'Чистая функция поиска колонок по заголовку строки 1: trim, регистр, ё/е, схлопывание пробелов; обязательные ID и Название'
+  context: Порядок колонок в таблице не гарантирован, лишние колонки допустимы
+  story_ref: US1
+  requirement_refs:
+  - FR-001
+  depends_on:
+  - T001
+  parallelizable: true
+  entity_refs:
+  - import-report
+  contract_refs:
+  - catalog-import-service-impl
+  steps:
+  - order: 1
+    action: Создать класс
+    detail: 'backend/MomSite.Infrastructure/Catalog/HeaderMap.cs: Build(IEnumerable<string?> headers) -> HeaderMap{TryGet(CatalogColumn), Missing}'
+  - order: 2
+    action: Описать колонки
+    detail: enum CatalogColumn (Id, Title, Price, Status, WidthCm, HeightCm, Year, Support, Technique, ShortDescription, Description, IsFeatured, NeedsReshoot, Comment, Keep, WhereWhen) и словарь нормализованных заголовков из design-notes («Цена, ₽», «⭐ Сильная работа» и т.д.)
+  - order: 3
+    action: Тесты
+    detail: 'backend/MomSite.Tests/Catalog/HeaderMapTests.cs: регистр, ё/е, пробелы, перестановка, лишние колонки, нет ID, нет Название'
+  technical_notes:
+  - path: scripts/catalog/build_catalog.py
+    note: Источник точных заголовков генератора
+  - path: specs/005-catalog-import/design-notes.md
+    note: Таблица колонок v1
+  acceptance_criteria:
+  - id: AC-1
+    description: Колонки находятся независимо от порядка и регистра
+    done: false
+  - id: AC-2
+    description: Нет ID или Название даёт required_header_missing
+    done: false
+  - id: AC-3
+    description: Нет побочных эффектов
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Заголовки «ЦЕНА, ₽ », «название», «id» в другом порядке
+    when: HeaderMap.Build
+    then:
+    - Все три колонки найдены
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - Нет колонки ID
+    when: HeaderMap.Build
+    then:
+    - Missing содержит Id
+    verification:
+    - automated
+    level: unit
+- id: T007
+  title: 'ValueParsers: цена, размеры, год, статус, флаги, очистка'
+  description: Чистые функции разбора значений ячеек по контракту v1 с результатом Set(value) | Keep | Clear | Warn(msg)
+  context: Мама пишет «150 000 ₽», «2017г.», «50,5», «продана»; мусор не должен ронять импорт
+  story_ref: US1
+  requirement_refs:
+  - FR-002
+  - FR-003
+  - FR-004
+  depends_on:
+  - T003
+  parallelizable: true
+  entity_refs:
+  - artwork
+  contract_refs:
+  - catalog-import-service-impl
+  steps:
+  - order: 1
+    action: Создать парсеры
+    detail: 'backend/MomSite.Infrastructure/Catalog/ValueParsers.cs (до 200 строк, при необходимости разделить): ParsePrice, ParseSize, ParseYear, ParseStatus, ParseFlag, ParseText(maxLen)'
+  - order: 2
+    action: Правила
+    detail: 'Пусто Keep; «-» Clear; цена: пробелы/nbsp, ₽, запятая, «по запросу» null; размер: запятая в точку, диапазон ArtworkFieldRules; год: «2017г.» 2017, диапазон 1950..текущий; статус: без регистра, 6 русских значений; флаг: да/+/1/true и нет/-/0/false; текст сверх лимита Warn без обрезки'
+  - order: 3
+    action: Тесты
+    detail: 'backend/MomSite.Tests/Catalog/ValueParsersTests.cs: Theory, границы 1/1000/1949/1950, мусор Warn, «-» Clear'
+  technical_notes:
+  - path: backend/MomSite.Core/Models/ArtworkFieldRules.cs
+    note: Лимиты отсюда (T003)
+  - path: specs/005-catalog-import/design-notes.md
+    note: Таблица парсинга
+  acceptance_criteria:
+  - id: AC-1
+    description: «150 000 ₽», «150000», «150 000,00» дают 150000; «по запросу» даёт null
+    done: false
+  - id: AC-2
+    description: «2017г.» даёт 2017; «50,5» даёт 50.5; «продана» даёт Sold
+    done: false
+  - id: AC-3
+    description: Мусор даёт Warn без исключения
+    done: false
+  - id: AC-4
+    description: «-» Clear, пустая ячейка Keep
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - 'Цены: «150 000 ₽», «по запросу», «abc»'
+    when: ParsePrice
+    then:
+    - 150000; null; Warn
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - «-» в Технике
+    when: ParseText
+    then:
+    - Clear
+    verification:
+    - automated
+    level: unit
+  - id: TS-3
+    given:
+    - Короткое описание 301 символ
+    when: ParseText(300)
+    then:
+    - Warn, значение не изменено
+    verification:
+    - automated
+    level: unit
+- id: T008
+  title: 'RowValidator: проверка строк листов и RowResult'
+  description: 'Валидатор строки: ID, дубли ID в файле, новая работа, название, предупреждения; лист «Фото с выставок»'
+  context: Каждая строка даёт изменения и замечания, плохая строка не останавливает остальные
+  story_ref: US1
+  requirement_refs:
+  - FR-003
+  - FR-007
+  - FR-008
+  depends_on:
+  - T006
+  - T007
+  parallelizable: false
+  entity_refs:
+  - artwork
+  - import-report
+  contract_refs:
+  - catalog-import-service-impl
+  steps:
+  - order: 1
+    action: Создать валидатор
+    detail: 'backend/MomSite.Infrastructure/Catalog/RowValidator.cs и RowResult.cs: вход значения строки по HeaderMap, существующие ID, встреченные ID, существующие названия; выход RowResult{Row,Sheet,Id?,Title,DesiredChanges,Issues}'
+  - order: 2
+    action: Лист «Каталог»
+    detail: 'ID не int>0 или неизвестный error (строка пропущена); повтор ID error «дубль ID»; пустой ID новая работа: Title обязателен, совпадение названия без регистра warning; полностью пустые строки пропускаются; «Комментарий» только в отчёт'
+  - order: 3
+    action: Лист «Фото с выставок»
+    detail: 'ID + «Оставить на сайте?»: нет IsPublished=false; «Где и когда» непусто в Description'
+  - order: 4
+    action: Статус NotMine
+    detail: Желаемое изменение Status=NotMine (скрытие через Visible), не удаление
+  - order: 5
+    action: Тесты
+    detail: backend/MomSite.Tests/Catalog/RowValidatorTests.cs по EC-2, EC-3, EC-5, EC-6, EC-7
+  technical_notes:
+  - path: specs/005-catalog-import/design-notes.md
+    note: Правила листов и ошибок
+  - path: scripts/catalog/build_catalog.py
+    note: Хвост из пустых заготовленных строк (EC-7)
+  acceptance_criteria:
+  - id: AC-1
+    description: Неизвестный и повторный ID дают error, остальные строки обрабатываются
+    done: false
+  - id: AC-2
+    description: Пустая строка не попадает в отчёт
+    done: false
+  - id: AC-3
+    description: Новая работа без названия error; с дублем названия warning
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - ID 999 (нет в БД) и валидная строка
+    when: RowValidator для обеих
+    then:
+    - Первая error, вторая без issues
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - Два раза ID 5
+    when: RowValidator
+    then:
+    - Вторая error «дубль ID»
+    verification:
+    - automated
+    level: unit
+- id: T009
+  title: 'ChangePlanner: diff с текущими работами'
+  description: Сравнить желаемые значения с текущими Artwork и построить план только изменённых полей (было, стало)
+  context: Предпросмотр и применение строятся одним планом, чтобы отчёт совпадал с результатом
+  story_ref: US1
+  requirement_refs:
+  - FR-005
+  - FR-006
+  depends_on:
+  - T008
+  parallelizable: false
+  entity_refs:
+  - artwork
+  - import-report
+  contract_refs:
+  - catalog-import-service-impl
+  steps:
+  - order: 1
+    action: Создать планировщик
+    detail: 'backend/MomSite.Infrastructure/Catalog/ChangePlanner.cs: Plan(IEnumerable<RowResult>, IReadOnlyDictionary<int,Artwork> current) -> ChangePlan{RowReport[], UpdateOps, CreateOps}'
+  - order: 2
+    action: Правила diff
+    detail: Поле в плане только если отличается; Clear на пустом поле не изменение; Status через ApplyStatus (в diff только Status); строки без изменений и issues считаются skipped
+  - order: 3
+    action: Сводка
+    detail: 'Заполнить ImportSummary: updated/created/skipped/warnings/errors'
+  - order: 4
+    action: Тесты
+    detail: 'backend/MomSite.Tests/Catalog/ChangePlannerTests.cs: повтор тех же значений даёт 0 изменений'
+  technical_notes:
+  - path: backend/MomSite.Core/Models/Artwork.cs
+    note: ApplyStatus и поля для сравнения
+  - path: backend/MomSite.Core/Models/Catalog/ImportReport.cs
+    note: Типы отчёта (T005)
+  acceptance_criteria:
+  - id: AC-1
+    description: В RowReport.Changes только реально изменённые поля
+    done: false
+  - id: AC-2
+    description: Повторный прогон того же входа даёт 0 updated и 0 created
+    done: false
+  - id: AC-3
+    description: Файл до 200 строк
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Работа с Price=100
+    when: Plan с Price=100
+    then:
+    - Changes пуст, строка skipped
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - Работа Status=Available
+    when: Plan со Status=Продана
+    then:
+    - Changes=[Status Available в Sold]
+    verification:
+    - automated
+    level: unit
+- id: T010
+  title: Чтение xlsx и проверка файла целиком
+  description: 'WorkbookReader: чтение потока ClosedXML, поиск листов по имени, лимиты, версия шаблона; проверки расширения и ZIP-сигнатуры'
+  context: Любой плохой файл даёт понятную ошибку, а не 500
+  story_ref: US1
+  requirement_refs:
+  - FR-001
+  - FR-009
+  depends_on:
+  - T001
+  - T006
+  parallelizable: false
+  entity_refs:
+  - import-report
+  contract_refs:
+  - catalog-import-service-impl
+  - catalog-import-service
+  steps:
+  - order: 1
+    action: Создать читатель
+    detail: 'backend/MomSite.Infrastructure/Catalog/WorkbookReader.cs: Open(Stream) -> Workbook | FileError; XLWorkbook из Stream, значения через CachedValue (формулы не вычисляются, =IMAGE игнорируются), без сохранения файла'
+  - order: 2
+    action: Проверки файла
+    detail: расширение .xlsx и ZIP-сигнатура PK\x03\x04 иначе not_xlsx; любое исключение ClosedXML file_unreadable; нет листа «Каталог» sheet_missing; нет ID/Название required_header_missing; более 2000 непустых строк too_many_rows (до валидации)
+  - order: 3
+    action: Версия шаблона
+    detail: 'На листе «Как заполнять» искать ячейку колонки A, начинающуюся с «format:» (генератор пишет «format: v1 (не удаляй эту строку)»), не привязываться к жёсткому A20; не v1 или нет: summary.TemplateVersionMismatch=true и warning (EC-4)'
+  - order: 4
+    action: Тесты
+    detail: 'backend/MomSite.Tests/Catalog/WorkbookReaderTests.cs: книги в памяти через ClosedXML и байты csv/мусор/обрезанный zip'
+  technical_notes:
+  - path: scripts/catalog/build_catalog.py
+    note: Строка версии на листе «Как заполнять»
+  - path: backend/MomSite.Tests/Fixtures/catalog/
+    note: Каталог фикстур (T13)
+  acceptance_criteria:
+  - id: AC-1
+    description: Ошибка чтения не превращается в исключение наружу
+    done: false
+  - id: AC-2
+    description: Лимит строк считается по непустым строкам
+    done: false
+  - id: AC-3
+    description: Нет листа или заголовка даёт соответствующий код ошибки
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Файл .csv
+    when: Open
+    then:
+    - not_xlsx
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - Обрезанный zip
+    when: Open
+    then:
+    - file_unreadable
+    verification:
+    - automated
+    level: unit
+  - id: TS-3
+    given:
+    - Лист «Каталог» с 2001 заполненной строкой
+    when: Open
+    then:
+    - too_many_rows
+    verification:
+    - automated
+    level: unit
+- id: T011
+  title: 'CatalogImportService: режим предпросмотра и регистрация в DI'
+  description: Склеить Reader, Validator, Planner в CatalogImportService (dryRun=true), семафор одного импорта, регистрация в Program.cs
+  context: Один сервис за интерфейсом нужен контроллеру; предпросмотр не меняет данные
+  story_ref: US1
+  requirement_refs:
+  - FR-005
+  - FR-009
+  depends_on:
+  - T005
+  - T009
+  - T010
+  parallelizable: false
+  entity_refs:
+  - artwork
+  - import-report
+  - catalog-import-log
+  contract_refs:
+  - catalog-import-service
+  - catalog-import-service-impl
+  steps:
+  - order: 1
+    action: Создать сервис
+    detail: 'backend/MomSite.Infrastructure/Catalog/CatalogImportService.cs : ICatalogImportService; dryRun=true читает Artworks AsNoTracking, строит план, возвращает ImportReport без SaveChanges'
+  - order: 2
+    action: Блокировка
+    detail: статический SemaphoreSlim(1,1); WaitAsync(0) неуспешно даёт Busy
+  - order: 3
+    action: Регистрация
+    detail: 'Program.cs: AddScoped<ICatalogImportService, CatalogImportService>() рядом с IBlogService'
+  - order: 4
+    action: Тесты
+    detail: 'backend/MomSite.Tests/Catalog/CatalogImportServicePreviewTests.cs: после предпросмотра БД не изменилась'
+  technical_notes:
+  - path: backend/MomSite.API/Program.cs
+    note: Регистрации сервисов в строках ~155-189
+  - path: backend/MomSite.Infrastructure/Catalog/
+    note: Файлы до 200 строк (P3)
+  acceptance_criteria:
+  - id: AC-1
+    description: Предпросмотр не вызывает SaveChanges
+    done: false
+  - id: AC-2
+    description: Параллельный запрос получает Busy
+    done: false
+  - id: AC-3
+    description: Сервис зарегистрирован в DI
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Заполненный xlsx и БД с 3 работами
+    when: ImportAsync(dryRun=true)
+    then:
+    - Отчёт со сводкой; БД до и после совпадает
+    verification:
+    - automated
+    level: integration
+  - id: TS-2
+    given:
+    - Импорт уже выполняется
+    when: Второй ImportAsync
+    then:
+    - Busy
+    verification:
+    - automated
+    level: integration
+- id: T012
+  title: 'CatalogImportController: POST /api/admin/catalog/import (предпросмотр)'
+  description: Эндпоинт multipart с [Authorize], RequestSizeLimit 5 МБ, коды 200/400/401/409/413
+  context: Админка общается с сервисом только через этот эндпоинт
+  story_ref: US1
+  requirement_refs:
+  - FR-005
+  - FR-009
+  depends_on:
+  - T011
+  parallelizable: false
+  entity_refs:
+  - import-report
+  contract_refs:
+  - admin-catalog-import
+  steps:
+  - order: 1
+    action: Создать контроллер
+    detail: 'backend/MomSite.API/Controllers/CatalogImportController.cs: [ApiController][Route("api/admin/catalog")][Authorize]; POST import ([FromForm] IFormFile file, [FromQuery] bool dryRun = true); [RequestSizeLimit(5*1024*1024)]'
+  - order: 2
+    action: Маппинг ответов
+    detail: report 200 {summary, rows, logId?}; FileInvalid 400 {error, message по-русски}; Busy 409; превышение размера 413 (лимит атрибутом на action, глобальный MaxRequestBodySize 100 МБ не снижать)
+  - order: 3
+    action: userName
+    detail: User.Identity?.Name ?? "admin"
+  - order: 4
+    action: Тесты
+    detail: backend/MomSite.Tests/Catalog/CatalogImportControllerTests.cs по образцу Blog/BlogAdminControllerTests.cs (WebApplicationFactory, 401 без токена)
+  technical_notes:
+  - path: backend/MomSite.API/Controllers/BlogAdminController.cs
+    note: Образец [Authorize]-контроллера
+  - path: backend/MomSite.Tests/Blog/BlogAdminControllerTests.cs
+    note: Образец тестов с коллекцией AdminEnvIntegration
+  - path: backend/MomSite.API/Program.cs
+    note: Kestrel MaxRequestBodySize 100 МБ
+  acceptance_criteria:
+  - id: AC-1
+    description: Запрос без JWT даёт 401
+    done: false
+  - id: AC-2
+    description: Файл 6 МБ даёт 413, .csv даёт 400 с понятным текстом
+    done: false
+  - id: AC-3
+    description: Нет 500 на наборе испорченных файлов
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Нет токена
+    when: POST /api/admin/catalog/import
+    then:
+    - '401'
+    verification:
+    - automated
+    level: integration
+  - id: TS-2
+    given:
+    - Валидный xlsx, dryRun=true
+    when: POST
+    then:
+    - 200 с summary и rows
+    verification:
+    - automated
+    level: integration
+  - id: TS-3
+    given:
+    - Файл 6 МБ
+    when: POST
+    then:
+    - '413'
+    verification:
+    - automated
+    level: integration
+- id: T013
+  title: Фикстуры xlsx и интеграционные тесты предпросмотра
+  description: Фикстуры (выгрузка build_catalog.py v1, версия Google Sheets, 10 испорченных файлов) и прогон предпросмотра
+  context: 'SC-002: 0 ошибок сервера на 10 испорченных файлах; экспорт Google не должен ломать заголовки'
+  story_ref: US1
+  requirement_refs:
+  - FR-001
+  - FR-002
+  - FR-009
+  depends_on:
+  - T012
+  parallelizable: false
+  entity_refs:
+  - import-report
+  contract_refs:
+  - admin-catalog-import
+  steps:
+  - order: 1
+    action: Фикстура v1
+    detail: python scripts/catalog/build_catalog.py, результат в backend/MomSite.Tests/Fixtures/catalog/catalog_v1.xlsx; CopyToOutputDirectory в MomSite.Tests.csproj
+  - order: 2
+    action: Фикстура Google Sheets
+    detail: 'backend/MomSite.Tests/Fixtures/catalog/catalog_gsheets.xlsx: экспорт того же файла из Google Sheets (нужен ручной шаг пользователя; до этого тест Skip с причиной)'
+  - order: 3
+    action: Испорченные файлы
+    detail: 'В тесте в памяти: csv, пустой файл, обрезанный zip, нет листа, нет ID, 2001 строка, формулы =IMAGE, дубли ID, мусор в ячейках, unicode/emoji'
+  - order: 4
+    action: Тесты
+    detail: 'backend/MomSite.Tests/Catalog/CatalogImportFixturesTests.cs: ни один не даёт 500; AS-2 (150 000 ₽, 2017г., 50,5)'
+  technical_notes:
+  - path: backend/MomSite.Tests/MomSite.Tests.csproj
+    note: ItemGroup для Fixtures/catalog/*.xlsx
+  - path: scripts/catalog/build_catalog.py
+    note: Генератор шаблона
+  acceptance_criteria:
+  - id: AC-1
+    description: 10 испорченных файлов дают 400/200, не 500
+    done: false
+  - id: AC-2
+    description: Фикстура v1 разбирается, распознаваемые значения без warnings
+    done: false
+  - id: AC-3
+    description: Фикстура Google Sheets добавлена либо тест явно Skip
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Фикстура v1, частично заполненная
+    when: Предпросмотр
+    then:
+    - Сводка корректна, данные не изменены
+    verification:
+    - automated
+    level: integration
+  - id: TS-2
+    given:
+    - 10 испорченных файлов
+    when: Предпросмотр каждого
+    then:
+    - Нет 500
+    verification:
+    - automated
+    level: integration
+- id: T014
+  title: Типы и API-клиент каталога во фронтенде
+  description: 'types/catalog.ts и lib/catalogApi.ts: preview/apply/rollback'
+  context: UI-странице нужен типизированный клиент, общий для US1-US3
+  story_ref: US1
+  requirement_refs:
+  - FR-005
+  depends_on: []
+  parallelizable: true
+  entity_refs:
+  - import-report
+  contract_refs:
+  - admin-catalog-import
+  steps:
+  - order: 1
+    action: Типы
+    detail: 'frontend/types/catalog.ts: ImportSummary, RowReport, FieldChange, ImportIssue, ImportReport, RollbackResult по data-model import-report'
+  - order: 2
+    action: Клиент
+    detail: 'frontend/lib/catalogApi.ts: adminCatalog.preview(file), apply(file), rollback(); FormData multipart, токен как в lib/blogApi.ts; catalogErrorMessage(e) показывает message из 400'
+  - order: 3
+    action: Тесты
+    detail: frontend/lib/catalogApi.test.ts по образцу lib/blogApi.test.ts, если такой есть, иначе с моком fetch
+  technical_notes:
+  - path: frontend/lib/blogApi.ts
+    note: Образец admin-клиента с токеном
+  - path: frontend/types/blog.ts
+    note: Образец типов
+  acceptance_criteria:
+  - id: AC-1
+    description: Клиент возвращает типизированный отчёт
+    done: false
+  - id: AC-2
+    description: Текст ошибки 400 доходит до UI
+    done: false
+  - id: AC-3
+    description: tsc --noEmit без ошибок
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Мок fetch 200 с summary
+    when: adminCatalog.preview(file)
+    then:
+    - Возвращён объект отчёта
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - Мок 400
+    when: preview
+    then:
+    - Ошибка с message
+    verification:
+    - automated
+    level: unit
+- id: T015
+  title: 'Страница /admin/catalog: загрузка и предпросмотр'
+  description: Страница с выбором файла, кнопкой «Предпросмотр», сводкой, таблицей diff (только изменённые поля), фильтром «только с ошибками», плиткой на дашборде
+  context: Админ видит результат до применения, не заглядывая в файл
+  story_ref: US1
+  requirement_refs:
+  - FR-005
+  depends_on:
+  - T012
+  - T014
+  parallelizable: false
+  entity_refs:
+  - import-report
+  contract_refs:
+  - admin-catalog-import
+  steps:
+  - order: 1
+    action: Создать страницу
+    detail: frontend/app/admin/catalog/page.tsx ('use client', AdminAuthGuard как в frontend/app/admin/blog/page.tsx); таблица в frontend/components/admin/CatalogDiffTable.tsx (до 200 строк)
+  - order: 2
+    action: Состояния
+    detail: 'загрузка, ошибка (catalogErrorMessage), отчёт; сводка: обновится, создастся, пропущено, предупреждений, ошибок; предупреждение о версии шаблона; строки error/warning выделены, чекбокс «только с ошибками»; Комментарий в строке'
+  - order: 3
+    action: Плитка
+    detail: 'frontend/app/admin/page.tsx: карточка «Каталог (импорт)» со ссылкой на /admin/catalog рядом с плиткой блога'
+  - order: 4
+    action: Тесты
+    detail: 'frontend/app/admin/catalog/page.test.tsx: рендер отчёта, фильтр, ошибка файла'
+  technical_notes:
+  - path: frontend/app/admin/blog/page.tsx
+    note: Образец админ-страницы с AdminAuthGuard
+  - path: frontend/app/admin/page.tsx
+    note: Плитки дашборда (~строка 331)
+  acceptance_criteria:
+  - id: AC-1
+    description: После загрузки видны сводка и diff только изменённых полей
+    done: false
+  - id: AC-2
+    description: Фильтр «только с ошибками» оставляет строки с error
+    done: false
+  - id: AC-3
+    description: Плитка ведёт на /admin/catalog
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - 'Мок отчёта: 2 строки, одна с error'
+    when: Включить фильтр
+    then:
+    - Видна одна строка
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - Мок 400 not_xlsx
+    when: Загрузить файл
+    then:
+    - Понятный текст ошибки
+    verification:
+    - automated
+    level: unit
+- id: T016
+  title: 'ImportApplier: применение плана в транзакции со снимком'
+  description: 'Применить ChangePlan одной транзакцией: обновления, черновики, скрытие; записать CatalogImportLog со снимком старых значений'
+  context: Данные переносятся атомарно и с возможностью отката
+  story_ref: US2
+  requirement_refs:
+  - FR-004
+  - FR-006
+  - FR-007
+  - FR-008
+  depends_on:
+  - T011
+  parallelizable: false
+  entity_refs:
+  - artwork
+  - category
+  - catalog-import-log
+  contract_refs:
+  - catalog-import-service-impl
+  steps:
+  - order: 1
+    action: Создать применитель
+    detail: 'backend/MomSite.Infrastructure/Catalog/ImportApplier.cs: Apply(ChangePlan, userName, fileName, sha256) внутри db.Database.BeginTransactionAsync; строки с error пропущены'
+  - order: 2
+    action: Снимок
+    detail: До изменений собрать Snapshot [{artworkId, field, oldValue}] только изменяемых полей; CreatedIds для созданных; лог пишется только если изменений больше 0
+  - order: 3
+    action: Правила записи
+    detail: Status через artwork.ApplyStatus (IsForSale производная, прямая запись игнорируется); Clear даёт null/false; UpdatedAt = UtcNow только у изменённых
+  - order: 4
+    action: Новые работы
+    detail: IsPublished=false, CategoryId = первая Category по DisplayOrder, ImagePath/ThumbnailPath = пустая строка (Required допускает пустую; проверять только у опубликованных), CreatedAt=UtcNow
+  - order: 5
+    action: Подключить в сервис
+    detail: CatalogImportService при dryRun=false вызывает Apply, возвращает LogId, считает SHA-256 потока
+  technical_notes:
+  - path: backend/MomSite.Core/Models/Artwork.cs
+    note: 'ImagePath/ThumbnailPath [Required]: черновик без фото хранит пустую строку'
+  - path: backend/MomSite.Infrastructure/Data/ApplicationDbContext.cs
+    note: Конфигурация обязательных путей
+  acceptance_criteria:
+  - id: AC-1
+    description: Ошибка в середине применения откатывает всю транзакцию
+    done: false
+  - id: AC-2
+    description: Повторный импорт того же файла даёт 0 изменений и не создаёт лог
+    done: false
+  - id: AC-3
+    description: Новая работа создаётся скрытым черновиком в категории по умолчанию
+    done: false
+  - id: AC-4
+    description: Статус «Не моя работа» скрывает работу, не удаляя
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Файл с 3 валидными и 1 error-строкой
+    when: Apply
+    then:
+    - 3 применены, error-строка пропущена, лог создан
+    verification:
+    - automated
+    level: integration
+  - id: TS-2
+    given:
+    - Тот же файл повторно
+    when: Apply
+    then:
+    - 0 изменений, логов по-прежнему 1
+    verification:
+    - automated
+    level: integration
+  - id: TS-3
+    given:
+    - Исключение на 2-й записи
+    when: Apply
+    then:
+    - Ни одна работа не изменена
+    verification:
+    - automated
+    level: integration
+- id: T017
+  title: Эндпоинт применения dryRun=false и 409 при конкуренции
+  description: 'Включить применение в контроллере: logId в ответе, 409 при параллельном импорте'
+  context: Админ применяет тот же файл одним действием после предпросмотра
+  story_ref: US2
+  requirement_refs:
+  - FR-006
+  depends_on:
+  - T016
+  - T012
+  parallelizable: false
+  entity_refs:
+  - catalog-import-log
+  contract_refs:
+  - admin-catalog-import
+  steps:
+  - order: 1
+    action: Ветка dryRun=false
+    detail: CatalogImportController.Import передаёт dryRun в ImportAsync; logId только при изменениях больше 0
+  - order: 2
+    action: Конкуренция
+    detail: Busy даёт 409 {error:'import_in_progress'}; семафор освобождается в finally
+  - order: 3
+    action: Кэш
+    detail: После применения сбросить кэш галереи через ICacheInvalidator, как в ArtworksController, если там есть такой вызов
+  - order: 4
+    action: Тесты
+    detail: 'CatalogImportControllerTests: apply, 409 при двух параллельных, 401'
+  technical_notes:
+  - path: backend/MomSite.API/Controllers/ArtworksController.cs
+    note: Как инвалидируется кэш
+  - path: backend/MomSite.Core/Interfaces/ICacheInvalidator.cs
+    note: Интерфейс сброса кэша
+  acceptance_criteria:
+  - id: AC-1
+    description: Применение возвращает 200 с logId
+    done: false
+  - id: AC-2
+    description: Второй одновременный запрос получает 409
+    done: false
+  - id: AC-3
+    description: Галерея сайта обновляется (кэш сброшен)
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Валидный xlsx
+    when: POST ?dryRun=false
+    then:
+    - 200 и logId, данные в БД обновлены
+    verification:
+    - automated
+    level: integration
+  - id: TS-2
+    given:
+    - Два одновременных POST ?dryRun=false
+    when: Отправить оба
+    then:
+    - Один 200, второй 409
+    verification:
+    - automated
+    level: integration
+- id: T018
+  title: Кнопка «Применить» и итог применения в админке
+  description: После предпросмотра админ нажимает «Применить» (с подтверждением), видит итог и logId
+  context: Без этого предпросмотр нельзя довести до результата
+  story_ref: US2
+  requirement_refs:
+  - FR-006
+  - FR-007
+  depends_on:
+  - T015
+  - T017
+  parallelizable: false
+  entity_refs:
+  - import-report
+  contract_refs:
+  - admin-catalog-import
+  steps:
+  - order: 1
+    action: Кнопка
+    detail: 'frontend/app/admin/catalog/page.tsx: «Применить» активна после успешного предпросмотра без file-level ошибки; window.confirm с числом изменений; повторно отправляет тот же File'
+  - order: 2
+    action: Итог
+    detail: Итоговая сводка, logId, список созданных черновиков с подсказкой «добавьте фото» (ссылка на /admin/artworks)
+  - order: 3
+    action: Защита
+    detail: Кнопка disabled во время запроса; 409 даёт «Импорт уже выполняется»; сброс состояния при выборе другого файла
+  - order: 4
+    action: Тесты
+    detail: 'page.test.tsx: apply вызывает adminCatalog.apply с тем же файлом; 409'
+  technical_notes:
+  - path: frontend/app/admin/catalog/page.tsx
+    note: Создана в T015
+  - path: frontend/app/admin/artworks/page.tsx
+    note: Список работ для добавления фото
+  acceptance_criteria:
+  - id: AC-1
+    description: Применить недоступно до предпросмотра
+    done: false
+  - id: AC-2
+    description: После применения показан итог и подсказка про фото
+    done: false
+  - id: AC-3
+    description: 409 показывает понятное сообщение
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Предпросмотр выполнен
+    when: Нажать «Применить» и подтвердить
+    then:
+    - Вызван apply, показан итог
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - Мок 409
+    when: Применить
+    then:
+    - Сообщение «Импорт уже выполняется»
+    verification:
+    - automated
+    level: unit
+- id: T019
+  title: 'Интеграционные тесты применения: идемпотентность и черновики'
+  description: 'Автотесты применения: статусы, очистка «-», новые работы, дубль названия, скрытие NotMine'
+  context: Подтверждение, что применение не ломает данные и совпадает с предпросмотром
+  story_ref: US2
+  requirement_refs:
+  - FR-004
+  - FR-006
+  - FR-007
+  - FR-008
+  depends_on:
+  - T017
+  parallelizable: false
+  entity_refs:
+  - artwork
+  - catalog-import-log
+  contract_refs:
+  - admin-catalog-import
+  steps:
+  - order: 1
+    action: Тесты применения
+    detail: 'backend/MomSite.Tests/Catalog/CatalogImportApplyTests.cs: предпросмотр и применение дают один набор Changes; «-» очищает Technique; пустая ячейка не трогает поле'
+  - order: 2
+    action: Черновики
+    detail: Строка без ID создаёт IsPublished=false, пустые пути фото, первую категорию; работа не видна в /api/public/gallery
+  - order: 3
+    action: Скрытие
+    detail: NotMine и «нет» в «Фото с выставок» скрывают работу, запись остаётся
+  - order: 4
+    action: Идемпотентность
+    detail: 'Повторное применение: Updated=0, Created=0, LogId=null'
+  technical_notes:
+  - path: backend/MomSite.Tests/Catalog/
+    note: Новые тесты модуля
+  acceptance_criteria:
+  - id: AC-1
+    description: Отчёт предпросмотра совпадает с фактическими изменениями
+    done: false
+  - id: AC-2
+    description: Черновик не виден публично
+    done: false
+  - id: AC-3
+    description: Идемпотентность подтверждена тестом
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Фикстура v1 и БД из 5 работ
+    when: Предпросмотр, затем применение
+    then:
+    - Changes идентичны; в БД ровно эти изменения
+    verification:
+    - automated
+    level: integration
+  - id: TS-2
+    given:
+    - Применённый файл
+    when: Применить повторно
+    then:
+    - 0 изменений, лог не создан
+    verification:
+    - automated
+    level: integration
+- id: T020
+  title: 'Откат последнего импорта: сервис и POST /import/rollback'
+  description: 'RollbackLastAsync и эндпоинт: восстановление полей из Snapshot, удаление черновиков без фото, список работ, правленных после импорта'
+  context: Если импорт ошибочен, админ возвращает данные одним действием
+  story_ref: US3
+  requirement_refs:
+  - FR-006
+  depends_on:
+  - T017
+  parallelizable: false
+  entity_refs:
+  - catalog-import-log
+  - artwork
+  contract_refs:
+  - admin-catalog-rollback
+  - catalog-import-service
+  steps:
+  - order: 1
+    action: Логика отката
+    detail: 'backend/MomSite.Infrastructure/Catalog/ImportRollback.cs: последний лог с RolledBackAt=null; в транзакции восстановить поля из Snapshot (Status через ApplyStatus); черновики из CreatedIds без Images удалить, с фото IsPublished=false и warning; работы с UpdatedAt > log.CreatedAt перечислить в editedAfterImport (поле всё равно восстановить); RolledBackAt=UtcNow'
+  - order: 2
+    action: Сервис
+    detail: 'CatalogImportService.RollbackLastAsync делегирует; под тем же семафором (занято: Busy)'
+  - order: 3
+    action: Контроллер
+    detail: 'POST api/admin/catalog/import/rollback: 200 {restoredFields, deletedDrafts, editedAfterImport}; нет лога 404; Busy 409; [Authorize]'
+  - order: 4
+    action: Тесты
+    detail: 'backend/MomSite.Tests/Catalog/ImportRollbackTests.cs и CatalogImportControllerTests: 401/404/409/200'
+  technical_notes:
+  - path: backend/MomSite.Core/Models/ArtworkImage.cs
+    note: Фото черновика через Artwork.Images
+  - path: backend/MomSite.API/Controllers/CatalogImportController.cs
+    note: Добавить action рядом с Import
+  acceptance_criteria:
+  - id: AC-1
+    description: Откат возвращает значения полей и удаляет черновики без фото
+    done: false
+  - id: AC-2
+    description: Повторный откат возвращает 404
+    done: false
+  - id: AC-3
+    description: Работы, правленные после импорта, перечислены в ответе
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Применённый импорт с 1 новой работой
+    when: POST /rollback
+    then:
+    - Поля восстановлены, черновик удалён
+    verification:
+    - automated
+    level: integration
+  - id: TS-2
+    given:
+    - Откат уже выполнен
+    when: POST /rollback
+    then:
+    - '404'
+    verification:
+    - automated
+    level: integration
+  - id: TS-3
+    given:
+    - Работа правилась в админке после импорта
+    when: POST /rollback
+    then:
+    - Id в editedAfterImport
+    verification:
+    - automated
+    level: integration
+- id: T021
+  title: Кнопка «Откатить последний импорт» в админке
+  description: Кнопка с подтверждением и показом результата отката
+  context: Откат доступен там же, где применение
+  story_ref: US3
+  requirement_refs:
+  - FR-006
+  depends_on:
+  - T018
+  - T020
+  parallelizable: false
+  entity_refs:
+  - catalog-import-log
+  contract_refs:
+  - admin-catalog-rollback
+  steps:
+  - order: 1
+    action: Кнопка
+    detail: 'frontend/app/admin/catalog/page.tsx: «Откатить последний импорт» с window.confirm; adminCatalog.rollback()'
+  - order: 2
+    action: Результат
+    detail: restoredFields, deletedDrafts и список editedAfterImport со ссылками; 404 даёт «Откатывать нечего»
+  - order: 3
+    action: Тесты
+    detail: 'page.test.tsx: успешный откат, 404'
+  technical_notes:
+  - path: frontend/lib/catalogApi.ts
+    note: Метод rollback (T014)
+  acceptance_criteria:
+  - id: AC-1
+    description: После отката показан результат
+    done: false
+  - id: AC-2
+    description: 404 показывает «Откатывать нечего»
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Мок 200
+    when: Откатить
+    then:
+    - Числа и список правленных работ
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - Мок 404
+    when: Откатить
+    then:
+    - Сообщение «Откатывать нечего»
+    verification:
+    - automated
+    level: unit
+- id: T022
+  title: Публичный DTO и фронтовые типы с новыми полями
+  description: Добавить в ArtworkDto/ArtworkAdminDto поля характеристик; цена публично только при Available; NeedsReshoot только в админском DTO
+  context: Карточке и галерее нужны размеры, год, техника и статус из публичного API
+  story_ref: US4
+  requirement_refs:
+  - FR-010
+  - FR-014
+  depends_on:
+  - T004
+  parallelizable: false
+  entity_refs:
+  - artwork
+  contract_refs:
+  - public-artworks
+  - admin-artworks
+  steps:
+  - order: 1
+    action: Бэкенд DTO
+    detail: 'backend/MomSite.API/DTOs/ArtworkDto.cs: Status, WidthCm, HeightCm, Year, Support, Technique, ShortDescription, IsFeatured; ArtworkAdminDto.cs: те же + NeedsReshoot, IsPublished'
+  - order: 2
+    action: Маппинг
+    detail: 'DTOs/MappingExtensions.cs ToDto: Price = Status == Available ? Price : null; IsForSale оставить для старых клиентов; админский маппинг в ArtworksController (~строка 48) дополнить'
+  - order: 3
+    action: Фронтовые типы
+    detail: 'frontend/lib/api.ts: Artwork и ArtworkDto получают status, widthCm, heightCm, year, support, technique, shortDescription, isFeatured; админский needsReshoot, isPublished'
+  - order: 4
+    action: Тесты
+    detail: 'backend/MomSite.Tests/PublicControllerTests.cs: у проданной работы price отсутствует, needsReshoot нет в JSON'
+  technical_notes:
+  - path: backend/MomSite.API/DTOs/MappingExtensions.cs
+    note: ToDto для Artwork (~строка 7)
+  - path: frontend/lib/api.ts
+    note: interface Artwork (~45) и ArtworkDto (~113)
+  acceptance_criteria:
+  - id: AC-1
+    description: Публичный JSON содержит новые поля и не содержит needsReshoot
+    done: false
+  - id: AC-2
+    description: price отдаётся только при Status=Available
+    done: false
+  - id: AC-3
+    description: IsForSale в ответах сохранён
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Работа Sold с Price=1000
+    when: GET /api/public/gallery
+    then:
+    - price отсутствует, status=Sold
+    verification:
+    - automated
+    level: integration
+  - id: TS-2
+    given:
+    - Работа Available с Price=1000
+    when: GET /api/public/gallery
+    then:
+    - price=1000
+    verification:
+    - automated
+    level: integration
+- id: T023
+  title: 'Карточка /gallery/[slug]: характеристики, статус, цена по правилу'
+  description: Вывести Ш × В см, технику, основу, год, статус-бейдж, цену только при Available, короткое описание как подзаголовок
+  context: Посетитель видит полные данные о работе перед обращением
+  story_ref: US4
+  requirement_refs:
+  - FR-010
+  - FR-014
+  depends_on:
+  - T022
+  parallelizable: false
+  entity_refs:
+  - artwork
+  contract_refs:
+  - public-artworks
+  steps:
+  - order: 1
+    action: Блок характеристик
+    detail: 'frontend/app/gallery/[slug]/page.tsx: «Ш × В см» (если оба заданы), техника, основа, год; пустые пропускать'
+  - order: 2
+    action: Статус и цена
+    detail: 'Available: цена или «по запросу» + AskPriceButton (как сейчас); иначе бейдж статуса без цены; опираться на artwork.status, не только isForSale'
+  - order: 3
+    action: Описание
+    detail: shortDescription подзаголовком под названием; полное Description ниже
+  - order: 4
+    action: SEO-описание
+    detail: 'frontend/app/gallery/[slug]/artworkSeo.ts buildSeoDescription: shortDescription, иначе первые 160 символов Description'
+  - order: 5
+    action: Тесты
+    detail: frontend/app/gallery/[slug]/page.test.tsx и frontend/__tests__/artworkSeo.boundary.test.ts
+  technical_notes:
+  - path: frontend/app/gallery/[slug]/page.tsx
+    note: Сейчас showPriceCta/priceLabel по isForSale (~113)
+  - path: frontend/app/gallery/[slug]/artworkSeo.ts
+    note: buildSeoDescription
+  acceptance_criteria:
+  - id: AC-1
+    description: У «В наличии» видны размер, техника, основа, год и цена; у «Продана» бейдж вместо цены
+    done: false
+  - id: AC-2
+    description: Пустые поля не рендерят пустых подписей
+    done: false
+  - id: AC-3
+    description: meta description берёт shortDescription или 160 символов Description
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Работа Sold с размерами
+    when: Рендер карточки
+    then:
+    - Бейдж «Продана», цены нет, размер есть
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - shortDescription пуст, Description 500 символов
+    when: buildSeoDescription
+    then:
+    - Первые 160 символов
+    verification:
+    - automated
+    level: unit
+- id: T024
+  title: 'StructuredData: VisualArtwork и Offer'
+  description: Дополнить JSON-LD карточки artMedium, artworkSurface, width, height, dateCreated и offers только при цене и статусе Available/Sold
+  context: Невалидная разметка вредит выдаче (SC-004)
+  story_ref: US4
+  requirement_refs:
+  - FR-012
+  depends_on:
+  - T022
+  parallelizable: true
+  entity_refs:
+  - artwork
+  contract_refs:
+  - public-artworks
+  steps:
+  - order: 1
+    action: Схема работы
+    detail: 'frontend/app/gallery/[slug]/artworkSeo.ts buildArtworkSchema: @type VisualArtwork; artMedium=technique, artworkSurface=support, width/height QuantitativeValue (unitCode CMT), dateCreated=year; поля только если заданы'
+  - order: 2
+    action: Offer
+    detail: offers {Offer, price, priceCurrency RUB, availability InStock|SoldOut} только при цене и Status Available (InStock) или Sold (SoldOut); иначе offers нет
+  - order: 3
+    action: Тесты
+    detail: 'frontend/__tests__/ArtworkJsonLd.test.tsx и artworkSeo.boundary.test.ts: Available с ценой, Sold, без цены, без размеров'
+  technical_notes:
+  - path: frontend/app/gallery/[slug]/artworkSeo.ts
+    note: buildArtworkSchema
+  - path: frontend/__tests__/ArtworkJsonLd.test.tsx
+    note: Существующие тесты JSON-LD
+  acceptance_criteria:
+  - id: AC-1
+    description: Available с ценой даёт Offer InStock; Sold SoldOut
+    done: false
+  - id: AC-2
+    description: Без цены или со статусом NotForSale offers нет
+    done: false
+  - id: AC-3
+    description: Нет полей undefined/null в JSON-LD
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Available, price 1000, техника, размеры
+    when: buildArtworkSchema
+    then:
+    - offers InStock, artMedium, width, height
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - Status NotForSale
+    when: buildArtworkSchema
+    then:
+    - Нет offers
+    verification:
+    - automated
+    level: unit
+- id: T025
+  title: 'Галерея и sitemap: статусы и скрытые работы'
+  description: GalleryClientPage показывает статус вместо цены у недоступных; sitemap и связанные работы опираются на статус и серверный фильтр
+  context: Скрытые работы исключены сервером; клиентские места не должны полагаться только на isForSale
+  story_ref: US4
+  requirement_refs:
+  - FR-011
+  - FR-014
+  depends_on:
+  - T022
+  parallelizable: true
+  entity_refs:
+  - artwork
+  contract_refs:
+  - public-artworks
+  steps:
+  - order: 1
+    action: Галерея
+    detail: 'frontend/app/gallery/GalleryClientPage.tsx: бейдж статуса у не-Available, цена только у Available'
+  - order: 2
+    action: Sitemap
+    detail: 'frontend/app/sitemap.ts: источник getGalleryData() уже без скрытых (T004); убедиться, что artworksForSale (lib/gallery.ts) не возвращает скрытых; обновить frontend/app/sitemap.test.ts'
+  - order: 3
+    action: Связанные работы
+    detail: 'frontend/app/gallery/[slug]/page.tsx (~129 candidate.isForSale) и RelatedWorks.tsx: перейти на status === ''Available'' с fallback на isForSale'
+  - order: 4
+    action: Тесты
+    detail: тесты галереи и sitemap.test.ts
+  technical_notes:
+  - path: frontend/app/sitemap.ts
+    note: artworksForSale (~65)
+  - path: frontend/lib/gallery.ts
+    note: artworksForSale фильтрует фото выставок
+  acceptance_criteria:
+  - id: AC-1
+    description: В галерее у проданной работы бейдж вместо цены
+    done: false
+  - id: AC-2
+    description: Скрытая работа отсутствует в sitemap
+    done: false
+  - id: AC-3
+    description: Нет регрессий текущих тестов галереи
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Галерея с Sold и Available
+    when: Рендер GalleryClientPage
+    then:
+    - Цена только у Available, бейдж у Sold
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - gallery data без скрытых
+    when: sitemap()
+    then:
+    - Нет их URL
+    verification:
+    - automated
+    level: unit
+- id: T026
+  title: 'e2e: карточка с полями и скрытая работа дают 404'
+  description: Playwright-сценарии карточки (Available/Sold) и 404 для скрытой работы с моками API
+  context: Закрыть AS карточки на уровне браузера
+  story_ref: US4
+  requirement_refs:
+  - FR-010
+  - FR-011
+  depends_on:
+  - T023
+  - T024
+  - T025
+  parallelizable: false
+  entity_refs:
+  - artwork
+  contract_refs:
+  - public-artworks
+  steps:
+  - order: 1
+    action: Спека
+    detail: 'frontend/e2e/catalog.spec.ts (по образцу e2e/blog.spec.ts): карточка Available показывает размер/технику/год/цену и ld+json VisualArtwork+Offer; Sold показывает бейдж без цены'
+  - order: 2
+    action: Скрытая работа
+    detail: Прямой URL работы, которой нет в gallery data, даёт 404; галерея её не содержит
+  - order: 3
+    action: Запуск
+    detail: cd frontend && npx playwright test e2e/catalog.spec.ts
+  technical_notes:
+  - path: frontend/e2e/
+    note: Существующие spec-файлы и способ мокирования API
+  acceptance_criteria:
+  - id: AC-1
+    description: Оба сценария карточки проходят
+    done: false
+  - id: AC-2
+    description: Скрытая работа даёт 404
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Мок gallery с Available и Sold
+    when: Открыть карточки
+    then:
+    - Данные и разметка по правилам
+    verification:
+    - automated
+    level: integration
+- id: T027
+  title: 'ArtworksController: новые поля в create/update с общей валидацией'
+  description: Принять status и поля характеристик в CreateArtworkDto/UpdateArtworkDto; IsForSale из запроса не источник правды; валидация по ArtworkFieldRules
+  context: Админ правит поля вручную с теми же правилами, что и импорт
+  story_ref: US5
+  requirement_refs:
+  - FR-013
+  - FR-014
+  depends_on:
+  - T003
+  - T022
+  parallelizable: false
+  entity_refs:
+  - artwork
+  contract_refs:
+  - admin-artworks
+  steps:
+  - order: 1
+    action: DTO запросов
+    detail: 'backend/MomSite.API/Controllers/ArtworksController.cs (~168 CreateArtworkDto, ~178 UpdateArtworkDto): Status, WidthCm, HeightCm, Year, Support, Technique, ShortDescription, IsFeatured, NeedsReshoot, IsPublished'
+  - order: 2
+    action: Валидация
+    detail: 'Проверки через ArtworkFieldRules: диапазоны размеров и года, длины; нарушение даёт 400 с понятным текстом'
+  - order: 3
+    action: Присвоение
+    detail: 'artwork.ApplyStatus(dto.Status); IsForSale из dto не пишется напрямую (старый клиент без Status: IsForSale превращается в Available/NotForSale)'
+  - order: 4
+    action: Тесты
+    detail: 'backend/MomSite.Tests/Catalog/ArtworksControllerCatalogFieldsTests.cs: сохранение полей, 400 на год 1900, IsForSale следует за статусом'
+  technical_notes:
+  - path: backend/MomSite.API/Controllers/ArtworksController.cs
+    note: Create/Update присваивают IsForSale = dto.IsForSale
+  - path: backend/MomSite.Core/Models/ArtworkFieldRules.cs
+    note: Единые лимиты (T003)
+  acceptance_criteria:
+  - id: AC-1
+    description: Новые поля сохраняются и возвращаются
+    done: false
+  - id: AC-2
+    description: Год вне диапазона даёт 400
+    done: false
+  - id: AC-3
+    description: IsForSale всегда равен Status == Available
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Admin JWT
+    when: PUT работы со Status=Sold, year=2017
+    then:
+    - 200, IsForSale=false
+    verification:
+    - automated
+    level: integration
+  - id: TS-2
+    given:
+    - Admin JWT
+    when: PUT с year=1900
+    then:
+    - '400'
+    verification:
+    - automated
+    level: integration
+- id: T028
+  title: 'Форма работы в админке: новые поля'
+  description: 'ArtworkFormFields/ArtworkForm/useArtworkSave: статус, размеры, год, основа, техника, короткое описание, «сильная», «переснять», «опубликована»'
+  context: Админ правит характеристики без таблицы
+  story_ref: US5
+  requirement_refs:
+  - FR-013
+  depends_on:
+  - T027
+  parallelizable: false
+  entity_refs:
+  - artwork
+  contract_refs:
+  - admin-artworks
+  steps:
+  - order: 1
+    action: Поля формы
+    detail: 'frontend/components/admin/ArtworkFormFields.tsx: select статуса (6 значений, русские подписи), числовые Ш/В см, год, основа, техника, textarea короткого описания (счётчик 300), чекбоксы isFeatured/needsReshoot/isPublished; чекбокс «в продаже» заменить статусом'
+  - order: 2
+    action: Сохранение
+    detail: 'frontend/components/admin/useArtworkSave.ts и ArtworkForm.tsx: добавить поля в FormData; клиентская валидация по тем же лимитам (frontend/lib/catalogLimits.ts)'
+  - order: 3
+    action: Список
+    detail: 'frontend/app/admin/artworks/page.tsx: бейдж статуса и пометки «черновик»/«переснять»'
+  - order: 4
+    action: Тесты
+    detail: frontend/__tests__/ArtworkForm.test.tsx, useArtworkSave.boundary.test.ts
+  technical_notes:
+  - path: frontend/components/admin/ArtworkFormFields.tsx
+    note: Сейчас поле isForSale
+  - path: frontend/__tests__/ArtworkForm.test.tsx
+    note: Существующие тесты формы
+  acceptance_criteria:
+  - id: AC-1
+    description: Новые поля сохраняются из формы
+    done: false
+  - id: AC-2
+    description: Невалидный год/размер блокирует отправку с сообщением
+    done: false
+  - id: AC-3
+    description: Список работ показывает статус и пометки
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Открыта форма работы
+    when: Выбрать «Продана», год 2017, сохранить
+    then:
+    - В запросе status=Sold, year=2017
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - Год 1900
+    when: Сохранить
+    then:
+    - Ошибка валидации, запрос не отправлен
+    verification:
+    - automated
+    level: unit
+- id: T029
+  title: Полный прогон по quickstart и проверка размеров файлов
+  description: Прогнать тесты backend/frontend, tsc, Playwright, проверить до 200 строк на новых файлах, пройти сценарии quickstart
+  context: 'Закрытие фичи: подтвердить, что сценарии 1-12 из quickstart проходят'
+  story_ref: US2
+  requirement_refs:
+  - FR-006
+  - FR-011
+  depends_on:
+  - T013
+  - T019
+  - T021
+  - T026
+  - T028
+  parallelizable: false
+  entity_refs:
+  - artwork
+  - catalog-import-log
+  contract_refs:
+  - admin-catalog-import
+  steps:
+  - order: 1
+    action: Backend
+    detail: cd backend && dotnet test
+  - order: 2
+    action: Frontend
+    detail: cd frontend && npm test && npx tsc --noEmit && npx playwright test e2e/catalog.spec.ts
+  - order: 3
+    action: P3
+    detail: 'wc -l по новым .cs/.tsx в Infrastructure/Catalog и app/admin/catalog: ни один не больше 200'
+  - order: 4
+    action: Quickstart
+    detail: Пройти сценарии 1-12 из specs/005-catalog-import/quickstart.md, зафиксировать отклонения
+  - order: 5
+    action: Прод
+    detail: 'Не применять каталог мамы на проде без согласия пользователя: только предпросмотр и показ diff'
+  technical_notes:
+  - path: specs/005-catalog-import/quickstart.md
+    note: Список сценариев и команды
+  acceptance_criteria:
+  - id: AC-1
+    description: Все автотесты зелёные
+    done: false
+  - id: AC-2
+    description: Новые файлы до 200 строк
+    done: false
+  - id: AC-3
+    description: Сценарии quickstart 1-12 подтверждены
+    done: false
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Все задачи выполнены
+    when: Запустить команды из quickstart
+    then:
+    - Зелёные backend, frontend, e2e
+    verification:
+    - automated
+    level: integration

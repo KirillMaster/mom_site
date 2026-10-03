@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MomSite.Core.Interfaces;
 
@@ -18,6 +19,7 @@ public class FrontendCacheInvalidator : ICacheInvalidator
     private readonly ILogger<FrontendCacheInvalidator> _logger;
     private readonly TimeSpan _timeout;
 
+    [ActivatorUtilitiesConstructor]
     public FrontendCacheInvalidator(
         HttpClient httpClient,
         IConfiguration configuration,
