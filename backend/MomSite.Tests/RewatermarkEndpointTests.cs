@@ -71,5 +71,42 @@ namespace MomSite.Tests
             var json = await response.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
             Assert.True(json.GetProperty("processed").GetInt32() <= 100);
         }
+
+        [Fact, Trait("scenario", "US7-BE4")]
+        public async Task US7_BE4_Take_NegativeValue_ClampedTo1_Returns200()
+        {
+            var client = await _factory.CreateAuthorizedClientAsync();
+            await _factory.WithDbAsync(async ctx =>
+            {
+                await SeedArtworkAsync(ctx, 1, "Neg");
+                return 0;
+            });
+
+            var response = await client.PostAsync("/api/admin/images/rewatermark?take=-5", null);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var json = await response.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
+            Assert.True(json.GetProperty("skipped").GetArrayLength() <= 1);
+        }
+
+        [Fact, Trait("scenario", "US7-BE2")]
+        public async Task US7_BE2_DryRunDefaultsTrue_NoParametersNoWrite()
+        {
+            await _factory.WithDbAsync(async ctx =>
+            {
+                await SeedArtworkAsync(ctx, 1, "DryDef");
+                return 0;
+            });
+            var client = await _factory.CreateAuthorizedClientAsync();
+
+            var response = await client.PostAsync("/api/admin/images/rewatermark", null);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var json = await response.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
+            Assert.True(json.GetProperty("dryRun").GetBoolean());
+            Assert.Equal(0, json.GetProperty("processed").GetInt32());
+            var withOriginal = await _factory.WithDbAsync(c => c.ArtworkImages.CountAsync(i => i.OriginalPath != null));
+            Assert.Equal(0, withOriginal);
+        }
     }
 }

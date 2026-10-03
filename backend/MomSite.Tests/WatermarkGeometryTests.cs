@@ -26,6 +26,47 @@ namespace MomSite.Tests
         }
 
         [Fact, Trait("scenario", "US7-AS1")]
+        public void US7_AS1_Geometry_MinimalBoundary_1x1_StillHasGeometry()
+        {
+            var l = WatermarkGeometry.Compute(1, 1);
+
+            Assert.Equal(12f, l.FontSize);
+            Assert.True(l.Padding >= 4f);
+            Assert.True(l.OriginX <= 1);
+            Assert.True(l.OriginY <= 1);
+            Assert.Equal(102, l.Alpha);
+        }
+
+        [Fact, Trait("scenario", "US7-AS1")]
+        public void US7_AS1_Geometry_SquareImage_SymmetricOrigin()
+        {
+            var l = WatermarkGeometry.Compute(1000, 1000);
+
+            Assert.Equal(l.OriginX, l.OriginY);
+        }
+
+        [Fact, Trait("scenario", "US7-AS1")]
+        public void US7_AS1_Geometry_VeryLargeImage_ProportionalFontSize()
+        {
+            var large = WatermarkGeometry.Compute(10000, 10000);
+            var small = WatermarkGeometry.Compute(100, 100);
+
+            Assert.True(large.FontSize > small.FontSize);
+            Assert.True(large.Padding > small.Padding);
+        }
+
+        [Fact, Trait("scenario", "US7-AS1")]
+        public void US7_AS1_Geometry_WideImage_OriginLocatedCorrectly()
+        {
+            var l = WatermarkGeometry.Compute(5000, 500);
+
+            Assert.True(l.OriginX > 5000 * 0.75f);
+            Assert.True(l.OriginY > 500 * 0.75f);
+            Assert.True(l.OriginX <= 5000);
+            Assert.True(l.OriginY <= 500);
+        }
+
+        [Fact, Trait("scenario", "US7-AS1")]
         public async Task US7_AS1_RealImage_CornerMarked_BottomCenterUntouched_ThumbnailClean()
         {
             var service = new ImageService(new Mock<IS3Service>().Object);

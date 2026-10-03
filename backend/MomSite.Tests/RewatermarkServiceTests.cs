@@ -189,5 +189,58 @@ namespace MomSite.Tests
             Assert.Null(imgs[0].OriginalPath);
             Assert.NotNull(imgs[1].OriginalPath);
         }
+
+        [Fact, Trait("scenario", "US7-BE4")]
+        public async Task US7_BE4_Take_MinimumBoundary_ProcessesAtLeastOne()
+        {
+            var env = new Env(Obj(Orig, 0), Obj(Copy, 3));
+            await env.SeedAsync(Copy);
+
+            var report = await env.Service.RunAsync(false, 1);
+
+            Assert.Equal(1, report.Matched);
+            Assert.Equal(1, report.Processed);
+            Assert.True(env.Calls.Any(c => c.StartsWith("del:")));
+        }
+
+        [Fact, Trait("scenario", "US7-BE4")]
+        public async Task US7_BE4_Take_MaximumBoundary_ProcessesUpTo100()
+        {
+            var env = new Env();
+            for (var i = 0; i < 105; i++)
+                await env.SeedAsync($"2026/10/02/g{i}_artworks/watermarked_c{i}.jpg", i.ToString());
+
+            var report = await env.Service.RunAsync(true, 100);
+
+            Assert.Equal(100, report.Skipped.Count);
+        }
+
+        [Fact, Trait("scenario", "US7-BE2")]
+        public async Task US7_BE2_DryRun_DoesNotDeleteFiles_VerifyDeleteNotCalled()
+        {
+            var env = new Env(Obj(Orig, 0), Obj(Copy, 3));
+            var (_, img) = await env.SeedAsync(Copy);
+            var oldPath = img.ImagePath;
+
+            var report = await env.Service.RunAsync(true, 25);
+
+            Assert.True(report.DryRun);
+            Assert.Equal(1, report.Matched);
+            Assert.Empty(env.Calls.Where(c => c.StartsWith("del:")));
+            env.S3.Verify(s => s.DeleteFileAsync(It.IsAny<string>()), Times.Never);
+        }
+
+        [Fact, Trait("scenario", "US7-AS2")]
+        public async Task US7_AS2_EmptyDatabase_NoProcessing_ReturnsZeros()
+        {
+            var env = new Env(Obj(Orig, 0), Obj(Copy, 3));
+
+            var report = await env.Service.RunAsync(false, 25);
+
+            Assert.Equal(0, report.Matched);
+            Assert.Equal(0, report.Processed);
+            Assert.Equal(0, report.Remaining);
+            Assert.Empty(env.Calls);
+        }
     }
 }

@@ -65,5 +65,32 @@ namespace MomSite.Tests
             Assert.Equal(copy, WatermarkPairing.IsCopy(key));
             Assert.Equal(original, WatermarkPairing.IsOriginal(key));
         }
+
+        [Fact, Trait("scenario", "US7-BE1")]
+        public void US7_BE1_EmptyOriginals_NoPairs()
+        {
+            var r = WatermarkPairing.Match(Array.Empty<StorageObject>(), new[] { O("artworks/watermarked_b.jpg", 3) });
+            Assert.Empty(r);
+        }
+
+        [Fact, Trait("scenario", "US7-BE1")]
+        public void US7_BE1_EmptyCopies_NoPairs()
+        {
+            var r = WatermarkPairing.Match(new[] { O("artworks/a.jpg", 0) }, Array.Empty<StorageObject>());
+            Assert.Empty(r);
+        }
+
+        [Fact, Trait("scenario", "US7-BE1")]
+        public void US7_BE1_MultipleOriginalsAndCopies_SameExtension_Paired()
+        {
+            var originals = new[] { O("g1/a.jpg", 0), O("g2/b.jpg", 10) };
+            var copies = new[] { O("g1/watermarked_x.jpg", 3), O("g2/watermarked_y.jpg", 13) };
+
+            var r = WatermarkPairing.Match(originals, copies);
+
+            Assert.Equal(2, r.Count);
+            Assert.Equal("g1/a.jpg", r["g1/watermarked_x.jpg"]);
+            Assert.Equal("g2/b.jpg", r["g2/watermarked_y.jpg"]);
+        }
     }
 }
