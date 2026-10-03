@@ -18,6 +18,8 @@ namespace MomSite.API.DTOs
         // its own commercial default in that case.
         public string SeoTitle { get; set; } = string.Empty;
         public string SeoDescription { get; set; } = string.Empty;
+
+        public List<ArtworkDto> AvailableArtworks { get; set; } = new();
     }
 
     public class GalleryData
@@ -36,6 +38,7 @@ namespace MomSite.API.DTOs
         public string BannerDescription { get; set; } = string.Empty;
         public string AdditionalBiography { get; set; } = string.Empty;
         public string Philosophy { get; set; } = string.Empty;
+        public List<ArtworkDto> ExhibitionPhotos { get; set; } = new();
     }
 
     public class ContactsData
@@ -122,4 +125,6 @@ namespace MomSite.API.DTOs
     }
 
     public record PrivacyDto(string? Text, DateTime? UpdatedAt);
+
+    public record HowToBuyDto(string? Text, DateTime? UpdatedAt);
 }

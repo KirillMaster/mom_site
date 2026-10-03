@@ -282,6 +282,8 @@ using (var scope = app.Services.CreateScope())
     {
         dbContext.Database.Migrate();
     }
+
+    MomSite.Infrastructure.Services.DescriptionCleanup.Run(dbContext, scope.ServiceProvider.GetRequiredService<ILogger<Program>>());
 }
 
 app.Run();

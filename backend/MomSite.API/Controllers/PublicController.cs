@@ -51,6 +51,15 @@ public class PublicController : ControllerBase
             .Take(9) // Limit to 9 artworks for the carousel
             .ToListAsync();
 
+        var availableArtworks = await _context.Artworks
+            .Visible()
+            .Include(a => a.Category)
+            .Include(a => a.Images)
+            .Where(a => a.Category.ShowOnHome && a.Status == ArtworkStatus.Available)
+            .OrderByDescending(a => a.CreatedAt)
+            .Take(8)
+            .ToListAsync();
+
         var biographyText = await _context.PageContents
             .Where(pc => pc.PageKey == "home" && pc.ContentKey == "home_biography_text" && pc.IsActive)
             .FirstOrDefaultAsync();
@@ -129,6 +138,7 @@ public class PublicController : ControllerBase
             BiographyText = biographyText?.TextContent ?? "Информация о художнике",
             AuthorPhoto = authorPhoto?.ImagePath ?? null,
             Artworks = artworks.Select(a => a.ToPublicDto()).ToList(),
+            AvailableArtworks = availableArtworks.Select(a => a.ToPublicDto()).ToList(),
             Contacts = contactsData, // Assign the populated contactsData
             SeoTitle = seoTitle?.TextContent ?? string.Empty,
             SeoDescription = seoDescription?.TextContent ?? string.Empty
@@ -188,6 +198,19 @@ public class PublicController : ControllerBase
         return Ok(new PrivacyDto(body.TextContent, body.UpdatedAt));
     }
 
+    [HttpGet("how-to-buy")]
+    public async Task<ActionResult<HowToBuyDto>> GetHowToBuy()
+    {
+        var body = await _context.PageContents
+            .Where(pc => pc.PageKey == "how-to-buy" && pc.ContentKey == "body" && pc.IsActive)
+            .FirstOrDefaultAsync();
+
+        if (body == null || string.IsNullOrWhiteSpace(body.TextContent))
+            return Ok(new HowToBuyDto(null, null));
+
+        return Ok(new HowToBuyDto(body.TextContent, body.UpdatedAt));
+    }
+
     [HttpGet("about")] // Явный маршрут для страницы "Обо мне"
     public async Task<ActionResult<AboutData>> GetAboutData()
     {
@@ -216,8 +239,18 @@ public class PublicController : ControllerBase
             .Where(pc => pc.PageKey == "about" && pc.ContentKey == "banner_description" && pc.IsActive)
             .FirstOrDefaultAsync();
 
+        var exhibitionPhotos = await _context.Artworks
+            .Visible()
+            .Include(a => a.Category)
+            .Include(a => a.Images)
+            .Where(a => a.Category.Name == "Фото с выставок")
+            .OrderByDescending(a => a.CreatedAt)
+            .Take(24)
+            .ToListAsync();
+
         return Ok(new AboutData
         {
+            ExhibitionPhotos = exhibitionPhotos.Select(a => a.ToPublicDto()).ToList(),
             Biography = biography?.TextContent ?? "Информация о художнике",
             ArtistPhoto = artistPhoto?.ImagePath ?? null,
             AdditionalBiography = additionalBiography?.TextContent ?? "Мое творчество основано на глубоком понимании классических техник живописи, которые я сочетаю с современным видением и индивидуальным подходом к каждому произведению. Каждая картина - это история, эмоция, момент времени, запечатленный на холсте.",
