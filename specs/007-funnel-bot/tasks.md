@@ -28,8 +28,8 @@
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Переменная FUNNEL_BOT_TOKEN объявлена в api prod-compose, дефолт пустой
-- [ ] `AC-2` В репозитории нет значений токенов
+- [x] `AC-1` Переменная FUNNEL_BOT_TOKEN объявлена в api prod-compose, дефолт пустой
+- [x] `AC-2` В репозитории нет значений токенов
 
 **Test Scenarios**:
 
@@ -68,8 +68,8 @@ Email сделать nullable, добавить Phone, TelegramUsername, Telegra
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` ContactMessage содержит Phone, TelegramUsername, TelegramUserId; Email nullable
-- [ ] `AC-2` Сборка зелёная, ContactMessageDto не изменён
+- [x] `AC-1` ContactMessage содержит Phone, TelegramUsername, TelegramUserId; Email nullable
+- [x] `AC-2` Сборка зелёная, ContactMessageDto не изменён
 
 **Test Scenarios**:
 
@@ -104,8 +104,8 @@ Email сделать nullable, добавить Phone, TelegramUsername, Telegra
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Миграция создана и применяется к чистой и существующей БД
-- [ ] `AC-2` Существующие заявки сохраняют Email
+- [x] `AC-1` Миграция создана и применяется к чистой и существующей БД
+- [x] `AC-2` Существующие заявки сохраняют Email
 
 **Test Scenarios**:
 
@@ -141,9 +141,9 @@ Email сделать nullable, добавить Phone, TelegramUsername, Telegra
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Сохранение и уведомление выполняются в одном сервисе
-- [ ] `AC-2` Сбой notifier'а не пробрасывается, лид сохранён
-- [ ] `AC-3` Сбой БД пробрасывается
+- [x] `AC-1` Сохранение и уведомление выполняются в одном сервисе
+- [x] `AC-2` Сбой notifier'а не пробрасывается, лид сохранён
+- [x] `AC-3` Сбой БД пробрасывается
 
 **Test Scenarios**:
 
@@ -188,8 +188,8 @@ Email сделать nullable, добавить Phone, TelegramUsername, Telegra
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Ответы формы (200/400/429/500, honeypot) прежние
-- [ ] `AC-2` Существующие тесты PublicController проходят без смены ожиданий
+- [x] `AC-1` Ответы формы (200/400/429/500, honeypot) прежние
+- [x] `AC-2` Существующие тесты PublicController проходят без смены ожиданий
 
 **Test Scenarios**:
 
@@ -230,9 +230,9 @@ TelegramNotifier.BuildText добавляет Телефон и Telegram; EmailN
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` В уведомлении есть телефон и/или ссылка на Telegram клиента
-- [ ] `AC-2` Заявка формы выглядит как раньше
-- [ ] `AC-3` Email-канал не падает при Email = null
+- [x] `AC-1` В уведомлении есть телефон и/или ссылка на Telegram клиента
+- [x] `AC-2` Заявка формы выглядит как раньше
+- [x] `AC-3` Email-канал не падает при Email = null
 
 **Test Scenarios**:
 
@@ -279,9 +279,9 @@ TelegramNotifier.BuildText добавляет Телефон и Telegram; EmailN
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Все 4 метода работают против фейкового Bot API
-- [ ] `AC-2` Ошибки Telegram не бросают исключений наружу
-- [ ] `AC-3` Токен не появляется в логах
+- [x] `AC-1` Все 4 метода работают против фейкового Bot API
+- [x] `AC-2` Ошибки Telegram не бросают исключений наружу
+- [x] `AC-3` Токен не появляется в логах
 
 **Test Scenarios**:
 
@@ -321,8 +321,8 @@ TelegramNotifier.BuildText добавляет Телефон и Telegram; EmailN
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Модели - неизменяемые record, тексты в одном файле
-- [ ] `AC-2` callback_data всех кнопок <= 64 байт
+- [x] `AC-1` Модели - неизменяемые record, тексты в одном файле
+- [x] `AC-2` callback_data всех кнопок <= 64 байт
 
 **Test Scenarios**:
 
@@ -359,10 +359,10 @@ TelegramNotifier.BuildText добавляет Телефон и Telegram; EmailN
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Все 5 целей доходят до готового лида
-- [ ] `AC-2` Для мастер-класса бюджет пропускается
-- [ ] `AC-3` Без username бот просит телефон
-- [ ] `AC-4` Лид с пустым контактом не создаётся
+- [x] `AC-1` Все 5 целей доходят до готового лида
+- [x] `AC-2` Для мастер-класса бюджет пропускается
+- [x] `AC-3` Без username бот просит телефон
+- [x] `AC-4` Лид с пустым контактом не создаётся
 
 **Test Scenarios**:
 
@@ -407,9 +407,9 @@ TelegramNotifier.BuildText добавляет Телефон и Telegram; EmailN
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` «Назад» и /cancel работают на каждом шаге
-- [ ] `AC-2` Текст вне сценария сохраняется как лид «Другой вопрос»
-- [ ] `AC-3` Неподдерживаемый ввод не ломает сценарий
+- [x] `AC-1` «Назад» и /cancel работают на каждом шаге
+- [x] `AC-2` Текст вне сценария сохраняется как лид «Другой вопрос»
+- [x] `AC-3` Неподдерживаемый ввод не ломает сценарий
 
 **Test Scenarios**:
 
@@ -458,8 +458,8 @@ TelegramNotifier.BuildText добавляет Телефон и Telegram; EmailN
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Все ветки автомата покрыты зелёными тестами
-- [ ] `AC-2` В тестах автомата нет моков и I/O
+- [x] `AC-1` Все ветки автомата покрыты зелёными тестами
+- [x] `AC-2` В тестах автомата нет моков и I/O
 
 **Test Scenarios**:
 
@@ -492,8 +492,8 @@ TelegramNotifier.BuildText добавляет Телефон и Telegram; EmailN
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` 4-я заявка за 24 ч от одного пользователя отклоняется
-- [ ] `AC-2` Через 24 ч квота освобождается
+- [x] `AC-1` 4-я заявка за 24 ч от одного пользователя отклоняется
+- [x] `AC-2` Через 24 ч квота освобождается
 
 **Test Scenarios**:
 
@@ -535,10 +535,10 @@ BackgroundService с long polling: апдейт в BotInput, вызов FunnelDi
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Без токена сервис не стартует, сайт работает
-- [ ] `AC-2` Апдейты из групп игнорируются
-- [ ] `AC-3` Сбой Telegram не роняет api
-- [ ] `AC-4` Лид уходит только через ILeadService
+- [x] `AC-1` Без токена сервис не стартует, сайт работает
+- [x] `AC-2` Апдейты из групп игнорируются
+- [x] `AC-3` Сбой Telegram не роняет api
+- [x] `AC-4` Лид уходит только через ILeadService
 
 **Test Scenarios**:
 
@@ -583,8 +583,8 @@ BackgroundService с long polling: апдейт в BotInput, вызов FunnelDi
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` api стартует без FUNNEL_BOT_TOKEN
-- [ ] `AC-2` С токеном в логе нет строк с токеном
+- [x] `AC-1` api стартует без FUNNEL_BOT_TOKEN
+- [x] `AC-2` С токеном в логе нет строк с токеном
 
 **Test Scenarios**:
 
@@ -619,9 +619,9 @@ BackgroundService с long polling: апдейт в BotInput, вызов FunnelDi
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Заявка из бота в таблице ContactMessages со статусом New
-- [ ] `AC-2` Notifier вызван один раз
-- [ ] `AC-3` Сбой notifier'а не влияет на подтверждение
+- [x] `AC-1` Заявка из бота в таблице ContactMessages со статусом New
+- [x] `AC-2` Notifier вызван один раз
+- [x] `AC-3` Сбой notifier'а не влияет на подтверждение
 
 **Test Scenarios**:
 
@@ -662,8 +662,8 @@ BackgroundService с long polling: апдейт в BotInput, вызов FunnelDi
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Заявка из бота отображается без ошибок
-- [ ] `AC-2` Счётчик непрочитанных не сломан
+- [x] `AC-1` Заявка из бота отображается без ошибок
+- [x] `AC-2` Счётчик непрочитанных не сломан
 
 **Test Scenarios**:
 
@@ -698,8 +698,8 @@ BackgroundService с long polling: апдейт в BotInput, вызов FunnelDi
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Эндпоинт отдаёт text и updatedAt или text = null
-- [ ] `AC-2` Схема БД не менялась
+- [x] `AC-1` Эндпоинт отдаёт text и updatedAt или text = null
+- [x] `AC-2` Схема БД не менялась
 
 **Test Scenarios**:
 
@@ -738,8 +738,8 @@ BackgroundService с long polling: апдейт в BotInput, вызов FunnelDi
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` В /admin/pages есть пункт «Политика конфиденциальности» с полем текста
-- [ ] `AC-2` Сохранённый текст создаёт PageContent privacy/body
+- [x] `AC-1` В /admin/pages есть пункт «Политика конфиденциальности» с полем текста
+- [x] `AC-2` Сохранённый текст создаёт PageContent privacy/body
 
 **Test Scenarios**:
 
@@ -775,8 +775,8 @@ BackgroundService с long polling: апдейт в BotInput, вызов FunnelDi
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Шаблон содержит оператора, состав данных, цели, срок, способ отзыва, контакт ответственного
-- [ ] `AC-2` Без данных от API страница получает шаблон
+- [x] `AC-1` Шаблон содержит оператора, состав данных, цели, срок, способ отзыва, контакт ответственного
+- [x] `AC-2` Без данных от API страница получает шаблон
 
 **Test Scenarios**:
 
@@ -816,8 +816,8 @@ BackgroundService с long polling: апдейт в BotInput, вызов FunnelDi
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` /privacy отдаётся сервером с h1, метаданными и реквизитами
-- [ ] `AC-2` Правка в админке отображается на странице
+- [x] `AC-1` /privacy отдаётся сервером с h1, метаданными и реквизитами
+- [x] `AC-2` Правка в админке отображается на странице
 
 **Test Scenarios**:
 
@@ -850,7 +850,7 @@ BackgroundService с long polling: апдейт в BotInput, вызов FunnelDi
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Ссылка видна на всех страницах и ведёт на /privacy
+- [x] `AC-1` Ссылка видна на всех страницах и ведёт на /privacy
 
 **Test Scenarios**:
 
@@ -883,8 +883,8 @@ BackgroundService с long polling: апдейт в BotInput, вызов FunnelDi
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Под формой есть строка согласия со ссылкой на /privacy
-- [ ] `AC-2` Отправка формы работает как раньше
+- [x] `AC-1` Под формой есть строка согласия со ссылкой на /privacy
+- [x] `AC-2` Отправка формы работает как раньше
 
 **Test Scenarios**:
 
@@ -917,7 +917,7 @@ BackgroundService с long polling: апдейт в BotInput, вызов FunnelDi
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` /sitemap.xml содержит https://angelamoiseenko.ru/privacy
+- [x] `AC-1` /sitemap.xml содержит https://angelamoiseenko.ru/privacy
 
 **Test Scenarios**:
 
@@ -952,7 +952,7 @@ Playwright-тест открытия политики из футера и фо�
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Тест зелёный на мобильном viewport 360x740
+- [x] `AC-1` Тест зелёный на мобильном viewport 360x740
 
 **Test Scenarios**:
 
@@ -986,7 +986,7 @@ Playwright-тест открытия политики из футера и фо�
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Сообщение запроса контакта содержит ссылку на /privacy
+- [x] `AC-1` Сообщение запроса контакта содержит ссылку на /privacy
 
 **Test Scenarios**:
 
@@ -1018,8 +1018,8 @@ Playwright-тест открытия политики из футера и фо�
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Работа, МК и интерьер распознаются; прочее - кампания
-- [ ] `AC-2` Невалидный ввод не бросает исключений
+- [x] `AC-1` Работа, МК и интерьер распознаются; прочее - кампания
+- [x] `AC-2` Невалидный ввод не бросает исключений
 
 **Test Scenarios**:
 
@@ -1056,9 +1056,9 @@ Playwright-тест открытия политики из футера и фо�
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Для существующей работы бот показывает фото и название и сразу просит контакт
-- [ ] `AC-2` Для несуществующей или скрытой - обычный сценарий без ошибки
-- [ ] `AC-3` Кампания сохраняется в UtmCampaign
+- [x] `AC-1` Для существующей работы бот показывает фото и название и сразу просит контакт
+- [x] `AC-2` Для несуществующей или скрытой - обычный сценарий без ошибки
+- [x] `AC-3` Кампания сохраняется в UtmCampaign
 
 **Test Scenarios**:
 
@@ -1101,8 +1101,8 @@ Playwright-тест открытия политики из футера и фо�
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Нет файлов длиннее 200 строк
-- [ ] `AC-2` В логах нет токена и ПДн
+- [x] `AC-1` Нет файлов длиннее 200 строк
+- [x] `AC-2` В логах нет токена и ПДн
 
 **Test Scenarios**:
 
