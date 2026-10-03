@@ -74,7 +74,7 @@ describe('Contact form phone and prefill', () => {
     render(<ContactsClientPage contactsData={contactsData} />);
 
     const button = screen.getByRole('button', { name: /Отправить сообщение/ });
-    expect(button).toHaveClass('bg-primary');
+    expect(button).toHaveClass('bg-sea');
     expect(button.className).not.toMatch(/purple/);
   });
 

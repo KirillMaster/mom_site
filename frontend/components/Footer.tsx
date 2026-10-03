@@ -10,20 +10,20 @@ const Footer = () => {
   const { data: footerData, isLoading } = useFooterData();
 
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="bg-ink text-paper">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Section */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
-                <Palette className="w-6 h-6 text-white" />
+              <div className="w-10 h-10 bg-sea rounded-md flex items-center justify-center">
+                <Palette className="w-6 h-6 text-paper" />
               </div>
               <span className="text-xl font-serif font-semibold">
                 Анжела Моисеенко
               </span>
             </div>
-            <p className="text-gray-300 mb-6 max-w-md">
+            <p className="text-paper/80 mb-6 max-w-md">
               {footerData?.description || "Художник-импрессионист, создающий уникальные работы в стиле импрессионизма. Специализируюсь на театральных картинах и натюрмортах."}
             </p>
             <div className="flex space-x-4">
@@ -32,7 +32,7 @@ const Footer = () => {
                   href={footerData.socialLinks.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
+                  className="w-10 h-10 bg-ink-700 text-paper rounded-md flex items-center justify-center hover:bg-sea transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-paper"
                 >
                   <FaInstagram className="w-5 h-5" />
                 </a>
@@ -42,7 +42,7 @@ const Footer = () => {
                   href={footerData.socialLinks.vk}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
+                  className="w-10 h-10 bg-ink-700 text-paper rounded-md flex items-center justify-center hover:bg-sea transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-paper"
                 >
                   <FaVk className="w-5 h-5" />
                 </a>
@@ -52,7 +52,7 @@ const Footer = () => {
                   href={footerData.socialLinks.telegram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
+                  className="w-10 h-10 bg-ink-700 text-paper rounded-md flex items-center justify-center hover:bg-sea transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-paper"
                 >
                   <FaTelegram className="w-5 h-5" />
                 </a>
@@ -62,7 +62,7 @@ const Footer = () => {
                   href={footerData.socialLinks.whatsapp}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
+                  className="w-10 h-10 bg-ink-700 text-paper rounded-md flex items-center justify-center hover:bg-sea transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-paper"
                 >
                   <FaWhatsapp className="w-5 h-5" />
                 </a>
@@ -72,7 +72,7 @@ const Footer = () => {
                   href={footerData.socialLinks.youtube}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
+                  className="w-10 h-10 bg-ink-700 text-paper rounded-md flex items-center justify-center hover:bg-sea transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-paper"
                 >
                   <FaYoutube className="w-5 h-5" />
                 </a>
@@ -83,7 +83,7 @@ const Footer = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="MAX"
-                  className="w-10 h-10 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
+                  className="w-10 h-10 bg-ink-700 text-paper rounded-md flex items-center justify-center hover:bg-sea transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-paper"
                 >
                   <MaxIcon className="w-5 h-5" />
                 </a>
@@ -91,7 +91,7 @@ const Footer = () => {
               {footerData?.email && (
                 <a
                   href={`mailto:${footerData.email}`}
-                  className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
+                  className="w-10 h-10 bg-ink-700 text-paper rounded-md flex items-center justify-center hover:bg-sea transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-paper"
                 >
                   <Mail className="w-5 h-5" />
                 </a>
@@ -104,37 +104,37 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Навигация</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/" className="text-gray-300 hover:text-white transition-colors duration-200">
+                <Link href="/" className="text-paper/80 hover:text-paper transition-colors duration-200">
                   Главная
                 </Link>
               </li>
               <li>
-                <Link href="/gallery" className="text-gray-300 hover:text-white transition-colors duration-200">
+                <Link href="/gallery" className="text-paper/80 hover:text-paper transition-colors duration-200">
                   Галерея
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-gray-300 hover:text-white transition-colors duration-200">
+                <Link href="/about" className="text-paper/80 hover:text-paper transition-colors duration-200">
                   Обо мне
                 </Link>
               </li>
               <li>
-                <Link href="/videos" className="text-gray-300 hover:text-white transition-colors duration-200">
+                <Link href="/videos" className="text-paper/80 hover:text-paper transition-colors duration-200">
                   Видео
                 </Link>
               </li>
               <li>
-                <Link href="/blog" className="text-gray-300 hover:text-white transition-colors duration-200">
+                <Link href="/blog" className="text-paper/80 hover:text-paper transition-colors duration-200">
                   Блог
                 </Link>
               </li>
               <li>
-                <Link href="/reviews" className="text-gray-300 hover:text-white transition-colors duration-200">
+                <Link href="/reviews" className="text-paper/80 hover:text-paper transition-colors duration-200">
                   Отзывы
                 </Link>
               </li>
               <li>
-                <Link href="/contacts" className="text-gray-300 hover:text-white transition-colors duration-200">
+                <Link href="/contacts" className="text-paper/80 hover:text-paper transition-colors duration-200">
                   Контакты
                 </Link>
               </li>
@@ -147,10 +147,10 @@ const Footer = () => {
             <div className="space-y-3">
               {footerData?.email && (
                 <div className="flex items-center space-x-3">
-                  <Mail className="w-5 h-5 text-primary-400" />
+                  <Mail className="w-5 h-5 text-paper/80" />
                   <a
                     href={`mailto:${footerData.email}`}
-                    className="text-gray-300 hover:text-white transition-colors duration-200"
+                    className="text-paper/80 hover:text-paper transition-colors duration-200"
                   >
                     {footerData.email}
                   </a>
@@ -158,10 +158,10 @@ const Footer = () => {
               )}
               {footerData?.phone && (
                 <div className="flex items-center space-x-3">
-                  <Phone className="w-5 h-5 text-primary-400" />
+                  <Phone className="w-5 h-5 text-paper/80" />
                   <a
                     href={`tel:${footerData.phone}`}
-                    className="text-gray-300 hover:text-white transition-colors duration-200"
+                    className="text-paper/80 hover:text-paper transition-colors duration-200"
                   >
                     {footerData.phone}
                   </a>
@@ -172,9 +172,9 @@ const Footer = () => {
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-gray-800 mt-8 pt-8">
+        <div className="border-t border-ink-600 mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm">
+            <p className="text-paper/60 text-sm">
               © {currentYear} Анжела Моисеенко. Все права защищены.
             </p>
 
