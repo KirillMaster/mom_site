@@ -357,4 +357,23 @@ describe('MessagesList phone (@US3-BE4)', () => {
     fireEvent.change(screen.getByLabelText('Поиск по заявкам'), { target: { value: '333-44' } });
     expect(screen.getByText('Анна')).toBeInTheDocument();
   });
+
+  it('T016: lead without email shows phone and Telegram username link', () => {
+    const messages = [makeMessage({ id: 20, email: null, phone: '+7 900 111-22-33', telegramUsername: 'anna_art' })];
+
+    renderList({ messages });
+
+    expect(screen.queryByRole('link', { name: /mailto/ })).toBeNull();
+    expect(screen.getByRole('link', { name: '+7 900 111-22-33' })).toHaveAttribute('href', 'tel:+7 900 111-22-33');
+    expect(screen.getByRole('link', { name: '@anna_art' })).toHaveAttribute('href', 'https://t.me/anna_art');
+  });
+
+  it('T016: lead with only Telegram id falls back to tg://user link and search by username works', () => {
+    const messages = [makeMessage({ id: 21, email: undefined, telegramUserId: 12345 })];
+    renderList({ messages });
+    expect(screen.getByRole('link', { name: 'Telegram ID 12345' })).toHaveAttribute('href', 'tg://user?id=12345');
+
+    fireEvent.change(screen.getByLabelText('Поиск по заявкам'), { target: { value: 'zzz' } });
+    expect(screen.getByTestId('empty-state')).toBeInTheDocument();
+  });
 });

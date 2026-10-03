@@ -295,6 +295,8 @@ export interface ContactMessageAdmin {
   name: string;
   email?: string | null;
   phone?: string | null;
+  telegramUsername?: string | null;
+  telegramUserId?: number | null;
   subject: string;
   message: string;
   ipAddress?: string;
