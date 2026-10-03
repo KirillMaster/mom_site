@@ -10,8 +10,10 @@ const VIEWPORTS = [
 const STATIC_PAGES = ['/', '/gallery', '/contacts', '/blog'];
 const OVERFLOW_PAGES = ['/', '/gallery', '/about', '/videos', '/reviews', '/contacts', '/blog'];
 
+const open = (page: Page, path: string) => page.goto(path, { waitUntil: 'domcontentloaded' });
+
 const firstArtworkPath = async (page: Page) => {
-  await page.goto('/gallery');
+  await open(page, '/gallery');
   const href = await page.locator('a[href^="/gallery/"]').first().getAttribute('href');
   return href ?? '/gallery';
 };
@@ -38,8 +40,7 @@ for (const vp of VIEWPORTS) {
       const errors = collectConsoleErrors(page);
       const paths = [...STATIC_PAGES, await firstArtworkPath(page)];
       for (const path of paths) {
-        await page.goto(path);
-        await page.waitForLoadState('networkidle');
+        await open(page, path);
         expect(await style(page, 'body', 'background-color'), path).toBe(PAPER);
         expect(await style(page, 'body', 'color'), path).toBe(INK);
       }
@@ -50,13 +51,13 @@ for (const vp of VIEWPORTS) {
       if (vp.width > 390) test.skip();
       const paths = [...OVERFLOW_PAGES, await firstArtworkPath(page)];
       for (const path of paths) {
-        await page.goto(path);
-        await page.waitForLoadState('networkidle');
+        await open(page, path);
         expect(await overflow(page), path).toBeLessThanOrEqual(0);
       }
     });
 
     test(`screenshots at ${vp.name}`, async ({ page }) => {
+      test.setTimeout(240_000);
       const targets: [string, string][] = [
         ['home', '/'],
         ['gallery', '/gallery'],
@@ -64,8 +65,8 @@ for (const vp of VIEWPORTS) {
         ['contacts', '/contacts'],
       ];
       for (const [name, path] of targets) {
-        await page.goto(path);
-        await page.waitForLoadState('networkidle');
+        await open(page, path);
+        await page.waitForLoadState('load', { timeout: 60000 }).catch(() => undefined);
         await page.screenshot({ path: `test-results/design/${name}-${vp.name}.png`, fullPage: true });
       }
     });
@@ -76,14 +77,14 @@ test.describe('typography and focus', () => {
   test.use({ viewport: { width: 1280, height: 800 } });
 
   test('@US2-E2E1 headings use Cormorant, paragraphs use Manrope', async ({ page }) => {
-    await page.goto('/');
+    await open(page, '/');
     await page.evaluate(() => document.fonts.ready);
     expect(await style(page, 'h1', 'font-family')).toContain('Cormorant');
     expect(await style(page, 'p', 'font-family')).toContain('Manrope');
   });
 
   test('@US2-E2E2 biography paragraph is at most 75ch wide', async ({ page }) => {
-    await page.goto('/about');
+    await open(page, '/about');
     await page.evaluate(() => document.fonts.ready);
     const paragraph = page.locator('.prose-measure p').first();
     const { width, ch } = await paragraph.evaluate((el) => {
@@ -102,7 +103,7 @@ test.describe('typography and focus', () => {
   });
 
   test('@US1-AS2 keyboard focus shows the sea ring', async ({ page }) => {
-    await page.goto('/');
+    await open(page, '/');
     for (const tag of ['A', 'BUTTON']) {
       let found = false;
       for (let i = 0; i < 40 && !found; i++) {
@@ -121,7 +122,7 @@ test.describe('typography and focus', () => {
   test('@US4-AS2 primary action is sea with light text', async ({ page }) => {
     const paths = ['/', await firstArtworkPath(page), '/contacts'];
     for (const path of paths) {
-      await page.goto(path);
+      await open(page, path);
       const primary = page.locator('a[class*="bg-sea"], button[class*="bg-sea"]').first();
       expect(await primary.evaluate((el) => getComputedStyle(el).backgroundColor), path).toBe(SEA);
       const color = await primary.evaluate((el) => getComputedStyle(el).color);

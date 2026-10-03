@@ -46,4 +46,14 @@ describe('@US5-FE1 шапка', () => {
     expect(nav.className).toContain('border-line');
     expect(container.innerHTML).not.toMatch(FORBIDDEN);
   });
+
+  it('@US1-AS2 все ссылки и кнопки шапки имеют морское кольцо фокуса', () => {
+    mockPath = '/';
+    const { container } = render(<Navigation />);
+    const focusables = container.querySelectorAll('nav a, nav button');
+    expect(focusables.length).toBeGreaterThan(0);
+    focusables.forEach((el) => {
+      expect(el.className).toContain('focus-visible:ring-sea');
+    });
+  });
 });
