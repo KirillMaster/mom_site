@@ -1,0 +1,48 @@
+feature: 009-design-system-seaside
+contracts:
+  - id: price-lib
+    name: 'lib/price.ts — formatPrice, priceLabel'
+    kind: interface
+    request:
+      - {name: price, type: number, required: false, description: 'formatPrice: положительное число'}
+      - {name: artwork, type: object, required: true, description: 'priceLabel: ArtworkDto'}
+      - {name: exhibition, type: boolean, required: true, description: 'priceLabel: выставочное фото → null'}
+    response_cases:
+      - outcome: price
+        fields:
+          - {name: label, type: string, required: true, description: '«45 000 ₽» (разделитель U+00A0 допустим)'}
+      - outcome: on_request
+        fields:
+          - {name: label, type: string, required: true, description: '«цена по запросу» при null/0 и статусе Available'}
+      - outcome: status
+        fields:
+          - {name: label, type: string, required: true, description: 'Метка статуса, если не Available'}
+      - outcome: none
+        fields: []
+    entity_refs: [artwork]
+  - id: museum-label-component
+    name: 'components/artwork/MuseumLabel.tsx'
+    kind: interface
+    request:
+      - {name: artwork, type: object, required: true, description: ArtworkDto}
+      - {name: exhibition, type: boolean, required: false, description: 'true — без цены/статуса'}
+      - {name: as, type: enum, required: false, enum_values: [h2, h3, p], description: 'Тег названия; default p'}
+      - {name: size, type: enum, required: false, enum_values: [sm, md], description: 'sm — галерея/related, md — страница работы'}
+    response_cases:
+      - outcome: rendered
+        fields:
+          - {name: lines, type: array, required: true, description: 'title, medium, size, year, priceOrStatus — только непустые'}
+    entity_refs: [museum-label, artwork]
+  - id: ui-primitives
+    name: 'components/ui — Button, TextLink, Input, Textarea, Card, Section, Container'
+    kind: interface
+    request:
+      - {name: variant, type: enum, required: false, enum_values: [primary, secondary, ghost], description: 'Button; default primary'}
+      - {name: href, type: string, required: false, description: 'Button/TextLink: с href рендерится next/link'}
+      - {name: label, type: string, required: false, description: 'Input/Textarea: связанная метка'}
+      - {name: error, type: string, required: false, description: 'Input/Textarea: текст ошибки, aria-describedby + aria-invalid'}
+    response_cases:
+      - outcome: rendered
+        fields:
+          - {name: focusRing, type: string, required: true, description: 'focus-visible:ring-2 ring-sea ring-offset-paper'}
+    entity_refs: [design-tokens]
