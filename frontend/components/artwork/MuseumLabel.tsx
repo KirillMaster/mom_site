@@ -1,4 +1,4 @@
-import { normalizeTitle } from '@/lib/normalizeTitle';
+import { quotedTitle } from '@/lib/normalizeTitle';
 import { priceLabel, sizeLabel } from '@/lib/price';
 import type { ArtworkDto } from '@/lib/api';
 
@@ -16,7 +16,7 @@ const SIZES = {
 
 const MuseumLabel = ({ artwork, exhibition = false, as: Title = 'p', size = 'sm' }: MuseumLabelProps) => {
   const s = SIZES[size];
-  const title = normalizeTitle(artwork.title);
+  const title = quotedTitle(artwork.title);
   const medium = [artwork.technique, artwork.support].map((v) => (v ?? '').trim()).filter(Boolean).join(', ');
   const priceOrStatus = priceLabel(artwork, exhibition);
   const dimensions = exhibition ? null : sizeLabel(artwork);
@@ -26,7 +26,7 @@ const MuseumLabel = ({ artwork, exhibition = false, as: Title = 'p', size = 'sm'
     <div>
       {title && (
         <Title data-label-line className={`font-serif italic break-words text-ink ${s.title}`}>
-          «{title}»
+          {title}
         </Title>
       )}
       {!exhibition && medium && <p data-label-line className={line}>{medium}</p>}
