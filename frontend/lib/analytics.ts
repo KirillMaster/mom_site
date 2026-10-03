@@ -35,4 +35,5 @@ export const Goals = {
   ContactClick: 'contact_click',
   SocialClick: 'social_click',
   BlogCta: 'blog_cta',
+  CustomOrderSubmit: 'custom_order_submit',
 } as const;

@@ -159,3 +159,14 @@ describe('@US4-AS6 the sitemap lists every work regardless of gallery pagination
     expect(urls.filter((url) => url.includes('/gallery/'))).toHaveLength(60);
   });
 });
+
+describe('@US6-FE1 the sitemap lists /order', () => {
+  it('contains the order page', async () => {
+    mockedGetGalleryData.mockResolvedValue(gallery([]));
+    mockedGetVideosData.mockResolvedValue({ videos: [] });
+
+    const urls = (await sitemap()).map((entry) => entry.url);
+
+    expect(urls).toContain('https://angelamoiseenko.ru/order');
+  });
+});

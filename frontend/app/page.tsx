@@ -1,10 +1,10 @@
-import { getHomeData } from '@/hooks/useApi';
+import { getHomeData, getReviewsData } from '@/hooks/useApi';
 import HomeClientPage from './HomeClientPage';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import StructuredData from '@/components/StructuredData';
 import { Metadata } from 'next';
 import { loadOrBuildFallback } from '@/lib/buildPhase';
-import type { HomeData } from '@/lib/api';
+import type { HomeData, ReviewDto } from '@/lib/api';
 
 export const revalidate = 3600;
 
@@ -93,11 +93,12 @@ export async function generateMetadata(): Promise<Metadata> {
 const HomePage = async () => {
   const homeData = await loadOrBuildFallback(getHomeData, { welcomeMessage: '', bannerImage: '', biographyText: '', authorPhoto: '', artworks: [], contacts: { socialLinks: {} } } as unknown as HomeData);
 
+  const reviews: ReviewDto[] = await getReviewsData().catch(() => []);
 
   return (
     <>
       <StructuredData homeData={homeData} />
-      <HomeClientPage homeData={homeData} />
+      <HomeClientPage homeData={homeData} reviews={reviews} />
     </>
   );
 };
