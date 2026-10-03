@@ -1,9 +1,11 @@
+import { useId } from 'react';
 import type { ReactNode } from 'react';
 
 export const fieldClasses =
   'w-full rounded-md border border-line bg-white px-3 py-2 text-ink placeholder:text-ink-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-sea';
 
-export function useFieldIds(reactId: string, id: string | undefined, error?: string, hint?: string) {
+export function useFieldIds(id: string | undefined, error?: string, hint?: string) {
+  const reactId = useId();
   const field = id ?? `f${reactId.replace(/:/g, '')}`;
   const errorId = `${field}-error`;
   const hintId = `${field}-hint`;

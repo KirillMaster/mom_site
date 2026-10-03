@@ -1,4 +1,4 @@
-import { forwardRef, useId } from 'react';
+import { forwardRef } from 'react';
 import type { InputHTMLAttributes } from 'react';
 import { cx } from './cx';
 import { Field, fieldClasses, useFieldIds } from './Field';
@@ -6,7 +6,7 @@ import { Field, fieldClasses, useFieldIds } from './Field';
 type Props = InputHTMLAttributes<HTMLInputElement> & { label: string; error?: string; hint?: string };
 
 const Input = forwardRef<HTMLInputElement, Props>(function Input({ label, error, hint, className, id, ...rest }, ref) {
-  const ids = useFieldIds(useId(), id, error, hint);
+  const ids = useFieldIds(id, error, hint);
   return (
     <Field label={label} error={error} hint={hint} ids={ids}>
       <input
