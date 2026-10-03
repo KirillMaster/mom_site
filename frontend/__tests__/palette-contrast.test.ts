@@ -93,3 +93,64 @@ describe('@US4-EC4 reduced motion', () => {
     expect(m![1]).toContain('rise-in');
   });
 });
+
+describe('@US1-FE1 additional palette contrast checks', () => {
+  it('ochre-700 on white background meets AA', () => {
+    const ochreWhiteContrast = contrast(colors.ochre[700], '#FFFFFF');
+    expect(ochreWhiteContrast).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('ink on white background exceeds AA', () => {
+    const inkWhiteContrast = contrast(colors.ink.DEFAULT, '#FFFFFF');
+    expect(inkWhiteContrast).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('all palette colors are properly defined hex values', () => {
+    expect(colors.paper.DEFAULT).toMatch(/^#[0-9A-F]{6}$/i);
+    expect(colors.ink.DEFAULT).toMatch(/^#[0-9A-F]{6}$/i);
+    expect(colors.sea.DEFAULT).toMatch(/^#[0-9A-F]{6}$/i);
+    expect(colors.ochre.DEFAULT).toMatch(/^#[0-9A-F]{6}$/i);
+    expect(colors.line.DEFAULT).toMatch(/^#[0-9A-F]{6}$/i);
+  });
+});
+
+describe('@US2-AS1 font display swap', () => {
+  it('both fonts use display=swap for performance', () => {
+    const layout = read('app/layout.tsx');
+    const swaps = (layout.match(/display:\s*['"]swap['"]/g) || []).length;
+    expect(swaps).toBeGreaterThanOrEqual(2);
+  });
+});
+
+describe('@US2-AS2 prose measure line length limit', () => {
+  it('text articles constrained to readable line length', () => {
+    const css = read('app/globals.css');
+    expect(css).toContain('prose-measure');
+    expect(css).toMatch(/prose-measure[^}]*max-width[^}]*75ch/);
+  });
+});
+
+describe('@US3-FE3 single price implementation is enforced', () => {
+  it('no formatPrice copy-pastes in other files', () => {
+    const walk = (d: string): string[] => {
+      return fs.readdirSync(d, { withFileTypes: true }).flatMap((e: any) =>
+        ['node_modules', '.next', 'e2e', '__tests__'].includes(e.name) ? [] :
+          e.isDirectory() ? walk(path.join(d, e.name)) : /\.(ts|tsx)$/.test(e.name) && !/\.test\./.test(e.name) ? [path.join(d, e.name)] : []);
+    };
+    const files = walk(root);
+    const priceImplementations = files.filter((f) => {
+      const content = fs.readFileSync(f, 'utf8');
+      return /new\s+Intl\.NumberFormat/.test(content) || /format\(['"]ru-RU/.test(content);
+    });
+    const normalized = priceImplementations.map((f) => f.replace(root, '.').split(path.sep).join('/'));
+    expect(normalized).toEqual(['./lib/price.ts']);
+  });
+});
+
+describe('@US4-FE1 button focus ring color', () => {
+  it('focus ring is always sea color across variants', () => {
+    const button = read('components/ui/Button.tsx');
+    expect(button).toContain('focus-visible:ring-sea');
+    expect(button).toMatch(/focus-visible:ring-sea/g);
+  });
+});
