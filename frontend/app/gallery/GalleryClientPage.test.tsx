@@ -265,4 +265,126 @@ describe('catalogue filters (011 S5)', () => {
     fireEvent.click(screen.getByRole('button', { name: /^M/ }));
     expect(screen.getByText('Ничего не найдено')).toBeInTheDocument();
   });
+
+  it('@US5-FE1 size S boundary: 40x30 (S), 41x30 (M) - degradation', () => {
+    const { unmount } = render(<GalleryClientPage galleryData={data([mk(1, 1, 40, 30), mk(2, 1, 41, 30)])} />);
+    fireEvent.click(screen.getByRole('button', { name: /^S/ }));
+    expect(screen.getByText('«Т1»')).toBeInTheDocument();
+    expect(screen.queryByText('«Т2»')).not.toBeInTheDocument();
+    unmount();
+
+    render(<GalleryClientPage galleryData={data([mk(1, 1, 40, 30), mk(2, 1, 41, 30)])} />);
+    fireEvent.click(screen.getByRole('button', { name: /^M/ }));
+    expect(screen.queryByText('«Т1»')).not.toBeInTheDocument();
+    expect(screen.getByText('«Т2»')).toBeInTheDocument();
+  });
+
+  it('@US5-FE1 size M boundary: 80x50 (M), 81x50 (L) - degradation', () => {
+    const { unmount } = render(<GalleryClientPage galleryData={data([mk(1, 1, 80, 50), mk(2, 1, 81, 50)])} />);
+    fireEvent.click(screen.getByRole('button', { name: /^M/ }));
+    expect(screen.getByText('«Т1»')).toBeInTheDocument();
+    expect(screen.queryByText('«Т2»')).not.toBeInTheDocument();
+    unmount();
+
+    render(<GalleryClientPage galleryData={data([mk(1, 1, 80, 50), mk(2, 1, 81, 50)])} />);
+    fireEvent.click(screen.getByRole('button', { name: /^L/ }));
+    expect(screen.queryByText('«Т1»')).not.toBeInTheDocument();
+    expect(screen.getByText('«Т2»')).toBeInTheDocument();
+  });
+
+  it('@US5-AS5 invalid category param is ignored - degradation', () => {
+    window.history.replaceState({}, '', '/gallery?category=-5');
+    render(<GalleryClientPage galleryData={full()} />);
+    expect(screen.getByText('«Т1»')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Все работы' })).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('@US5-AS5 invalid size param is ignored - degradation', () => {
+    window.history.replaceState({}, '', '/gallery?size=XL');
+    render(<GalleryClientPage galleryData={full()} />);
+    expect(screen.getByText('«Т1»')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^S/ })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('button', { name: /^M/ })).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('@US5-AS5 invalid available param value is treated as false - degradation', () => {
+    window.history.replaceState({}, '', '/gallery?available=yes');
+    render(<GalleryClientPage galleryData={full()} />);
+    expect(screen.getByRole('button', { name: 'Только в наличии' })).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('@US5-FE2 combining size and available filters excludes unavailable - degradation', () => {
+    const available = mk(1, 1, 60, 50, { status: 'Available' });
+    const sold = mk(2, 1, 60, 50, { status: 'Sold' });
+    render(<GalleryClientPage galleryData={data([available, sold])} />);
+    fireEvent.click(screen.getByRole('button', { name: /^M/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Только в наличии' }));
+    expect(screen.getByText('«Т1»')).toBeInTheDocument();
+    expect(screen.queryByText('«Т2»')).not.toBeInTheDocument();
+    expect(screen.getByTestId('gallery-count')).toHaveTextContent('Найдено: 1');
+  });
+
+  it('@US5-FE2 no size filter with available=1 still shows all statuses - degradation', () => {
+    const available = mk(1, 1, 60, 50, { status: 'Available' });
+    const sold = mk(2, 1, 30, 30, { status: 'Sold' });
+    render(<GalleryClientPage galleryData={data([available, sold])} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Только в наличии' }));
+    expect(screen.getByText('«Т1»')).toBeInTheDocument();
+    expect(screen.queryByText('«Т2»')).not.toBeInTheDocument();
+  });
+
+  it('@US5-AS3 Sukhorukikh category shows attribution and hides other works - degradation', () => {
+    render(<GalleryClientPage galleryData={full()} />);
+    fireEvent.click(screen.getByTestId('sukhorukikh-tab'));
+    expect(screen.getByText('«Т5»')).toBeInTheDocument();
+    expect(screen.getByTestId('authorship-caption')).toBeVisible();
+    expect(screen.queryByText('«Т1»')).not.toBeInTheDocument();
+    expect(screen.queryByText('«Т2»')).not.toBeInTheDocument();
+    expect(screen.queryByText('«Т3»')).not.toBeInTheDocument();
+  });
+
+  it('@US5-AS5 multiple query params with size and available - degradation', () => {
+    window.history.replaceState({}, '', '/gallery?size=M&available=1');
+    render(<GalleryClientPage galleryData={full()} />);
+    expect(screen.getByText('«Т2»')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^M/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'Только в наличии' })).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('@US5-FE2 reset after filtering with all three filters - degradation', () => {
+    render(<GalleryClientPage galleryData={full()} />);
+    fireEvent.click(screen.getByRole('button', { name: /^M/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Только в наличии' }));
+    expect(window.location.search).toBe('?size=M&available=1');
+    const resets = screen.getAllByRole('button', { name: 'Сбросить' });
+    fireEvent.click(resets[resets.length - 1]);
+    expect(window.location.search).toBe('');
+    expect(screen.getByTestId('gallery-count')).toHaveTextContent('Найдено: 4');
+  });
+
+  it('@US5-FE2 no results message appears when filters exclude everything - degradation', () => {
+    render(<GalleryClientPage galleryData={data([mk(1, 1, 60, 50)])} />);
+    fireEvent.click(screen.getByRole('button', { name: /^S/ }));
+    expect(screen.getByText('Ничего не найдено')).toBeInTheDocument();
+    expect(screen.getByTestId('gallery-count')).toHaveTextContent('Найдено: 0');
+  });
+
+  it('@US5-EC1 missing Sukhorukikh category does not break filters - degradation', () => {
+    const plain = { artworks: [mk(1, 1, 30, 30)], categories: [{ id: 1, name: 'Пейзаж' }] } as any;
+    render(<GalleryClientPage galleryData={plain} />);
+    fireEvent.click(screen.getByRole('button', { name: /^S/ }));
+    expect(screen.getByText('«Т1»')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^S/ })).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('@US5-FE2 count is updated when switching between size classes - degradation', () => {
+    render(<GalleryClientPage galleryData={full()} />);
+    expect(screen.getByTestId('gallery-count')).toHaveTextContent('Найдено: 4');
+    fireEvent.click(screen.getByRole('button', { name: /^S/ }));
+    expect(screen.getByTestId('gallery-count')).toHaveTextContent('Найдено: 1');
+    fireEvent.click(screen.getByRole('button', { name: /^M/ }));
+    expect(screen.getByTestId('gallery-count')).toHaveTextContent('Найдено: 1');
+    fireEvent.click(screen.getByRole('button', { name: /^L/ }));
+    expect(screen.getByTestId('gallery-count')).toHaveTextContent('Найдено: 1');
+  });
 });
