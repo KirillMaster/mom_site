@@ -113,7 +113,7 @@ describe('GalleryCard boundary: missing data', () => {
   it('applies correct link structure for card', () => {
     render(<GalleryClientPage galleryData={data([art(1)])} />);
     const link = screen.getByRole('link', { name: 'Закат' });
-    expect(link.href).toContain('/gallery/');
+    expect((link as HTMLAnchorElement).href).toContain('/gallery/');
     expect(link.className).toContain('block');
   });
   it('applies correct image classes for responsive sizing', () => {

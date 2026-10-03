@@ -46,8 +46,8 @@ const artwork = (overrides?: Partial<ArtworkDto>): ArtworkDto => ({
 } as ArtworkDto);
 
 const categories: GalleryData['categories'] = [
-  { id: 1, name: 'Пейзаж' },
-  { id: 999, name: 'Выставка' }
+  { id: 1, name: 'Пейзаж', displayOrder: 1, isActive: true },
+  { id: 999, name: 'Выставка', displayOrder: 2, isActive: true }
 ];
 
 describe('ArtworkInfoCard boundary: exhibition vs available', () => {
@@ -208,7 +208,7 @@ describe('ArtworkInfoCard boundary: layout and structure', () => {
   it('renders back link to gallery', () => {
     render(<ArtworkInfoCard artwork={artwork()} categories={categories} />);
     const backLink = screen.getByRole('link', { name: /Вернуться в галерею/ });
-    expect(backLink.href).toContain('/gallery');
+    expect((backLink as HTMLAnchorElement).href).toContain('/gallery');
   });
 
   it('back link has correct styling', () => {
