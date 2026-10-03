@@ -1,4 +1,4 @@
-import { formatPrice, priceLabel, sizeLabel } from '@/lib/galleryCard';
+import { formatPrice, priceLabel, sizeLabel } from '@/lib/price';
 import type { ArtworkDto } from '@/lib/api';
 
 const defaultArtwork = (): ArtworkDto => ({

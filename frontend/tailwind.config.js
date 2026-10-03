@@ -8,6 +8,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        paper: { DEFAULT: '#F7F6F3', 50: '#FBFAF8', 100: '#F7F6F3', 200: '#EFEDE8' },
+        ink: { DEFAULT: '#1F2328', 500: '#5A6069', 600: '#454B53', 700: '#33383F', 900: '#1F2328' },
+        sea: { DEFAULT: '#2F4A5C', 50: '#EEF2F5', 100: '#D9E2E8', 600: '#2F4A5C', 700: '#263D4C', 800: '#1D2F3B' },
+        ochre: { DEFAULT: '#B8862F', 700: '#8A6420' },
+        line: { DEFAULT: '#E2DED6' },
         primary: {
           50: '#fef7ee',
           100: '#fdedd6',
@@ -47,8 +52,8 @@ module.exports = {
         }
       },
       fontFamily: {
-        serif: ['var(--font-playfair)', 'serif'],
-        sans: ['var(--font-inter)', 'sans-serif'],
+        serif: ['var(--font-serif)', 'serif'],
+        sans: ['var(--font-sans)', 'sans-serif'],
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',

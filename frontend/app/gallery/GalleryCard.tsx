@@ -3,7 +3,7 @@ import { getImageUrl } from '@/hooks/useApi';
 import type { ArtworkDto } from '@/lib/api';
 import { buildArtworkSlug } from '@/lib/artworkSlug';
 import { normalizeTitle } from '@/lib/normalizeTitle';
-import { priceLabel, sizeLabel } from '@/lib/galleryCard';
+import { priceLabel, sizeLabel } from '@/lib/price';
 import { ARTWORK_STATUS_LABELS, resolveStatus } from '@/lib/artworkStatus';
 
 interface GalleryCardProps {
