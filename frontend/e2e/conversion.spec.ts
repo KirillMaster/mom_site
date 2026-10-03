@@ -20,7 +20,7 @@ test('@US2-E2E1 gallery -> artwork -> channels -> ask price -> form without emai
   await page.locator('a[href^="/gallery/"]').first().click();
   await page.waitForURL(/\/gallery\/.+/);
 
-  await expect(page.locator('dl').first()).toContainText('Статус');
+  await expect(page.locator('h1[data-label-line]')).toBeVisible();
 
   const whatsapp = page.getByRole('link', { name: 'Написать в WhatsApp' }).first();
   await expect(whatsapp).toHaveAttribute('href', /text=/);
