@@ -199,5 +199,288 @@ namespace MomSite.Tests
             Assert.NotNull(about.ExhibitionPhotos);
             Assert.Empty(about.ExhibitionPhotos);
         }
+
+        // =====================================================================
+        // Boundary tests for DescriptionCleaner edge cases
+        // =====================================================================
+
+        [Fact, Trait("scenario", "US8-AS2")]
+        public void US8_BoundaryEmptyString_ReturnsEmpty()
+        {
+            // Empty string edge case: should return empty string as input
+            Assert.Empty(DescriptionCleaner.Clean("") ?? "");
+        }
+
+        [Fact, Trait("scenario", "US8-AS2")]
+        public void US8_BoundaryWhitespaceOnly_ReturnsAsIs()
+        {
+            // Whitespace-only input is returned as-is by the cleaner
+            Assert.NotNull(DescriptionCleaner.Clean("   "));
+            Assert.NotNull(DescriptionCleaner.Clean("\n\n"));
+            Assert.NotNull(DescriptionCleaner.Clean("\t\t"));
+        }
+
+        [Fact, Trait("scenario", "US8-EC1")]
+        public void US8_BoundaryMultilineGenerated_OnlyTemplateStrings_ReturnsNull()
+        {
+            // Edge case: multiple template lines with no actual content
+            var input = "На картине мы видим натюрморт.\n" +
+                       "Художник мастерски передал свет и тень.\n" +
+                       "В целом произведение радует глаз.";
+            Assert.Null(DescriptionCleaner.Clean(input));
+        }
+
+        [Fact, Trait("scenario", "US8-AS1")]
+        public void US8_BoundaryFactThenGenerated_KeepsFact()
+        {
+            // Fact first, generated templates after - should keep fact
+            const string fact = "Холст на подрамнике, масло, 80х70, 2026г.";
+            var input = fact + "\n" +
+                       "На представленной картине мы видим яркую композицию.\n" +
+                       "Художник использовал теплую палитру.";
+            Assert.Equal(fact, DescriptionCleaner.Clean(input));
+        }
+
+        [Fact, Trait("scenario", "US8-AS1")]
+        public void US8_BoundaryGeneratedThenFact_KeepsFact()
+        {
+            // Generated template first, then fact - should keep fact
+            var input = "На предоставленной картине изображены цветы.\n" +
+                       "Холст, масло, 60х50, 2025г.\n" +
+                       "Работа выполнена в импрессионистской манере.";
+            const string fact = "Холст, масло, 60х50, 2025г.";
+            Assert.Equal(fact, DescriptionCleaner.Clean(input));
+        }
+
+        [Fact, Trait("scenario", "US8-AS2")]
+        public void US8_BoundaryMixedTemplatesAndFacts_KeepsAllFacts()
+        {
+            // Mix of generated and actual lines - keep only factual ones
+            var input = "Холст на подрамнике.\n" +
+                       "На картине мы видим букет.\n" +
+                       "Размер: 90х70 см.\n" +
+                       "Техника: масло.\n" +
+                       "В целом это произведение радует.";
+            var expected = "Холст на подрамнике.\nРазмер: 90х70 см.\nТехника: масло.";
+            Assert.Equal(expected, DescriptionCleaner.Clean(input));
+        }
+
+        [Fact, Trait("scenario", "US8-AS1")]
+        public void US8_BoundaryCarriageReturnNewlines_HandledCorrectly()
+        {
+            // Handle Windows-style line endings (\r\n)
+            const string fact = "Холст на подрамнике, масло, 80х70, 2026г.";
+            var input = fact + "\r\n" +
+                       "На картине изображена композиция.\r\n" +
+                       "Художник передал свет и цвет.";
+            Assert.Equal(fact, DescriptionCleaner.Clean(input));
+        }
+
+        // =====================================================================
+        // Boundary tests for HowToBuy endpoint
+        // =====================================================================
+
+        [Fact, Trait("scenario", "US3-BE1")]
+        public async Task US3_BoundaryHowToBuy_WithWhitespaceOnlyText_ReturnsNull()
+        {
+            var (c, ctx) = Create();
+            ctx.PageContents.Add(new PageContent
+            {
+                PageKey = "how-to-buy", ContentKey = "body", TextContent = "   \n   \t   ",
+                IsActive = true, UpdatedAt = new DateTime(2026, 10, 1, 0, 0, 0, DateTimeKind.Utc)
+            });
+            await ctx.SaveChangesAsync();
+            var dto = await GetHtb(c);
+            Assert.Null(dto.Text);
+        }
+
+        [Fact, Trait("scenario", "US3-BE2")]
+        public async Task US3_BoundaryHowToBuy_WithEmptyString_ReturnsNull()
+        {
+            var (c, ctx) = Create();
+            ctx.PageContents.Add(new PageContent
+            {
+                PageKey = "how-to-buy", ContentKey = "body", TextContent = "",
+                IsActive = true, UpdatedAt = new DateTime(2026, 10, 1, 0, 0, 0, DateTimeKind.Utc)
+            });
+            await ctx.SaveChangesAsync();
+            var dto = await GetHtb(c);
+            Assert.Null(dto.Text);
+        }
+
+        // =====================================================================
+        // Boundary tests for availableArtworks
+        // =====================================================================
+
+        [Fact, Trait("scenario", "US1-BE1")]
+        public async Task US1_BoundaryAvailableArtworks_Single_ReturnsOne()
+        {
+            var (c, ctx) = Create();
+            var cat = new Category { Name = "Цветы", ShowOnHome = true };
+            ctx.Artworks.Add(Art(cat, "single", ArtworkStatus.Available, ageDays: 0));
+            await ctx.SaveChangesAsync();
+
+            var home = await GetHome(c);
+
+            Assert.NotNull(home.AvailableArtworks);
+            Assert.Single(home.AvailableArtworks);
+            Assert.Equal("single", home.AvailableArtworks[0].Title);
+        }
+
+        [Fact, Trait("scenario", "US1-BE1")]
+        public async Task US1_BoundaryAvailableArtworks_ExactlyEight_AllReturned()
+        {
+            var (c, ctx) = Create();
+            var cat = new Category { Name = "Цветы", ShowOnHome = true };
+            for (var i = 0; i < 8; i++)
+                ctx.Artworks.Add(Art(cat, $"a{i}", ageDays: i)); // ageDays=0 is newest, ageDays=7 is oldest
+            await ctx.SaveChangesAsync();
+
+            var home = await GetHome(c);
+
+            Assert.Equal(8, home.AvailableArtworks.Count);
+            // Newest first: a0, a1, ..., a7
+            for (var i = 0; i < 8; i++)
+                Assert.Equal($"a{i}", home.AvailableArtworks[i].Title);
+        }
+
+        [Fact, Trait("scenario", "US1-BE1")]
+        public async Task US1_BoundaryAvailableArtworks_MoreThanEight_LimitedToEight()
+        {
+            var (c, ctx) = Create();
+            var cat = new Category { Name = "Цветы", ShowOnHome = true };
+            // Add 15 artworks with ageDays from 0 (newest) to 14 (oldest)
+            for (var i = 0; i < 15; i++)
+                ctx.Artworks.Add(Art(cat, $"newer{i}", ageDays: i));
+            await ctx.SaveChangesAsync();
+
+            var home = await GetHome(c);
+
+            Assert.Equal(8, home.AvailableArtworks.Count);
+            // Verify we got the 8 newest: newer0 through newer7
+            for (var i = 0; i < 8; i++)
+                Assert.Equal($"newer{i}", home.AvailableArtworks[i].Title);
+        }
+
+        [Fact, Trait("scenario", "US1-BE2")]
+        public async Task US1_BoundaryAvailableArtworks_UnpublishedAvailable_Excluded()
+        {
+            var (c, ctx) = Create();
+            var cat = new Category { Name = "Цветы", ShowOnHome = true };
+            ctx.Artworks.AddRange(
+                Art(cat, "published_available", ArtworkStatus.Available, published: true),
+                Art(cat, "unpublished_available", ArtworkStatus.Available, published: false)
+            );
+            await ctx.SaveChangesAsync();
+
+            var home = await GetHome(c);
+
+            Assert.Single(home.AvailableArtworks);
+            Assert.Equal("published_available", home.AvailableArtworks[0].Title);
+        }
+
+        [Fact, Trait("scenario", "US1-BE2")]
+        public async Task US1_BoundaryAvailableArtworks_OffHomeCategory_Excluded()
+        {
+            var (c, ctx) = Create();
+            var onHome = new Category { Name = "Цветы", ShowOnHome = true };
+            var offHome = new Category { Name = "Выставки", ShowOnHome = false };
+            ctx.Artworks.AddRange(
+                Art(onHome, "on_home", ArtworkStatus.Available),
+                Art(offHome, "off_home", ArtworkStatus.Available)
+            );
+            await ctx.SaveChangesAsync();
+
+            var home = await GetHome(c);
+
+            Assert.Single(home.AvailableArtworks);
+            Assert.Equal("on_home", home.AvailableArtworks[0].Title);
+        }
+
+        // =====================================================================
+        // Boundary tests for exhibitionPhotos
+        // =====================================================================
+
+        [Fact, Trait("scenario", "US5-BE1")]
+        public async Task US5_BoundaryExhibitionPhotos_ExactlyTwentyFour_AllReturned()
+        {
+            var (c, ctx) = Create();
+            var ex = new Category { Name = "Фото с выставок" };
+            for (var i = 0; i < 24; i++)
+                ctx.Artworks.Add(Art(ex, $"ex{i}", ArtworkStatus.Sold, ageDays: i));
+            await ctx.SaveChangesAsync();
+
+            var about = await GetAbout(c);
+
+            Assert.Equal(24, about.ExhibitionPhotos.Count);
+            for (var i = 0; i < 24; i++)
+                Assert.Equal($"ex{i}", about.ExhibitionPhotos[i].Title);
+        }
+
+        [Fact, Trait("scenario", "US5-BE1")]
+        public async Task US5_BoundaryExhibitionPhotos_Single_ReturnsOne()
+        {
+            var (c, ctx) = Create();
+            var ex = new Category { Name = "Фото с выставок" };
+            ctx.Artworks.Add(Art(ex, "single_photo", ArtworkStatus.Sold));
+            await ctx.SaveChangesAsync();
+
+            var about = await GetAbout(c);
+
+            Assert.Single(about.ExhibitionPhotos);
+            Assert.Equal("single_photo", about.ExhibitionPhotos[0].Title);
+        }
+
+        [Fact, Trait("scenario", "US5-BE1")]
+        public async Task US5_BoundaryExhibitionPhotos_UnpublishedPhoto_Excluded()
+        {
+            var (c, ctx) = Create();
+            var ex = new Category { Name = "Фото с выставок" };
+            ctx.Artworks.AddRange(
+                Art(ex, "published_photo", ArtworkStatus.Sold, published: true),
+                Art(ex, "unpublished_photo", ArtworkStatus.Sold, published: false)
+            );
+            await ctx.SaveChangesAsync();
+
+            var about = await GetAbout(c);
+
+            Assert.Single(about.ExhibitionPhotos);
+            Assert.Equal("published_photo", about.ExhibitionPhotos[0].Title);
+        }
+
+        [Fact, Trait("scenario", "US5-BE1")]
+        public async Task US5_BoundaryExhibitionPhotos_MoreThanTwentyFour_LimitedToTwentyFour()
+        {
+            var (c, ctx) = Create();
+            var ex = new Category { Name = "Фото с выставок" };
+            for (var i = 0; i < 50; i++)
+                ctx.Artworks.Add(Art(ex, $"ex{i}", ArtworkStatus.Sold, ageDays: i));
+            await ctx.SaveChangesAsync();
+
+            var about = await GetAbout(c);
+
+            Assert.Equal(24, about.ExhibitionPhotos.Count);
+            // Verify we got the 24 newest: ex0 through ex23
+            for (var i = 0; i < 24; i++)
+                Assert.Equal($"ex{i}", about.ExhibitionPhotos[i].Title);
+        }
+
+        [Fact, Trait("scenario", "US5-BE1")]
+        public async Task US5_BoundaryExhibitionPhotos_OnlyCorrectCategory_OthersExcluded()
+        {
+            var (c, ctx) = Create();
+            var ex = new Category { Name = "Фото с выставок" };
+            var other = new Category { Name = "Цветы" };
+            ctx.Artworks.AddRange(
+                Art(ex, "ex_photo", ArtworkStatus.Sold),
+                Art(other, "flower_photo", ArtworkStatus.Sold)
+            );
+            await ctx.SaveChangesAsync();
+
+            var about = await GetAbout(c);
+
+            Assert.Single(about.ExhibitionPhotos);
+            Assert.Equal("ex_photo", about.ExhibitionPhotos[0].Title);
+        }
     }
 }
