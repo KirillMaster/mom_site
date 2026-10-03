@@ -1,0 +1,1 @@
+S1 architect: no structural findings. Interfaces live in Infrastructure per existing convention (IImageService/IS3Service); WatermarkPairing/Geometry pure statics; controller [Authorize]; migration additive nullable.
