@@ -1,18 +1,24 @@
 import { render, screen } from '@testing-library/react';
 import ExhibitionPhotos from './ExhibitionPhotos';
+import type { ArtworkDto } from '@/lib/api';
 
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: ({ src, alt, loading, sizes }: { src: string; alt: string; loading?: string; sizes?: string }) => (
+  default: ({ src, alt, loading, sizes }: { src: string; alt: string; loading?: 'eager' | 'lazy'; sizes?: string }) => (
     <img src={src} alt={alt} loading={loading} data-sizes={sizes} />
   ),
 }));
 
-const photo = (id: number, overrides: Record<string, unknown> = {}) => ({
+const photo = (id: number, overrides: Record<string, unknown> = {}): ArtworkDto => ({
   id,
   title: `Фото ${id}`,
   imagePath: `image${id}.jpg`,
   thumbnailPath: `thumb${id}.jpg`,
+  isForSale: false,
+  createdAt: '2024-01-01T00:00:00Z',
+  updatedAt: '2024-01-01T00:00:00Z',
+  categoryId: 4,
+  images: [],
   ...overrides,
 });
 
