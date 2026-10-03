@@ -8,7 +8,7 @@ const VIEWPORTS = [
   { name: '390', width: 390, height: 844 },
 ];
 const STATIC_PAGES = ['/', '/gallery', '/contacts', '/blog'];
-const OVERFLOW_PAGES = ['/', '/gallery', '/about', '/videos', '/reviews', '/contacts', '/blog'];
+const OVERFLOW_PAGES = ['/', '/gallery', '/about', '/videos', '/reviews', '/contacts', '/blog', '/order'];
 
 const open = (page: Page, path: string) => page.goto(path, { waitUntil: 'domcontentloaded' });
 
