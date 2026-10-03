@@ -205,3 +205,31 @@ describe('@US3-AS7 artwork page URL building', () => {
     expect(url).toContain('999');
   });
 });
+
+describe('@T023 catalog fields in SEO', () => {
+  const base = {
+    id: 3, title: 'Закат', status: 'Available', price: 12000, widthCm: 60, heightCm: 80, year: 2019,
+    support: 'холст', technique: 'масло', shortDescription: 'Тёплый вечер у моря', description: 'Длинное описание',
+    imagePath: '/a.jpg',
+  };
+
+  it('schema has size, year, medium, surface and InStock offer', () => {
+    const ld: any = buildArtworkSchema(base as any, []);
+    expect(ld.width).toEqual({ '@type': 'QuantitativeValue', value: 60, unitCode: 'CMT' });
+    expect(ld.height.value).toBe(80);
+    expect(ld.dateCreated).toBe('2019');
+    expect(ld.artMedium).toBe('масло');
+    expect(ld.artworkSurface).toBe('холст');
+    expect(ld.offers.availability).toMatch(/InStock/);
+    expect(ld.offers.priceCurrency).toBe('RUB');
+  });
+
+  it('Sold gives SoldOut offer, other statuses give no offer', () => {
+    expect((buildArtworkSchema({ ...base, status: 'Sold' } as any, []) as any).offers.availability).toMatch(/SoldOut/);
+    expect((buildArtworkSchema({ ...base, status: 'PrivateCollection' } as any, []) as any).offers).toBeUndefined();
+  });
+
+  it('description starts with short description', () => {
+    expect(buildSeoDescription(base as any)).toContain("Тёплый вечер у моря");
+  });
+});

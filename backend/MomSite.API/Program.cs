@@ -155,6 +155,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IS3Service, S3Service>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IArtworkImageService, ArtworkImageService>();
+builder.Services.AddScoped<MomSite.Core.Interfaces.ICatalogImportService, MomSite.Infrastructure.Catalog.CatalogImportService>();
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<ICacheInvalidator, FrontendCacheInvalidator>();
 builder.Services.AddSingleton(new MomSite.Infrastructure.Blog.BlogHtmlSanitizer(new[] { "s3.twcstorage.ru" }, "angelamoiseenko.ru"));

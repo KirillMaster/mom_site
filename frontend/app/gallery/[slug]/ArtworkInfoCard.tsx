@@ -41,6 +41,8 @@ const ArtworkInfoCard = ({ artwork, categoryName, categories, channels = [] }: P
 
         <h1 className="font-serif text-3xl font-bold text-gray-900 md:text-4xl">{quotedTitle(artwork.title)}</h1>
 
+        {artwork.shortDescription && <p className="mt-2 text-lg text-gray-700">{artwork.shortDescription}</p>}
+
         {artwork.description && <p className="mt-4 leading-relaxed text-gray-600">{artwork.description}</p>}
 
         {!isExhibition && <ArtworkSpecs artwork={artwork} />}

@@ -14,6 +14,10 @@ export interface ArtworkFormState {
   year: string;
   support: string;
   technique: string;
+  shortDescription: string;
+  isFeatured: boolean;
+  needsReshoot: boolean;
+  isPublished: boolean;
   categoryId: string;
 }
 

@@ -29,10 +29,10 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: dotnet build зелёный с ClosedXML
-    done: false
+    done: true
   - id: AC-2
     description: Версия пакета записана в research.md R1
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -84,13 +84,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: В Artwork есть все поля, WidthCm/HeightCm допускают дробь
-    done: false
+    done: true
   - id: AC-2
     description: ApplyStatus держит IsForSale == (Status == Available)
-    done: false
+    done: true
   - id: AC-3
     description: Нет двух миграций с одинаковыми колонками
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -150,13 +150,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Миграция применяется на БД с данными, текущие работы IsPublished=true
-    done: false
+    done: true
   - id: AC-2
     description: Description принимает 5000 символов, ShortDescription 300
-    done: false
+    done: true
   - id: AC-3
     description: ArtworkFieldRules единственное место лимитов
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -214,13 +214,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: В решении одно определение Visible() для Artwork
-    done: false
+    done: true
   - id: AC-2
     description: /api/public/gallery и главная не возвращают IsPublished=false и NotMine
-    done: false
+    done: true
   - id: AC-3
     description: Админский список видит все работы
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -280,13 +280,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Таблица CatalogImportLog создаётся миграцией
-    done: false
+    done: true
   - id: AC-2
     description: Типы Core не зависят от ClosedXML/EF
-    done: false
+    done: true
   - id: AC-3
     description: Каждый файл до 200 строк
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -338,13 +338,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Колонки находятся независимо от порядка и регистра
-    done: false
+    done: true
   - id: AC-2
     description: Нет ID или Название даёт required_header_missing
-    done: false
+    done: true
   - id: AC-3
     description: Нет побочных эффектов
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -398,16 +398,16 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: «150 000 ₽», «150000», «150 000,00» дают 150000; «по запросу» даёт null
-    done: false
+    done: true
   - id: AC-2
     description: «2017г.» даёт 2017; «50,5» даёт 50.5; «продана» даёт Sold
-    done: false
+    done: true
   - id: AC-3
     description: Мусор даёт Warn без исключения
-    done: false
+    done: true
   - id: AC-4
     description: «-» Clear, пустая ячейка Keep
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -478,13 +478,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Неизвестный и повторный ID дают error, остальные строки обрабатываются
-    done: false
+    done: true
   - id: AC-2
     description: Пустая строка не попадает в отчёт
-    done: false
+    done: true
   - id: AC-3
     description: Новая работа без названия error; с дублем названия warning
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -541,13 +541,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: В RowReport.Changes только реально изменённые поля
-    done: false
+    done: true
   - id: AC-2
     description: Повторный прогон того же входа даёт 0 updated и 0 created
-    done: false
+    done: true
   - id: AC-3
     description: Файл до 200 строк
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -605,13 +605,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Ошибка чтения не превращается в исключение наружу
-    done: false
+    done: true
   - id: AC-2
     description: Лимит строк считается по непустым строкам
-    done: false
+    done: true
   - id: AC-3
     description: Нет листа или заголовка даёт соответствующий код ошибки
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -681,13 +681,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Предпросмотр не вызывает SaveChanges
-    done: false
+    done: true
   - id: AC-2
     description: Параллельный запрос получает Busy
-    done: false
+    done: true
   - id: AC-3
     description: Сервис зарегистрирован в DI
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -745,13 +745,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Запрос без JWT даёт 401
-    done: false
+    done: true
   - id: AC-2
     description: Файл 6 МБ даёт 413, .csv даёт 400 с понятным текстом
-    done: false
+    done: true
   - id: AC-3
     description: Нет 500 на наборе испорченных файлов
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -817,13 +817,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: 10 испорченных файлов дают 400/200, не 500
-    done: false
+    done: true
   - id: AC-2
     description: Фикстура v1 разбирается, распознаваемые значения без warnings
-    done: false
+    done: true
   - id: AC-3
     description: Фикстура Google Sheets добавлена либо тест явно Skip
-    done: false
+    done: true  # тест явно Skip (нет фикстуры)
   test_scenarios:
   - id: TS-1
     given:
@@ -874,13 +874,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Клиент возвращает типизированный отчёт
-    done: false
+    done: true
   - id: AC-2
     description: Текст ошибки 400 доходит до UI
-    done: false
+    done: true
   - id: AC-3
     description: tsc --noEmit без ошибок
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -936,13 +936,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: После загрузки видны сводка и diff только изменённых полей
-    done: false
+    done: true
   - id: AC-2
     description: Фильтр «только с ошибками» оставляет строки с error
-    done: false
+    done: true
   - id: AC-3
     description: Плитка ведёт на /admin/catalog
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1005,16 +1005,16 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Ошибка в середине применения откатывает всю транзакцию
-    done: false
+    done: true
   - id: AC-2
     description: Повторный импорт того же файла даёт 0 изменений и не создаёт лог
-    done: false
+    done: true
   - id: AC-3
     description: Новая работа создаётся скрытым черновиком в категории по умолчанию
-    done: false
+    done: true
   - id: AC-4
     description: Статус «Не моя работа» скрывает работу, не удаляя
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1079,13 +1079,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Применение возвращает 200 с logId
-    done: false
+    done: true
   - id: AC-2
     description: Второй одновременный запрос получает 409
-    done: false
+    done: true
   - id: AC-3
     description: Галерея сайта обновляется (кэш сброшен)
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1142,13 +1142,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Применить недоступно до предпросмотра
-    done: false
+    done: true
   - id: AC-2
     description: После применения показан итог и подсказка про фото
-    done: false
+    done: true
   - id: AC-3
     description: 409 показывает понятное сообщение
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1205,13 +1205,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Отчёт предпросмотра совпадает с фактическими изменениями
-    done: false
+    done: true
   - id: AC-2
     description: Черновик не виден публично
-    done: false
+    done: true
   - id: AC-3
     description: Идемпотентность подтверждена тестом
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1268,13 +1268,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Откат возвращает значения полей и удаляет черновики без фото
-    done: false
+    done: true
   - id: AC-2
     description: Повторный откат возвращает 404
-    done: false
+    done: true
   - id: AC-3
     description: Работы, правленные после импорта, перечислены в ответе
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1334,10 +1334,10 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: После отката показан результат
-    done: false
+    done: true
   - id: AC-2
     description: 404 показывает «Откатывать нечего»
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1394,13 +1394,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Публичный JSON содержит новые поля и не содержит needsReshoot
-    done: false
+    done: true
   - id: AC-2
     description: price отдаётся только при Status=Available
-    done: false
+    done: true
   - id: AC-3
     description: IsForSale в ответах сохранён
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1459,13 +1459,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: У «В наличии» видны размер, техника, основа, год и цена; у «Продана» бейдж вместо цены
-    done: false
+    done: true
   - id: AC-2
     description: Пустые поля не рендерят пустых подписей
-    done: false
+    done: true
   - id: AC-3
     description: meta description берёт shortDescription или 160 символов Description
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1517,13 +1517,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Available с ценой даёт Offer InStock; Sold SoldOut
-    done: false
+    done: true
   - id: AC-2
     description: Без цены или со статусом NotForSale offers нет
-    done: false
+    done: true
   - id: AC-3
     description: Нет полей undefined/null в JSON-LD
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1579,13 +1579,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: В галерее у проданной работы бейдж вместо цены
-    done: false
+    done: true
   - id: AC-2
     description: Скрытая работа отсутствует в sitemap
-    done: false
+    done: true
   - id: AC-3
     description: Нет регрессий текущих тестов галереи
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1638,10 +1638,10 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Оба сценария карточки проходят
-    done: false
+    done: true
   - id: AC-2
     description: Скрытая работа даёт 404
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1689,13 +1689,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Новые поля сохраняются и возвращаются
-    done: false
+    done: true
   - id: AC-2
     description: Год вне диапазона даёт 400
-    done: false
+    done: true
   - id: AC-3
     description: IsForSale всегда равен Status == Available
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1750,13 +1750,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Новые поля сохраняются из формы
-    done: false
+    done: true
   - id: AC-2
     description: Невалидный год/размер блокирует отправку с сообщением
-    done: false
+    done: true
   - id: AC-3
     description: Список работ показывает статус и пометки
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1818,13 +1818,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Все автотесты зелёные
-    done: false
+    done: true
   - id: AC-2
     description: Новые файлы до 200 строк
-    done: false
+    done: true
   - id: AC-3
     description: Сценарии quickstart 1-12 подтверждены
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:

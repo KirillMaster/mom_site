@@ -25,6 +25,10 @@ const initialState = (a: any | null): ArtworkFormState => ({
   year: a?.year ? String(a.year) : '',
   support: a?.support ?? '',
   technique: a?.technique ?? '',
+  shortDescription: a?.shortDescription ?? '',
+  isFeatured: a?.isFeatured ?? false,
+  needsReshoot: a?.needsReshoot ?? false,
+  isPublished: a?.isPublished ?? true,
   categoryId: a ? String(a.categoryId) : '',
 });
 

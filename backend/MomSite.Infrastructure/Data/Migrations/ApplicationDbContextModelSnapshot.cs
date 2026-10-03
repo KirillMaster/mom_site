@@ -37,22 +37,37 @@ namespace MomSite.Infrastructure.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)");
 
-                    b.Property<int?>("HeightCm")
-                        .HasColumnType("integer");
+                    b.Property<decimal?>("HeightCm")
+                        .HasColumnType("numeric(6,1)");
 
                     b.Property<string>("ImagePath")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsForSale")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsPublished")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("NeedsReshoot")
                         .HasColumnType("boolean");
 
                     b.Property<decimal?>("Price")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ShortDescription")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -78,8 +93,8 @@ namespace MomSite.Infrastructure.Data.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("WidthCm")
-                        .HasColumnType("integer");
+                    b.Property<decimal?>("WidthCm")
+                        .HasColumnType("numeric(6,1)");
 
                     b.Property<int?>("Year")
                         .HasColumnType("integer");
@@ -240,6 +255,54 @@ namespace MomSite.Infrastructure.Data.Migrations
                     b.HasIndex("ArtworkId");
 
                     b.ToTable("BlogPostArtworks");
+                });
+
+            modelBuilder.Entity("MomSite.Core.Models.CatalogImportLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedIds")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<string>("FileSha256")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTime?>("RolledBackAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Snapshot")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("Summary")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.ToTable("CatalogImportLogs");
                 });
 
             modelBuilder.Entity("MomSite.Core.Models.Category", b =>

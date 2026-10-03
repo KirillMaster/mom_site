@@ -2,10 +2,13 @@ import { getImageUrl } from '@/hooks/useApi';
 import { buildArtworkSlug } from '@/lib/artworkSlug';
 import type { ArtworkPhoto } from '@/lib/artworkPhotos';
 import { normalizeTitle } from '@/lib/normalizeTitle';
+import { resolveStatus } from '@/lib/artworkStatus';
 import type { ArtworkDto } from '@/lib/api';
 
-type SeoArtwork = Pick<ArtworkDto, 'id' | 'title' | 'description'>;
-type SchemaArtwork = SeoArtwork & Partial<Pick<ArtworkDto, 'isForSale' | 'price'>>;
+type SeoArtwork = Pick<ArtworkDto, 'id' | 'title' | 'description'> & Partial<Pick<ArtworkDto, 'shortDescription'>>;
+type SchemaArtwork = SeoArtwork &
+  Partial<Pick<ArtworkDto, 'isForSale' | 'price' | 'status' | 'technique' | 'support' | 'widthCm' | 'heightCm' | 'year'>>;
+type CmValue = { '@type': string; value: number; unitCode: string };
 interface ArtworkSchema {
   '@context': string;
   '@type': string;
@@ -14,6 +17,10 @@ interface ArtworkSchema {
   description: string;
   creator: { '@type': string; name: string };
   artMedium?: string;
+  artworkSurface?: string;
+  width?: CmValue;
+  height?: CmValue;
+  dateCreated?: string;
   offers?: { '@type': string; price: number; priceCurrency: string; availability: string; url: string };
 }
 
@@ -27,11 +34,14 @@ export const artworkPageUrl = (artwork: Pick<ArtworkDto, 'id' | 'title'>) => `${
 // <title>/<meta description> length budgets.
 export const buildSeoTitle = (artwork: Pick<ArtworkDto, 'title'>) => `Купить картину «${normalizeTitle(artwork.title)}» — ${ARTIST_NAME}`;
 
-export const buildSeoDescription = (artwork: Pick<ArtworkDto, 'title' | 'description'>) => {
-  const details = artwork.description ? `${artwork.description}. ` : '';
+export const buildSeoDescription = (artwork: Pick<SeoArtwork, 'title' | 'description' | 'shortDescription'>) => {
+  const lead = artwork.shortDescription || artwork.description;
+  const details = lead ? `${lead}. ` : '';
   const text = `«${normalizeTitle(artwork.title)}» — ${details}Купить картину художника ${ARTIST_NAME} с доставкой.`;
   return text.length > 160 ? `${text.slice(0, 157)}...` : text;
 };
+
+const cmValue = (value: number): CmValue => ({ '@type': 'QuantitativeValue', value, unitCode: 'CMT' });
 
 // schema.org markup (S3-AS4/S3-AS5/S3-AS6): the artwork block only gets an
 // "offers" entry when it is actually for sale with a known price — an
@@ -49,15 +59,19 @@ export const buildArtworkSchema = (artwork: SchemaArtwork, photos: ArtworkPhoto[
       name: ARTIST_NAME,
     },
   };
-  if (artwork.description) {
-    schema.artMedium = artwork.description;
-  }
-  if (artwork.isForSale && artwork.price) {
+  const medium = artwork.technique || artwork.description;
+  if (medium) schema.artMedium = medium;
+  if (artwork.support) schema.artworkSurface = artwork.support;
+  if (artwork.widthCm) schema.width = cmValue(artwork.widthCm);
+  if (artwork.heightCm) schema.height = cmValue(artwork.heightCm);
+  if (artwork.year) schema.dateCreated = String(artwork.year);
+  const status = resolveStatus(artwork);
+  if (artwork.price && (status === 'Available' || status === 'Sold')) {
     schema.offers = {
       '@type': 'Offer',
       price: artwork.price,
       priceCurrency: 'RUB',
-      availability: 'https://schema.org/InStock',
+      availability: `https://schema.org/${status === 'Available' ? 'InStock' : 'SoldOut'}`,
       url: artworkPageUrl(artwork),
     };
   }

@@ -4,6 +4,7 @@ import type { ArtworkDto } from '@/lib/api';
 import { buildArtworkSlug } from '@/lib/artworkSlug';
 import { normalizeTitle } from '@/lib/normalizeTitle';
 import { priceLabel, sizeLabel } from '@/lib/galleryCard';
+import { ARTWORK_STATUS_LABELS, resolveStatus } from '@/lib/artworkStatus';
 
 interface GalleryCardProps {
   artwork: ArtworkDto;
@@ -17,6 +18,7 @@ const GalleryCard = ({ artwork, exhibition, eager }: GalleryCardProps) => {
   const title = normalizeTitle(artwork.title);
   const price = priceLabel(artwork, exhibition);
   const size = sizeLabel(artwork);
+  const status = resolveStatus(artwork);
 
   return (
     <Link
@@ -46,6 +48,11 @@ const GalleryCard = ({ artwork, exhibition, eager }: GalleryCardProps) => {
           {artwork.category?.name || 'Без категории'}
         </span>
         <h3 className="text-xl font-serif font-semibold my-2 text-gray-900">{title}</h3>
+        {!exhibition && status !== 'Available' && (
+          <span data-testid="status-badge" className="mb-2 inline-block rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-700">
+            {ARTWORK_STATUS_LABELS[status]}
+          </span>
+        )}
         <div className="flex items-center justify-between text-sm text-gray-700">
           {size && <span>{size}</span>}
           {price && <span className="font-bold text-gray-900">{price}</span>}

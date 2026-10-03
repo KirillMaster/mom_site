@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MomSite.Core.Models;
+using MomSite.Core.Models.Catalog;
+using System.Text.Json;
 using System.Diagnostics;
 
 namespace MomSite.Infrastructure.Data;
@@ -22,6 +25,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<BlogPost> BlogPosts { get; set; }
     public DbSet<BlogCategory> BlogCategories { get; set; }
     public DbSet<BlogPostArtwork> BlogPostArtworks { get; set; }
+    public DbSet<CatalogImportLog> CatalogImportLogs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -32,7 +36,11 @@ public class ApplicationDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
-            entity.Property(e => e.Description).HasMaxLength(1000);
+            entity.Property(e => e.Description).HasMaxLength(ArtworkFieldRules.DescriptionMax);
+            entity.Property(e => e.ShortDescription).HasMaxLength(ArtworkFieldRules.ShortDescriptionMax);
+            entity.Property(e => e.IsPublished).HasDefaultValue(true);
+            entity.Property(e => e.WidthCm).HasColumnType("numeric(6,1)");
+            entity.Property(e => e.HeightCm).HasColumnType("numeric(6,1)");
             entity.Property(e => e.ImagePath).IsRequired().HasMaxLength(500);
             entity.Property(e => e.ThumbnailPath).IsRequired().HasMaxLength(500);
             entity.Property(e => e.Price).HasColumnType("decimal(18,2)");
@@ -139,6 +147,7 @@ public class ApplicationDbContext : DbContext
         });
 
         ConfigureBlog(modelBuilder);
+        ConfigureCatalogImportLog(modelBuilder);
 
         // Seed data was removed in migration 20260427120500_RemoveSeedData.
         // The rows from the original seed have long since been edited
@@ -146,6 +155,25 @@ public class ApplicationDbContext : DbContext
         // longer want EF to manage them. New deployments still get the
         // schema, just no seeded rows.
     }
+
+    private static void ConfigureCatalogImportLog(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<CatalogImportLog>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UserName).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.FileName).IsRequired().HasMaxLength(300);
+            entity.Property(e => e.FileSha256).IsRequired().HasMaxLength(64);
+            entity.Property(e => e.Summary).HasConversion(JsonConverter<ImportSummary>()).HasColumnType("jsonb");
+            entity.Property(e => e.Snapshot).HasConversion(JsonConverter<List<SnapshotEntry>>()).HasColumnType("jsonb");
+            entity.Property(e => e.CreatedIds).HasConversion(JsonConverter<List<int>>()).HasColumnType("jsonb");
+            entity.HasIndex(e => e.CreatedAt);
+        });
+    }
+
+    private static ValueConverter<T, string> JsonConverter<T>() => new(
+        v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+        v => JsonSerializer.Deserialize<T>(v, (JsonSerializerOptions?)null) !);
 
     private static void ConfigureBlog(ModelBuilder modelBuilder)
     {

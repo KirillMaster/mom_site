@@ -10,7 +10,7 @@ public class Artwork
     [MaxLength(200)]
     public string Title { get; set; } = string.Empty;
     
-    [MaxLength(1000)]
+    [MaxLength(ArtworkFieldRules.DescriptionMax)]
     public string? Description { get; set; }
     
     [Required]
@@ -27,11 +27,9 @@ public class Artwork
 
     public ArtworkStatus Status { get; set; } = ArtworkStatus.Available;
 
-    [Range(1, 1000)]
-    public int? WidthCm { get; set; }
+    public decimal? WidthCm { get; set; }
 
-    [Range(1, 1000)]
-    public int? HeightCm { get; set; }
+    public decimal? HeightCm { get; set; }
 
     public int? Year { get; set; }
 
@@ -41,6 +39,15 @@ public class Artwork
     [MaxLength(100)]
     public string? Technique { get; set; }
     
+    [MaxLength(ArtworkFieldRules.ShortDescriptionMax)]
+    public string? ShortDescription { get; set; }
+
+    public bool IsFeatured { get; set; }
+
+    public bool NeedsReshoot { get; set; }
+
+    public bool IsPublished { get; set; } = true;
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
@@ -49,4 +56,11 @@ public class Artwork
     public Category Category { get; set; } = null!;
 
     public List<ArtworkImage> Images { get; set; } = new();
-} 
+
+    /// <summary>IsForSale is derived from Status; never written directly.</summary>
+    public void ApplyStatus(ArtworkStatus status)
+    {
+        Status = status;
+        IsForSale = status == ArtworkStatus.Available;
+    }
+}

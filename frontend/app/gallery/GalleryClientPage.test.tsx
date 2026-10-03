@@ -172,3 +172,19 @@ describe('GalleryClientPage', () => {
     expect(screen.queryByText('Холст, масло')).not.toBeInTheDocument();
   });
 });
+
+describe('@T025 status badge', () => {
+  it('shows badge for Sold and none for Available', () => {
+    render(
+      <GalleryClientPage
+        galleryData={galleryData([
+          artwork({ id: 1, title: 'Продана', status: 'Sold', isForSale: false }),
+          artwork({ id: 2, title: 'Доступна', status: 'Available', isForSale: true }),
+        ])}
+      />
+    );
+    const badges = screen.getAllByTestId('status-badge');
+    expect(badges).toHaveLength(1);
+    expect(badges[0]).toHaveTextContent('Продана');
+  });
+});
