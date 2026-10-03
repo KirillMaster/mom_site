@@ -1000,5 +1000,46 @@ namespace MomSite.Tests
             // simply to never surface null here.
             Assert.Equal(string.Empty, homeData.SeoTitle);
         }
+
+        private static void ApplyDtoValidation(PublicController controller, ContactMessageDto dto)
+        {
+            var results = new List<System.ComponentModel.DataAnnotations.ValidationResult>();
+            System.ComponentModel.DataAnnotations.Validator.TryValidateObject(
+                dto, new System.ComponentModel.DataAnnotations.ValidationContext(dto), results, validateAllProperties: true);
+            foreach (var r in results)
+                foreach (var member in r.MemberNames.DefaultIfEmpty(""))
+                    controller.ModelState.AddModelError(member, r.ErrorMessage ?? "invalid");
+        }
+
+        [Fact]
+        [Trait("scenario", "US6-FE2")]
+        public async Task SendContactMessage_TelegramOnlyContact_IsAcceptedAndPersisted()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_TelegramOnlyContact_IsAcceptedAndPersisted));
+            var controller = CreateController(context, new[] { DisabledNotifier().Object });
+            var dto = new ContactMessageDto { Name = "Анна", TelegramUsername = " @artist ", Subject = "Картина на заказ", Message = "Сюжет" };
+            ApplyDtoValidation(controller, dto);
+
+            var result = await controller.SendContactMessage(dto);
+
+            var saved = AssertOkAndPersisted(result, context);
+            Assert.Equal("artist", saved.TelegramUsername);
+            Assert.Null(saved.Email);
+            Assert.Null(saved.Phone);
+        }
+
+        [Fact]
+        [Trait("scenario", "US6-FE2")]
+        public async Task SendContactMessage_NoEmailPhoneOrTelegram_IsRejected()
+        {
+            using var context = CreateDbContext(nameof(SendContactMessage_NoEmailPhoneOrTelegram_IsRejected));
+            var controller = CreateController(context, new[] { DisabledNotifier().Object });
+            var dto = new ContactMessageDto { Name = "Анна", TelegramUsername = "  ", Subject = "Картина на заказ", Message = "Сюжет" };
+            ApplyDtoValidation(controller, dto);
+
+            var result = await controller.SendContactMessage(dto);
+
+            AssertBadRequestAndNotPersisted(result, context);
+        }
     }
 }

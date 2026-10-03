@@ -496,7 +496,7 @@ public class PublicController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to persist contact message from {FromEmail}", message.Email ?? message.Phone);
+            _logger.LogError(ex, "Failed to persist contact message from {FromEmail}", message.Email ?? message.Phone ?? message.TelegramUsername);
             return StatusCode(500, new { message = "Ошибка при отправке сообщения. Попробуйте позже." });
         }
 
@@ -512,6 +512,7 @@ public class PublicController : ControllerBase
             Name = message.Name,
             Email = message.Email,
             Phone = message.Phone,
+            TelegramUsername = message.TelegramUsername,
             Subject = message.Subject,
             Message = message.Message,
             UtmSource = message.UtmSource,

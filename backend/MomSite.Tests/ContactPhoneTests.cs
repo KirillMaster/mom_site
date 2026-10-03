@@ -69,7 +69,7 @@ namespace MomSite.Tests
             var res = await Post(Body(email, phone, name));
 
             Assert.Equal(HttpStatusCode.BadRequest, res.StatusCode);
-            Assert.Contains("Укажите email или телефон", await res.Content.ReadAsStringAsync());
+            Assert.Contains("Укажите email, телефон или Telegram", await res.Content.ReadAsStringAsync());
             Assert.Equal(0, await Count(name));
         }
 
