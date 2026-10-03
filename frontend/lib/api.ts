@@ -199,6 +199,11 @@ export interface GalleryData {
   bannerDescription: string;
 }
 
+export interface PrivacyData {
+  text: string | null;
+  updatedAt: string | null;
+}
+
 export interface AboutData {
   biography: string;
   artistPhoto: string;
