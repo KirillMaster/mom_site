@@ -187,3 +187,82 @@ describe('@T025 status badge', () => {
     expect(screen.queryByText('В наличии')).not.toBeInTheDocument();
   });
 });
+
+describe('catalogue filters (011 S5)', () => {
+  afterEach(() => window.history.replaceState({}, '', '/'));
+  const cats = [
+    { id: 1, name: 'Пейзаж' },
+    { id: 2, name: 'Пейзажи Всеволода Сухоруких' },
+    { id: 4, name: 'Фото с выставок' },
+  ];
+  const mk = (id: number, categoryId: number, w: number | null, h: number | null, extra: Record<string, unknown> = {}) =>
+    artwork({ id, title: `Т${id}`, categoryId, category: cats.find((c) => c.id === categoryId), widthCm: w, heightCm: h, status: 'Available', ...extra });
+  const data = (list: unknown[]) => ({ artworks: list, categories: cats }) as any;
+  const full = () =>
+    data([mk(1, 1, 30, 30), mk(2, 1, 60, 50), mk(3, 1, 100, 80), mk(4, 1, null, null), mk(5, 2, 60, 50), mk(6, 4, 60, 50)]);
+
+  it('@US5-AS1 size M shows only the 60x50 painting', () => {
+    render(<GalleryClientPage galleryData={full()} />);
+    fireEvent.click(screen.getByRole('button', { name: /^M/ }));
+    expect(screen.getByText('«Т2»')).toBeInTheDocument();
+    expect(screen.queryByText('«Т1»')).not.toBeInTheDocument();
+    expect(screen.queryByText('«Т4»')).not.toBeInTheDocument();
+  });
+
+  it('@US5-AS2 default view hides the other author and exhibition photos', () => {
+    render(<GalleryClientPage galleryData={full()} />);
+    expect(screen.queryByText('«Т5»')).not.toBeInTheDocument();
+    expect(screen.queryByText('«Т6»')).not.toBeInTheDocument();
+    expect(screen.getByText('«Т1»')).toBeInTheDocument();
+  });
+
+  it('@US5-AS3 Sukhorukikh tab shows only his works with the authorship caption', () => {
+    render(<GalleryClientPage galleryData={full()} />);
+    fireEvent.click(screen.getByTestId('sukhorukikh-tab'));
+    expect(screen.getByText('«Т5»')).toBeInTheDocument();
+    expect(screen.queryByText('«Т1»')).not.toBeInTheDocument();
+    expect(screen.getByTestId('authorship-caption')).toHaveTextContent('Сухоруких');
+  });
+
+  it('@US5-AS5 writes filters to the URL, reads them on load, reflects aria-pressed', () => {
+    const { unmount } = render(<GalleryClientPage galleryData={full()} />);
+    fireEvent.click(screen.getByRole('button', { name: /^M/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Только в наличии' }));
+    expect(window.location.search).toBe('?size=M&available=1');
+    unmount();
+
+    render(<GalleryClientPage galleryData={full()} />);
+    expect(screen.getByRole('button', { name: /^M/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'Только в наличии' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: /^S/ })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByText('«Т2»')).toBeInTheDocument();
+    expect(screen.queryByText('«Т1»')).not.toBeInTheDocument();
+  });
+
+  it('@US5-FE2 combines filters, counts, shows empty state and reset, has no price filter', () => {
+    render(<GalleryClientPage galleryData={full()} />);
+    expect(screen.getByTestId('gallery-count')).toHaveTextContent('Найдено: 4');
+    fireEvent.click(screen.getByRole('button', { name: /^S/ }));
+    expect(screen.getByTestId('gallery-count')).toHaveTextContent('Найдено: 1');
+    fireEvent.click(screen.getByTestId('sukhorukikh-tab'));
+    expect(screen.getByText('Ничего не найдено')).toBeInTheDocument();
+    expect(screen.queryByText(/цена:|по цене/i)).not.toBeInTheDocument();
+    const resets = screen.getAllByRole('button', { name: 'Сбросить' });
+    fireEvent.click(resets[resets.length - 1]);
+    expect(screen.getByTestId('gallery-count')).toHaveTextContent('Найдено: 4');
+    expect(window.location.search).toBe('');
+  });
+
+  it('@US5-EC1 works without the special categories: no Sukhorukikh tab, all works visible', () => {
+    const plain = { artworks: [mk(1, 1, 30, 30)], categories: [{ id: 1, name: 'Пейзаж' }] } as any;
+    render(<GalleryClientPage galleryData={plain} />);
+    expect(screen.queryByTestId('sukhorukikh-tab')).not.toBeInTheDocument();
+    expect(screen.getByText('«Т1»')).toBeInTheDocument();
+  });
+
+  it('@US5-EC2 a work with one side only is dropped by any size filter', () => {
+    render(<GalleryClientPage galleryData={data([mk(1, 1, 50, null)])} />);
+    fireEvent.click(screen.getByRole('button', { name: /^M/ }));
+    expect(screen.getByText('Ничего не найдено')).toBeInTheDocument();
+  });
+});

@@ -2,30 +2,41 @@
 
 import { useState, useEffect } from 'react';
 import { GalleryData } from '@/lib/api';
-import { artworksForSale } from '@/lib/gallery';
+import {
+  filterArtworks,
+  filtersToQuery,
+  sukhorukikhCategory,
+  parseFilters,
+  NO_FILTERS,
+  type CatalogueFilters,
+} from '@/lib/gallery';
 import { useGalleryPaging } from '@/lib/useGalleryPaging';
 import GalleryGrid from './GalleryGrid';
 import GalleryHeader from './GalleryHeader';
 import GalleryFilters from './GalleryFilters';
 
-// ?category=<id> preselects a category (the "Смотреть все" link of RelatedWorks).
-const categoryFromUrl = (): number | null => {
-  const raw = new URLSearchParams(window.location.search).get('category');
-  const id = raw ? Number(raw) : NaN;
-  return Number.isInteger(id) && id > 0 ? id : null;
-};
+const AUTHORSHIP = 'Работы Всеволода Сухоруких — автор не Анжела Моисеенко.';
 
+// Filters live in the address (?category=<id>&size=M&available=1) so a filtered
+// view survives a reload and can be shared. The URL is read after mount to keep
+// the server-rendered markup identical to the first client render.
 const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [filters, setFilters] = useState<CatalogueFilters>(NO_FILTERS);
 
   useEffect(() => {
-    setSelectedCategory(categoryFromUrl());
+    setFilters(parseFilters(window.location.search));
   }, []);
 
-  const artworksToDisplay = selectedCategory
-    ? galleryData.artworks.filter(artwork => artwork.categoryId === selectedCategory)
-    : artworksForSale(galleryData);
-  const { visible, remaining, showMore } = useGalleryPaging(artworksToDisplay, selectedCategory);
+  const apply = (next: CatalogueFilters) => {
+    setFilters(next);
+    window.history.replaceState(window.history.state, '', `${window.location.pathname}${filtersToQuery(next)}`);
+  };
+
+  const artworksToDisplay = filterArtworks(galleryData, filters);
+  const pagingKey = `${filters.category}|${filters.size}|${filters.available}`;
+  const { visible, remaining, showMore } = useGalleryPaging(artworksToDisplay, pagingKey);
+  const other = sukhorukikhCategory(galleryData.categories);
+  const sukhorukikhSelected = !!other && filters.category === other.id;
 
   return (
     <div className="min-h-screen">
@@ -33,8 +44,10 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
 
       <GalleryFilters
         categories={galleryData.categories}
-        selected={selectedCategory}
-        onSelect={setSelectedCategory}
+        filters={filters}
+        found={artworksToDisplay.length}
+        onChange={(next) => apply({ ...filters, ...next })}
+        onReset={() => apply(NO_FILTERS)}
       />
 
       <GalleryGrid
@@ -42,8 +55,10 @@ const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
         categories={galleryData.categories}
         remaining={remaining}
         total={artworksToDisplay.length}
-        categoryKey={selectedCategory}
+        categoryKey={filters.category}
         onShowMore={showMore}
+        onReset={() => apply(NO_FILTERS)}
+        attribution={sukhorukikhSelected ? AUTHORSHIP : null}
       />
     </div>
   );
