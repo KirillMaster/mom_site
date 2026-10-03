@@ -171,7 +171,7 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
         <RelatedWorks works={relatedWorks} categoryId={categoryIdOf(artwork)} />
       </div>
 
-      {showChannels && <MobileContactBar channels={channels} artwork={displayTitle} />}
+      {showChannels && <MobileContactBar channels={channels} artwork={displayTitle} artworkId={artwork.id} />}
     </div>
   );
 };

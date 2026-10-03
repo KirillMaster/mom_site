@@ -35,3 +35,14 @@ describe('в Footer есть ссылка на /privacy', () => {
     expect(screen.getByRole('link', { name: 'Политика конфиденциальности' })).toHaveAttribute('href', '/privacy');
   });
 });
+
+describe('@US2 в Footer есть ссылка на Telegram-бота', () => {
+  it('ведёт в бота с параметром site', () => {
+    mockedUseFooterData.mockReturnValue({ data: undefined, isLoading: false });
+    render(<Footer />);
+
+    const link = screen.getByRole('link', { name: 'Бот в Telegram' });
+    expect(link).toHaveAttribute('href', 'https://t.me/angela_moiseenko_bot?start=site');
+    expect(link).toHaveAttribute('target', '_blank');
+  });
+});

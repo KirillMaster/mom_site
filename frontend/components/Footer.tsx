@@ -3,6 +3,7 @@ import { Palette, Mail, Phone } from 'lucide-react';
 import { FaInstagram, FaVk, FaTelegram, FaWhatsapp, FaYoutube } from 'react-icons/fa';
 import MaxIcon from '@/components/MaxIcon';
 import { maxProfileUrl } from '@/lib/social';
+import { botLink } from '@/lib/funnelBot';
 import { useFooterData } from '@/hooks/useApi';
 
 const Footer = () => {
@@ -156,6 +157,17 @@ const Footer = () => {
                   </a>
                 </div>
               )}
+              <div className="flex items-center space-x-3">
+                <FaTelegram className="w-5 h-5 text-primary-400" aria-hidden="true" />
+                <a
+                  href={botLink('site')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-300 hover:text-white transition-colors duration-200"
+                >
+                  Бот в Telegram
+                </a>
+              </div>
               {footerData?.phone && (
                 <div className="flex items-center space-x-3">
                   <Phone className="w-5 h-5 text-primary-400" />

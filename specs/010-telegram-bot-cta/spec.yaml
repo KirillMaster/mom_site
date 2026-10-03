@@ -1,0 +1,162 @@
+feature: Кнопка «Спросить в Telegram» (публичный бот)
+branch: feature/010-bot-cta
+created: '2026-10-03'
+status: InReview
+input: 'Публичный бот @angela_moiseenko_bot (007-funnel-bot) принимает deep-link start=art_<id> и показывает фото работы.
+  Добавить на страницу работы отдельную заметную кнопку «Спросить в Telegram» в бота (личный Telegram мамы остаётся обычным
+  каналом), путь в бота на мобильной панели, ссылку на бота в /contacts и футере. Username бота — константа с env-override.
+  Вне скоупа: изменения бота, редизайн (009).'
+user_stories:
+- id: US1
+  title: Покупатель спрашивает о работе через бота
+  priority: P1
+  description: На странице работы рядом с каналами есть заметная кнопка «Спросить в Telegram», ведущая в бота с параметром
+    art_<id>; на мобильной нижней панели — компактная иконка-кнопка в бота. Личный Telegram остаётся в списке каналов.
+  motivation:
+    problem: Личный Telegram требует писать «с нуля»; бот сам показывает работу и собирает заявку.
+    value: Меньше трения и готовая заявка с привязкой к работе и целью «Купить».
+    consequence_if_skipped: Бот не получает трафик со страниц работ.
+  why_priority: Страница работы — главная точка конверсии.
+  independent_test: 'Открыть /gallery/<slug>: видна кнопка «Спросить в Telegram» с href .../angela_moiseenko_bot?start=art_<id>
+    и рядом личный Telegram; на 390 px в нижней панели есть иконка бота.'
+  acceptance_scenarios:
+  - id: AS-1
+    given: Страница работы с id 7
+    when: Страница отрисована
+    then: Есть ссылка «Спросить в Telegram» на https://t.me/angela_moiseenko_bot?start=art_7 с target=_blank и rel=noopener;
+      личный канал «Написать в Telegram» тоже на месте
+  - id: AS-2
+    given: Мобильная ширина
+    when: Видна нижняя панель
+    then: В ней есть иконка-ссылка в бота (accessible name «Спросить в Telegram»), кнопки «Написать» и «Позвонить» не изменены
+  - id: AS-3
+    given: Страница отрисована
+    when: Пользователь кликает по кнопке бота
+    then: Отправляется цель contact_click с channel=telegram_bot и названием работы
+  acceptance_criteria:
+  - id: AC-1
+    description: Кнопка бота отдельна и заметна, личный Telegram не удалён
+    done: true
+  - id: AC-2
+    description: Мобильная панель содержит путь в бота, горизонтального скролла на 390 px нет
+    done: true
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Страница работы
+    when: Рендер
+    then:
+    - Кнопка бота с art_<id> и личный Telegram присутствуют
+    verification:
+    - automated
+    level: unit
+  - id: TS-2
+    given:
+    - Мобильная панель
+    when: Рендер и клик
+    then:
+    - Ссылка в бота есть и шлёт цель
+    verification:
+    - automated
+    level: unit
+- id: US2
+  title: Посетитель находит бота в контактах и футере
+  priority: P2
+  description: На /contacts и в футере есть ссылка на бота без привязки к работе (start=site); бот трактует неизвестный payload
+    как кампанию и запускает полный сценарий.
+  motivation:
+    problem: Вне страницы работы о боте не узнать.
+    value: Дополнительный канал обращений с любой страницы.
+    consequence_if_skipped: Бот виден только на работах.
+  why_priority: Дополняет US1, меньший трафик.
+  independent_test: На /contacts и в футере найти ссылку на бота с ?start=site.
+  acceptance_scenarios:
+  - id: AS-1
+    given: Страница /contacts
+    when: Отрисована секция соцсетей
+    then: Есть ссылка «Telegram-бот» на https://t.me/angela_moiseenko_bot?start=site рядом с личным Telegram
+  - id: AS-2
+    given: Любая страница
+    when: Отрисован футер
+    then: В колонке «Контакты» есть ссылка «Бот в Telegram» на тот же адрес
+  acceptance_criteria:
+  - id: AC-1
+    description: Ссылки есть на /contacts и в футере и открываются в новой вкладке
+    done: true
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Футер и контакты
+    when: Рендер
+    then:
+    - Ссылки на бота с start=site присутствуют
+    verification:
+    - automated
+    level: unit
+edge_cases:
+- id: EC-1
+  description: Задан NEXT_PUBLIC_FUNNEL_BOT_USERNAME
+  expected_behavior: Все ссылки строятся с этим username
+- id: EC-2
+  description: Фото с выставки (нет каналов связи)
+  expected_behavior: Кнопка бота не показывается вместе с остальными каналами
+- id: EC-3
+  description: Payload site неизвестен боту
+  expected_behavior: StartPayloadParser возвращает Campaign, запускается полный сценарий
+functional_requirements:
+- id: FR-001
+  text: The page of an artwork MUST show a separate button «Спросить в Telegram» linking to https://t.me/<bot>?start=art_<artworkId>,
+    opening in a new tab with rel noopener, keeping the personal Telegram channel.
+  category: functional
+  status: final
+  story_refs:
+  - US1
+- id: FR-002
+  text: The mobile contact bar MUST include a compact link to the bot with accessible name «Спросить в Telegram» without removing
+    existing buttons.
+  category: functional
+  status: final
+  story_refs:
+  - US1
+- id: FR-003
+  text: WHEN a bot link is clicked the system MUST send the ContactClick goal with channel telegram_bot and the artwork title.
+  category: functional
+  status: final
+  story_refs:
+  - US1
+- id: FR-004
+  text: The /contacts page and the footer MUST link to the bot with start=site.
+  category: functional
+  status: final
+  story_refs:
+  - US2
+- id: FR-005
+  text: The bot username MUST be a single constant in frontend/lib/funnelBot.ts overridable via NEXT_PUBLIC_FUNNEL_BOT_USERNAME,
+    exposed through botLink(payload?).
+  category: non_functional
+  status: final
+  story_refs:
+  - US1
+  - US2
+- id: FR-006
+  text: The change MUST NOT cause horizontal scroll at 390 px.
+  category: non_functional
+  status: final
+  story_refs:
+  - US1
+key_entities:
+- id: E-1
+  name: Ссылка на бота (botLink)
+  description: URL https://t.me/<username>[?start=<payload>]; payload art_<id> или site
+success_criteria:
+- id: SC-001
+  description: Появляются заявки из бота с привязкой к работе (payload art_<id>)
+  measurable_via: Цель contact_click channel=telegram_bot в Метрике и заявки бота
+- id: SC-002
+  description: Jest, tsc и e2e bot-cta проходят
+  measurable_via: CI
+assumptions:
+- id: A-1
+  description: Бот @angela_moiseenko_bot запущен и поддерживает art_<id>; неизвестный payload даёт полный сценарий (StartPayload.cs)
+- id: A-2
+  description: Правки минимальны и локальны, чтобы не конфликтовать с редизайном 009

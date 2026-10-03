@@ -1,0 +1,48 @@
+feature: 010-telegram-bot-cta
+branch: feature/010-bot-cta
+summary: 'Чисто фронтенд: lib/funnelBot.ts (константа + botLink), компонент BotCtaButton на странице работы (в ArtworkInfoCard
+  над ContactChannels), иконка бота в MobileContactBar (проп artworkId), ссылка в ContactsSocialSection и Footer, цель contact_click
+  channel=telegram_bot, e2e bot-cta (только чтение).'
+technical_context:
+  language_version: TypeScript 5 strict / Next.js 14
+  primary_dependencies:
+  - lib/analytics reachGoal (существует)
+  - react-icons FaTelegram (существует)
+  storage: нет
+  testing: Jest (funnelBot, BotCta, Footer, ContactsBotLink); Playwright e2e/bot-cta.spec.ts без кликов наружу
+  target_platform: Linux Docker, mobile-first
+  project_type: web_application
+  performance_goals: без влияния на LCP
+  constraints: Минимальные локальные правки (параллельный редизайн 009); бэкенд не меняется
+  scale_scope: 4 страницы/компонента
+constitution_check:
+- principle_id: P1
+  status: pass
+- principle_id: P2
+  status: pass
+- principle_id: P3
+  status: pass
+- principle_id: P4
+  status: pass
+- principle_id: P5
+  status: pass
+- principle_id: P6
+  status: pass
+- principle_id: P7
+  status: pass
+- principle_id: P8
+  status: pass
+- principle_id: P9
+  status: pass
+- principle_id: P10
+  status: pass
+project_structure:
+  layout: web_application
+  description: frontend/lib/funnelBot.ts(+test); frontend/app/gallery/[slug]/BotCtaButton.tsx, ArtworkInfoCard.tsx, MobileContactBar.tsx,
+    page.tsx; frontend/app/contacts/ContactsSocialSection.tsx; frontend/components/Footer.tsx; frontend/e2e/bot-cta.spec.ts
+  directories:
+  - frontend/lib/
+  - frontend/app/gallery/[slug]/
+  - frontend/app/contacts/
+  - frontend/components/
+  - frontend/e2e/

@@ -1,0 +1,199 @@
+feature: 010-telegram-bot-cta
+tasks:
+- id: T001
+  title: botLink и константа
+  description: 'lib/funnelBot.ts: FUNNEL_BOT_USERNAME (env override), botLink(payload?), artworkBotLink(id)'
+  context: Фича 010
+  story_ref: US1
+  requirement_refs:
+  - FR-005
+  depends_on: []
+  parallelizable: false
+  entity_refs:
+  - E-1
+  contract_refs: []
+  steps:
+  - order: 1
+    action: Тесты
+    detail: Сначала jest-тесты
+  - order: 2
+    action: Реализовать
+    detail: 'lib/funnelBot.ts: FUNNEL_BOT_USERNAME (env override), botLink(payload?), artworkBotLink(id)'
+  technical_notes:
+  - path: frontend/lib/funnelBot.ts
+    note: минимальная правка
+  acceptance_criteria:
+  - id: AC-1
+    description: Тесты зелёные, tsc без ошибок
+    done: true
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Компонент отрисован
+    when: Рендер
+    then:
+    - Ожидаемые ссылки присутствуют
+    verification:
+    - automated
+    level: unit
+- id: T002
+  title: Кнопка бота на странице работы
+  description: BotCtaButton + подключение в ArtworkInfoCard; цель telegram_bot
+  context: Фича 010
+  story_ref: US1
+  requirement_refs:
+  - FR-001
+  - FR-003
+  depends_on:
+  - T001
+  parallelizable: false
+  entity_refs:
+  - E-1
+  contract_refs: []
+  steps:
+  - order: 1
+    action: Тесты
+    detail: Сначала jest-тесты
+  - order: 2
+    action: Реализовать
+    detail: BotCtaButton + подключение в ArtworkInfoCard; цель telegram_bot
+  technical_notes:
+  - path: frontend/app/gallery/[slug]/BotCtaButton.tsx
+    note: минимальная правка
+  - path: frontend/app/gallery/[slug]/ArtworkInfoCard.tsx
+    note: минимальная правка
+  acceptance_criteria:
+  - id: AC-1
+    description: Тесты зелёные, tsc без ошибок
+    done: true
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Компонент отрисован
+    when: Рендер
+    then:
+    - Ожидаемые ссылки присутствуют
+    verification:
+    - automated
+    level: unit
+- id: T003
+  title: Иконка бота в мобильной панели
+  description: 'MobileContactBar: проп artworkId, компактная иконка-ссылка; page.tsx передаёт id'
+  context: Фича 010
+  story_ref: US1
+  requirement_refs:
+  - FR-002
+  - FR-003
+  - FR-006
+  depends_on:
+  - T001
+  parallelizable: false
+  entity_refs:
+  - E-1
+  contract_refs: []
+  steps:
+  - order: 1
+    action: Тесты
+    detail: Сначала jest-тесты
+  - order: 2
+    action: Реализовать
+    detail: 'MobileContactBar: проп artworkId, компактная иконка-ссылка; page.tsx передаёт id'
+  technical_notes:
+  - path: frontend/app/gallery/[slug]/MobileContactBar.tsx
+    note: минимальная правка
+  - path: frontend/app/gallery/[slug]/page.tsx
+    note: минимальная правка
+  acceptance_criteria:
+  - id: AC-1
+    description: Тесты зелёные, tsc без ошибок
+    done: true
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Компонент отрисован
+    when: Рендер
+    then:
+    - Ожидаемые ссылки присутствуют
+    verification:
+    - automated
+    level: unit
+- id: T004
+  title: Ссылка в /contacts и футере
+  description: 'ContactsSocialSection и Footer: ссылка botLink(''site'')'
+  context: Фича 010
+  story_ref: US2
+  requirement_refs:
+  - FR-004
+  depends_on:
+  - T001
+  parallelizable: false
+  entity_refs:
+  - E-1
+  contract_refs: []
+  steps:
+  - order: 1
+    action: Тесты
+    detail: Сначала jest-тесты
+  - order: 2
+    action: Реализовать
+    detail: 'ContactsSocialSection и Footer: ссылка botLink(''site'')'
+  technical_notes:
+  - path: frontend/app/contacts/ContactsSocialSection.tsx
+    note: минимальная правка
+  - path: frontend/components/Footer.tsx
+    note: минимальная правка
+  acceptance_criteria:
+  - id: AC-1
+    description: Тесты зелёные, tsc без ошибок
+    done: true
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Компонент отрисован
+    when: Рендер
+    then:
+    - Ожидаемые ссылки присутствуют
+    verification:
+    - automated
+    level: unit
+- id: T005
+  title: e2e bot-cta
+  description: 'e2e/bot-cta.spec.ts: только goto и проверка href, без кликов наружу'
+  context: Фича 010
+  story_ref: US2
+  requirement_refs:
+  - FR-001
+  - FR-004
+  - FR-006
+  depends_on:
+  - T002
+  - T003
+  - T004
+  parallelizable: false
+  entity_refs:
+  - E-1
+  contract_refs: []
+  steps:
+  - order: 1
+    action: Тесты
+    detail: Сначала jest-тесты
+  - order: 2
+    action: Реализовать
+    detail: 'e2e/bot-cta.spec.ts: только goto и проверка href, без кликов наружу'
+  technical_notes:
+  - path: frontend/e2e/bot-cta.spec.ts
+    note: минимальная правка
+  acceptance_criteria:
+  - id: AC-1
+    description: Тесты зелёные, tsc без ошибок
+    done: true
+  test_scenarios:
+  - id: TS-1
+    given:
+    - Компонент отрисован
+    when: Рендер
+    then:
+    - Ожидаемые ссылки присутствуют
+    verification:
+    - automated
+    level: unit
