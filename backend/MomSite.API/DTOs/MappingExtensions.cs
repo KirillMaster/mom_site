@@ -4,7 +4,11 @@ namespace MomSite.API.DTOs
 {
     public static class MappingExtensions
     {
-        public static ArtworkDto ToDto(this Artwork artwork)
+        public static ArtworkDto ToDto(this Artwork artwork) => artwork.ToDto(publicView: false);
+
+        public static ArtworkDto ToPublicDto(this Artwork artwork) => artwork.ToDto(publicView: true);
+
+        private static ArtworkDto ToDto(this Artwork artwork, bool publicView)
         {
             return new ArtworkDto
             {
@@ -13,8 +17,16 @@ namespace MomSite.API.DTOs
                 Description = artwork.Description,
                 ImagePath = artwork.ImagePath,
                 ThumbnailPath = artwork.ThumbnailPath,
-                Price = artwork.Price,
+                Price = publicView && artwork.Status != ArtworkStatus.Available ? null : artwork.Price,
                 IsForSale = artwork.IsForSale,
+                Status = artwork.Status,
+                WidthCm = artwork.WidthCm,
+                HeightCm = artwork.HeightCm,
+                Year = artwork.Year,
+                Support = artwork.Support,
+                Technique = artwork.Technique,
+                ShortDescription = artwork.ShortDescription,
+                IsFeatured = artwork.IsFeatured,
                 CreatedAt = artwork.CreatedAt,
                 UpdatedAt = artwork.UpdatedAt,
                 CategoryId = artwork.CategoryId,

@@ -1,0 +1,573 @@
+feature: 008-conversion-quick-wins
+tasks:
+  # ---------- Phase 2: Foundational ----------
+  - id: T001
+    title: 'Утилита normalizeTitle'
+    description: 'Создать frontend/lib/normalizeTitle.ts: trim + снятие одной пары обрамляющих кавычек (" '' « » „ “ ”), внутренние сохраняются; quotedTitle(raw) → «normalized»'
+    context: 'Названия нужны в карточках, заголовках, тексте мессенджеров и теме формы — единая точка нормализации (R7)'
+    story_ref: US8
+    requirement_refs: [FR-019]
+    depends_on: []
+    parallelizable: true
+    entity_refs: [artwork]
+    contract_refs: []
+    steps:
+      - order: 1
+        action: 'Написать тесты'
+        detail: 'frontend/lib/normalizeTitle.test.ts: "Закат" → Закат; «Закат» → Закат; „Закат“ → Закат; Дом «у моря» → без изменений; пустая строка → пустая; quotedTitle("\"Закат\"") → «Закат»'
+      - order: 2
+        action: 'Реализовать'
+        detail: 'export function normalizeTitle(raw: string | null | undefined): string; export function quotedTitle(raw): string'
+    technical_notes:
+      - path: frontend/lib/normalizeTitle.ts
+        note: 'Без any; ≤ 50 строк на функцию'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Все тест-кейсы зелёные; данные в БД не меняются'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Название "Закат" в двойных кавычках']
+        when: 'normalizeTitle'
+        then: ['Возвращает Закат']
+        verification: [automated]
+        level: unit
+
+  - id: T002
+    title: 'Backend: поля характеристик Artwork и миграция'
+    description: 'enum ArtworkStatus (Available, Sold, PrivateCollection, Unavailable, NotForSale, NotMine) в Core/Models; поля Status, WidthCm, HeightCm, Year, Support, Technique в Artwork.cs; миграция AddArtworkCatalogFields с переносом данных'
+    context: 'Покупателю нужны размер/техника/статус; поля строго по data-model 005, чтобы импорт 005 лёг без конфликтов (R1, A-1, A-2)'
+    story_ref: US1
+    requirement_refs: [FR-001]
+    depends_on: []
+    parallelizable: true
+    entity_refs: [artwork]
+    contract_refs: []
+    steps:
+      - order: 1
+        action: 'Добавить enum и поля'
+        detail: 'backend/MomSite.Core/Models/ArtworkStatus.cs; Artwork: ArtworkStatus Status = Available; int? WidthCm [Range(1,1000)]; int? HeightCm [Range(1,1000)]; int? Year; [MaxLength(100)] string? Support; [MaxLength(100)] string? Technique'
+      - order: 2
+        action: 'Сгенерировать миграцию'
+        detail: 'dotnet ef migrations add AddArtworkCatalogFields --project MomSite.Infrastructure --startup-project MomSite.API --output-dir Data/Migrations; в Up после AddColumn: migrationBuilder.Sql("UPDATE \"Artworks\" SET \"Status\" = CASE WHEN \"IsForSale\" THEN 0 ELSE 4 END")'
+      - order: 3
+        action: 'Проверить имена таблиц'
+        detail: 'Сверить имя таблицы/колонок с ApplicationDbContextModelSnapshot.cs; Status хранится int'
+    technical_notes:
+      - path: backend/MomSite.Core/Models/Artwork.cs
+        note: 'IsForSale остаётся колонкой (R2)'
+      - path: backend/MomSite.Infrastructure/Data/Migrations/
+        note: 'Последняя миграция 20261002174348_AddBlog'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'dotnet build зелёный; миграция применяется на чистой и существующей БД; непродаваемые работы получают NotForSale'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['БД с работой IsForSale=false']
+        when: 'dotnet ef database update'
+        then: ['Status = NotForSale']
+        verification: [automated]
+        level: integration
+
+  - id: T003
+    title: 'Backend: DTO, маппинг и синхронизация IsForSale'
+    description: 'Расширить ArtworkDto, ArtworkAdminDto, MappingExtensions, Create/Update DTO в ArtworksController новыми полями; при сохранении IsForSale = Status == Available; валидация Year 1950..текущий год'
+    context: 'Фронт и админка должны получать/передавать характеристики; старые потребители IsForSale не ломаются (R2)'
+    story_ref: US1
+    requirement_refs: [FR-001, FR-003]
+    depends_on: [T002]
+    parallelizable: false
+    entity_refs: [artwork]
+    contract_refs: [public-artwork-dto, admin-artwork-upsert]
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'MomSite.Tests: маппинг возвращает новые поля; PUT с Status=Sold → IsForSale=false; WidthCm=0 или Year=1900 → 400 с ошибкой поля'
+      - order: 2
+        action: 'Расширить DTO'
+        detail: 'Status сериализуется строкой (JsonStringEnumConverter на свойстве); camelCase поля widthCm, heightCm, year, support, technique, status'
+      - order: 3
+        action: 'Обновить контроллер'
+        detail: 'ArtworksController Create (строка ~109) и Update (~137): присвоить поля, IsForSale = dto.Status == ArtworkStatus.Available; Year валидировать IValidatableObject в DTO'
+      - order: 4
+        action: 'Публичный API'
+        detail: 'PublicController gallery и BlogPublicDtos, где маппятся работы, — через MappingExtensions'
+    technical_notes:
+      - path: backend/MomSite.API/Controllers/ArtworksController.cs
+        note: 'Inline DTO-классы на строках 170–190; если файл > 200 строк — вынести DTO в DTOs/ArtworkUpsertDto.cs'
+      - path: backend/MomSite.API/DTOs/MappingExtensions.cs
+        note: 'Единая точка маппинга'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'GET /api/public/gallery отдаёт status и характеристики; PUT валидирует диапазоны'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Работа Available']
+        when: 'PUT status=Sold'
+        then: ['200, isForSale=false, status=Sold']
+        verification: [automated]
+        level: integration
+      - id: TS-2
+        given: ['Работа']
+        when: 'PUT widthCm=0'
+        then: ['400 с ошибкой WidthCm']
+        verification: [automated]
+        level: integration
+
+  # ---------- Phase 3: US1 ----------
+  - id: T004
+    title: 'Админка: поля характеристик в форме работы'
+    description: 'ArtworkFormFields: селект статуса (русские подписи), числа ширина/высота/год, текст техника/основа; типы фронта и useArtworkSave передают поля'
+    context: 'Художница сама заполняет характеристики (FR-003)'
+    story_ref: US1
+    requirement_refs: [FR-003]
+    depends_on: [T003]
+    parallelizable: true
+    entity_refs: [artwork]
+    contract_refs: [admin-artwork-upsert]
+    steps:
+      - order: 1
+        action: 'Добавить тип'
+        detail: 'frontend/types/artwork.ts (или существующий тип в lib/api.ts): ArtworkStatus union и поля; lib/artworkStatus.ts — карта подписей: Available «В наличии», Sold «Продана», PrivateCollection «В частной коллекции», Unavailable «Недоступна», NotForSale «Не продаётся», NotMine «Не моя работа»'
+      - order: 2
+        action: 'Поля формы'
+        detail: 'components/admin/ArtworkFormFields.tsx — вынести блок в ArtworkSpecsFields.tsx (лимит 200 строк); пустые числа → null'
+      - order: 3
+        action: 'Тест'
+        detail: 'Jest: заполнение полей уходит в payload useArtworkSave'
+    technical_notes:
+      - path: frontend/components/admin/useArtworkSave.ts
+        note: 'Сериализация payload'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Сохранение работы с характеристиками и повторное открытие показывает введённые значения'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Открыта форма работы']
+        when: 'Ввести 60×80, холст, масло, 2024, Продана и сохранить'
+        then: ['Payload содержит widthCm=60, heightCm=80, support, technique, year, status=Sold']
+        verification: [automated]
+        level: unit
+
+  - id: T005
+    title: 'Карточка: блок ArtworkSpecs и логика цены по статусу'
+    description: 'Компонент app/gallery/[slug]/ArtworkSpecs.tsx — список только заполненных: Размер «Ш × В см», Техника, Основа, Год, Статус; на page.tsx: для не-Available цена скрыта, «Узнать цену» → «Заказать похожую»; для выставочных фото блок не показывается'
+    context: 'Главная информация для решения о покупке (US1, FR-002, FR-004, FR-020)'
+    story_ref: US1
+    requirement_refs: [FR-002, FR-004, FR-020]
+    depends_on: [T003]
+    parallelizable: true
+    entity_refs: [artwork]
+    contract_refs: [public-artwork-dto]
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'ArtworkSpecs.test.tsx: только заполненные строки; ширина без высоты — размер не показан; статус всегда'
+      - order: 2
+        action: 'Реализовать'
+        detail: '<dl> с семантикой; lib/artworkStatus.ts для подписей; page.tsx использует isExhibitionPhoto из lib/gallery'
+      - order: 3
+        action: 'Кнопка'
+        detail: 'AskPriceButton принимает variant: "price" | "similar"; similar ведёт на /contacts?artwork=<title>&similar=1'
+    technical_notes:
+      - path: frontend/app/gallery/[slug]/page.tsx
+        note: 'Заголовок через quotedTitle (T001)'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Карточка Sold-работы без цены, с «Заказать похожую»; у выставочного фото нет характеристик'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Работа Available 60×80 без года']
+        when: 'Рендер карточки'
+        then: ['Есть Размер 60 × 80 см и Статус «В наличии»', 'Нет строки Год']
+        verification: [automated]
+        level: unit
+
+  # ---------- Phase 4: US2 ----------
+  - id: T006
+    title: 'lib/contactChannels: каналы и предзаполненный текст'
+    description: 'buildPrefilledMessage(title, url) и buildContactChannels({title, url, socialLinks, phone}) → ContactChannel[] (telegram, whatsapp, max, phone), только с непустым href'
+    context: 'Единая логика для кнопок карточки и мобильной панели (R4, A-3, A-4)'
+    story_ref: US2
+    requirement_refs: [FR-005, FR-006]
+    depends_on: [T001]
+    parallelizable: true
+    entity_refs: [contact-channel]
+    contract_refs: [contact-channels-lib]
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'lib/contactChannels.test.ts: текст «Здравствуйте! Интересует картина «Закат» https://…»; wa.me/<digits>?text=<encodeURIComponent>; без whatsapp в socialLinks — whatsapp строится из phone; без telegram — канал отсутствует; max через maxProfileUrl; phone → tel:+7…'
+      - order: 2
+        action: 'Реализовать'
+        detail: 'Использовать SITE_PHONE и maxProfileUrl из lib/social.ts'
+    technical_notes:
+      - path: frontend/lib/social.ts
+        note: 'maxProfileUrl(explicitUrl, phone)'
+      - path: frontend/components/ClickTracker.tsx
+        note: 'Уже распознаёт wa.me и tel: — избегать двойной цели: кнопкам ставить data-ym-tracked'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Функции покрыты тестами, корректный URL-encoding кириллицы'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['socialLinks без telegram, phone задан']
+        when: 'buildContactChannels'
+        then: ['whatsapp, max, phone; telegram отсутствует']
+        verification: [automated]
+        level: unit
+
+  - id: T007
+    title: 'Кнопки мессенджеров на карточке и цели Метрики'
+    description: 'ContactChannels.tsx в app/gallery/[slug]: ряд кнопок рядом с «Узнать цену»; onClick → reachGoal(Goals.ContactClick, {channel, artwork}); target=_blank rel=noopener для веб-ссылок'
+    context: 'Быстрый путь к диалогу вместо формы (US2)'
+    story_ref: US2
+    requirement_refs: [FR-005, FR-007, FR-020]
+    depends_on: [T006]
+    parallelizable: false
+    entity_refs: [contact-channel, artwork]
+    contract_refs: [contact-channels-lib]
+    steps:
+      - order: 1
+        action: 'Получить контакты'
+        detail: 'page.tsx (server) запрашивает /api/public/contacts (socialLinks, phone) с тем же revalidate, что и работа; передать в компонент'
+      - order: 2
+        action: 'Тесты'
+        detail: 'ContactChannels.test.tsx: рендерит только каналы с href; клик вызывает reachGoal с channel и artwork; data-ym-tracked стоит'
+      - order: 3
+        action: 'Реализовать'
+        detail: 'Иконки: существующий MaxIcon, inline-SVG для telegram/whatsapp; aria-label «Написать в WhatsApp» и т.п.'
+    technical_notes:
+      - path: frontend/lib/analytics.ts
+        note: 'Goals.ContactClick = contact_click'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Кнопки видны на карточке работы (не выставочной), каждая шлёт цель'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Карточка работы с настроенными контактами']
+        when: 'Клик WhatsApp'
+        then: ['reachGoal(contact_click, {channel: whatsapp, artwork: Закат})', 'href начинается с https://wa.me/']
+        verification: [automated]
+        level: unit
+
+  - id: T008
+    title: 'Мобильная панель «Написать / Позвонить»'
+    description: 'MobileContactBar.tsx: fixed bottom-0 md:hidden, safe-area-inset, «Написать» (whatsapp или telegram — первый доступный) и «Позвонить»; страница получает pb-20 md:pb-0'
+    context: 'На мобильном CTA должен быть всегда под пальцем (FR-008, R8)'
+    story_ref: US2
+    requirement_refs: [FR-008, FR-007, FR-020]
+    depends_on: [T006]
+    parallelizable: true
+    entity_refs: [contact-channel]
+    contract_refs: [contact-channels-lib]
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'Jest: без мессенджеров показывает только «Позвонить»; клик шлёт цель'
+      - order: 2
+        action: 'Подключить'
+        detail: 'Рендер в page.tsx только для не-выставочных работ'
+    technical_notes:
+      - path: frontend/app/gallery/[slug]/MobileContactBar.tsx
+        note: 'z-index ниже модалок галереи ArtworkGallery'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'На 390 px панель видна, футер доступен целиком'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Viewport 390×844, карточка работы']
+        when: 'Прокрутка до низа'
+        then: ['Панель видна', 'Последний элемент футера не перекрыт']
+        verification: [automated]
+        level: e2e
+
+  # ---------- Phase 5: US3 ----------
+  - id: T009
+    title: 'Backend: Phone в ContactMessage и правило email|phone'
+    description: 'ContactMessage: Email nullable, Phone [MaxLength(100)]; миграция AddContactPhone; ContactMessageDto: Email без [Required], Phone ≤ 100, IValidatableObject — ошибка «Укажите email или телефон», если оба пусты; Phone в BuildContactMessageEntity, ContactMessageAdminDto, TelegramNotifier, EmailNotifier'
+    context: 'Покупатели чаще оставляют телефон, чем email (R3)'
+    story_ref: US3
+    requirement_refs: [FR-009, FR-010]
+    depends_on: []
+    parallelizable: true
+    entity_refs: [contact-message]
+    contract_refs: [public-contact-message]
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'MomSite.Tests: только phone → 200; оба пусты → 400; email невалидный → 400; phone 101 символ → 400; уведомление содержит телефон'
+      - order: 2
+        action: 'Модель и миграция'
+        detail: 'dotnet ef migrations add AddContactPhone ... --output-dir Data/Migrations'
+      - order: 3
+        action: 'Уведомления'
+        detail: 'TelegramNotifier строка ~125 и EmailNotifier: строка «Телефон/мессенджер: …», Email выводить «—» если null; EmailNotifier ReplyTo только при наличии email'
+    technical_notes:
+      - path: backend/MomSite.Core/Models/ContactMessageDto.cs
+        note: '[EmailAddress] пропускает null, но не пустую строку — нормализовать пустую в null'
+      - path: backend/MomSite.API/Controllers/PublicController.cs
+        note: 'TryPersistContactMessageAsync(entity, string fromEmail) → string?'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Заявка только с телефоном сохраняется и приходит в Telegram с телефоном'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['DTO с phone и пустым email']
+        when: 'POST /api/public/contact-message'
+        then: ['200, в БД Phone заполнен']
+        verification: [automated]
+        level: integration
+      - id: TS-2
+        given: ['DTO без email и phone']
+        when: 'POST'
+        then: ['400 с сообщением «Укажите email или телефон»']
+        verification: [automated]
+        level: integration
+
+  - id: T010
+    title: 'Форма контактов: телефон, ?artwork, бренд-кнопка; телефон в админке сообщений'
+    description: 'ContactsClientPage: поле «Телефон или мессенджер», email необязателен, клиентская проверка «хотя бы одно»; тема из ?artwork (normalizeTitle, обрезка до лимита темы); ?similar=1 → «Похожая на «…»»; кнопка отправки bg-primary; MessagesList показывает телефон'
+    context: 'Снижает трение формы (US3, FR-009–FR-011)'
+    story_ref: US3
+    requirement_refs: [FR-009, FR-010, FR-011]
+    depends_on: [T009, T001]
+    parallelizable: false
+    entity_refs: [contact-message]
+    contract_refs: [public-contact-message]
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'Jest: ?artwork=%22Закат%22 → тема «Картина «Закат»»; отправка без email и телефона показывает ошибку; с телефоном — payload содержит phone; кнопка имеет класс bg-primary'
+      - order: 2
+        action: 'Реализовать'
+        detail: 'Если файл > 200 строк — вынести поля формы в ContactFormFields.tsx; useSearchParams внутри Suspense'
+      - order: 3
+        action: 'Админка'
+        detail: 'components/MessagesList.tsx — колонка/строка телефона'
+    technical_notes:
+      - path: frontend/app/contacts/ContactsClientPage.tsx
+        note: 'email required около строк 191–198'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Форма отправляется с одним телефоном; тема подставлена'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['/contacts?artwork=Закат']
+        when: 'Ввести телефон и сообщение, отправить'
+        then: ['Запрос содержит phone и subject с «Закат»', 'Показано подтверждение']
+        verification: [automated]
+        level: e2e
+
+  # ---------- Phase 6: US4 ----------
+  - id: T011
+    title: 'Галерея: пагинация по 24, lazy, карточка-ссылка с ценой и размером'
+    description: 'GalleryClientPage: visibleCount 24, «Показать ещё» +24, сброс при смене категории; первые 4 изображения eager, остальные loading=lazy decoding=async; карточка целиком <Link>; убрать «Перейти к описанию» и «Узнать цену»; показать цену (Available) или «цена по запросу», размер если заполнен, название через normalizeTitle'
+    context: 'Сокращает вес страницы и путь к работе (US4)'
+    story_ref: US4
+    requirement_refs: [FR-012, FR-013, FR-014, FR-015]
+    depends_on: [T003, T001]
+    parallelizable: true
+    entity_refs: [artwork, category]
+    contract_refs: [public-artwork-dto]
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'GalleryClientPage.test.tsx: 30 работ → 24 карточки, клик «Показать ещё» → 30 и кнопка скрыта; смена категории → снова ≤ 24; карточка — один link; цена 15 000 ₽ или «цена по запросу»; обновить старые тесты про ask-price'
+      - order: 2
+        action: 'Реализовать'
+        detail: 'Вынести карточку в app/gallery/GalleryCard.tsx и хук useGalleryPaging в lib (лимит 200 строк); поддержать ?category=<id> как начальный фильтр (нужно для T012)'
+      - order: 3
+        action: 'Sitemap'
+        detail: 'Проверить app/sitemap.ts — все работы в sitemap вне зависимости от пагинации (FR-015)'
+    technical_notes:
+      - path: frontend/app/gallery/GalleryClientPage.tsx
+        note: 'Строки 185 и 208 — текущие кнопки; isExhibitionPhoto из lib/gallery'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Пагинация и карточки соответствуют FR-012–FR-014; sitemap содержит все работы'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Галерея с 30 работами']
+        when: 'Открыть и нажать «Показать ещё»'
+        then: ['Сначала 24 карточки', 'После клика 30, кнопка скрыта']
+        verification: [automated]
+        level: unit
+
+  # ---------- Phase 7: US5 ----------
+  - id: T012
+    title: 'RelatedWorks: максимум 8 и «Смотреть все»'
+    description: 'RelatedWorks.tsx: исключить текущую, slice(0, 8), ссылка «Смотреть все» → /gallery?category=<categoryId>; скрыть блок, если других нет'
+    context: 'Длинная лента похожих тормозит и уводит от CTA (US5)'
+    story_ref: US5
+    requirement_refs: [FR-016]
+    depends_on: [T011]
+    parallelizable: false
+    entity_refs: [artwork, category]
+    contract_refs: []
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'RelatedWorks.test.tsx: 12 работ категории → 8 карточек и ссылка с ?category=; 0 других → блока нет'
+      - order: 2
+        action: 'Реализовать'
+        detail: 'Названия через normalizeTitle'
+    technical_notes:
+      - path: frontend/app/gallery/[slug]/RelatedWorks.tsx
+        note: 'Существующий компонент'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Не более 8 работ, ссылка ведёт на галерею с выбранной категорией'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Категория с 12 работами']
+        when: 'Рендер RelatedWorks для одной из них'
+        then: ['8 карточек без текущей', 'Ссылка /gallery?category=<id>']
+        verification: [automated]
+        level: unit
+
+  # ---------- Phase 8: US6 ----------
+  - id: T013
+    title: 'Убрать горизонтальный overflow и e2e на 390 px'
+    description: 'AboutClientPage: декоративный элемент -bottom-6 -right-6 не выходит за вьюпорт (overflow-hidden у обёртки или right-0 на мобильном); e2e/no-overflow.spec.ts проверяет scrollWidth ≤ clientWidth на /, /gallery, первой карточке, /about, /videos, /reviews, /contacts, /blog'
+    context: 'Горизонтальный скролл на мобильном — P0-дефект (US6)'
+    story_ref: US6
+    requirement_refs: [FR-017]
+    depends_on: []
+    parallelizable: true
+    entity_refs: []
+    contract_refs: []
+    steps:
+      - order: 1
+        action: 'Написать e2e'
+        detail: 'page.setViewportSize({width: 390, height: 844}); после networkidle evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth) ≤ 0; карточку брать по первой ссылке /gallery/ со страницы галереи'
+      - order: 2
+        action: 'Исправить'
+        detail: 'frontend/app/about/AboutClientPage.tsx; прогнать e2e и починить другие найденные страницы'
+    technical_notes:
+      - path: frontend/e2e/
+        note: 'Существующие спеки как образец конфигурации baseURL'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'e2e зелёный на всех 8 страницах'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Viewport 390 px']
+        when: 'Открыть /about'
+        then: ['scrollWidth равен clientWidth']
+        verification: [automated]
+        level: e2e
+
+  # ---------- Phase 9: US7 ----------
+  - id: T014
+    title: 'SEO-тексты и alt hero'
+    description: 'gallery/page.tsx title «Купить картины маслом — галерея Анжелы Моисеенко» (и openGraph); reviews/page.tsx description «… художника-импрессиониста Анжелы Моисеенко …» (родительный падеж); HomeClientPage hero alt — осмысленный (название работы или «Картина маслом Анжелы Моисеенко»)'
+    context: 'Коммерческий запрос в title и грамматика в сниппете (US7)'
+    story_ref: US7
+    requirement_refs: [FR-018]
+    depends_on: []
+    parallelizable: true
+    entity_refs: []
+    contract_refs: []
+    steps:
+      - order: 1
+        action: 'Правки метаданных'
+        detail: 'frontend/app/gallery/page.tsx строки 11–16; frontend/app/reviews/page.tsx строка 16 (ARTIST_NAME в именительном — использовать строку в родительном)'
+      - order: 2
+        action: 'Alt'
+        detail: 'frontend/app/HomeClientPage.tsx — hero <Image alt="">'
+      - order: 3
+        action: 'Тесты'
+        detail: 'Обновить reviews/page.test.tsx, app/page.test.ts; добавить тест метаданных галереи'
+    technical_notes:
+      - path: frontend/app/reviews/page.tsx
+        note: 'Комментарий S4-AS10 — уникальные title/description'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Тексты совпадают с FR-018, alt непустой'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Метаданные /gallery']
+        when: 'Импорт metadata'
+        then: ['title = «Купить картины маслом — галерея Анжелы Моисеенко»']
+        verification: [automated]
+        level: unit
+
+  # ---------- Phase 10: US8 ----------
+  - id: T015
+    title: 'Применить normalizeTitle во всех местах вывода названий'
+    description: 'Карточка (h1 через quotedTitle, metadata title, JSON-LD name), галерея, RelatedWorks, блог (связанные работы), ArtworkGallery alt'
+    context: 'Единообразные названия без двойных кавычек (US8)'
+    story_ref: US8
+    requirement_refs: [FR-019]
+    depends_on: [T001, T005, T011]
+    parallelizable: false
+    entity_refs: [artwork]
+    contract_refs: []
+    steps:
+      - order: 1
+        action: 'Найти места'
+        detail: 'grep -rn "artwork.title\|\.title}" frontend/app frontend/components (кроме админки — там исходное значение)'
+      - order: 2
+        action: 'Заменить'
+        detail: 'artworkSeo.ts, page.tsx, components/blog/*'
+    technical_notes:
+      - path: frontend/app/gallery/[slug]/artworkSeo.ts
+        note: 'Title и description метаданных'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Работа "Закат" выводится как «Закат» в h1 и Закат в карточках галереи'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Работа с названием "Закат"']
+        when: 'Рендер карточки работы'
+        then: ['h1 = «Закат»', 'Нет символа "']
+        verification: [automated]
+        level: unit
+
+  # ---------- Phase 11: Polish ----------
+  - id: T016
+    title: 'E2E конверсионного пути и финальные проверки'
+    description: 'e2e/conversion.spec.ts: галерея → «Показать ещё» → карточка → характеристики → WhatsApp href с текстом → «Узнать цену» → форма с телефоном без email; dotnet test, npm test, npx tsc --noEmit, npm run lint, npm run build'
+    context: 'Сквозная проверка P5 до PR'
+    story_ref: US2
+    requirement_refs: [FR-005, FR-006, FR-009, FR-012]
+    depends_on: [T005, T007, T008, T010, T011, T012, T013, T014, T015]
+    parallelizable: false
+    entity_refs: [artwork, contact-message]
+    contract_refs: [public-contact-message, public-artwork-dto]
+    steps:
+      - order: 1
+        action: 'Написать e2e'
+        detail: 'Отправку формы перехватывать page.route на /api/public/contact-message, чтобы не слать реальные уведомления'
+      - order: 2
+        action: 'Прогнать всё'
+        detail: 'backend: dotnet test; frontend: npm test && npx tsc --noEmit && npm run lint && npm run build && npx playwright test'
+    technical_notes:
+      - path: frontend/e2e/utm-lead.spec.ts
+        note: 'Образец перехвата формы'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Все тесты, линт и сборка зелёные'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Запущенный стек']
+        when: 'npx playwright test e2e/conversion.spec.ts'
+        then: ['Сценарий проходит целиком']
+        verification: [automated]
+        level: e2e

@@ -1,0 +1,74 @@
+feature: 008-conversion-quick-wins
+contracts:
+  - id: public-artwork-dto
+    name: 'ArtworkDto в GET /api/public/gallery и карточке (расширение)'
+    kind: interface
+    request: []
+    response_cases:
+      - outcome: '200 ok'
+        fields:
+          - {name: status, type: enum, required: true, enum_values: [Available, Sold, PrivateCollection, Unavailable, NotForSale, NotMine], description: 'Строка enum'}
+          - {name: isForSale, type: boolean, required: true, description: 'Сохранено для совместимости'}
+          - {name: widthCm, type: number, required: false, description: 'null если не заполнено'}
+          - {name: heightCm, type: number, required: false, description: 'null если не заполнено'}
+          - {name: year, type: number, required: false, description: 'null если не заполнено'}
+          - {name: support, type: string, required: false, description: 'null если не заполнено'}
+          - {name: technique, type: string, required: false, description: 'null если не заполнено'}
+    entity_refs: [artwork]
+  - id: admin-artwork-upsert
+    name: 'POST /api/admin/artworks/create, PUT /api/admin/artworks/{id} (Authorize, расширение)'
+    kind: interface
+    request:
+      - {name: status, type: enum, required: false, enum_values: [Available, Sold, PrivateCollection, Unavailable, NotForSale, NotMine], description: 'default Available; IsForSale вычисляется сервером'}
+      - {name: widthCm, type: number, required: false, description: '1–1000'}
+      - {name: heightCm, type: number, required: false, description: '1–1000'}
+      - {name: year, type: number, required: false, description: '1950–текущий'}
+      - {name: support, type: string, required: false, description: '≤ 100'}
+      - {name: technique, type: string, required: false, description: '≤ 100'}
+    response_cases:
+      - outcome: '200 saved'
+        fields:
+          - {name: artwork, type: object, required: true, description: 'ArtworkAdminDto с новыми полями'}
+      - outcome: '400 validation'
+        fields:
+          - {name: errors, type: object, required: true, description: 'ValidationProblemDetails по полям'}
+      - outcome: '401 unauthorized'
+        fields: []
+      - outcome: '404 not_found'
+        fields: []
+    entity_refs: [artwork]
+  - id: public-contact-message
+    name: 'POST /api/public/contact-message (расширение)'
+    kind: interface
+    request:
+      - {name: name, type: string, required: false, description: Имя}
+      - {name: email, type: string, required: false, description: 'Если непусто — валидный email ≤ 200'}
+      - {name: phone, type: string, required: false, description: 'Телефон или мессенджер ≤ 100'}
+      - {name: subject, type: string, required: true, description: Тема}
+      - {name: message, type: string, required: true, description: '≤ 5000'}
+      - {name: website, type: string, required: false, description: 'Honeypot (существует)'}
+    response_cases:
+      - outcome: '200 accepted'
+        fields: []
+      - outcome: '400 contact_required'
+        fields:
+          - {name: errors, type: object, required: true, description: 'Ошибка «Укажите email или телефон», если оба пусты'}
+      - outcome: '400 validation'
+        fields:
+          - {name: errors, type: object, required: true, description: 'Невалидный email, превышение длины'}
+      - outcome: '429 rate_limited'
+        fields: []
+    entity_refs: [contact-message]
+  - id: contact-channels-lib
+    name: 'lib/contactChannels.ts (фронт)'
+    kind: interface
+    request:
+      - {name: title, type: string, required: true, description: 'Нормализованное название'}
+      - {name: url, type: string, required: true, description: 'Абсолютный URL карточки'}
+      - {name: socialLinks, type: object, required: true, description: 'telegram/whatsapp/max из API'}
+      - {name: phone, type: string, required: false, description: 'Телефон сайта'}
+    response_cases:
+      - outcome: channels
+        fields:
+          - {name: channels, type: array, required: true, description: 'ContactChannel[] только с непустым href, порядок telegram, whatsapp, max, phone'}
+    entity_refs: [contact-channel, artwork]

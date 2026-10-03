@@ -3,7 +3,7 @@
 Вход — `design-notes.md` (контракт файла v1) и `spec.yaml`. NEEDS CLARIFICATION в `plan.yaml` нет.
 
 ## R1. Парсер xlsx
-- **Decision**: ClosedXML (MIT) в `MomSite.Infrastructure/Catalog/`. Читаем `XLWorkbook` из `Stream` (файл не сохраняется), лист по имени, ячейки — `CachedValue` (формулы не вычисляем, `=IMAGE()` игнор).
+- **Decision**: ClosedXML 0.104.2 (MIT) в `MomSite.Infrastructure/Catalog/`. Читаем `XLWorkbook` из `Stream` (файл не сохраняется), лист по имени, ячейки — `CachedValue` (формулы не вычисляем, `=IMAGE()` игнор).
 - **Rationale**: MIT, стабильный API, работает и с выгрузкой Excel, и с экспортом Google Sheets.
 - **Alternatives**: EPPlus — коммерческая лицензия с v5; OpenXML SDK напрямую — много низкоуровневого кода (P3/P10).
 
@@ -12,7 +12,7 @@
 - **Rationale**: dry-run и apply строят один и тот же план → предпросмотр гарантированно совпадает с результатом (US1/US2).
 
 ## R3. Расширение Artwork вместо новой сущности
-- **Decision**: одна миграция `AddArtworkCatalogFields`: `Status` (int enum, default Available), `WidthCm`/`HeightCm` (numeric(6,1) null), `Year` (int null), `Support`/`Technique` (varchar 100 null), `ShortDescription` (varchar 300 null), `IsFeatured`, `NeedsReshoot` (bool false), `IsPublished` (bool true). Data-migration: `Status = IsForSale ? Available : NotForSale`.
+- **Decision**: миграции `AddArtworkCatalogExtras` (поля Artwork) и `AddCatalogImportLog` (журнал импорта; созданы через `dotnet ef migrations add`): `Status` (int enum, default Available), `WidthCm`/`HeightCm` (numeric(6,1) null), `Year` (int null), `Support`/`Technique` (varchar 100 null), `ShortDescription` (varchar 300 null), `IsFeatured`, `NeedsReshoot` (bool false), `IsPublished` (bool true). Data-migration: `Status = IsForSale ? Available : NotForSale`.
 - **IsForSale**: остаётся колонкой ради совместимости API и старых клиентов, но всегда выставляется из `Status` при сохранении (`Artwork.ApplyStatus`); прямая запись `IsForSale` игнорируется.
 - **Rationale**: правило «не дублировать» — карточка, галерея, админка уже работают с Artwork.
 - **Alternatives**: отдельная таблица `ArtworkDetails` — лишний join и дубль CRUD.

@@ -464,3 +464,90 @@ describe('the artwork page opens the painting full-screen', () => {
     expect(screen.getByTestId('lightbox')).toBeInTheDocument();
   });
 });
+
+describe('@US1-AS1 the artwork page shows the specs block', () => {
+  it('renders all five characteristics', async () => {
+    mockedGetGalleryData.mockResolvedValue(
+      gallery([
+        {
+          id: 7, title: 'Осенний сад', isForSale: true, status: 'Available',
+          widthCm: 80, heightCm: 70, technique: 'масло', support: 'холст на подрамнике', year: 2026,
+        },
+      ])
+    );
+    render(await ArtworkPage({ params: { slug: 'osenniy-sad-7' } }));
+
+    expect(screen.getByText('80 × 70 см')).toBeInTheDocument();
+    expect(screen.getByText('масло')).toBeInTheDocument();
+    expect(screen.getByText('холст на подрамнике')).toBeInTheDocument();
+    expect(screen.getByText('2026')).toBeInTheDocument();
+    expect(screen.getByText('В наличии')).toBeInTheDocument();
+  });
+});
+
+describe('@US1-AS3 a sold work hides the price and offers "Заказать похожую"', () => {
+  it('shows status Продана, no price and the similar-order button', async () => {
+    mockedGetGalleryData.mockResolvedValue(
+      gallery([{ id: 7, title: 'Осенний сад', isForSale: false, status: 'Sold', price: 45000 }])
+    );
+    render(await ArtworkPage({ params: { slug: 'osenniy-sad-7' } }));
+
+    expect(screen.getByText('Продана')).toBeInTheDocument();
+    expect(screen.queryByText(/45\s000/)).not.toBeInTheDocument();
+    expect(screen.queryByText('цена по запросу')).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Узнать цену' })).not.toBeInTheDocument();
+    const link = screen.getByRole('link', { name: 'Заказать похожую' });
+    expect(link.getAttribute('href')).toBe('/contacts?artwork=%D0%9E%D1%81%D0%B5%D0%BD%D0%BD%D0%B8%D0%B9%20%D1%81%D0%B0%D0%B4&similar=1');
+  });
+});
+
+describe('@US1-EC1 only the status row is shown when nothing else is filled', () => {
+  it('renders just the status', async () => {
+    mockedGetGalleryData.mockResolvedValue(
+      gallery([{ id: 7, title: 'Осенний сад', isForSale: true, status: 'Available' }])
+    );
+    const { container } = render(await ArtworkPage({ params: { slug: 'osenniy-sad-7' } }));
+
+    expect(container.querySelectorAll('dt')).toHaveLength(1);
+    expect(screen.getByText('Статус')).toBeInTheDocument();
+  });
+});
+
+describe('@US1-EC2 a private collection behaves like sold', () => {
+  it('hides the price and shows "Заказать похожую"', async () => {
+    mockedGetGalleryData.mockResolvedValue(
+      gallery([{ id: 7, title: 'Осенний сад', isForSale: false, status: 'PrivateCollection', price: 45000 }])
+    );
+    render(await ArtworkPage({ params: { slug: 'osenniy-sad-7' } }));
+
+    expect(screen.getByText('В частной коллекции')).toBeInTheDocument();
+    expect(screen.queryByText(/45\s000/)).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Узнать цену' })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Заказать похожую' })).toBeInTheDocument();
+  });
+});
+
+describe('@US1-EC3 an exhibition photo has no specs block', () => {
+  it('does not render the specs list', async () => {
+    mockedGetGalleryData.mockResolvedValue(
+      gallery([
+        { id: 55, title: 'С открытия', isForSale: false, status: 'NotForSale', widthCm: 10, heightCm: 10,
+          category: { id: 4, name: 'Фото с выставок' } },
+      ])
+    );
+    const { container } = render(await ArtworkPage({ params: { slug: 'with-55' } }));
+
+    expect(container.querySelector('dl')).toBeNull();
+    expect(screen.queryByText('Статус')).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Заказать похожую' })).not.toBeInTheDocument();
+  });
+});
+
+describe('@US8-AS1 the page title heading is wrapped in guillemets once', () => {
+  it.each(['"Утро"', '«Утро»', "'Утро'", 'Утро'])('renders «Утро» for %s', async (raw) => {
+    mockedGetGalleryData.mockResolvedValue(gallery([{ id: 3, title: raw, isForSale: true, status: 'Available' }]));
+    render(await ArtworkPage({ params: { slug: 'utro-3' } }));
+
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('«Утро»');
+  });
+});

@@ -46,6 +46,16 @@ public class ArtworksController : ControllerBase
                 ThumbnailPath = a.ThumbnailPath,
                 Price = a.Price,
                 IsForSale = a.IsForSale,
+                Status = a.Status,
+                WidthCm = a.WidthCm,
+                HeightCm = a.HeightCm,
+                Year = a.Year,
+                Support = a.Support,
+                Technique = a.Technique,
+                ShortDescription = a.ShortDescription,
+                IsFeatured = a.IsFeatured,
+                NeedsReshoot = a.NeedsReshoot,
+                IsPublished = a.IsPublished,
                 CreatedAt = a.CreatedAt,
                 UpdatedAt = a.UpdatedAt,
                 CategoryId = a.CategoryId,
@@ -103,14 +113,10 @@ public class ArtworksController : ControllerBase
 
         var artwork = new Artwork
         {
-            Title = dto.Title,
-            Description = dto.Description,
-            Price = dto.Price,
-            IsForSale = dto.IsForSale,
-            CategoryId = dto.CategoryId,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
+        dto.ApplyTo(artwork);
         await _artworkImages.SetCoverAsync(artwork, dto.Image!);
 
         _context.Artworks.Add(artwork);
@@ -131,11 +137,7 @@ public class ArtworksController : ControllerBase
 
         Console.WriteLine($"UpdateArtwork: Id={id}, Title={dto.Title}, Description={dto.Description}, ImageFileName={dto.Image?.FileName}");
 
-        artwork.Title = dto.Title;
-        artwork.Description = dto.Description;
-        artwork.Price = dto.Price;
-        artwork.IsForSale = dto.IsForSale;
-        artwork.CategoryId = dto.CategoryId;
+        dto.ApplyTo(artwork);
         artwork.UpdatedAt = DateTime.UtcNow;
 
         if (dto.Image != null)
@@ -164,23 +166,3 @@ public class ArtworksController : ControllerBase
         return NoContent();
     }
 }
-
-public class CreateArtworkDto
-{
-    public string Title { get; set; } = string.Empty;
-    public string? Description { get; set; }
-    public IFormFile Image { get; set; } = null!;
-    public decimal? Price { get; set; }
-    public bool IsForSale { get; set; } = true;
-    public int CategoryId { get; set; }
-}
-
-public class UpdateArtworkDto
-{
-    public string Title { get; set; } = string.Empty;
-    public string? Description { get; set; }
-    public IFormFile? Image { get; set; }
-    public decimal? Price { get; set; }
-    public bool IsForSale { get; set; } = true;
-    public int CategoryId { get; set; }
-} 
