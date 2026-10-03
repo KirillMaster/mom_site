@@ -6,6 +6,7 @@ import Footer from '@/components/Footer';
 import { ReviewDto } from '@/lib/api';
 import { submitReview } from '@/hooks/useApi';
 import { buildArtworkSlug } from '@/lib/artworkSlug';
+import { normalizeTitle } from '@/lib/normalizeTitle';
 
 export interface ReviewArtwork {
   id: number;
@@ -58,7 +59,7 @@ const ReviewCard = ({ review, artwork }: { review: ReviewDto; artwork?: ReviewAr
         href={`/gallery/${buildArtworkSlug(artwork.title, artwork.id)}`}
         className="mt-3 inline-block text-primary-600 hover:underline"
       >
-        {artwork.title}
+        {normalizeTitle(artwork.title)}
       </a>
     )}
   </article>

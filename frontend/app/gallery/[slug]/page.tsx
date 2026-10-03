@@ -72,7 +72,7 @@ export async function generateMetadata({ params }: ArtworkPageProps): Promise<Me
           url: imageUrl,
           width: 1200,
           height: 630,
-          alt: artwork.title,
+          alt: normalizeTitle(artwork.title),
         },
       ],
       locale: 'ru_RU',
@@ -168,7 +168,7 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
           <ArtworkInfoCard artwork={artwork} categoryName={categoryName} categories={categories} channels={channels} />
         </div>
 
-        <RelatedWorks works={relatedWorks} />
+        <RelatedWorks works={relatedWorks} categoryId={categoryIdOf(artwork)} />
       </div>
 
       {showChannels && <MobileContactBar channels={channels} artwork={displayTitle} />}

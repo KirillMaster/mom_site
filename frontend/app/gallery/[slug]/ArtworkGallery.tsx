@@ -6,6 +6,7 @@ import Lightbox from 'yet-another-react-lightbox';
 import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import 'yet-another-react-lightbox/styles.css';
 import { reachGoal, Goals } from '@/lib/analytics';
+import { normalizeTitle } from '@/lib/normalizeTitle';
 
 export interface GalleryPhoto {
   src: string;
@@ -17,8 +18,10 @@ interface ArtworkGalleryProps {
   title: string;
 }
 
-const altFor = (title: string, index: number, total: number) =>
-  total > 1 ? `${title} — фото ${index + 1}` : title;
+const altFor = (rawTitle: string, index: number, total: number) => {
+  const title = normalizeTitle(rawTitle);
+  return total > 1 ? `${title} — фото ${index + 1}` : title;
+};
 
 interface PhotoNavigationProps {
   photos: GalleryPhoto[];

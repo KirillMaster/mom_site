@@ -130,3 +130,19 @@ describe('blog in sitemap', () => {
     expect(urls.some((url) => url.endsWith('/gallery/osenniy-sad-7'))).toBe(true);
   });
 });
+
+describe('@US4-AS6 the sitemap lists every work regardless of gallery pagination', () => {
+  it('contains a slug url for each of 60 works', async () => {
+    const works = Array.from({ length: 60 }, (_, i) => ({ id: i + 1, title: `Работа ${i + 1}`, isForSale: true }));
+    mockedGetGalleryData.mockResolvedValue(gallery(works));
+    mockedGetVideosData.mockResolvedValue({ videos: [] });
+
+    const result = await sitemap();
+    const urls = result.map((entry) => entry.url);
+
+    works.forEach((work) => {
+      expect(urls.some((url) => url.endsWith(`-${work.id}`))).toBe(true);
+    });
+    expect(urls.filter((url) => url.includes('/gallery/'))).toHaveLength(60);
+  });
+});

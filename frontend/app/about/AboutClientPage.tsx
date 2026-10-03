@@ -48,7 +48,7 @@ const AboutClientPage = ({ aboutData }: { aboutData: AboutData }) => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
               </div>
-              <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center shadow-lg">
+              <div className="absolute -bottom-6 right-0 md:-right-6 w-24 h-24 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center shadow-lg">
                 <Palette className="w-12 h-12 text-white" />
               </div>
             </div>

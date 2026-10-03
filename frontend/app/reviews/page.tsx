@@ -7,13 +7,14 @@ export const revalidate = 3600;
 
 const SITE_URL = 'https://angelamoiseenko.ru';
 const ARTIST_NAME = 'Анжела Моисеенко';
+const ARTIST_NAME_GENITIVE = 'Анжелы Моисеенко';
 const PAGE_URL = `${SITE_URL}/reviews`;
 
 // SEO metadata is unique to this page (S4-AS10): distinct title/description
 // from every other route, plus an explicit canonical link.
 export async function generateMetadata(): Promise<Metadata> {
   const title = `Отзывы о картинах и творчестве — ${ARTIST_NAME}`;
-  const description = `Читайте отзывы посетителей о картинах и творчестве художника-импрессиониста ${ARTIST_NAME}, оставьте свой отзыв.`;
+  const description = `Читайте отзывы посетителей о картинах и творчестве художника-импрессиониста ${ARTIST_NAME_GENITIVE}, оставьте свой отзыв.`;
 
   return {
     title,
