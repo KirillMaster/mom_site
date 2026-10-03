@@ -4,7 +4,7 @@ test.use({ viewport: { width: 390, height: 844 } });
 
 // The submit is intercepted: this path must never send a real lead.
 test('@US2-E2E1 gallery -> artwork -> channels -> ask price -> form without email', async ({ page }) => {
-  page.on('dialog', (d) => d.accept());
+  page.on('dialog', (d) => { d.accept().catch(() => undefined); });
   let sent: Record<string, unknown> | null = null;
   await page.route('**/api/public/contact-message', async (route) => {
     sent = JSON.parse(route.request().postData() ?? '{}');
