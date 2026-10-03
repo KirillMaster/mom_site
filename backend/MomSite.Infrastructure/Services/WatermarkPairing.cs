@@ -5,11 +5,14 @@ namespace MomSite.Infrastructure.Services;
 public static class WatermarkPairing
 {
     public static readonly TimeSpan Window = TimeSpan.FromSeconds(120);
+    private const string CopyPrefix = "watermarked_";
     private static readonly Regex ArtworkName = new(@"(^|_)artworks/(?<name>[^/]+)$", RegexOptions.Compiled);
 
-    public static bool IsCopy(string key) => Name(key)?.StartsWith("watermarked_", StringComparison.OrdinalIgnoreCase) == true;
+    public static bool IsCopy(string key) => Name(key) is { } n && HasCopyPrefix(n);
 
-    public static bool IsOriginal(string key) => Name(key) is { } n && !n.StartsWith("watermarked_", StringComparison.OrdinalIgnoreCase);
+    public static bool IsOriginal(string key) => Name(key) is { } n && !HasCopyPrefix(n);
+
+    private static bool HasCopyPrefix(string name) => name.StartsWith(CopyPrefix, StringComparison.OrdinalIgnoreCase);
 
     private static string? Name(string key)
     {
