@@ -130,3 +130,16 @@ describe('blog in sitemap', () => {
     expect(urls.some((url) => url.endsWith('/gallery/osenniy-sad-7'))).toBe(true);
   });
 });
+
+describe('static pages in sitemap', () => {
+  it('includes /privacy', async () => {
+    mockedGetGalleryData.mockResolvedValue(gallery([]));
+    mockedGetVideosData.mockResolvedValue({ videos: [] });
+
+    const entry = (await sitemap()).find((e) => e.url === 'https://angelamoiseenko.ru/privacy');
+
+    expect(entry).toBeDefined();
+    expect(entry?.changeFrequency).toBe('yearly');
+    expect(entry?.priority).toBe(0.3);
+  });
+});
