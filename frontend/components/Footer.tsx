@@ -92,6 +92,11 @@ const Footer = () => {
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link href="/order" className={MUTED_LINK_CLASS}>
+                  Заказать картину
+                </Link>
+              </li>
             </ul>
           </div>
 

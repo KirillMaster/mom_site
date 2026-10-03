@@ -7,10 +7,13 @@ import MaxIcon from '@/components/MaxIcon';
 import { maxProfileUrl } from '@/lib/social';
 import Image from 'next/image';
 import { getImageUrl } from '@/hooks/useApi';
-import { HomeData } from '@/lib/api';
+import { HomeData, ReviewDto } from '@/lib/api';
 import ArtworkCarousel from '@/components/ArtworkCarousel';
 import { shortBio } from '@/data/biography';
 import { Button } from '@/components/ui';
+import AvailableGrid from '@/components/home/AvailableGrid';
+import TrustStrip from '@/components/home/TrustStrip';
+import ReviewsPreview from '@/components/home/ReviewsPreview';
 
 const homeHighlights = [
   'Член Союза художников России и АИАП ЮНЕСКО',
@@ -36,7 +39,7 @@ const socialItems = ({ contacts }: HomeData): SocialItem[] => {
   return items.filter((item): item is SocialItem => item !== null);
 };
 
-const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
+const HomeClientPage = ({ homeData, reviews }: { homeData: HomeData; reviews?: ReviewDto[] }) => {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero Banner - Full Screen */}
@@ -61,13 +64,16 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
           <p
             className="rise-in [animation-delay:100ms] text-xl md:text-2xl mb-8 text-balance"
           >
-            Художник-импрессионист
+            Живопись маслом из Крыма. Работы в коллекциях 12 стран
           </p>
-          
-          <div className="rise-in [animation-delay:200ms]">
+
+          <div className="rise-in [animation-delay:200ms] flex flex-wrap justify-center gap-4">
             <Button href="/gallery" className="px-6 py-3">
-              <span>Смотреть галерею</span>
+              <span>Выбрать картину</span>
               <ArrowRight className="w-5 h-5" />
+            </Button>
+            <Button href="/order" variant="secondary" className="px-6 py-3 bg-paper text-sea hover:bg-sea-50">
+              <span>Заказать картину</span>
             </Button>
           </div>
         </div>
@@ -80,6 +86,10 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
           </div>
         </div>
       </section>
+
+      <AvailableGrid artworks={homeData.availableArtworks} />
+
+      <TrustStrip />
 
       {/* Artwork Carousel Section */}
       <section className="py-20 bg-paper-200">
@@ -131,9 +141,12 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
             <div
               className="reveal md:w-1/2 flex justify-center">
               {homeData.authorPhoto ? (
-                <img
+                <Image
                   src={getImageUrl(homeData.authorPhoto)}
                   alt="Фотография автора"
+                  width={640}
+                  height={800}
+                  sizes="(min-width: 768px) 50vw, 100vw"
                   className="rounded-md max-w-full h-auto"
                 />
               ) : (
@@ -145,6 +158,8 @@ const HomeClientPage = ({ homeData }: { homeData: HomeData }) => {
           </div>
         </div>
       </section>
+
+      <ReviewsPreview reviews={reviews} />
 
       {/* Contacts Section */}
       <section className="py-20 bg-paper-200">

@@ -279,6 +279,7 @@ export interface ContactMessage {
   name: string;
   email?: string;
   phone?: string;
+  telegramUsername?: string;
   subject: string;
   message: string;
   // Honeypot anti-spam field. Left empty by real visitors (the input is

@@ -18,3 +18,15 @@ describe('@US1-AS2 карусель на главной', () => {
     });
   });
 });
+
+describe('@US1-AS3 карусель на главной идёт через оптимизатор', () => {
+  it('img идут через /_next/image с sizes', () => {
+    const { container } = render(<ArtworkCarousel artworks={[artwork(1), artwork(2)]} />);
+    const imgs = container.querySelectorAll('img');
+    expect(imgs.length).toBe(2);
+    imgs.forEach((img) => {
+      expect(img.getAttribute('src')).toMatch(/^\/_next\/image/);
+      expect(img.getAttribute('sizes')).toBeTruthy();
+    });
+  });
+});

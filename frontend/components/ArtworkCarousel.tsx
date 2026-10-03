@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { getImageUrl } from '@/hooks/useApi';
 import type { ArtworkDto } from '@/lib/api';
 import { normalizeTitle } from '@/lib/normalizeTitle';
@@ -66,13 +67,14 @@ const ArtworkCarousel = ({ artworks }: { artworks: ArtworkDto[] }) => {
             <Link href="/gallery" className="card p-4 block h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-sea focus-visible:ring-offset-2 focus-visible:ring-offset-paper">
               {/* Same square frame as the gallery cards, so a tall
                   canvas is shown whole instead of cropped to a strip. */}
-              <div className="aspect-square bg-paper-200 rounded-md overflow-hidden mb-4">
-                <img
+              <div className="relative aspect-square bg-paper-200 rounded-md overflow-hidden mb-4">
+                <Image
                   src={getImageUrl(artwork.imagePath)}
                   alt={normalizeTitle(artwork.title)}
-                  loading={index < 3 ? 'eager' : 'lazy'}
-                  decoding="async"
-                  className="w-full h-full object-contain"
+                  fill
+                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                  priority={index < 3}
+                  className="object-contain"
                 />
               </div>
               <h3 className="text-lg font-serif font-semibold text-ink">{normalizeTitle(artwork.title)}</h3>
