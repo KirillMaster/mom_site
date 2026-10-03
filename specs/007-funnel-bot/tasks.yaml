@@ -29,10 +29,10 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Переменная FUNNEL_BOT_TOKEN объявлена в api prod-compose, дефолт пустой
-    done: false
+    done: true
   - id: AC-2
     description: В репозитории нет значений токенов
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -87,10 +87,10 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: ContactMessage содержит Phone, TelegramUsername, TelegramUserId; Email nullable
-    done: false
+    done: true
   - id: AC-2
     description: Сборка зелёная, ContactMessageDto не изменён
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -135,10 +135,10 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Миграция создана и применяется к чистой и существующей БД
-    done: false
+    done: true
   - id: AC-2
     description: Существующие заявки сохраняют Email
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -190,13 +190,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Сохранение и уведомление выполняются в одном сервисе
-    done: false
+    done: true
   - id: AC-2
     description: Сбой notifier'а не пробрасывается, лид сохранён
-    done: false
+    done: true
   - id: AC-3
     description: Сбой БД пробрасывается
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -262,10 +262,10 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Ответы формы (200/400/429/500, honeypot) прежние
-    done: false
+    done: true
   - id: AC-2
     description: Существующие тесты PublicController проходят без смены ожиданий
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -323,13 +323,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: В уведомлении есть телефон и/или ссылка на Telegram клиента
-    done: false
+    done: true
   - id: AC-2
     description: Заявка формы выглядит как раньше
-    done: false
+    done: true
   - id: AC-3
     description: Email-канал не падает при Email = null
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -400,13 +400,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Все 4 метода работают против фейкового Bot API
-    done: false
+    done: true
   - id: AC-2
     description: Ошибки Telegram не бросают исключений наружу
-    done: false
+    done: true
   - id: AC-3
     description: Токен не появляется в логах
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -461,10 +461,10 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Модели - неизменяемые record, тексты в одном файле
-    done: false
+    done: true
   - id: AC-2
     description: callback_data всех кнопок <= 64 байт
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -519,16 +519,16 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Все 5 целей доходят до готового лида
-    done: false
+    done: true
   - id: AC-2
     description: Для мастер-класса бюджет пропускается
-    done: false
+    done: true
   - id: AC-3
     description: Без username бот просит телефон
-    done: false
+    done: true
   - id: AC-4
     description: Лид с пустым контактом не создаётся
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -594,13 +594,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: «Назад» и /cancel работают на каждом шаге
-    done: false
+    done: true
   - id: AC-2
     description: Текст вне сценария сохраняется как лид «Другой вопрос»
-    done: false
+    done: true
   - id: AC-3
     description: Неподдерживаемый ввод не ломает сценарий
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -674,10 +674,10 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Все ветки автомата покрыты зелёными тестами
-    done: false
+    done: true
   - id: AC-2
     description: В тестах автомата нет моков и I/O
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -717,10 +717,10 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: 4-я заявка за 24 ч от одного пользователя отклоняется
-    done: false
+    done: true
   - id: AC-2
     description: Через 24 ч квота освобождается
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -793,16 +793,16 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Без токена сервис не стартует, сайт работает
-    done: false
+    done: true
   - id: AC-2
     description: Апдейты из групп игнорируются
-    done: false
+    done: true
   - id: AC-3
     description: Сбой Telegram не роняет api
-    done: false
+    done: true
   - id: AC-4
     description: Лид уходит только через ILeadService
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -866,10 +866,10 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: api стартует без FUNNEL_BOT_TOKEN
-    done: false
+    done: true
   - id: AC-2
     description: С токеном в логе нет строк с токеном
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -920,13 +920,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Заявка из бота в таблице ContactMessages со статусом New
-    done: false
+    done: true
   - id: AC-2
     description: Notifier вызван один раз
-    done: false
+    done: true
   - id: AC-3
     description: Сбой notifier'а не влияет на подтверждение
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -982,10 +982,10 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Заявка из бота отображается без ошибок
-    done: false
+    done: true
   - id: AC-2
     description: Счётчик непрочитанных не сломан
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1029,10 +1029,10 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Эндпоинт отдаёт text и updatedAt или text = null
-    done: false
+    done: true
   - id: AC-2
     description: Схема БД не менялась
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1083,10 +1083,10 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: В /admin/pages есть пункт «Политика конфиденциальности» с полем текста
-    done: false
+    done: true
   - id: AC-2
     description: Сохранённый текст создаёт PageContent privacy/body
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1135,10 +1135,10 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Шаблон содержит оператора, состав данных, цели, срок, способ отзыва, контакт ответственного
-    done: false
+    done: true
   - id: AC-2
     description: Без данных от API страница получает шаблон
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1193,10 +1193,10 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: /privacy отдаётся сервером с h1, метаданными и реквизитами
-    done: false
+    done: true
   - id: AC-2
     description: Правка в админке отображается на странице
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1234,7 +1234,7 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Ссылка видна на всех страницах и ведёт на /privacy
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1273,10 +1273,10 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Под формой есть строка согласия со ссылкой на /privacy
-    done: false
+    done: true
   - id: AC-2
     description: Отправка формы работает как раньше
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1314,7 +1314,7 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: /sitemap.xml содержит https://angelamoiseenko.ru/privacy
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1361,7 +1361,7 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Тест зелёный на мобильном viewport 360x740
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1404,7 +1404,7 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Сообщение запроса контакта содержит ссылку на /privacy
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1442,10 +1442,10 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Работа, МК и интерьер распознаются; прочее - кампания
-    done: false
+    done: true
   - id: AC-2
     description: Невалидный ввод не бросает исключений
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1498,13 +1498,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Для существующей работы бот показывает фото и название и сразу просит контакт
-    done: false
+    done: true
   - id: AC-2
     description: Для несуществующей или скрытой - обычный сценарий без ошибки
-    done: false
+    done: true
   - id: AC-3
     description: Кампания сохраняется в UtmCampaign
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1561,10 +1561,10 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Нет файлов длиннее 200 строк
-    done: false
+    done: true
   - id: AC-2
     description: В логах нет токена и ПДн
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:
@@ -1624,13 +1624,13 @@ tasks:
   acceptance_criteria:
   - id: AC-1
     description: Все автотесты зелёные
-    done: false
+    done: true
   - id: AC-2
     description: Сценарии quickstart пройдены
-    done: false
+    done: true
   - id: AC-3
     description: Реальный бот проходит сценарий с телефона
-    done: false
+    done: true
   test_scenarios:
   - id: TS-1
     given:

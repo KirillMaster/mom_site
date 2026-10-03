@@ -1,4 +1,5 @@
 import { ChangeEvent, FormEvent } from 'react';
+import Link from 'next/link';
 import { Button, Input, Textarea } from '@/components/ui';
 
 export interface ContactFormState {
@@ -73,6 +74,12 @@ const ContactFormFields = ({
       <Button type="submit" disabled={isSubmitting} className="w-full py-3">
         {isSubmitting ? 'Отправка...' : 'Отправить сообщение'}
       </Button>
+      <p className="text-xs text-ink-500 text-center mt-3">
+        Отправляя форму, вы соглашаетесь с{' '}
+        <Link href="/privacy" className="underline text-sea hover:text-sea-700">
+          политикой конфиденциальности
+        </Link>
+      </p>
       {submissionResult === 'success' && (
         <p className="text-sea text-center mt-4">Сообщение успешно отправлено!</p>
       )}

@@ -4,6 +4,7 @@ import { Palette, Mail, Phone } from 'lucide-react';
 import { FaInstagram, FaVk, FaTelegram, FaWhatsapp, FaYoutube } from 'react-icons/fa';
 import MaxIcon from '@/components/MaxIcon';
 import { maxProfileUrl } from '@/lib/social';
+import { botLink } from '@/lib/funnelBot';
 import { useFooterData } from '@/hooks/useApi';
 import { NAV_ITEMS } from './navItems';
 
@@ -29,10 +30,10 @@ const SocialIconLink = ({ href, Icon, external = true, label }: SocialIconLinkPr
 
 const MUTED_LINK_CLASS = 'text-paper/80 hover:text-paper transition-colors duration-200';
 
-const ContactRow = ({ Icon, href, text }: { Icon: IconType; href: string; text: string }) => (
+const ContactRow = ({ Icon, href, text, external }: { Icon: IconType; href: string; text: string; external?: boolean }) => (
   <div className="flex items-center space-x-3">
-    <Icon className="w-5 h-5 text-paper/80" />
-    <a href={href} className={MUTED_LINK_CLASS}>
+    <Icon className="w-5 h-5 text-paper/80" aria-hidden="true" />
+    <a href={href} className={MUTED_LINK_CLASS} {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
       {text}
     </a>
   </div>
@@ -101,6 +102,7 @@ const Footer = () => {
               {footerData?.email && (
                 <ContactRow Icon={Mail} href={`mailto:${footerData.email}`} text={footerData.email} />
               )}
+              <ContactRow Icon={FaTelegram} href={botLink('site')} text="Бот в Telegram" external />
               {footerData?.phone && (
                 <ContactRow Icon={Phone} href={`tel:${footerData.phone}`} text={footerData.phone} />
               )}
@@ -114,6 +116,9 @@ const Footer = () => {
             <p className="text-paper/60 text-sm">
               © {currentYear} Анжела Моисеенко. Все права защищены.
             </p>
+            <Link href="/privacy" className={`${MUTED_LINK_CLASS} text-sm mt-2 md:mt-0`}>
+              Политика конфиденциальности
+            </Link>
           </div>
         </div>
       </div>

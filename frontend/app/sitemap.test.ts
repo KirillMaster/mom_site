@@ -131,6 +131,19 @@ describe('blog in sitemap', () => {
   });
 });
 
+describe('static pages in sitemap', () => {
+  it('includes /privacy', async () => {
+    mockedGetGalleryData.mockResolvedValue(gallery([]));
+    mockedGetVideosData.mockResolvedValue({ videos: [] });
+
+    const entry = (await sitemap()).find((e) => e.url === 'https://angelamoiseenko.ru/privacy');
+
+    expect(entry).toBeDefined();
+    expect(entry?.changeFrequency).toBe('yearly');
+    expect(entry?.priority).toBe(0.3);
+  });
+});
+
 describe('@US4-AS6 the sitemap lists every work regardless of gallery pagination', () => {
   it('contains a slug url for each of 60 works', async () => {
     const works = Array.from({ length: 60 }, (_, i) => ({ id: i + 1, title: `Работа ${i + 1}`, isForSale: true }));

@@ -2,6 +2,7 @@ import type { ComponentType } from 'react';
 import { FaInstagram, FaVk, FaTelegram, FaWhatsapp, FaYoutube } from 'react-icons/fa';
 import MaxIcon from '@/components/MaxIcon';
 import { maxProfileUrl } from '@/lib/social';
+import { botLink } from '@/lib/funnelBot';
 import { ContactsData } from '@/lib/api';
 
 interface SocialItem {
@@ -14,6 +15,7 @@ const buildItems = ({ socialLinks, phone }: ContactsData): SocialItem[] => [
   { href: socialLinks.instagram, label: 'Instagram', Icon: FaInstagram },
   { href: socialLinks.vk, label: 'ВКонтакте', Icon: FaVk },
   { href: socialLinks.telegram, label: 'Telegram', Icon: FaTelegram },
+  { href: botLink('site'), label: 'Telegram-бот', Icon: FaTelegram },
   { href: socialLinks.whatsapp, label: 'WhatsApp', Icon: FaWhatsapp },
   { href: socialLinks.youtube, label: 'YouTube', Icon: FaYoutube },
   { href: maxProfileUrl(socialLinks.max, phone), label: 'MAX', Icon: MaxIcon },

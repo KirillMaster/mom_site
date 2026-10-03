@@ -11,6 +11,21 @@ public static class LeadSource
 {
     public static string Dash(string? value) => string.IsNullOrWhiteSpace(value) ? "—" : value;
 
+    public const string BotSource = "telegram_bot";
+
+    public static bool IsBotLead(ContactMessage message) => message.UtmSource == BotSource;
+
+    /// <summary>"@username", else a tg://user link by id, else null.</summary>
+    public static string? TelegramContact(ContactMessage message)
+    {
+        if (!string.IsNullOrWhiteSpace(message.TelegramUsername))
+        {
+            return "@" + message.TelegramUsername.TrimStart('@');
+        }
+
+        return message.TelegramUserId is long id ? $"tg://user?id={id}" : null;
+    }
+
     public static string Describe(ContactMessage message)
     {
         var parts = new[] { message.UtmSource, message.UtmMedium, message.UtmCampaign }

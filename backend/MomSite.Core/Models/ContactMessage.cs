@@ -23,6 +23,11 @@ public class ContactMessage
     [MaxLength(100)]
     public string? Phone { get; set; }
 
+    [MaxLength(64)]
+    public string? TelegramUsername { get; set; }
+
+    public long? TelegramUserId { get; set; }
+
     [Required]
     [MaxLength(200)]
     public string Subject { get; set; } = string.Empty;

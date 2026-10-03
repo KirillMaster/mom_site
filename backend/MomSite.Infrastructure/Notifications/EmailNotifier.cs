@@ -70,24 +70,28 @@ public class EmailNotifier : IFeedbackNotifier
         await smtp.SendAsync(email, cts.Token);
         await smtp.DisconnectAsync(true, cts.Token);
 
-        _logger.LogInformation("Contact message notification emailed to {To} from {FromEmail}", toAddr, message.Email ?? message.Phone);
+        _logger.LogInformation("Contact message notification emailed to {To} from {FromEmail}", toAddr, message.Email ?? message.Phone ?? (message.TelegramUsername is { } tg ? "@" + tg : message.TelegramUserId is { } id ? $"tg:{id}" : "(контакт не указан)"));
     }
 
     public static (string Html, string Text) BuildBodies(ContactMessage message)
     {
         var enc = HtmlEncoder.Default;
+        var tg = LeadSource.TelegramContact(message);
+        var tgHtml = tg is null ? string.Empty : $"<p><strong>Telegram:</strong> {enc.Encode(tg)}</p>\n                ";
+        var tgText = tg is null ? string.Empty : $"Telegram: {tg}\n";
         var html = $@"
                 <h2>Новое сообщение с сайта</h2>
                 <p><strong>Имя:</strong> {enc.Encode(message.Name)}</p>
                 <p><strong>Email:</strong> {enc.Encode(LeadSource.Dash(message.Email))}</p>
                 <p><strong>Телефон/мессенджер:</strong> {enc.Encode(LeadSource.Dash(message.Phone))}</p>
-                <p><strong>Тема:</strong> {enc.Encode(message.Subject)}</p>
+                {tgHtml}<p><strong>Тема:</strong> {enc.Encode(message.Subject)}</p>
                 <p><strong>Источник:</strong> {enc.Encode(LeadSource.Describe(message))}</p>
                 <p><strong>Сообщение:</strong></p>
                 <p>{enc.Encode(message.Message).Replace("\n", "<br>")}</p>
             ";
         var text = $"Имя: {message.Name}\nEmail: {LeadSource.Dash(message.Email)}\n" +
                    $"Телефон/мессенджер: {LeadSource.Dash(message.Phone)}\n" +
+                   tgText +
                    $"Тема: {message.Subject}\nИсточник: {LeadSource.Describe(message)}\n\n{message.Message}";
         return (html, text);
     }

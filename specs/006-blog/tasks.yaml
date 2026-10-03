@@ -631,7 +631,7 @@ tasks:
     acceptance_criteria:
       - id: AC-1
         description: 'Все тесты и сборка зелёные; quickstart 1–16 пройден'
-        done: false
+        done: true
     test_scenarios:
       - id: TS-1
         given: ['Админ на телефоне 360px']

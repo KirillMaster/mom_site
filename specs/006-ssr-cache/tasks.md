@@ -29,8 +29,8 @@
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` В публичных сегментах нет force-dynamic, есть revalidate = 3600
-- [ ] `AC-2` next build проходит без доступа к API
+- [x] `AC-1` В публичных сегментах нет force-dynamic, есть revalidate = 3600
+- [x] `AC-2` next build проходит без доступа к API
 
 **Test Scenarios**:
 
@@ -62,7 +62,7 @@
 
 **Acceptance Criteria**:
 
-- [ ] `AC-3` При ошибке загрузчика серверный компонент страницы отклоняет промис
+- [x] `AC-3` При ошибке загрузчика серверный компонент страницы отклоняет промис
 
 **Test Scenarios**:
 
@@ -94,7 +94,7 @@ frontend/app/internal/revalidate/route.ts: POST, проверка X-Revalidate-S
 
 **Acceptance Criteria**:
 
-- [ ] `AC-4` Верный секрет → 200 и revalidatePath вызван; неверный/пустой → 401 без вызова
+- [x] `AC-4` Верный секрет → 200 и revalidatePath вызван; неверный/пустой → 401 без вызова
 
 **Test Scenarios**:
 
@@ -126,7 +126,7 @@ frontend/lib/cacheWarmup.ts: warmCache(baseUrl) получает /sitemap.xml с
 
 **Acceptance Criteria**:
 
-- [ ] `AC-5` Все URL sitemap запрошены, одновременно ≤ 3; параллельный вызов не запускает второй прогрев
+- [x] `AC-5` Все URL sitemap запрошены, одновременно ≤ 3; параллельный вызов не запускает второй прогрев
 
 **Test Scenarios**:
 
@@ -159,8 +159,8 @@ ICacheInvalidator (Core), FrontendCacheInvalidator (Infrastructure, HttpClient, 
 
 **Acceptance Criteria**:
 
-- [ ] `AC-6` Успешный POST/PUT/DELETE админки вызывает инвалидатор; GET, login, 4xx — нет
-- [ ] `AC-7` Исключение инвалидатора не меняет ответ админки
+- [x] `AC-6` Успешный POST/PUT/DELETE админки вызывает инвалидатор; GET, login, 4xx — нет
+- [x] `AC-7` Исключение инвалидатора не меняет ответ админки
 
 **Test Scenarios**:
 
@@ -198,8 +198,8 @@ nginx.conf: location ^~ /internal/ { return 404; }. docker-compose.prod.yml: REV
 
 **Acceptance Criteria**:
 
-- [ ] `AC-8` curl https://angelamoiseenko.ru/internal/revalidate → 404
-- [ ] `AC-9` после деплоя первый запрос страницы работы — x-nextjs-cache HIT
+- [x] `AC-8` curl https://angelamoiseenko.ru/internal/revalidate → 404
+- [x] `AC-9` после деплоя первый запрос страницы работы — x-nextjs-cache HIT
 
 **Test Scenarios**:
 
@@ -230,7 +230,7 @@ frontend/e2e/ssr-cache.spec.ts: для BASE_URL на prod-сборке — вт�
 
 **Acceptance Criteria**:
 
-- [ ] `AC-10` Спека зелёная против прода после деплоя
+- [x] `AC-10` Спека зелёная против прода после деплоя
 
 **Test Scenarios**:
 

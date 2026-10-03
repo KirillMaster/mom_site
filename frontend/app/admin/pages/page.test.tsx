@@ -67,3 +67,50 @@ describe('@S5-AS3 admin panel exposes editable homepage SEO fields', () => {
     expect(welcomeTextarea.value).toBe('Добро пожаловать');
   });
 });
+
+describe('T018 admin panel edits the privacy policy text', () => {
+  beforeEach(() => {
+    localStorage.setItem('token', 'test-token');
+    global.fetch = jest.fn((url: string, opts?: any) => {
+      if (opts?.method === 'PUT' || opts?.method === 'POST') {
+        return Promise.resolve({ ok: true, json: async () => ({}), text: async () => '' } as Response);
+      }
+      return Promise.resolve({ ok: true, json: async () => [] } as Response);
+    }) as any;
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+    localStorage.clear();
+  });
+
+  it('lists the privacy section with a body textarea and the default-text hint', async () => {
+    render(<PageContentManagement />);
+    await waitFor(() => expect(screen.getByText(/Приветственное сообщение/i)).toBeInTheDocument());
+
+    fireEvent.click(screen.getByRole('button', { name: 'Политика конфиденциальности' }));
+
+    await waitFor(() => expect(screen.getByText('Текст политики')).toBeInTheDocument());
+    expect(screen.getByText(/Пусто = текст по умолчанию/)).toBeInTheDocument();
+  });
+
+  it('creates PageContent privacy/body on save', async () => {
+    render(<PageContentManagement />);
+    await waitFor(() => expect(screen.getByText(/Приветственное сообщение/i)).toBeInTheDocument());
+    fireEvent.click(screen.getByRole('button', { name: 'Политика конфиденциальности' }));
+    await waitFor(() => expect(screen.getByText('Текст политики')).toBeInTheDocument());
+
+    const textarea = screen.getByText('Текст политики').parentElement!.querySelector('textarea') as HTMLTextAreaElement;
+    fireEvent.change(textarea, { target: { value: 'Новый текст' } });
+    fireEvent.click(screen.getByRole('button', { name: /Сохранить/i }));
+
+    await waitFor(() => {
+      const post = (global.fetch as jest.Mock).mock.calls.find(([, o]) => o?.method === 'POST');
+      expect(post).toBeDefined();
+      const body = post![1].body as FormData;
+      expect(body.get('pageKey')).toBe('privacy');
+      expect(body.get('contentKey')).toBe('body');
+      expect(body.get('textContent')).toBe('Новый текст');
+    });
+  });
+});

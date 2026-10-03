@@ -6,6 +6,7 @@ import { resolveStatus } from '@/lib/artworkStatus';
 import type { ArtworkDto, GalleryData } from '@/lib/api';
 import AskPriceButton from './AskPriceButton';
 import ContactChannels from './ContactChannels';
+import BotCtaButton from './BotCtaButton';
 import type { ContactChannel } from '@/lib/contactChannels';
 
 interface Props {
@@ -39,6 +40,7 @@ const ArtworkInfoCard = ({ artwork, categoryName, categories, channels = [] }: P
               id={artwork.id}
               variant={available ? 'price' : 'similar'}
             />
+            <BotCtaButton artworkId={artwork.id} artwork={normalizeTitle(artwork.title)} />
             <ContactChannels channels={channels} artwork={normalizeTitle(artwork.title)} />
           </div>
         )}

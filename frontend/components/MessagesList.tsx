@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { ContactMessageAdmin } from '@/lib/api';
+import TelegramLink from './TelegramLink';
 
 interface MessagesListProps {
   messages: ContactMessageAdmin[];
@@ -72,7 +73,7 @@ const TechDetails = ({ message }: { message: ContactMessageAdmin }) => {
 };
 
 const matchesQuery = (message: ContactMessageAdmin, query: string) => {
-  const haystack = `${message.name} ${message.email ?? ''} ${message.phone ?? ''} ${message.subject} ${message.message}`.toLowerCase();
+  const haystack = `${message.name} ${message.email ?? ''} ${message.phone ?? ''} ${message.telegramUsername ?? ''} ${message.subject} ${message.message}`.toLowerCase();
   return haystack.includes(query.toLowerCase());
 };
 
@@ -167,6 +168,7 @@ const MessagesList = ({ messages, unreadCount, onOpen, onArchive, filter, onFilt
                         {message.phone}
                       </a>
                     )}
+                    <TelegramLink message={message} className="block text-indigo-600 hover:text-indigo-900 font-normal" />
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
                     <div>{message.subject}</div>
