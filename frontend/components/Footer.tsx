@@ -177,6 +177,9 @@ const Footer = () => {
             <p className="text-gray-400 text-sm">
               © {currentYear} Анжела Моисеенко. Все права защищены.
             </p>
+            <Link href="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors duration-200 mt-2 md:mt-0">
+              Политика конфиденциальности
+            </Link>
 
           </div>
         </div>
