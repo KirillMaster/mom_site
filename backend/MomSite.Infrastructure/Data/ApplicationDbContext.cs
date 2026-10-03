@@ -118,6 +118,7 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
             entity.Property(e => e.Email).HasMaxLength(200);
             entity.Property(e => e.Phone).HasMaxLength(100);
+            entity.Property(e => e.TelegramUsername).HasMaxLength(64);
             entity.Property(e => e.Subject).IsRequired().HasMaxLength(200);
             entity.Property(e => e.Message).IsRequired().HasMaxLength(5000);
             entity.Property(e => e.IpAddress).HasMaxLength(64);

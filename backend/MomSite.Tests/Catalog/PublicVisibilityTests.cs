@@ -21,7 +21,7 @@ public class PublicVisibilityTests
         db.Categories.Add(new Category { Id = 1, Name = "К", IsActive = true });
         foreach (var a in items) { a.CategoryId = 1; db.Artworks.Add(a); }
         await db.SaveChangesAsync();
-        var c = new PublicController(db, Array.Empty<IFeedbackNotifier>(), Mock.Of<ILogger<PublicController>>(), new Allow());
+        var c = new PublicController(db, Array.Empty<IFeedbackNotifier>(), Mock.Of<ILogger<PublicController>>(), new Allow(), Mock.Of<ILeadService>());
         var ok = Assert.IsType<OkObjectResult>((await c.GetGalleryData()).Result);
         return Assert.IsType<MomSite.API.DTOs.GalleryData>(ok.Value);
     }

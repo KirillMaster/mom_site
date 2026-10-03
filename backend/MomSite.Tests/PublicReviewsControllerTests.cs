@@ -49,7 +49,8 @@ namespace MomSite.Tests
                 context,
                 notifiers ?? Array.Empty<IFeedbackNotifier>(),
                 Mock.Of<ILogger<PublicController>>(),
-                rateLimiter ?? new AlwaysAllowRateLimiter());
+                rateLimiter ?? new AlwaysAllowRateLimiter(),
+                new MomSite.Infrastructure.Services.LeadService(context, notifiers ?? Array.Empty<IFeedbackNotifier>(), Mock.Of<ILogger<MomSite.Infrastructure.Services.LeadService>>()));
             controller.ControllerContext = new ControllerContext { HttpContext = httpContext };
             return controller;
         }

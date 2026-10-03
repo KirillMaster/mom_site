@@ -213,6 +213,11 @@ export interface GalleryData {
   bannerDescription: string;
 }
 
+export interface PrivacyData {
+  text: string | null;
+  updatedAt: string | null;
+}
+
 export interface AboutData {
   biography: string;
   artistPhoto: string;
@@ -309,6 +314,8 @@ export interface ContactMessageAdmin {
   name: string;
   email?: string | null;
   phone?: string | null;
+  telegramUsername?: string | null;
+  telegramUserId?: number | null;
   subject: string;
   message: string;
   ipAddress?: string;

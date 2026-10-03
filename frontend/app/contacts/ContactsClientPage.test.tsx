@@ -111,3 +111,12 @@ describe('ContactsClientPage prefill from a painting', () => {
     expect(screen.getByLabelText(/Сообщение/)).toHaveValue('');
   });
 });
+
+describe('ContactsClientPage privacy consent line (T022)', () => {
+  it('shows the consent text with a link to /privacy under the form', () => {
+    render(<ContactsClientPage contactsData={contactsData} />);
+
+    expect(screen.getByText(/Отправляя форму, вы соглашаетесь с/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'политикой конфиденциальности' })).toHaveAttribute('href', '/privacy');
+  });
+});

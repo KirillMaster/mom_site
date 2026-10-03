@@ -7,6 +7,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import AdminAuthGuard from '@/components/AdminAuthGuard';
 import AdminPageShell from '@/components/AdminPageShell';
 import MessagesList from '@/components/MessagesList';
+import TelegramLink from '@/components/TelegramLink';
 import {
   useContactMessages,
   useOpenContactMessage,
@@ -72,6 +73,7 @@ const MessagesPageContent = () => {
                     </a>{' '}
                   </>
                 )}
+                <TelegramLink message={selected} className="text-indigo-600 hover:text-indigo-900" />{' '}
                 · {formatDate(selected.createdAt)}
               </p>
               <p className="text-xs text-gray-500 mb-4">

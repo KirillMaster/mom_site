@@ -26,3 +26,12 @@ describe('в Footer есть ссылка на /blog', () => {
     expect(screen.getByRole('link', { name: 'Блог' })).toHaveAttribute('href', '/blog');
   });
 });
+
+describe('в Footer есть ссылка на /privacy', () => {
+  it('рендерит ссылку на политику конфиденциальности', () => {
+    mockedUseFooterData.mockReturnValue({ data: undefined, isLoading: false });
+    render(<Footer />);
+
+    expect(screen.getByRole('link', { name: 'Политика конфиденциальности' })).toHaveAttribute('href', '/privacy');
+  });
+});

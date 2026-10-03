@@ -118,6 +118,11 @@ public class TelegramNotifier : IFeedbackNotifier
     /// </summary>
     public static string BuildText(ContactMessage message)
     {
+        if (LeadSource.IsBotLead(message))
+        {
+            return BuildBotText(message);
+        }
+
         var lines = new List<string>
         {
             "Новое сообщение с сайта",
@@ -129,6 +134,38 @@ public class TelegramNotifier : IFeedbackNotifier
 
         lines.Add($"Источник: {LeadSource.Describe(message)}");
 
+        lines.Add(string.Empty);
+        lines.Add(message.Message);
+
+        return string.Join("\n", lines);
+    }
+
+    private static string BuildBotText(ContactMessage message)
+    {
+        var lines = new List<string>
+        {
+            "Новая заявка из Telegram-бота",
+            $"Имя: {message.Name}",
+        };
+
+        if (!string.IsNullOrWhiteSpace(message.Email))
+        {
+            lines.Add($"Email: {message.Email}");
+        }
+
+        if (!string.IsNullOrWhiteSpace(message.Phone))
+        {
+            lines.Add($"Телефон: {message.Phone}");
+        }
+
+        var tg = LeadSource.TelegramContact(message);
+        if (tg is not null)
+        {
+            lines.Add($"Telegram: {tg}");
+        }
+
+        lines.Add($"Тема: {message.Subject}");
+        lines.Add($"Источник: {LeadSource.Describe(message)}");
         lines.Add(string.Empty);
         lines.Add(message.Message);
 

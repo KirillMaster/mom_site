@@ -8,6 +8,8 @@ namespace MomSite.API.DTOs
         public string Name { get; set; } = string.Empty;
         public string? Email { get; set; }
         public string? Phone { get; set; }
+        public string? TelegramUsername { get; set; }
+        public long? TelegramUserId { get; set; }
         public string Subject { get; set; } = string.Empty;
         public string Message { get; set; } = string.Empty;
         public string? IpAddress { get; set; }

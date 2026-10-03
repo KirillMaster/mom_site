@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api, auth, API_BASE_URL, Artwork, Category, Video, VideoCategory, PageContent, HomeData, GalleryData, AboutData, ContactsData, VideosData, FooterData, ArtworkDto, CategoryDto, ArtworkAdminDto } from '../lib/api';
+import { api, auth, API_BASE_URL, Artwork, Category, Video, VideoCategory, PageContent, HomeData, GalleryData, AboutData, PrivacyData, ContactsData, VideosData, FooterData, ArtworkDto, CategoryDto, ArtworkAdminDto } from '../lib/api';
 import { ContactMessage, ContactMessageAdmin, ContactMessagesPage, ReviewAdmin, UpdateReviewPayload, ReviewDto, CreateReviewPayload } from '../lib/api';
 
 
@@ -60,6 +60,11 @@ export function useAboutData() {
     queryKey: ['aboutData'],
     queryFn: getAboutData,
   });
+}
+
+export async function getPrivacyData(): Promise<PrivacyData> {
+  const response = await api.get('/public/privacy');
+  return response.data;
 }
 
 export async function getContactsData(): Promise<ContactsData> {
