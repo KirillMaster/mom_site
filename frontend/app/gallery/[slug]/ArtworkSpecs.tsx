@@ -28,8 +28,8 @@ const ArtworkSpecs = ({ artwork }: { artwork: ArtworkSpecsData }) => (
   <dl className="mt-6 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
     {buildSpecRows(artwork).map(([term, value]) => (
       <div key={term} className="contents">
-        <dt className="text-gray-500">{term}</dt>
-        <dd className="font-medium text-gray-900">{value}</dd>
+        <dt className="text-ink-500">{term}</dt>
+        <dd className="font-medium text-ink">{value}</dd>
       </div>
     ))}
   </dl>
