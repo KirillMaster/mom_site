@@ -1,5 +1,6 @@
 import type { ArtworkDto, CategoryDto } from '@/lib/api';
 import { isExhibitionPhoto } from '@/lib/gallery';
+import { Button } from '@/components/ui';
 import GalleryCard from './GalleryCard';
 
 const EAGER_IMAGES = 4;
@@ -14,7 +15,7 @@ interface GalleryGridProps {
 }
 
 const GalleryGrid = ({ artworks, categories, remaining, total, categoryKey, onShowMore }: GalleryGridProps) => (
-  <section className="py-16 bg-gray-50">
+  <section className="py-16 bg-paper">
     <div className="max-w-7xl mx-auto px-4">
       <div
         key={categoryKey || 'all'}
@@ -32,18 +33,13 @@ const GalleryGrid = ({ artworks, categories, remaining, total, categoryKey, onSh
 
       {remaining > 0 && (
         <div className="mt-10 text-center">
-          <button
-            onClick={onShowMore}
-            className="px-6 py-3 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-700 transition-colors duration-200"
-          >
-            Показать ещё ({remaining})
-          </button>
+          <Button onClick={onShowMore}>Показать ещё ({remaining})</Button>
         </div>
       )}
 
       {total === 0 && (
         <div className="rise-in text-center py-16">
-          <p className="text-xl text-gray-500">В выбранной категории пока нет работ</p>
+          <p className="text-xl text-ink-500">В выбранной категории пока нет работ</p>
         </div>
       )}
     </div>

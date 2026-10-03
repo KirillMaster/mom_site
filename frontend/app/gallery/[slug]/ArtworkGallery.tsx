@@ -38,7 +38,7 @@ const PhotoNavigation = ({ photos, active, onSelect }: PhotoNavigationProps) => 
           key={photo.src}
           data-testid="gallery-dot"
           aria-current={index === active ? 'true' : undefined}
-          className={`h-2 w-2 rounded-full ${index === active ? 'bg-gray-900' : 'bg-gray-300'}`}
+          className={`h-2 w-2 rounded-full ${index === active ? 'bg-ink' : 'bg-line'}`}
         />
       ))}
     </div>
@@ -52,8 +52,8 @@ const PhotoNavigation = ({ photos, active, onSelect }: PhotoNavigationProps) => 
           aria-label={`Показать фото ${index + 1}`}
           aria-current={index === active ? 'true' : undefined}
           onClick={() => onSelect(index)}
-          className={`h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-neutral-100 ring-2 ${
-            index === active ? 'ring-primary-600' : 'ring-transparent hover:ring-gray-300'
+          className={`h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-paper-200 ring-2 ${
+            index === active ? 'ring-sea' : 'ring-transparent hover:ring-line'
           }`}
         >
           <img src={photo.thumb} alt="" loading="lazy" className="h-full w-full object-cover" />
@@ -89,7 +89,7 @@ const ArtworkGallery = ({ photos, title }: ArtworkGalleryProps) => {
       <div
         data-testid="gallery-track"
         onScroll={handleScroll}
-        className="flex snap-x snap-mandatory overflow-x-auto rounded-2xl bg-neutral-900/5 shadow-lg ring-1 ring-black/5 md:block md:overflow-visible"
+        className="flex snap-x snap-mandatory overflow-x-auto rounded-md bg-paper-200 border border-line md:block md:overflow-visible"
       >
         {photos.map((photo, index) => (
           <div
@@ -120,7 +120,7 @@ const ArtworkGallery = ({ photos, title }: ArtworkGalleryProps) => {
       <button
         type="button"
         onClick={() => open(active)}
-        className="mt-4 inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 hover:border-primary-600 hover:text-primary-700"
+        className="mt-4 inline-flex items-center gap-2 rounded-md border border-line bg-paper-50 px-4 py-2 text-sm font-medium text-ink-600 transition-colors duration-200 hover:border-sea hover:text-sea"
       >
         <Maximize2 className="h-4 w-4" />
         Смотреть в полном размере

@@ -63,10 +63,10 @@ const ArtworkCarousel = ({ artworks }: { artworks: ArtworkDto[] }) => {
             key={artwork.id}
             className="snap-start shrink-0 basis-full sm:basis-1/2 lg:basis-1/3 px-2 pb-4"
           >
-            <Link href="/gallery" className="card p-4 block h-full">
+            <Link href="/gallery" className="card p-4 block h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-sea focus-visible:ring-offset-2 focus-visible:ring-offset-paper">
               {/* Same square frame as the gallery cards, so a tall
                   canvas is shown whole instead of cropped to a strip. */}
-              <div className="aspect-square bg-neutral-100 rounded-lg overflow-hidden mb-4">
+              <div className="aspect-square bg-paper-200 rounded-md overflow-hidden mb-4">
                 <img
                   src={getImageUrl(artwork.imagePath)}
                   alt={normalizeTitle(artwork.title)}
@@ -75,8 +75,8 @@ const ArtworkCarousel = ({ artworks }: { artworks: ArtworkDto[] }) => {
                   className="w-full h-full object-contain"
                 />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">{normalizeTitle(artwork.title)}</h3>
-              <p className="text-sm text-gray-600">{artwork.category?.name}</p>
+              <h3 className="text-lg font-serif font-semibold text-ink">{normalizeTitle(artwork.title)}</h3>
+              <p className="text-sm text-ink-500">{artwork.category?.name}</p>
             </Link>
           </div>
         ))}
@@ -91,8 +91,8 @@ const ArtworkCarousel = ({ artworks }: { artworks: ArtworkDto[] }) => {
               aria-label={`Работа ${index + 1}`}
               aria-current={index === active}
               onClick={() => scrollToIndex(index)}
-              className={`w-2.5 h-2.5 rounded-full transition-colors ${
-                index === active ? 'bg-gray-700' : 'bg-gray-300 hover:bg-gray-400'
+              className={`w-2.5 h-2.5 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sea focus-visible:ring-offset-2 focus-visible:ring-offset-paper ${
+                index === active ? 'bg-sea' : 'bg-line hover:bg-ink-500'
               }`}
             />
           ))}

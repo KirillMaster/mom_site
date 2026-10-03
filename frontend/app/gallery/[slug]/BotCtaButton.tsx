@@ -21,7 +21,7 @@ const BotCtaButton = ({ artworkId, artwork }: Props) => (
     data-testid="bot-cta"
     data-ym-tracked="channel-telegram_bot"
     onClick={() => reachGoal(Goals.ContactClick, { channel: BOT_CHANNEL, artwork })}
-    className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-sky-600 px-4 py-3 font-medium text-white transition-colors hover:bg-sky-700"
+    className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-sea px-4 py-3 font-medium text-paper transition-colors hover:bg-sea-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-sea focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
   >
     <FaTelegram className="h-5 w-5" aria-hidden="true" />
     {BOT_CTA_LABEL}

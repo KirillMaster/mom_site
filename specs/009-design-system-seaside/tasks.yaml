@@ -1,0 +1,436 @@
+feature: 009-design-system-seaside
+tasks:
+  # ---------- Phase 2: Foundational ----------
+  - id: T001
+    title: 'Токены палитры, шрифты и шкала типографики'
+    description: 'frontend/tailwind.config.js: colors paper/ink/sea/ochre/line (с оттенками), fontFamily serif=var(--font-serif), sans=var(--font-sans); app/layout.tsx: Cormorant_Garamond + Manrope вместо Playfair/Inter, body bg-paper text-ink; app/globals.css: base h1–h4 шкала, .caption, .prose-measure, btn-*/card переведены на токены или удалены, gradient-bg/text-gradient удалены, prefers-reduced-motion'
+    context: 'Единый источник визуальных значений (R2, R4, R5, R7); старые primary/secondary/warm остаются в конфиге только для админки (A-2)'
+    story_ref: US1
+    requirement_refs: [FR-001, FR-004, FR-005, FR-012]
+    depends_on: []
+    parallelizable: false
+    entity_refs: [design-tokens]
+    contract_refs: []
+    steps:
+      - order: 1
+        action: 'Токены'
+        detail: 'paper: {DEFAULT:#F7F6F3, 50:#FBFAF8, 100:#F7F6F3, 200:#EFEDE8}; ink: {DEFAULT:#1F2328, 500:#5A6069, 600:#454B53, 700:#33383F, 900:#1F2328}; sea: {DEFAULT:#2F4A5C, 50:#EEF2F5, 100:#D9E2E8, 600:#2F4A5C, 700:#263D4C, 800:#1D2F3B}; ochre: {DEFAULT:#B8862F, 700:#8A6420}; line: {DEFAULT:#E2DED6}. ink-500 на paper должен давать ≥ 4.5:1'
+      - order: 2
+        action: 'Шрифты'
+        detail: 'Cormorant_Garamond({subsets:[latin,cyrillic], weight:[500,600], style:[normal,italic], variable:--font-serif, display:swap}); Manrope({subsets:[latin,cyrillic], weight:[400,500,600], variable:--font-sans, display:swap}); body className bg-paper text-ink font-sans'
+      - order: 3
+        action: 'globals.css'
+        detail: 'body bg-paper text-ink; h1–h4 font-serif font-medium leading-tight + размеры R5; .caption text-sm text-ink-500; .prose-measure max-width:75ch; @media (prefers-reduced-motion: reduce) отключить rise-in и прочие анимации; удалить .gradient-bg и .text-gradient (заменить использования в T008–T012) — либо оставить класс, но без градиента до их перевода'
+    technical_notes:
+      - path: frontend/tailwind.config.js
+        note: 'primary/secondary/warm не удалять — админка'
+      - path: frontend/app/layout.tsx
+        note: 'После next dev/build откатывать frontend/tsconfig.json'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Сборка и все существующие jest-тесты зелёные; body на paper'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Палитра из tailwind.config.js']
+        when: 'Считается контраст ink/paper, ink-500/paper, white/sea, sea/paper, ochre-700/paper'
+        then: ['Все ≥ 4.5:1 (frontend/__tests__/palette-contrast.test.ts)']
+        verification: [automated]
+        level: unit
+
+  - id: T002
+    title: 'lib/price.ts и lib/site.ts (долг 008)'
+    description: 'Перенести formatPrice/priceLabel/sizeLabel из lib/galleryCard.ts в lib/price.ts (galleryCard реэкспортирует или удаляется с обновлением импортов); убрать локальный formatPrice из ArtworkInfoCard; SITE_PHONE перенести в lib/site.ts, PhoneLink и lib/contactChannels, lib/social импортируют из lib'
+    context: 'Две реализации цены дают разный формат (долг 008); lib → components — нарушение направления зависимостей (P2)'
+    story_ref: US3
+    requirement_refs: [FR-007]
+    depends_on: []
+    parallelizable: true
+    entity_refs: [artwork]
+    contract_refs: [price-lib]
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'frontend/lib/price.test.ts: formatPrice 1500→«1 500 ₽», 45000→«45 000 ₽», 1250000→«1 250 000 ₽» (нормализовать U+00A0/U+202F к пробелу); priceLabel: price 0/null → «цена по запросу»; Sold → «Продана»; exhibition → null'
+      - order: 2
+        action: 'Перенос'
+        detail: 'Обновить импорты GalleryCard, ArtworkInfoCard, существующие тесты; lib/galleryCard.ts удалить, если пуст'
+      - order: 3
+        action: 'SITE_PHONE'
+        detail: 'lib/site.ts export const SITE_PHONE; components/PhoneLink реэкспортирует для совместимости или импортирует из lib; grep "from .@/components" в lib/ должен быть пуст'
+    technical_notes:
+      - path: frontend/lib/price.ts
+        note: 'Intl.NumberFormat ru-RU maximumFractionDigits 0 + " ₽"'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Один formatPrice в кодовой базе; lib не импортирует components'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Цены 0, 1500, 45000, 1250000, null']
+        when: 'priceLabel для Available'
+        then: ['«цена по запросу», «1 500 ₽», «45 000 ₽», «1 250 000 ₽», «цена по запросу»']
+        verification: [automated]
+        level: unit
+
+  - id: T003
+    title: 'UI-примитивы Button, TextLink, Card, Section, Container'
+    description: 'frontend/components/ui/{Button,TextLink,Card,Section,Container}.tsx + index.ts'
+    context: 'Единые кнопки/карточки/ритм вместо ручной стилизации на каждой странице (FR-008, FR-009)'
+    story_ref: US4
+    requirement_refs: [FR-008, FR-009]
+    depends_on: [T001]
+    parallelizable: true
+    entity_refs: [design-tokens]
+    contract_refs: [ui-primitives]
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'components/ui/__tests__ или *.test.tsx: Button variant primary/secondary/ghost даёт классы bg-sea / border-sea / text-sea; с href — <a> (next/link), без — <button type="button" по умолчанию>; пробрасывает onClick, disabled, aria-*; все имеют focus-visible:ring-sea. TextLink — text-sea underline-offset. Card — bg-paper-50 border-line без shadow-lg. Section — py-16 md:py-24; Container — max-w-6xl px-4'
+      - order: 2
+        action: 'Реализация'
+        detail: 'Классы фокуса: focus:outline-none focus-visible:ring-2 focus-visible:ring-sea focus-visible:ring-offset-2 focus-visible:ring-offset-paper. Primary: bg-sea text-white hover:bg-sea-700; secondary: border border-sea text-sea hover:bg-sea-50; ghost: text-sea hover:underline. rounded-md, без теней'
+    technical_notes:
+      - path: frontend/components/ui/
+        note: 'className-проп мерджится в конец; без новых зависимостей (без clsx, если его нет)'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Примитивы покрыты тестами, экспортируются из components/ui'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Button variant=secondary href=/gallery']
+        when: 'Рендерится'
+        then: ['<a href="/gallery"> с классами secondary и кольцом фокуса']
+        verification: [automated]
+        level: unit
+
+  - id: T004
+    title: 'UI-примитивы Input и Textarea'
+    description: 'frontend/components/ui/{Input,Textarea}.tsx: label, error, hint; useId; aria-invalid, aria-describedby'
+    context: 'Форма контактов — ключевая точка конверсии; фокус и ошибки должны быть доступны (FR-008, FR-009)'
+    story_ref: US4
+    requirement_refs: [FR-008, FR-009]
+    depends_on: [T001]
+    parallelizable: true
+    entity_refs: [design-tokens]
+    contract_refs: [ui-primitives]
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'getByLabelText находит поле; error → role=alert/текст, aria-invalid=true, aria-describedby указывает на id ошибки; forwardRef и пропсы (name, required, value, onChange) пробрасываются'
+      - order: 2
+        action: 'Реализация'
+        detail: 'bg-white border border-line rounded-md px-3 py-2 text-ink placeholder:text-ink-500 focus-visible:ring-2 ring-sea; ошибка text-red-700 (контраст ≥ 4.5)'
+    technical_notes:
+      - path: frontend/components/ui/Input.tsx
+        note: 'forwardRef'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Метка и ошибка программно связаны с полем'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Input label="Имя" error="Обязательное поле"']
+        when: 'Рендерится'
+        then: ['Поле aria-invalid=true, aria-describedby → текст ошибки']
+        verification: [automated]
+        level: unit
+
+  # ---------- Phase 3: US3 ----------
+  - id: T005
+    title: 'MuseumLabel и применение в галерее, карточке, RelatedWorks'
+    description: 'frontend/components/artwork/MuseumLabel.tsx; заменить подписи в app/gallery/GalleryCard.tsx, app/gallery/[slug]/ArtworkInfoCard.tsx (заголовок + цена) и app/gallery/[slug]/RelatedWorks.tsx'
+    context: 'Сигнатура стиля и единый формат подписи/цены (FR-006, FR-007)'
+    story_ref: US3
+    requirement_refs: [FR-006, FR-007]
+    depends_on: [T001, T002]
+    parallelizable: false
+    entity_refs: [museum-label, artwork]
+    contract_refs: [museum-label-component, price-lib]
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'MuseumLabel.test.tsx: полная работа → «Закат» (italic, font-serif), «масло, холст», «80 × 70 см», «2026», «45 000 ₽» (text-ochre-700); без technique/support/year → этих строк нет; Sold → «Продана»; exhibition → только название и год; название "\"Закат\"" → «Закат» (normalizeTitle/quotedTitle); длинное название — break-words'
+      - order: 2
+        action: 'Компонент'
+        detail: 'Порядок строк: title (as h2/h3/p, italic font-serif, в «…»), medium = [technique, support].filter(Boolean).join(", ") lower-case как в данных, size = sizeLabel, year, priceOrStatus = priceLabel. size sm|md меняет кегль. Тонкая линия border-t border-line над ценой'
+      - order: 3
+        action: 'Применение'
+        detail: 'GalleryCard: убрать собственные строки цены/размера/статуса → MuseumLabel size=sm; RelatedWorks: MuseumLabel size=sm; ArtworkInfoCard: h1 названия остаётся для SEO, под ним MuseumLabel size=md без дублирования названия (проп hideTitle) либо h1 рендерится MuseumLabel as=h1 — выбрать вариант, сохраняющий единственный h1. Обновить существующие тесты страниц'
+    technical_notes:
+      - path: frontend/components/artwork/MuseumLabel.tsx
+        note: '≤ 80 строк; без бизнес-логики помимо lib/price и normalizeTitle'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Три места показа используют MuseumLabel; одинаковые строки и формат'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Работа без техники и года']
+        when: 'Рендерится MuseumLabel'
+        then: ['Строк техники и года нет, лишних разделителей нет']
+        verification: [automated]
+        level: unit
+
+  # ---------- Phase 4: US5 ----------
+  - id: T006
+    title: 'Шапка, мобильное меню, футер, MobileContactBar'
+    description: 'components/Navigation.tsx, components/Footer.tsx, app/gallery/[slug]/MobileContactBar.tsx, app/gallery/[slug]/ContactChannels.tsx на токенах и примитивах'
+    context: 'Обрамление видно на каждой странице (FR-010, FR-011)'
+    story_ref: US5
+    requirement_refs: [FR-010, FR-011, FR-009]
+    depends_on: [T001, T003]
+    parallelizable: true
+    entity_refs: [design-tokens]
+    contract_refs: [ui-primitives]
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'Navigation.test.tsx: при pathname /gallery ссылка «Галерея» aria-current=page и text-sea; мобильное меню открывается/закрывается; Footer: нет классов primary/secondary/purple/indigo/blue'
+      - order: 2
+        action: 'Шапка'
+        detail: 'bg-paper/95 backdrop-blur border-b border-line; имя художницы font-serif text-2xl text-ink; пункты text-ink-700 hover:text-sea, активный text-sea + underline decoration-ochre underline-offset-8; мобильное меню bg-paper'
+      - order: 3
+        action: 'Футер и панели'
+        detail: 'Footer bg-ink text-paper, ссылки text-paper/80 hover:text-white, разделители border-white/10; MobileContactBar bg-paper border-t border-line, кнопки Button primary/secondary; ContactChannels — Button secondary'
+    technical_notes:
+      - path: frontend/components/Navigation.tsx
+        note: 'usePathname; aria-current только у активного'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Шапка/футер/панель только в цветах палитры; aria-current у активного пункта'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['pathname /gallery']
+        when: 'Рендерится Navigation'
+        then: ['«Галерея» aria-current=page']
+        verification: [automated]
+        level: unit
+
+  # ---------- Phase 5: US4 ----------
+  - id: T007
+    title: 'Галерея и страница работы'
+    description: 'app/gallery/{GalleryHeader,GalleryFilters,GalleryGrid,GalleryCard}.tsx, app/gallery/[slug]/{page,ArtworkGallery,ArtworkInfoCard,AskPriceButton,RelatedWorks}.tsx на токенах, Button/Card/Section/Container; описание работы .prose-measure'
+    context: 'Основной путь к покупке (FR-002, FR-010)'
+    story_ref: US4
+    requirement_refs: [FR-002, FR-005, FR-010]
+    depends_on: [T003, T005]
+    parallelizable: true
+    entity_refs: [design-tokens]
+    contract_refs: [ui-primitives]
+    steps:
+      - order: 1
+        action: 'Замена цветов'
+        detail: 'primary-*→sea/ochre по смыслу (цена → ochre-700, действия → sea), gray-* текст → ink/ink-500/ink-600, bg-white карточек → bg-paper-50 border-line, ring-purple/indigo/blue → ring-sea, градиенты удалить'
+      - order: 2
+        action: 'Примитивы'
+        detail: '«Показать ещё» и «Узнать цену»/«Написать» — Button; фильтры-чипы — Button ghost/secondary с aria-pressed'
+      - order: 3
+        action: 'Тесты'
+        detail: 'Обновить существующие тесты галереи/карточки, если завязаны на классы; поведение (24/«Показать ещё», ссылки, цели аналитики) не меняется'
+    technical_notes:
+      - path: frontend/app/gallery/[slug]/page.tsx
+        note: '179 строк — не превысить 200'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'В перечисленных файлах нет запрещённых классов; все jest зелёные'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Страница работы']
+        when: 'Рендерится'
+        then: ['Основная кнопка — Button primary (bg-sea)']
+        verification: [automated]
+        level: unit
+
+  - id: T008
+    title: 'Главная и «О художнице»'
+    description: 'app/HomeClientPage.tsx, app/about/AboutClientPage.tsx, components/ArtworkCarousel.tsx, components/ArtistCredentials.tsx, components/ExhibitionTimeline.tsx на токенах и примитивах; биография .prose-measure'
+    context: 'Первый экран и доверие (FR-002, FR-005, FR-010)'
+    story_ref: US4
+    requirement_refs: [FR-002, FR-005, FR-010]
+    depends_on: [T003]
+    parallelizable: true
+    entity_refs: [design-tokens]
+    contract_refs: [ui-primitives]
+    steps:
+      - order: 1
+        action: 'Замена цветов и градиентов'
+        detail: 'Hero без градиентов: фон paper, заголовок font-serif text-ink, CTA Button primary + secondary; секции через Section/Container; акценты ochre только декоративные линии'
+      - order: 2
+        action: 'Тесты'
+        detail: 'Обновить HomeClientPage.test.tsx и др. при необходимости; поведение не меняется'
+    technical_notes:
+      - path: frontend/app/about/AboutClientPage.tsx
+        note: '243 строки — при правке вынести секцию в отдельный компонент, чтобы не расти (P3)'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Нет запрещённых классов; абзацы биографии ≤ 75ch'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Главная']
+        when: 'Рендерится'
+        then: ['CTA — Button primary, нет классов from-/to- градиента']
+        verification: [automated]
+        level: unit
+
+  - id: T009
+    title: 'Видео и отзывы'
+    description: 'app/videos/VideosClientPage.tsx, app/reviews/ReviewsClientPage.tsx, components/ReviewsList.tsx на токенах и примитивах'
+    context: 'FR-002, FR-010'
+    story_ref: US4
+    requirement_refs: [FR-002, FR-010]
+    depends_on: [T003, T004]
+    parallelizable: true
+    entity_refs: [design-tokens]
+    contract_refs: [ui-primitives]
+    steps:
+      - order: 1
+        action: 'Замена'
+        detail: 'Цвета → токены; форма отзыва (если есть) → Input/Textarea; кнопки → Button; карточки → Card'
+      - order: 2
+        action: 'Тесты'
+        detail: 'Обновить ReviewsList.test.tsx при необходимости'
+    technical_notes:
+      - path: frontend/app/videos/VideosClientPage.tsx
+        note: '263 строки — не увеличивать; по возможности вынести блок'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Нет запрещённых классов; jest зелёные'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['ReviewsList']
+        when: 'Рендерится'
+        then: ['Нет классов indigo/purple/blue']
+        verification: [automated]
+        level: unit
+
+  - id: T010
+    title: 'Контакты'
+    description: 'app/contacts/{ContactsHero,ContactDetailsCard,ContactsSocialSection,ContactFormFields}.tsx: поля формы → Input/Textarea, кнопка отправки → Button primary'
+    context: 'Форма — точка конверсии; фокус и ошибки (FR-008, FR-009)'
+    story_ref: US4
+    requirement_refs: [FR-002, FR-008, FR-009, FR-010]
+    depends_on: [T003, T004]
+    parallelizable: true
+    entity_refs: [design-tokens]
+    contract_refs: [ui-primitives]
+    steps:
+      - order: 1
+        action: 'Форма'
+        detail: 'Сохранить name-атрибуты, валидацию 008 (email или телефон), honeypot, ?artwork; ошибки через error-проп'
+      - order: 2
+        action: 'Тесты'
+        detail: 'Существующие тесты контактов зелёные; e2e conversion.spec.ts не ломается (селекторы по label/name)'
+    technical_notes:
+      - path: frontend/app/contacts/ContactFormFields.tsx
+        note: 'Проверить селекторы в e2e/conversion.spec.ts'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Tab по форме — у каждого поля и кнопки морское кольцо фокуса'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Форма контактов']
+        when: 'Рендерится'
+        then: ['Поля имеют связанные метки; кнопка — Button primary']
+        verification: [automated]
+        level: unit
+
+  - id: T011
+    title: 'Блог (публичная часть)'
+    description: 'app/blog/**/page.tsx, components/blog/{BlogCta,Pagination,CategoryTabs,PostCard,RelatedArtworks,BlogList}.tsx и прочие публичные blog-компоненты на токенах; текст статьи .prose-measure'
+    context: 'FR-002, FR-005, FR-010'
+    story_ref: US4
+    requirement_refs: [FR-002, FR-005, FR-010]
+    depends_on: [T003]
+    parallelizable: true
+    entity_refs: [design-tokens]
+    contract_refs: [ui-primitives]
+    steps:
+      - order: 1
+        action: 'Замена'
+        detail: 'components/blog/admin не трогать'
+    technical_notes:
+      - path: frontend/components/blog/admin/
+        note: 'Вне скоупа'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Нет запрещённых классов в публичном блоге'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['PostCard']
+        when: 'Рендерится'
+        then: ['Используются токены, нет primary/secondary']
+        verification: [automated]
+        level: unit
+
+  # ---------- Phase 6: Polish ----------
+  - id: T012
+    title: 'Гард запрещённых цветовых классов'
+    description: 'frontend/lib/publicSurface.ts (список исключений админки) + frontend/__tests__/forbidden-colors.test.ts: обход app/** и components/** (кроме исключений), regex R3; плюс globals.css без gradient'
+    context: 'Регресс-защита стиля в CI (FR-013, SC-001)'
+    story_ref: US1
+    requirement_refs: [FR-002, FR-013]
+    depends_on: [T005, T006, T007, T008, T009, T010, T011]
+    parallelizable: false
+    entity_refs: [design-tokens]
+    contract_refs: []
+    steps:
+      - order: 1
+        action: 'Тест'
+        detail: 'fs-обход .ts/.tsx (без *.test.*), исключения: app/admin, components/admin, components/blog/admin, components/MessagesList.tsx, components/AdminPageShell.tsx, components/AdminAuthGuard.tsx; падение выводит файл:строку:класс'
+      - order: 2
+        action: 'Дочистить'
+        detail: 'Исправить оставшиеся вхождения в публичных файлах (not-found.tsx, LoadingSpinner, PhoneLink, MaxIcon и др.)'
+    technical_notes:
+      - path: frontend/__tests__/forbidden-colors.test.ts
+        note: 'Работает в jest CI'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Тест зелёный; добавление text-purple-500 в публичный компонент роняет его'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Исходники публичной части']
+        when: 'Запускается гард'
+        then: ['0 вхождений']
+        verification: [automated]
+        level: unit
+
+  - id: T013
+    title: 'E2E: дизайн-проверки и скриншоты'
+    description: 'frontend/e2e/design-system.spec.ts: фон body rgb(247, 246, 243) на 1280 и 390; font-family h1 содержит Cormorant, p — Manrope; ширина абзаца биографии ≤ 75ch; скриншоты главной, /gallery, первой работы, /contacts на 1280 и 390 в test-results/design/; no-overflow.spec.ts зелёный'
+    context: 'TS-3 US1, TS-1/2 US2, TS-2 US5, SC-005'
+    story_ref: US5
+    requirement_refs: [FR-001, FR-004, FR-005, FR-012]
+    depends_on: [T012]
+    parallelizable: false
+    entity_refs: [design-tokens]
+    contract_refs: []
+    steps:
+      - order: 1
+        action: 'Спека'
+        detail: 'page.evaluate(getComputedStyle); 75ch = 75 * ширина «0» в шрифте абзаца, допуск 1px; собирать console errors'
+      - order: 2
+        action: 'Прогон'
+        detail: 'Локально против next dev (PLAYWRIGHT_BASE_URL=http://localhost:3000), затем против прода после деплоя'
+    technical_notes:
+      - path: frontend/e2e/design-system.spec.ts
+        note: 'Без записи данных на прод'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'design-system и no-overflow зелёные на chromium'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Главная на 390 px']
+        when: 'Считывается фон body'
+        then: ['rgb(247, 246, 243)']
+        verification: [automated]
+        level: e2e

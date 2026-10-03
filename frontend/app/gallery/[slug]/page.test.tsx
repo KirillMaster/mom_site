@@ -227,8 +227,8 @@ describe('@S2-AS6 the artwork page lists other works from the same category', ()
     const heading = screen.getByText('Другие работы этой категории');
     const section = heading.closest('section') as HTMLElement;
 
-    expect(within(section).getByText('Ваза с фруктами')).toBeInTheDocument();
-    expect(within(section).queryByText('Осенний сад')).not.toBeInTheDocument();
+    expect(within(section).getByText('«Ваза с фруктами»')).toBeInTheDocument();
+    expect(within(section).queryByText('«Осенний сад»')).not.toBeInTheDocument();
   });
 });
 
@@ -479,10 +479,8 @@ describe('@US1-AS1 the artwork page shows the specs block', () => {
     render(await ArtworkPage({ params: { slug: 'osenniy-sad-7' } }));
 
     expect(screen.getByText('80 × 70 см')).toBeInTheDocument();
-    expect(screen.getByText('масло')).toBeInTheDocument();
-    expect(screen.getByText('холст на подрамнике')).toBeInTheDocument();
+    expect(screen.getByText('масло, холст на подрамнике')).toBeInTheDocument();
     expect(screen.getByText('2026')).toBeInTheDocument();
-    expect(screen.getByText('В наличии')).toBeInTheDocument();
   });
 });
 
@@ -502,15 +500,15 @@ describe('@US1-AS3 a sold work hides the price and offers "Заказать по
   });
 });
 
-describe('@US1-EC1 only the status row is shown when nothing else is filled', () => {
-  it('renders just the status', async () => {
+describe('@US1-EC1 only title and price are shown when nothing else is filled', () => {
+  it('renders no specs block', async () => {
     mockedGetGalleryData.mockResolvedValue(
       gallery([{ id: 7, title: 'Осенний сад', isForSale: true, status: 'Available' }])
     );
     const { container } = render(await ArtworkPage({ params: { slug: 'osenniy-sad-7' } }));
 
-    expect(container.querySelectorAll('dt')).toHaveLength(1);
-    expect(screen.getByText('Статус')).toBeInTheDocument();
+    expect(container.querySelectorAll('dt')).toHaveLength(0);
+    expect(screen.getByText('цена по запросу')).toBeInTheDocument();
   });
 });
 

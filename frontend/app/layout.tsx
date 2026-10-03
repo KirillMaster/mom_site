@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, Playfair_Display } from 'next/font/google'
+import { Cormorant_Garamond, Manrope } from 'next/font/google'
 import './globals.css'
 import Providers from '@/components/Providers'
 import UtmTracker from '@/components/UtmTracker'
@@ -8,8 +8,19 @@ import ClickTracker from '@/components/ClickTracker'
 import LayoutContent from '@/components/LayoutContent';
 import { Toaster } from 'react-hot-toast';
 
-const inter = Inter({ subsets: ['latin', 'cyrillic'], variable: '--font-inter', display: 'swap' })
-const playfair = Playfair_Display({ subsets: ['latin', 'cyrillic'], variable: '--font-playfair', display: 'swap' })
+const serif = Cormorant_Garamond({
+  subsets: ['latin', 'cyrillic'],
+  weight: ['500', '600'],
+  style: ['normal', 'italic'],
+  variable: '--font-serif',
+  display: 'swap',
+})
+const sans = Manrope({
+  subsets: ['latin', 'cyrillic'],
+  weight: ['400', '500', '600'],
+  variable: '--font-sans',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'Анжела Моисеенко - Художник-импрессионист',
@@ -74,7 +85,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ru" className={`${inter.variable} ${playfair.variable}`}>
+    <html lang="ru" className={`${sans.variable} ${serif.variable}`}>
       <head>
         {/* Favicon — only the SVG is bundled; raster fallbacks are not shipped */}
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -83,7 +94,7 @@ export default function RootLayout({
         
         {/* Structured Data */}
       </head>
-      <body className={`${inter.className} bg-gray-50 text-gray-800`}>
+      <body className={`bg-paper text-ink font-sans`}>
         <Providers>
           <UtmTracker />
           <YandexMetrica />

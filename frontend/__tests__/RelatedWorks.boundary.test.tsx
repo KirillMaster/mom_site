@@ -35,9 +35,9 @@ describe('@US4-AS12 RelatedWorks edge cases', () => {
   it('shows title for each work', () => {
     const works = [artwork(1, 'Сирень'), artwork(2, 'Роза'), artwork(3, 'Тюльпан')];
     render(<RelatedWorks works={works} />);
-    expect(screen.getByText('Сирень')).toBeInTheDocument();
-    expect(screen.getByText('Роза')).toBeInTheDocument();
-    expect(screen.getByText('Тюльпан')).toBeInTheDocument();
+    expect(screen.getByText('«Сирень»')).toBeInTheDocument();
+    expect(screen.getByText('«Роза»')).toBeInTheDocument();
+    expect(screen.getByText('«Тюльпан»')).toBeInTheDocument();
   });
 
   it('includes correct gallery links for each work', () => {
@@ -86,7 +86,7 @@ describe('@US4-AS12 RelatedWorks edge cases', () => {
   it('handles single work correctly', () => {
     const works = [artwork(1, 'Одна картина')];
     render(<RelatedWorks works={works} />);
-    expect(screen.getByText('Одна картина')).toBeInTheDocument();
+    expect(screen.getByText('«Одна картина»')).toBeInTheDocument();
     const section = screen.getByRole('heading', { name: 'Другие работы этой категории' });
     expect(section).toBeInTheDocument();
   });

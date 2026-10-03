@@ -1,5 +1,6 @@
 import { ChangeEvent, FormEvent } from 'react';
 import Link from 'next/link';
+import { Button, Input, Textarea } from '@/components/ui';
 
 export interface ContactFormState {
   name: string;
@@ -50,96 +51,40 @@ const ContactFormFields = ({
       </div>
   
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-            Имя *
-          </label>
-          <input
-            type="text"
-            id="name"
-            required
-            value={formData.name}
-            onChange={onChange}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-          />
-        </div>
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            value={formData.email}
-            onChange={onChange}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-          />
-        </div>
+        <Input label="Имя *" id="name" name="name" type="text" required value={formData.name} onChange={onChange} />
+        <Input label="Email" id="email" name="email" type="email" value={formData.email} onChange={onChange} />
       </div>
-  
-      <div>
-        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-          Телефон или мессенджер
-        </label>
-        <input
-          type="tel"
-          id="phone"
-          value={formData.phone}
-          onChange={onChange}
-          placeholder="Телефон, Telegram, WhatsApp или MAX"
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-        />
-        <p className="text-xs text-gray-500 mt-1">Укажите телефон, мессенджер или email — как вам удобнее получить ответ.</p>
-      </div>
-  
-      <div>
-        <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
-          Тема
-        </label>
-        <input
-          type="text"
-          id="subject"
-          value={formData.subject}
-          onChange={onChange}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-        />
-      </div>
-  
-      <div>
-        <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-          Сообщение *
-        </label>
-        <textarea
-          id="message"
-          rows={6}
-          required
-          value={formData.message}
-          onChange={onChange}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none transition-all duration-200"
-        ></textarea>
-      </div>
-  
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-primary-700 transition-colors duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-      >
+
+      <Input
+        label="Телефон или мессенджер"
+        id="phone"
+        name="phone"
+        type="tel"
+        value={formData.phone}
+        onChange={onChange}
+        placeholder="Телефон, Telegram, WhatsApp или MAX"
+        hint="Укажите телефон, мессенджер или email — как вам удобнее получить ответ."
+        error={validationError ?? undefined}
+      />
+
+      <Input label="Тема" id="subject" name="subject" type="text" value={formData.subject} onChange={onChange} />
+
+      <Textarea label="Сообщение *" id="message" name="message" rows={6} required value={formData.message} onChange={onChange} className="resize-none" />
+
+      <Button type="submit" disabled={isSubmitting} className="w-full py-3">
         {isSubmitting ? 'Отправка...' : 'Отправить сообщение'}
-      </button>
-      <p className="text-xs text-gray-500 text-center mt-3">
+      </Button>
+      <p className="text-xs text-ink-500 text-center mt-3">
         Отправляя форму, вы соглашаетесь с{' '}
-        <Link href="/privacy" className="underline hover:text-gray-700">
+        <Link href="/privacy" className="underline text-sea hover:text-sea-700">
           политикой конфиденциальности
         </Link>
       </p>
       {submissionResult === 'success' && (
-        <p className="text-green-600 text-center mt-4">Сообщение успешно отправлено!</p>
+        <p className="text-sea text-center mt-4">Сообщение успешно отправлено!</p>
       )}
       {submissionResult === 'error' && (
-        <p className="text-red-600 text-center mt-4">{errorMessage}</p>
-      )}
-      {validationError && (
-        <p role="alert" className="text-red-600 text-center mt-4">{validationError}</p>
+        <p className="text-red-700 text-center mt-4">{errorMessage}</p>
       )}
     </form>
 );

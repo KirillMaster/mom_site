@@ -37,42 +37,42 @@ const ReviewsList = ({ reviews, onPublish, onUnpublish, onEdit, onDelete }: Revi
 
   return (
     <div>
-      <h1 className="text-3xl font-serif font-bold text-gray-900 mb-4">Отзывы</h1>
+      <h1 className="text-3xl font-serif font-semibold text-ink mb-4">Отзывы</h1>
 
       {reviews.length === 0 ? (
-        <div className="card p-6 text-center text-gray-600" data-testid="empty-state">
+        <div className="card p-6 text-center text-ink-500" data-testid="empty-state">
           Отзывов пока нет.
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-line">
+            <thead className="bg-paper-200">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Дата</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Автор</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Текст</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Рейтинг</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Статус</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Действия</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-ink-500 uppercase tracking-wider">Дата</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-ink-500 uppercase tracking-wider">Автор</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-ink-500 uppercase tracking-wider">Текст</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-ink-500 uppercase tracking-wider">Рейтинг</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-ink-500 uppercase tracking-wider">Статус</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-ink-500 uppercase tracking-wider">Действия</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-paper-50 divide-y divide-line">
               {reviews.map((review) => (
                 <tr key={review.id} data-testid={`review-row-${review.id}`}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(review.createdAt)}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-ink-500">{formatDate(review.createdAt)}</td>
+                  <td className="px-6 py-4 text-sm text-ink">
                     <div>{review.authorName}</div>
-                    {review.authorCity && <div className="text-xs text-gray-500">{review.authorCity}</div>}
+                    {review.authorCity && <div className="text-xs text-ink-500">{review.authorCity}</div>}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 max-w-md">{review.text}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{review.rating} / 5</td>
+                  <td className="px-6 py-4 text-sm text-ink max-w-md">{review.text}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-ink-500">{review.rating} / 5</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <span
                       data-testid={`review-status-${review.id}`}
                       className={
                         review.isPublished
                           ? 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800'
-                          : 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800'
+                          : 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-paper-200 text-ink-700'
                       }
                     >
                       {review.isPublished ? 'Опубликован' : 'Не опубликован'}
@@ -80,7 +80,7 @@ const ReviewsList = ({ reviews, onPublish, onUnpublish, onEdit, onDelete }: Revi
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
                     {review.isPublished ? (
-                      <button onClick={() => onUnpublish(review.id)} className="text-amber-600 hover:text-amber-900">
+                      <button onClick={() => onUnpublish(review.id)} className="text-ochre-700 hover:text-ink">
                         Снять с публикации
                       </button>
                     ) : (
@@ -88,16 +88,16 @@ const ReviewsList = ({ reviews, onPublish, onUnpublish, onEdit, onDelete }: Revi
                         Опубликовать
                       </button>
                     )}
-                    <button onClick={() => onEdit(review)} className="text-indigo-600 hover:text-indigo-900">
+                    <button onClick={() => onEdit(review)} className="text-sea hover:text-sea-700">
                       Редактировать
                     </button>
                     {pendingDeleteId === review.id ? (
                       <span className="inline-flex items-center space-x-2">
-                        <span className="text-xs text-gray-500">Удалить?</span>
+                        <span className="text-xs text-ink-500">Удалить?</span>
                         <button onClick={() => executeDelete(review.id)} className="text-red-600 hover:text-red-900">
                           Да
                         </button>
-                        <button onClick={cancelDelete} className="text-gray-500 hover:text-gray-700">
+                        <button onClick={cancelDelete} className="text-ink-500 hover:text-ink-600">
                           Отмена
                         </button>
                       </span>

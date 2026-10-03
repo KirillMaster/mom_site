@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@/components/ui';
 import { reachGoal, Goals } from '@/lib/analytics';
 
 interface AskPriceButtonProps {
@@ -22,14 +23,14 @@ const AskPriceButton = ({ title, id, variant = 'price' }: AskPriceButtonProps) =
   };
 
   return (
-    <a
+    <Button
       href={href}
       onClick={handleClick}
       data-ym-tracked={similar ? 'order-similar' : 'ask-price'}
-      className="inline-flex w-full items-center justify-center rounded-lg bg-primary-600 px-6 py-3 font-medium text-white shadow-sm transition-colors duration-200 hover:bg-primary-700 sm:w-auto"
+      className="w-full sm:w-auto"
     >
       {similar ? 'Заказать похожую' : 'Узнать цену'}
-    </a>
+    </Button>
   );
 };
 

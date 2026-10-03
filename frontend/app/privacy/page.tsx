@@ -35,13 +35,13 @@ const PrivacyPage = async () => {
 
   return (
     <main className="container mx-auto px-4 py-12 max-w-3xl">
-      <h1 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-6">Политика конфиденциальности</h1>
-      {revisedAt && <p className="text-sm text-gray-500 mb-6">Редакция от {revisedAt}</p>}
+      <h1 className="text-3xl md:text-4xl font-serif font-bold text-ink mb-6">Политика конфиденциальности</h1>
+      {revisedAt && <p className="text-sm text-ink-500 mb-6">Редакция от {revisedAt}</p>}
       {sections.map((section, index) => (
         <section key={index} className="mb-6">
-          {section.heading && <h2 className="text-xl font-semibold text-gray-900 mb-2">{section.heading}</h2>}
+          {section.heading && <h2 className="text-xl font-semibold text-ink mb-2">{section.heading}</h2>}
           {section.paragraphs.map((paragraph, i) => (
-            <p key={i} className="text-gray-700 leading-relaxed mb-3 whitespace-pre-line">
+            <p key={i} className="text-ink-700 leading-relaxed mb-3 whitespace-pre-line">
               {paragraph}
             </p>
           ))}

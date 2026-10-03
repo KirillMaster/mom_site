@@ -1,11 +1,11 @@
 import { getImageUrl } from '@/hooks/useApi';
 import { buildArtworkSlug } from '@/lib/artworkSlug';
-import { normalizeTitle } from '@/lib/normalizeTitle';
+import MuseumLabel from '@/components/artwork/MuseumLabel';
 import type { ArtworkDto } from '@/lib/api';
 
 export const MAX_RELATED = 8;
 
-type RelatedWork = Pick<ArtworkDto, 'id' | 'title' | 'imagePath'> & { thumbnailPath?: string };
+type RelatedWork = Pick<ArtworkDto, 'id' | 'title' | 'imagePath'> & Partial<ArtworkDto>;
 
 interface RelatedWorksProps {
   works: RelatedWork[];
@@ -19,7 +19,7 @@ const RelatedWorks = ({ works, categoryId }: RelatedWorksProps) => {
 
   return (
       <section className="mt-16">
-        <h2 className="mb-6 font-serif text-2xl font-semibold text-gray-900 md:text-3xl">
+        <h2 className="mb-6 font-serif text-2xl font-semibold text-ink md:text-3xl">
           Другие работы этой категории
         </h2>
         <ul className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
@@ -27,9 +27,9 @@ const RelatedWorks = ({ works, categoryId }: RelatedWorksProps) => {
             <li key={related.id}>
               <a
                 href={`/gallery/${buildArtworkSlug(related.title, related.id)}`}
-                className="group block overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-black/5 transition-shadow hover:shadow-md"
+                className="group block overflow-hidden rounded-md border border-line bg-paper-50 transition-colors hover:border-sea"
               >
-                <div className="aspect-square overflow-hidden bg-neutral-100">
+                <div className="aspect-square overflow-hidden bg-paper-200">
                   <img
                     src={getImageUrl(related.thumbnailPath || related.imagePath)}
                     alt=""
@@ -37,9 +37,9 @@ const RelatedWorks = ({ works, categoryId }: RelatedWorksProps) => {
                     className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>
-                <span className="block p-3 text-sm font-medium text-gray-900">
-                  {normalizeTitle(related.title)}
-                </span>
+                <div className="p-3">
+                  <MuseumLabel artwork={related as ArtworkDto} as="p" size="sm" />
+                </div>
               </a>
             </li>
           ))}
@@ -47,7 +47,7 @@ const RelatedWorks = ({ works, categoryId }: RelatedWorksProps) => {
         {categoryId != null && (
           <a
             href={`/gallery?category=${categoryId}`}
-            className="mt-6 inline-block font-medium text-primary-700 hover:text-primary-800"
+            className="mt-6 inline-block font-medium text-sea hover:text-sea-700 hover:underline"
           >
             Смотреть все
           </a>

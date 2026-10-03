@@ -43,7 +43,7 @@ const ContactChannels = ({ channels, artwork }: Props) => {
             data-ym-tracked={`channel-${channel}`}
             {...(isWeb ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
             onClick={() => reachGoal(Goals.ContactClick, { channel, artwork })}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-gray-200 text-gray-700 transition-colors hover:border-primary-600 hover:text-primary-600"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-line text-ink-600 transition-colors hover:border-sea hover:text-sea focus:outline-none focus-visible:ring-2 focus-visible:ring-sea"
           >
             {ICONS[channel]}
           </a>

@@ -34,16 +34,16 @@ const ContactsForm = ({ contactsData }: { contactsData: ContactsData }) => {
         <ContactsHero title={contactsData.bannerTitle} description={contactsData.bannerDescription} />
 
         {/* Contact Info & Form */}
-        <section className="py-20 bg-white">
+        <section className="py-20 bg-paper">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
               <ContactDetailsCard email={contactsData.email} phone={contactsData.phone} />
 
               {/* Contact Form */}
               <div
-                className="reveal bg-white p-8 rounded-lg shadow-xl"
+                className="reveal bg-paper-50 border border-line p-8 rounded-md"
               >
-                <h3 className="text-3xl font-serif font-bold mb-6 text-gray-900">
+                <h3 className="text-3xl font-serif font-semibold mb-6 text-ink">
                   Напишите мне сообщение
                 </h3>
                 

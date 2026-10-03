@@ -1,0 +1,400 @@
+feature: "Дизайн-система «Мастерская у моря»"
+branch: "feature/009-design-system-seaside"
+created: "2026-10-03"
+status: "Draft"
+input: "009-design-system-seaside. Дизайн-система «Мастерская у моря» для публичной части: палитра (бумага #F7F6F3, графит #1F2328, морской #2F4A5C, охра #B8862F, линии #E2DED6) вместо оранжевого/фиолетового; типографика Cormorant Garamond + Manrope; сигнатура «музейная этикетка» под работой; единые примитивы (кнопка, ссылка, поле ввода, карточка, секция); новые шапка и футер. Вне скоупа: админка, backend, каталог/фильтры, «Как купить», водяной знак, «картина на заказ»."
+
+user_stories:
+  - id: "US1"
+    title: "Сайт выглядит как галерея, а не шаблон"
+    priority: "P1"
+    description: "Все публичные страницы используют единую спокойную палитру: фон цвета бумаги, графитовый текст, глубокий морской акцент для ссылок, кнопок и фокуса, охра для цены и статуса, тонкие тёплые линии. Оранжевый и фиолетовый, градиенты и случайные синие/индиго акценты исчезают."
+    motivation:
+      problem: "Сейчас на сайте смешаны оранжевый, фиолетовый, синий и индиго, градиенты — сайт выглядит шаблонно и спорит с картинами по цвету."
+      value: "Нейтральная тёплая палитра не конкурирует с живописью, создаёт ощущение галереи и повышает доверие к цене."
+      consequence_if_skipped: "Картины теряются на пёстром фоне, сайт продолжает выглядеть как конструктор."
+    why_priority: "Палитра — основа всех остальных изменений; без неё этикетка и примитивы не имеют общего языка."
+    independent_test: "Открыть главную, галерею, карточку работы, контакты и блог — фон бумажный, акценты только морской и охра, нет оранжевых, фиолетовых, индиго-элементов и градиентов."
+    acceptance_scenarios:
+      - id: "AS-1"
+        given: "Посетитель открывает любую публичную страницу"
+        when: "Страница загружена"
+        then: "Фон страницы — цвет бумаги #F7F6F3, основной текст — графит #1F2328"
+      - id: "AS-2"
+        given: "На странице есть ссылки, основные кнопки и поля формы"
+        when: "Посетитель наводит курсор или переходит по Tab"
+        then: "Акцент и видимое кольцо фокуса — морской #2F4A5C"
+      - id: "AS-3"
+        given: "Работа в продаже с ценой"
+        when: "Посетитель смотрит на её карточку"
+        then: "Цена и статус выделены охрой"
+    acceptance_criteria:
+      - id: "AC-1"
+        description: "Ни на одной публичной странице нет элементов в оранжевом бренд-цвете, фиолетовом (secondary/purple), индиго и синих акцентах, нет декоративных градиентов"
+        done: false
+      - id: "AC-2"
+        description: "Контраст основного текста и текста на кнопках к фону не ниже 4.5:1"
+        done: false
+      - id: "AC-3"
+        description: "Админка продолжает работать и выглядеть как раньше"
+        done: false
+    test_scenarios:
+      - id: "TS-1"
+        given:
+          - "Исходный код публичных страниц и компонентов"
+        when: "Выполняется проверка запрещённых цветовых классов"
+        then:
+          - "Не найдено ни одного использования старых бренд-цветов, фиолетового, индиго и синих акцентов вне админки"
+        verification:
+          - "automated"
+        level: "unit"
+      - id: "TS-2"
+        given:
+          - "Пары цветов палитры: текст/фон, текст кнопки/кнопка, охра/фон"
+        when: "Вычисляется коэффициент контраста"
+        then:
+          - "Каждая пара для текста ≥ 4.5:1"
+        verification:
+          - "automated"
+        level: "unit"
+      - id: "TS-3"
+        given:
+          - "Открыта главная страница на 1280 и 390 px"
+        when: "Считывается вычисленный фон body"
+        then:
+          - "Фон равен rgb(247, 246, 243)"
+        verification:
+          - "automated"
+        level: "e2e"
+
+  - id: "US2"
+    title: "Читаемая музейная типографика"
+    priority: "P1"
+    description: "Заголовки набраны классической антиквой (Cormorant Garamond), текст — современным гротеском (Manrope); размеры заголовков и текста заданы единой шкалой, длинные абзацы не шире комфортной длины строки."
+    motivation:
+      problem: "Сейчас Playfair + Inter с разными размерами на страницах; абзацы описаний на десктопе тянутся на всю ширину и плохо читаются."
+      value: "Единая типографика задаёт характер «мастерской» и делает описания работ и биографию удобными для чтения."
+      consequence_if_skipped: "Новая палитра будет соседствовать с разнобойными шрифтами, эффект передизайна размоется."
+    why_priority: "Типографика — вторая опора визуального стиля, нужна до этикетки и примитивов."
+    independent_test: "Открыть карточку работы и «О художнице» — заголовки в Cormorant Garamond, текст в Manrope, кириллица без подмены шрифта, ширина абзаца не больше ~75 символов."
+    acceptance_scenarios:
+      - id: "AS-1"
+        given: "Посетитель открывает публичную страницу"
+        when: "Шрифты загружены"
+        then: "Заголовки h1–h4 используют Cormorant Garamond, основной текст — Manrope, кириллица без fallback-шрифта"
+      - id: "AS-2"
+        given: "Длинное описание работы или биография на экране 1280 px"
+        when: "Посетитель читает текст"
+        then: "Ширина строки абзаца не превышает 75 символов"
+    acceptance_criteria:
+      - id: "AC-1"
+        description: "Шкала размеров h1–h4, основной текст и подпись определены в одном месте и используются на всех публичных страницах"
+        done: false
+      - id: "AC-2"
+        description: "Шрифты подключены с кириллицей и не вызывают заметного сдвига макета при загрузке"
+        done: false
+    test_scenarios:
+      - id: "TS-1"
+        given:
+          - "Открыта карточка работы"
+        when: "Считывается вычисленный font-family заголовка и абзаца"
+        then:
+          - "У заголовка семейство содержит Cormorant Garamond, у абзаца — Manrope"
+        verification:
+          - "automated"
+        level: "e2e"
+      - id: "TS-2"
+        given:
+          - "Открыта страница «О художнице» на 1280 px"
+        when: "Измеряется ширина абзаца биографии"
+        then:
+          - "Ширина не превышает 75ch"
+        verification:
+          - "automated"
+        level: "e2e"
+
+  - id: "US3"
+    title: "Музейная этикетка под каждой работой"
+    priority: "P1"
+    description: "Под работой в галерее, на странице работы и в блоке «Другие работы» показывается единая этикетка как в музее: название курсивом в «…», техника и основа, размер, год; цена или статус — охрой. Цена везде форматируется одинаково."
+    motivation:
+      problem: "Подписи к работам оформлены по-разному в галерее, на карточке и в похожих работах; цена в двух местах форматируется по-разному."
+      value: "Узнаваемая подпись-сигнатура делает сайт похожим на выставку и сразу даёт покупателю ключевые параметры."
+      consequence_if_skipped: "Разнобой подписей, расхождение формата цены, сайт без характерной детали."
+    why_priority: "Сигнатура стиля, ради которой выбран «Мастерская у моря»; затрагивает путь к покупке."
+    independent_test: "Работа «Закат», холст, масло, 80 × 70 см, 2026, 45 000 ₽ — в галерее, на её странице и в «Других работах» соседней видна одинаковая этикетка: «Закат» курсивом, «масло, холст», «80 × 70 см», «2026», «45 000 ₽» охрой."
+    acceptance_scenarios:
+      - id: "AS-1"
+        given: "Работа с названием, техникой, основой, размером, годом и ценой"
+        when: "Она показана в галерее, на своей странице и в «Других работах»"
+        then: "Во всех трёх местах этикетка содержит одни и те же строки в одном порядке и формате"
+      - id: "AS-2"
+        given: "У работы не заполнены техника и год"
+        when: "Показывается этикетка"
+        then: "Пустые строки не выводятся, лишних разделителей нет"
+      - id: "AS-3"
+        given: "Работа продана"
+        when: "Показывается этикетка"
+        then: "Вместо цены — статус «Продана» охрой"
+      - id: "AS-4"
+        given: "Работа в наличии без цены"
+        when: "Показывается этикетка"
+        then: "Показано «цена по запросу»"
+    acceptance_criteria:
+      - id: "AC-1"
+        description: "Галерея, страница работы и «Другие работы» используют одну и ту же этикетку"
+        done: false
+      - id: "AC-2"
+        description: "Цена форматируется единообразно во всех местах сайта: разряды через пробел, знак «₽»"
+        done: false
+      - id: "AC-3"
+        description: "Название в этикетке выводится в «…» без двойных кавычек"
+        done: false
+    test_scenarios:
+      - id: "TS-1"
+        given:
+          - "Работа со всеми заполненными полями и ценой 45000"
+        when: "Рендерится этикетка"
+        then:
+          - "Видны «Закат», «масло, холст», «80 × 70 см», «2026», «45 000 ₽»"
+        verification:
+          - "automated"
+        level: "unit"
+      - id: "TS-2"
+        given:
+          - "Работа без техники и года"
+        when: "Рендерится этикетка"
+        then:
+          - "Строки техники и года отсутствуют"
+        verification:
+          - "automated"
+        level: "unit"
+      - id: "TS-3"
+        given:
+          - "Значения цены 0, 1500, 45000, 1250000 и пустое"
+        when: "Форматируется цена"
+        then:
+          - "Результаты «цена по запросу», «1 500 ₽», «45 000 ₽», «1 250 000 ₽», «цена по запросу»"
+        verification:
+          - "automated"
+        level: "unit"
+
+  - id: "US4"
+    title: "Единые кнопки, поля и карточки на всех страницах"
+    priority: "P2"
+    description: "Кнопки (основная — морская, второстепенная — контурная, текстовая), ссылки, поля ввода с видимым фокусом, карточки на бумажном фоне с тонкой линией и секции с единым вертикальным ритмом используются на главной, в галерее, карточке работы, «О художнице», видео, отзывах, контактах и блоге."
+    motivation:
+      problem: "Каждая страница стилизована вручную: разные кнопки, тени, отступы, кольца фокуса разного цвета."
+      value: "Сайт ощущается цельным; доступность клавиатурой одинакова везде; будущие страницы собираются быстрее."
+      consequence_if_skipped: "Палитра будет применена неравномерно, разнобой вернётся с каждой правкой."
+    why_priority: "Закрепляет стиль во всех страницах, но опирается на US1–US3."
+    independent_test: "Пройти Tab-ом форму контактов и навигацию — у всех интерактивных элементов видно морское кольцо фокуса; основные кнопки на главной, карточке и контактах выглядят одинаково."
+    acceptance_scenarios:
+      - id: "AS-1"
+        given: "Посетитель на странице контактов"
+        when: "Переходит Tab-ом по полям и кнопке отправки"
+        then: "Каждый элемент получает видимое морское кольцо фокуса"
+      - id: "AS-2"
+        given: "Основные действия на главной, карточке работы и контактах"
+        when: "Посетитель их видит"
+        then: "Они имеют одинаковый вид основной кнопки (морской фон, светлый текст)"
+      - id: "AS-3"
+        given: "Публичные страницы на 390 px"
+        when: "Страница загружена"
+        then: "Нет горизонтальной прокрутки"
+    acceptance_criteria:
+      - id: "AC-1"
+        description: "Основная, второстепенная и текстовая кнопки, поле ввода, многострочное поле, карточка и секция имеют по одному определению и используются на перечисленных страницах"
+        done: false
+      - id: "AC-2"
+        description: "Все интерактивные элементы публичных страниц имеют видимый фокус"
+        done: false
+      - id: "AC-3"
+        description: "Проверка отсутствия горизонтального скролла на 390 px остаётся зелёной"
+        done: false
+    test_scenarios:
+      - id: "TS-1"
+        given:
+          - "Кнопка в вариантах primary, secondary, ghost; как ссылка и как кнопка"
+        when: "Рендерится"
+        then:
+          - "Получает классы своего варианта, кольцо фокуса, корректный тег и пробрасывает атрибуты"
+        verification:
+          - "automated"
+        level: "unit"
+      - id: "TS-2"
+        given:
+          - "Поле ввода с меткой и ошибкой"
+        when: "Рендерится"
+        then:
+          - "Метка связана с полем, ошибка связана через aria-describedby, у поля кольцо фокуса"
+        verification:
+          - "automated"
+        level: "unit"
+      - id: "TS-3"
+        given:
+          - "Все публичные страницы на 390 px"
+        when: "Измеряется ширина документа"
+        then:
+          - "scrollWidth не превышает ширину окна"
+        verification:
+          - "automated"
+        level: "e2e"
+
+  - id: "US5"
+    title: "Новые шапка и футер"
+    priority: "P2"
+    description: "Шапка: имя художницы антиквой, навигация графитом с морским активным пунктом, на бумажном фоне с тонкой линией снизу; мобильное меню в том же стиле. Футер: спокойный, на графитовом фоне, контакты и соцсети в светлых тонах."
+    motivation:
+      problem: "Шапка и футер в старых цветах будут выбиваться из новой палитры на каждой странице."
+      value: "Обрамление страниц задаёт тон с первого экрана."
+      consequence_if_skipped: "Передизайн выглядит незавершённым."
+    why_priority: "Видны на каждой странице, но не блокируют путь к покупке."
+    independent_test: "Открыть любую страницу на десктопе и телефоне — шапка и футер в новой палитре, активный пункт меню выделен морским, мобильное меню открывается и закрывается."
+    acceptance_scenarios:
+      - id: "AS-1"
+        given: "Посетитель на странице галереи"
+        when: "Смотрит на навигацию"
+        then: "Пункт «Галерея» выделен морским цветом и помечен как текущий для экранных чтецов"
+      - id: "AS-2"
+        given: "Экран 390 px"
+        when: "Посетитель открывает и закрывает мобильное меню"
+        then: "Меню в новой палитре, все пункты доступны, нет горизонтального скролла"
+    acceptance_criteria:
+      - id: "AC-1"
+        description: "Шапка, мобильное меню и футер используют только цвета палитры"
+        done: false
+      - id: "AC-2"
+        description: "Активный пункт навигации визуально выделен и помечен aria-current"
+        done: false
+    test_scenarios:
+      - id: "TS-1"
+        given:
+          - "Текущий путь /gallery"
+        when: "Рендерится навигация"
+        then:
+          - "Ссылка «Галерея» имеет aria-current=page и класс активного состояния"
+        verification:
+          - "automated"
+        level: "unit"
+      - id: "TS-2"
+        given:
+          - "Главная, галерея, карточка работы, контакты на 1280 и 390 px"
+        when: "Делаются скриншоты"
+        then:
+          - "Скриншоты сохранены для визуальной проверки, страницы без ошибок консоли"
+        verification:
+          - "automated"
+          - "manual"
+        level: "e2e"
+
+edge_cases:
+  - id: "EC-1"
+    description: "Шрифт не загрузился (медленная сеть, блокировка)"
+    expected_behavior: "Используется близкий системный fallback (serif для заголовков, sans-serif для текста), макет не ломается"
+  - id: "EC-2"
+    description: "Очень длинное название работы в этикетке на 390 px"
+    expected_behavior: "Название переносится по словам, нет горизонтального скролла"
+  - id: "EC-3"
+    description: "Выставочное фото (не картина)"
+    expected_behavior: "Этикетка показывает только название и год (если есть), без цены и статуса"
+  - id: "EC-4"
+    description: "Пользователь с prefers-reduced-motion"
+    expected_behavior: "Декоративные анимации появления отключены"
+  - id: "EC-5"
+    description: "Админка использует старые цветовые классы"
+    expected_behavior: "Старые цвета остаются доступны для админки, проверка запрещённых классов её не затрагивает"
+
+functional_requirements:
+  - id: "FR-001"
+    text: "The public site MUST use a single semantic palette: paper #F7F6F3 (page background), ink #1F2328 (text), sea #2F4A5C (links, primary buttons, focus), ochre #B8862F (price and status), line #E2DED6 (borders and dividers), with tints/shades defined in one place."
+    story_refs:
+      - "US1"
+  - id: "FR-002"
+    text: "Public pages and shared components MUST NOT use the legacy orange brand colour, secondary/purple, indigo or blue accent colours, or decorative colour gradients; the admin area is exempt."
+    story_refs:
+      - "US1"
+  - id: "FR-003"
+    text: "Text and interactive-element colour pairs MUST meet WCAG 2.1 AA contrast (at least 4.5:1 for body text and button labels)."
+    story_refs:
+      - "US1"
+      - "US4"
+  - id: "FR-004"
+    text: "Headings MUST use Cormorant Garamond (500/600) and body text MUST use Manrope (400/500/600), both with Cyrillic subsets, swap display and a close system fallback."
+    story_refs:
+      - "US2"
+  - id: "FR-005"
+    text: "A single type scale MUST define h1–h4, body and caption sizes and line-heights; long-form paragraphs MUST be limited to 75ch."
+    story_refs:
+      - "US2"
+  - id: "FR-006"
+    text: "A single museum-label component MUST render, in order, the title in italics wrapped in «…», technique and support, size «W × H см», year, and price or status in ochre, omitting empty lines; it MUST be used in the gallery card, the artwork page and related works."
+    story_refs:
+      - "US3"
+  - id: "FR-007"
+    text: "Price formatting MUST be provided by one shared helper: positive amounts as «N NNN ₽» with space-separated thousands, missing or zero price as «цена по запросу»; non-Available artworks show the status label instead of price."
+    story_refs:
+      - "US3"
+  - id: "FR-008"
+    text: "Shared primitives MUST exist for Button (primary sea / secondary outline / ghost; rendered as button or link), text link style, Input and Textarea with label and error association, Card (paper background, line border, no heavy shadow) and Section/Container with a consistent vertical rhythm."
+    story_refs:
+      - "US4"
+  - id: "FR-009"
+    text: "Every interactive element on public pages MUST show a visible sea-coloured focus ring on keyboard focus."
+    story_refs:
+      - "US4"
+  - id: "FR-010"
+    text: "The primitives MUST be applied on home, gallery, artwork page, about, videos, reviews, contacts, blog, header, footer and the mobile contact bar."
+    story_refs:
+      - "US4"
+      - "US5"
+  - id: "FR-011"
+    text: "The header and mobile menu MUST use the palette, show the artist name in the heading font, and mark the active item with sea colour and aria-current=page."
+    story_refs:
+      - "US5"
+  - id: "FR-012"
+    text: "No public page MUST have horizontal scroll at 390 px; decorative animations MUST be disabled under prefers-reduced-motion."
+    story_refs:
+      - "US4"
+      - "US5"
+  - id: "FR-013"
+    text: "An automated check MUST fail the test suite if forbidden legacy colour classes appear in public pages or shared public components."
+    story_refs:
+      - "US1"
+
+key_entities:
+  - id: "E-1"
+    name: "Токены дизайна"
+    description: "Именованные цвета палитры (paper, ink, sea, ochre, line), шрифты и шкала размеров — единственный источник визуальных значений публичной части"
+  - id: "E-2"
+    name: "Музейная этикетка"
+    description: "Представление работы: название, техника/основа, размер, год, цена или статус; использует существующие поля работы без изменений модели"
+
+success_criteria:
+  - id: "SC-001"
+    description: "0 вхождений запрещённых цветов (старый оранжевый, фиолетовый, индиго, синие акценты, градиенты) на публичных страницах"
+    measurable_via: "Автоматическая проверка исходников и e2e"
+  - id: "SC-002"
+    description: "100% пар «текст/фон» и «текст кнопки/кнопка» имеют контраст не ниже 4.5:1"
+    measurable_via: "Автотест контраста палитры"
+  - id: "SC-003"
+    description: "Подпись к работе одинакова в 3 из 3 мест показа (галерея, страница работы, другие работы)"
+    measurable_via: "Ручная проверка на 5 работах и юнит-тесты"
+  - id: "SC-004"
+    description: "Время на странице работы и доля переходов «галерея → работа» не снижаются более чем на 5% за 30 дней после релиза"
+    measurable_via: "Яндекс.Метрика, сравнение периодов"
+  - id: "SC-005"
+    description: "0 публичных страниц с горизонтальной прокруткой на 390 px"
+    measurable_via: "e2e no-overflow"
+
+assumptions:
+  - id: "A-1"
+    description: "Палитра, шрифты и сигнатура утверждены пользователем 2026-10-02 и не пересогласовываются"
+  - id: "A-2"
+    description: "Админка остаётся в старом стиле; старые цветовые токены сохраняются в конфигурации только для неё"
+  - id: "A-3"
+    description: "Backend и модель данных не меняются; этикетка использует поля характеристик, добавленные в 008"
+  - id: "A-4"
+    description: "Тёмная тема не вводится — сайт-галерея показывается в светлой палитре"
+  - id: "A-5"
+    description: "Объединённый формат цены — «45 000 ₽» (неразрывный пробел между разрядами допустим)"

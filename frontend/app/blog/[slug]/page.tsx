@@ -31,15 +31,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { post, artworks } = data;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <BlogPostJsonLd post={post} />
       <article className="mx-auto max-w-3xl px-4 pt-24 pb-16">
-        <nav aria-label="breadcrumbs" className="mb-6 flex flex-wrap items-center gap-2 text-sm text-gray-500">
-          <Link href="/" className="hover:text-primary-600">Главная</Link>
+        <nav aria-label="breadcrumbs" className="mb-6 flex flex-wrap items-center gap-2 text-sm text-ink-500">
+          <Link href="/" className="hover:text-sea">Главная</Link>
           <span aria-hidden="true">/</span>
-          <Link href="/blog" className="hover:text-primary-600">Блог</Link>
+          <Link href="/blog" className="hover:text-sea">Блог</Link>
           <span aria-hidden="true">/</span>
-          <Link href={`/blog/category/${post.category.slug}`} className="hover:text-primary-600">
+          <Link href={`/blog/category/${post.category.slug}`} className="hover:text-sea">
             {post.category.name}
           </Link>
         </nav>
@@ -53,8 +53,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           />
         )}
 
-        <h1 className="font-serif text-3xl font-bold text-gray-900 md:text-4xl">{post.title}</h1>
-        <p className="mt-3 mb-8 text-sm text-gray-500">
+        <h1 className="font-serif text-3xl font-semibold text-ink md:text-4xl">{post.title}</h1>
+        <p className="mt-3 mb-8 text-sm text-ink-500">
           <time dateTime={post.publishedAt}>{formatBlogDate(post.publishedAt)}</time>
           {' · '}{post.readingMinutes} мин чтения
         </p>

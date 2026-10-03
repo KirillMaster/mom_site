@@ -3,8 +3,7 @@ import { getImageUrl } from '@/hooks/useApi';
 import type { ArtworkDto } from '@/lib/api';
 import { buildArtworkSlug } from '@/lib/artworkSlug';
 import { normalizeTitle } from '@/lib/normalizeTitle';
-import { priceLabel, sizeLabel } from '@/lib/galleryCard';
-import { ARTWORK_STATUS_LABELS, resolveStatus } from '@/lib/artworkStatus';
+import MuseumLabel from '@/components/artwork/MuseumLabel';
 
 interface GalleryCardProps {
   artwork: ArtworkDto;
@@ -16,17 +15,14 @@ interface GalleryCardProps {
 // buttons, so a tap anywhere opens the work.
 const GalleryCard = ({ artwork, exhibition, eager }: GalleryCardProps) => {
   const title = normalizeTitle(artwork.title);
-  const price = priceLabel(artwork, exhibition);
-  const size = sizeLabel(artwork);
-  const status = resolveStatus(artwork);
 
   return (
     <Link
       href={`/gallery/${buildArtworkSlug(artwork.title, artwork.id)}`}
       aria-label={title}
-      className="rise-in card group block"
+      className="rise-in group block overflow-hidden rounded-md border border-line bg-paper-50"
     >
-      <div className="relative overflow-hidden aspect-square bg-neutral-100">
+      <div className="relative overflow-hidden aspect-square bg-paper-200">
         <img
           src={getImageUrl(artwork.thumbnailPath)}
           alt={title}
@@ -43,19 +39,10 @@ const GalleryCard = ({ artwork, exhibition, eager }: GalleryCardProps) => {
           </span>
         )}
       </div>
-      <div className="p-6">
-        <span className="text-sm text-primary-600 font-medium">
-          {artwork.category?.name || 'Без категории'}
-        </span>
-        <h3 className="text-xl font-serif font-semibold my-2 text-gray-900">{title}</h3>
-        {!exhibition && status !== 'Available' && (
-          <span data-testid="status-badge" className="mb-2 inline-block rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-700">
-            {ARTWORK_STATUS_LABELS[status]}
-          </span>
-        )}
-        <div className="flex items-center justify-between text-sm text-gray-700">
-          {size && <span>{size}</span>}
-          {price && <span className="font-bold text-gray-900">{price}</span>}
+      <div className="p-5">
+        <span className="text-sm font-medium text-sea">{artwork.category?.name || 'Без категории'}</span>
+        <div className="mt-2">
+          <MuseumLabel artwork={artwork} exhibition={exhibition} as="h3" size="sm" />
         </div>
       </div>
     </Link>

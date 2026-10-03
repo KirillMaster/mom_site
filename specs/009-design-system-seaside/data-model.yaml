@@ -1,0 +1,38 @@
+feature: 009-design-system-seaside
+entities:
+  - id: design-tokens
+    name: Design tokens (не хранится, конфиг фронта)
+    description: 'Семантическая палитра, шрифты и шкала в tailwind.config.js и globals.css'
+    fields:
+      - {name: paper, type: string, required: true, description: '#F7F6F3 — фон страниц'}
+      - {name: ink, type: string, required: true, description: '#1F2328 — основной текст; оттенки для второстепенного текста'}
+      - {name: sea, type: string, required: true, description: '#2F4A5C — ссылки, основная кнопка, фокус'}
+      - {name: ochre, type: string, required: true, description: '#B8862F — декор; ochre-700 #8A6420 — текст цены/статуса'}
+      - {name: line, type: string, required: true, description: '#E2DED6 — границы и разделители'}
+      - {name: fontSerif, type: string, required: true, description: 'Cormorant Garamond 500/600 + italic'}
+      - {name: fontSans, type: string, required: true, description: 'Manrope 400/500/600'}
+    relationships: []
+  - id: artwork
+    name: Artwork (существующая, без изменений)
+    description: 'Источник данных этикетки; поля из 008'
+    fields:
+      - {name: title, type: string, required: true, description: 'Через normalizeTitle'}
+      - {name: technique, type: string, required: false, description: Техника}
+      - {name: support, type: string, required: false, description: Основа}
+      - {name: widthCm, type: number, required: false, description: Ширина}
+      - {name: heightCm, type: number, required: false, description: Высота}
+      - {name: year, type: number, required: false, description: Год}
+      - {name: price, type: number, required: false, description: 'null/0 = цена по запросу'}
+      - {name: status, type: enum, required: true, enum_values: [Available, Sold, PrivateCollection, Unavailable, NotForSale, NotMine], description: 'Не Available — показывается статус вместо цены'}
+    relationships: []
+  - id: museum-label
+    name: MuseumLabel (не хранится, представление)
+    description: 'Этикетка работы: строки в фиксированном порядке, пустые опускаются'
+    fields:
+      - {name: title, type: string, required: true, description: 'Курсив, в «…»'}
+      - {name: medium, type: string, required: false, description: 'technique, support через запятую'}
+      - {name: size, type: string, required: false, description: 'W × H см'}
+      - {name: year, type: number, required: false, description: Год}
+      - {name: priceOrStatus, type: string, required: false, description: 'Охра; null для выставочного фото'}
+    relationships:
+      - {field: artwork, target_entity_ref: artwork, cardinality: one}

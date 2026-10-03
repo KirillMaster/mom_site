@@ -1,4 +1,4 @@
-import { formatPrice, priceLabel, sizeLabel } from '@/lib/galleryCard';
+import { formatPrice, priceLabel, sizeLabel } from '@/lib/price';
 import type { ArtworkDto } from '@/lib/api';
 
 const defaultArtwork = (): ArtworkDto => ({
@@ -183,5 +183,98 @@ describe('@US4-EC4 price and size boundary edge cases', () => {
     artwork.price = 50000;
     artwork.status = 'Available' as const;
     expect(priceLabel(artwork, true)).toBeNull();
+  });
+
+  it('@US3-FE1 formatPrice handles price exactly at boundary 100', () => {
+    expect(formatPrice(100)).toMatch(/^100\s*₽$/);
+  });
+
+  it('@US3-FE1 formatPrice handles price exactly at boundary 1000', () => {
+    expect(formatPrice(1000)).toMatch(/^1\s*000\s*₽$/);
+  });
+
+  it('@US3-FE1 formatPrice handles price exactly at boundary 10000', () => {
+    expect(formatPrice(10000)).toMatch(/^10\s*000\s*₽$/);
+  });
+
+  it('@US3-FE1 formatPrice with maximum safe integer', () => {
+    const max = Number.MAX_SAFE_INTEGER;
+    const result = formatPrice(max);
+    expect(result).toMatch(/₽$/);
+    expect(result).not.toContain('Infinity');
+  });
+
+  it('@US3-FE2 priceLabel returns exact status labels for each status', () => {
+    const sold = defaultArtwork();
+    sold.status = 'Sold' as const;
+    sold.price = 50000;
+    expect(priceLabel(sold, false)).toBe('Продана');
+
+    const notForSale = defaultArtwork();
+    notForSale.status = 'NotForSale' as const;
+    notForSale.price = 50000;
+    expect(priceLabel(notForSale, false)).toBe('Не продаётся');
+
+    const privateCollection = defaultArtwork();
+    privateCollection.status = 'PrivateCollection' as const;
+    privateCollection.price = 50000;
+    expect(priceLabel(privateCollection, false)).toBe('В частной коллекции');
+
+    const unavailable = defaultArtwork();
+    unavailable.status = 'Unavailable' as const;
+    unavailable.price = 50000;
+    expect(priceLabel(unavailable, false)).toBe('Недоступна');
+
+    const notMine = defaultArtwork();
+    notMine.status = 'NotMine' as const;
+    notMine.price = 50000;
+    expect(priceLabel(notMine, false)).toBe('Не моя работа');
+  });
+
+  it('@US3-FE2 priceLabel returns null for exhibition photos in all statuses', () => {
+    const sold = defaultArtwork();
+    sold.status = 'Sold' as const;
+    expect(priceLabel(sold, true)).toBeNull();
+
+    const available = defaultArtwork();
+    available.price = 100000;
+    available.status = 'Available' as const;
+    expect(priceLabel(available, true)).toBeNull();
+  });
+
+  it('@US3-FE2 priceLabel with price between 0 exclusive and 1', () => {
+    const artwork = defaultArtwork();
+    artwork.price = 0.5;
+    // Should show price or "по запросу" depending on implementation
+    const result = priceLabel(artwork, false);
+    expect(result).not.toBeNull();
+  });
+
+  it('@US4-AS9 sizeLabel with minimum boundary 1cm each', () => {
+    const artwork = defaultArtwork();
+    artwork.widthCm = 1;
+    artwork.heightCm = 1;
+    expect(sizeLabel(artwork)).toBe('1 × 1 см');
+  });
+
+  it('@US4-AS10 sizeLabel with maximum typical boundary 1000cm', () => {
+    const artwork = defaultArtwork();
+    artwork.widthCm = 1000;
+    artwork.heightCm = 1000;
+    expect(sizeLabel(artwork)).toBe('1000 × 1000 см');
+  });
+
+  it('@US4-AS10 sizeLabel asymmetric dimensions', () => {
+    const artwork = defaultArtwork();
+    artwork.widthCm = 50;
+    artwork.heightCm = 200;
+    expect(sizeLabel(artwork)).toBe('50 × 200 см');
+  });
+
+  it('@US4-AS10 sizeLabel with very small and very large dimensions', () => {
+    const artwork = defaultArtwork();
+    artwork.widthCm = 1;
+    artwork.heightCm = 9999;
+    expect(sizeLabel(artwork)).toBe('1 × 9999 см');
   });
 });

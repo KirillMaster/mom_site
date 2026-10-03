@@ -17,9 +17,9 @@ export default function Pagination({ basePath, page, total, pageSize }: Paginati
     <nav aria-label="Страницы блога" className="mt-10 flex flex-wrap justify-center gap-2">
       {Array.from({ length: pages }, (_, i) => i + 1).map((n) =>
         n === page ? (
-          <span key={n} aria-current="page" className={`${linkClass} bg-primary-600 text-white`}>{n}</span>
+          <span key={n} aria-current="page" className={`${linkClass} bg-sea text-white`}>{n}</span>
         ) : (
-          <Link key={n} href={pageHref(basePath, n)} className={`${linkClass} bg-white text-gray-700 ring-1 ring-black/10 hover:bg-gray-100`}>
+          <Link key={n} href={pageHref(basePath, n)} className={`${linkClass} bg-paper-50 text-ink-600 border border-line hover:bg-paper-200`}>
             {n}
           </Link>
         ),
