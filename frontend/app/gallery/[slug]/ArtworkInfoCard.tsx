@@ -7,6 +7,7 @@ import type { ArtworkDto, GalleryData } from '@/lib/api';
 import AskPriceButton from './AskPriceButton';
 import ContactChannels from './ContactChannels';
 import BotCtaButton from './BotCtaButton';
+import SimilarOrderLink from './SimilarOrderLink';
 import type { ContactChannel } from '@/lib/contactChannels';
 
 interface Props {
@@ -19,6 +20,7 @@ interface Props {
 const ArtworkInfoCard = ({ artwork, categoryName, categories, channels = [] }: Props) => {
   const isExhibition = isExhibitionPhoto(artwork, categories);
   const available = resolveStatus(artwork) === 'Available';
+  const title = normalizeTitle(artwork.title);
 
   return (
     <aside className="lg:sticky lg:top-28">
@@ -36,12 +38,13 @@ const ArtworkInfoCard = ({ artwork, categoryName, categories, channels = [] }: P
         {!isExhibition && (
           <div className="mt-6">
             <AskPriceButton
-              title={normalizeTitle(artwork.title)}
+              title={title}
               id={artwork.id}
               variant={available ? 'price' : 'similar'}
             />
-            <BotCtaButton artworkId={artwork.id} artwork={normalizeTitle(artwork.title)} />
-            <ContactChannels channels={channels} artwork={normalizeTitle(artwork.title)} />
+            <SimilarOrderLink title={title} />
+            <BotCtaButton artworkId={artwork.id} artwork={title} />
+            <ContactChannels channels={channels} artwork={title} />
           </div>
         )}
 

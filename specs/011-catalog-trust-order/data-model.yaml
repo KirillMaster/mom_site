@@ -1,0 +1,38 @@
+feature: 011-catalog-trust-order
+entities:
+  - id: artwork-image
+    name: ArtworkImage (существующая + OriginalPath)
+    description: 'Изображение работы: копия со знаком, превью, путь к оригиналу S3'
+    fields:
+      - {name: imagePath, type: string, required: true, description: 'URL копии со знаком'}
+      - {name: thumbnailPath, type: string, required: true, description: 'URL превью 300×300 без знака'}
+      - {name: originalPath, type: string, required: false, description: 'НОВОЕ. URL оригинала; null — не перерендерено'}
+    relationships:
+      - {field: artworkId, target_entity_ref: artwork, cardinality: one}
+  - id: artwork
+    name: Artwork (существующая)
+    description: 'Работа; описание чистится от сгенерированных абзацев'
+    fields:
+      - {name: description, type: string, required: false, description: 'После очистки — только авторские строки'}
+      - {name: widthCm, type: number, required: false, description: 'Для фильтра размера и схемы масштаба'}
+      - {name: heightCm, type: number, required: false, description: 'Для фильтра размера и схемы масштаба'}
+      - {name: status, type: enum, required: true, enum_values: [Available, Sold, PrivateCollection, Unavailable, NotForSale, NotMine], description: 'Available — «в наличии»'}
+    relationships: []
+  - id: how-to-buy-content
+    name: PageContent how-to-buy/body
+    description: 'Текст «Как купить», редактируется в админке страниц'
+    fields:
+      - {name: textContent, type: string, required: false, description: 'Абзацы через пустую строку; пусто — дефолт на фронте'}
+      - {name: updatedAt, type: string, required: true, description: 'Время правки'}
+    relationships: []
+  - id: rewatermark-report
+    name: Отчёт перерендера (не хранится)
+    description: 'Результат admin-операции'
+    fields:
+      - {name: dryRun, type: boolean, required: true, description: 'Режим проверки'}
+      - {name: matched, type: number, required: true, description: 'Найдены пары'}
+      - {name: processed, type: number, required: true, description: 'Перерендерено (0 при dryRun)'}
+      - {name: skipped, type: array, required: true, description: 'id изображений без однозначного оригинала'}
+      - {name: failed, type: array, required: true, description: 'id и ошибка'}
+      - {name: remaining, type: number, required: true, description: 'Сколько ещё без OriginalPath'}
+    relationships: []

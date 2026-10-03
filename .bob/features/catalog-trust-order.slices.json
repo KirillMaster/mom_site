@@ -1,0 +1,63 @@
+{
+  "feature": "catalog-trust-order",
+  "slices": [
+    {
+      "id": "S1",
+      "title": "backend-images: OriginalPath, угловой водяной знак, перерендер из оригиналов S3",
+      "depends_on": [],
+      "tasks": ["T001", "T002"],
+      "scenario_refs": [
+        "US7-AS1", "US7-AS2", "US7-AS3",
+        "US7-BE1", "US7-BE2", "US7-BE3", "US7-BE4",
+        "US7-EC4"
+      ]
+    },
+    {
+      "id": "S2",
+      "title": "backend-content: how-to-buy API, очистка LLM-описаний, home.availableArtworks, about.exhibitionPhotos",
+      "depends_on": [],
+      "tasks": ["T003", "T004", "T005"],
+      "scenario_refs": [
+        "US3-BE1", "US3-BE2", "US3-BE3",
+        "US8-AS1", "US8-AS2", "US8-BE1", "US8-EC1",
+        "US1-BE1", "US1-BE2",
+        "US5-BE1", "US5-BE2"
+      ]
+    },
+    {
+      "id": "S3",
+      "title": "frontend-home-order: hero, Сейчас в наличии, доверие и отзывы на главной, страница /order",
+      "depends_on": ["S2"],
+      "tasks": ["T006", "T007", "T008"],
+      "scenario_refs": [
+        "US1-AS1", "US1-AS2", "US1-AS3", "US1-EC1", "US1-EC2",
+        "US2-AS1", "US2-AS3", "US2-EC1",
+        "US6-AS1", "US6-AS2", "US6-EC1", "US6-FE1", "US6-FE2", "US6-FE3"
+      ]
+    },
+    {
+      "id": "S4",
+      "title": "artwork-page: Как купить, схема масштаба, доверие и отзывы, Хочу похожую",
+      "depends_on": ["S2", "S3"],
+      "tasks": ["T009", "T010"],
+      "scenario_refs": [
+        "US3-AS1", "US3-AS2", "US3-EC1", "US3-EC2",
+        "US4-AS1", "US4-AS2", "US4-EC1", "US4-EC2",
+        "US2-AS2", "US2-FE1",
+        "US6-AS3", "US6-EC2"
+      ]
+    },
+    {
+      "id": "S5",
+      "title": "catalog-about: фильтры каталога, раздел Сухоруких, выставки на /about, e2e на проде",
+      "depends_on": ["S2"],
+      "tasks": ["T011", "T012", "T013"],
+      "scenario_refs": [
+        "US5-AS1", "US5-AS2", "US5-AS3", "US5-AS4", "US5-AS5",
+        "US5-FE1", "US5-FE2", "US5-FE3",
+        "US5-EC1", "US5-EC2",
+        "US5-E2E1", "US1-E2E1"
+      ]
+    }
+  ]
+}

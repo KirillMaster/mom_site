@@ -1,0 +1,434 @@
+feature: 011-catalog-trust-order
+tasks:
+  # ---------- S1: backend images (US7) ----------
+  - id: T001
+    title: 'OriginalPath, угловой водяной знак, превью без знака'
+    description: 'ArtworkImage.OriginalPath (nullable) + EF-миграция; ImageService.AddCornerWatermark: правый нижний угол, высота текста ≤3% меньшей стороны (мин. 12 px), alpha ≤ 0.4, отступ ~2%; CreateThumbnailAsync больше не накладывает знак; ArtworkImageService.StoreAsync сохраняет путь оригинала в OriginalPath'
+    context: 'Крупный знак по центру мешает смотреть картину; оригиналы лежат в S3, но не связаны с записями (US7)'
+    story_ref: US7
+    requirement_refs: [FR-013]
+    depends_on: []
+    parallelizable: false
+    entity_refs: [artwork-image]
+    contract_refs: []
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'MomSite.Tests: WatermarkGeometry (чистая функция размера/позиции знака) — для 3000×2000 высота ≤ 60 px, позиция у правого нижнего угла; для 300×200 высота ≥ 12 px; StoreAsync возвращает/сохраняет OriginalPath (мок IImageService)'
+      - order: 2
+        action: 'Модель и миграция'
+        detail: 'Core: ArtworkImage.OriginalPath string?; Infrastructure: dotnet ef migrations add AddArtworkImageOriginalPath (миграции применяются при старте, Program.cs)'
+      - order: 3
+        action: 'ImageService'
+        detail: 'Вынести геометрию в WatermarkGeometry; AddCornerWatermark использует её; убрать знак из обеих веток CreateThumbnailAsync (local/S3); AddWatermarkAsync продолжает писать artworks/watermarked_{guid}'
+      - order: 4
+        action: 'StoreAsync'
+        detail: 'Вернуть кортеж (watermarked, thumb, original) и записать OriginalPath во всех местах создания ArtworkImage (контроллеры admin artworks); DeleteFiles оригинал НЕ удаляет'
+    technical_notes:
+      - path: backend/MomSite.Infrastructure/Services/ImageService.cs
+        note: 'AddCornerWatermark сейчас вызывается в 4 местах (161, 232 превью; 288, 340 копия)'
+      - path: backend/MomSite.Infrastructure/Services/ArtworkImageService.cs
+        note: 'Оригинал остаётся в S3 по artworks/{guid}.ext'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'dotnet test зелёный; новая загрузка даёт знак в углу, превью без знака, OriginalPath заполнен'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Изображение 3000×2000']
+        when: 'Считается геометрия знака'
+        then: ['Высота текста ≤ 60 px, правый край и низ в пределах 3% от краёв']
+        verification: [automated]
+        level: unit
+
+  - id: T002
+    title: 'Перерендер знака из оригиналов S3 (admin)'
+    description: 'IS3Service.ListObjectsAsync(prefix); чистая WatermarkPairing.Match(originals, watermarked) — пары по LastModified (оригинал не позже копии, окно 120 с, то же расширение, без повторного использования оригинала); RewatermarkService; POST api/admin/images/rewatermark?dryRun=true&take=25'
+    context: 'Перерендер существующих 427 работ без потери оригиналов (US7, FR-014)'
+    story_ref: US7
+    requirement_refs: [FR-014]
+    depends_on: [T001]
+    parallelizable: false
+    entity_refs: [artwork-image, rewatermark-report]
+    contract_refs: [rewatermark-endpoint]
+    steps:
+      - order: 1
+        action: 'Тесты пар'
+        detail: 'WatermarkPairing: точная пара; копия раньше оригинала → нет пары; разница > 120 с → skipped; два оригинала у одной копии → ближайший, второй не используется; разные расширения → нет пары'
+      - order: 2
+        action: 'S3 листинг'
+        detail: 'ListObjectsV2 с пагинацией, возвращает (Key, LastModified); local-ветка — по файловой системе'
+      - order: 3
+        action: 'Сервис'
+        detail: 'Берёт ArtworkImage с OriginalPath == null (take, по Id); ключ копии из ImagePath; при dryRun только отчёт; иначе: AddWatermarkAsync(original) → новый ImagePath, CreateThumbnailAsync(original) → новый ThumbnailPath, OriginalPath = original; Artwork.ImagePath/ThumbnailPath обновить, если совпадали со старыми; старые копию и превью удалить после SaveChanges; оригинал не трогать; ошибки по одному изображению → failed, не прерывать пачку'
+      - order: 4
+        action: 'Эндпоинт'
+        detail: '[Authorize] admin controller; dryRun по умолчанию true; take 1..100 (по умолчанию 25); ответ — отчёт data-model rewatermark-report, remaining = число без OriginalPath после операции'
+    technical_notes:
+      - path: backend/MomSite.Infrastructure/Services/S3Service.cs
+        note: 'Листинга сейчас нет — добавить в IS3Service и реализацию'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Повторный запуск не трогает уже перерендеренные (идемпотентность по OriginalPath); без авторизации 401'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Оригинал artworks/a.jpg 10:00:00 и копия artworks/watermarked_b.jpg 10:00:03']
+        when: 'WatermarkPairing.Match'
+        then: ['Пара a↔b']
+        verification: [automated]
+        level: unit
+      - id: TS-2
+        given: ['Изображение без пары']
+        when: 'POST rewatermark?dryRun=false'
+        then: ['id в skipped, файлы не изменены']
+        verification: [automated]
+        level: integration
+
+  # ---------- S2: backend content (US3, US8, US1, US5) ----------
+  - id: T003
+    title: 'GET api/public/how-to-buy'
+    description: 'PublicController: PageContent page how-to-buy / key body, активный → {text, updatedAt}; нет → {text:null, updatedAt:null}; по образцу privacy'
+    context: 'Текст «Как купить» редактируется в админке страниц (решение пользователя)'
+    story_ref: US3
+    requirement_refs: [FR-006, FR-007]
+    depends_on: []
+    parallelizable: true
+    entity_refs: [how-to-buy-content]
+    contract_refs: [how-to-buy-endpoint]
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'Заполнено → текст; неактивно/нет → null'
+      - order: 2
+        action: 'Эндпоинт'
+        detail: 'HowToBuyDto(string? Text, DateTime? UpdatedAt); admin pages: в app/admin/pages/page.tsx добавить how-to-buy в список страниц, если список захардкожен'
+    technical_notes:
+      - path: backend/MomSite.API/Controllers/PublicController.cs
+        note: 'Шаблон — endpoint privacy'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Эндпоинт без авторизации отдаёт текст или null'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['PageContent how-to-buy/body активен']
+        when: 'GET api/public/how-to-buy'
+        then: ['200 и text из записи']
+        verification: [automated]
+        level: integration
+
+  - id: T004
+    title: 'Очистка LLM-описаний'
+    description: 'MomSite.Core/Services/DescriptionCleaner.Clean(string?) — удаляет абзацы, начинающиеся с известных шаблонов генерации («Эта картина», «Картина «…» — это», «В этой работе», «Работа погружает», «Художник мастерски» и т.п.), оставляет фактические строки (техника, размер, год, место); идемпотентный запуск при старте после Migrate()'
+    context: 'Сгенерированный текст снижает доверие (US8); пример — id 428/429'
+    story_ref: US8
+    requirement_refs: [FR-015]
+    depends_on: []
+    parallelizable: true
+    entity_refs: [artwork]
+    contract_refs: []
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: '«Холст на подрамнике , масло, 80х65, Севастополь 2012г.» + LLM-абзацы → только первая строка; чисто LLM-текст → пусто (null); авторский текст без шаблонов не меняется; повторный вызов не меняет результат'
+      - order: 2
+        action: 'Запуск'
+        detail: 'Program.cs после Migrate(): пройти Artworks, где Clean(d) != d, сохранить, залогировать количество; новый текст не добавлять'
+    technical_notes:
+      - path: backend/MomSite.Core/Services/DescriptionCleaner.cs
+        note: 'Чистая функция без зависимостей'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Описания id 428/429 на проде очищены после деплоя'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Описание id 428']
+        when: 'DescriptionCleaner.Clean'
+        then: ['Осталась строка «Холст на подрамнике , масло, 80х65, Севастополь 2012г.»']
+        verification: [automated]
+        level: unit
+
+  - id: T005
+    title: 'home.availableArtworks и about.exhibitionPhotos'
+    description: 'GET api/public/home: availableArtworks — до 8 опубликованных Available работ категорий главной, новые первыми; GET api/public/about: exhibitionPhotos — опубликованные работы категории «Фото с выставок», до 24'
+    context: 'Данные для блока «Сейчас в наличии» (US1) и выставок на /about (US5)'
+    story_ref: US1
+    requirement_refs: [FR-002, FR-010]
+    depends_on: []
+    parallelizable: true
+    entity_refs: [artwork]
+    contract_refs: [home-endpoint, about-endpoint]
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'Sold/неопубликованные не попадают; не больше 8; exhibitionPhotos только из категории «Фото с выставок» (по имени)'
+      - order: 2
+        action: 'DTO'
+        detail: 'Добавить поля в существующие DTO home/about; фронтовые типы lib/api.ts дополнить (optional)'
+    technical_notes:
+      - path: backend/MomSite.API/Controllers/PublicController.cs
+        note: 'Не ломать существующие поля ответа'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Ответы содержат новые массивы, старые поля без изменений'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['10 Available и 2 Sold работ категорий главной']
+        when: 'GET api/public/home'
+        then: ['availableArtworks длиной 8, без Sold']
+        verification: [automated]
+        level: integration
+
+  # ---------- S3: frontend home + trust + order (US1, US2, US6) ----------
+  - id: T006
+    title: 'Hero, «Сейчас в наличии» на next/image'
+    description: 'HomeClientPage: подзаголовок «Живопись маслом из Крыма. Работы в коллекциях 12 стран», кнопки «Выбрать картину» (/gallery?available=1, primary sea) и «Заказать картину» (/order, secondary); components/home/AvailableGrid.tsx — сетка MuseumLabel + next/image с sizes; ArtworkCarousel перевести на next/image'
+    context: 'Главная должна сразу вести к покупке (US1); изображения не должны грузиться оригиналами S3 (FR-003)'
+    story_ref: US1
+    requirement_refs: [FR-001, FR-002, FR-003]
+    depends_on: [T005]
+    parallelizable: false
+    entity_refs: [artwork]
+    contract_refs: [home-endpoint]
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'jest: hero содержит подзаголовок и две ссылки; AvailableGrid рендерит N карточек со ссылкой /gallery/{slug}, скрыт при пустом массиве; img через next/image (srcset/_next/image)'
+      - order: 2
+        action: 'Компоненты'
+        detail: 'next.config images.remotePatterns уже должен включать S3-хост — проверить; ArtworkCarousel: next/image fill + sizes, тест ArtworkCarousel.seaside ждёт 4 focusables — сохранить'
+    technical_notes:
+      - path: frontend/app/HomeClientPage.tsx
+        note: 'Токены 009, кольцо фокуса sea'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'На главной нет <img src> с прямым S3 URL'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['home.availableArtworks из 6 работ']
+        when: 'Рендер главной'
+        then: ['6 карточек «Сейчас в наличии» со ссылками на страницы работ']
+        verification: [automated]
+        level: unit
+
+  - id: T007
+    title: 'TrustStrip и ReviewsPreview'
+    description: 'components/home/TrustStrip.tsx (Член Союза художников России; Работы в музейных собраниях; Коллекционеры в 12 странах) и components/home/ReviewsPreview.tsx (2–3 опубликованных отзыва, ссылка «Все отзывы» → /reviews, prioritizeArtworkId ставит отзывы о работе первыми, скрыт без отзывов); подключить на главной'
+    context: 'Доверие к художнику (US2)'
+    story_ref: US2
+    requirement_refs: [FR-004, FR-005]
+    depends_on: []
+    parallelizable: true
+    entity_refs: []
+    contract_refs: []
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'TrustStrip — три факта; ReviewsPreview — максимум 3, отзыв о работе первым, null при пустом списке'
+      - order: 2
+        action: 'Данные'
+        detail: 'Отзывы — существующий публичный эндпоинт reviews (lib/api)'
+    technical_notes:
+      - path: frontend/components/home
+        note: 'Компоненты переиспользуются на странице работы (T010)'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Блоки на главной, jest зелёный'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['5 отзывов, один про работу 7']
+        when: 'ReviewsPreview с prioritizeArtworkId=7'
+        then: ['3 отзыва, первый — про работу 7']
+        verification: [automated]
+        level: unit
+
+  - id: T008
+    title: 'Страница /order и цель custom_order_submit'
+    description: 'app/order/page.tsx (metadata, описание процесса: сюжет → эскиз → предоплата → работа → доставка) + OrderForm.tsx (имя, контакт, сюжет, размер, комментарий; ?artwork= префилл комментария «Хочу похожую на «…»»); POST contact-message с subject «Картина на заказ»; analytics custom_order_submit; sitemap + ссылка в Footer'
+    context: 'Заказ картины по своему сюжету (US6)'
+    story_ref: US6
+    requirement_refs: [FR-011, FR-012]
+    depends_on: []
+    parallelizable: true
+    entity_refs: []
+    contract_refs: [order-form]
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'Отправка вызывает API с subject «Картина на заказ» и цель custom_order_submit; пустые обязательные поля блокируют отправку; ?artwork=Х префиллит комментарий; sitemap содержит /order'
+      - order: 2
+        action: 'Форма'
+        detail: 'Контакт → email если содержит @, телефон если цифры, иначе telegramUsername; сообщение = сюжет + размер + комментарий; Input/Textarea из components/ui'
+    technical_notes:
+      - path: frontend/lib/analytics.ts
+        note: 'Добавить цель в список целей'
+    acceptance_criteria:
+      - id: AC-1
+        description: '/order открывается, форма отправляется, в Footer есть ссылка'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Заполненная форма /order']
+        when: 'Нажата «Отправить»'
+        then: ['POST contact-message с subject «Картина на заказ», цель custom_order_submit']
+        verification: [automated]
+        level: unit
+
+  # ---------- S4: artwork page (US3, US4, US2) ----------
+  - id: T009
+    title: 'Блок «Как купить» и схема масштаба'
+    description: 'app/gallery/[slug]/HowToBuy.tsx — текст из api/public/how-to-buy (абзацы по пустой строке), при null — дефолт (доставка СДЭК/лично по Крыму, оплата переводом, сертификат подлинности, возврат 14 дней); ScaleDiagram.tsx — SVG диван ~200 см и прямоугольник работы пропорционально WidthCm×HeightCm, подпись размера; скрыт без размеров'
+    context: 'Покупателю понятно, как купить, и виден реальный размер (US3, US4)'
+    story_ref: US3
+    requirement_refs: [FR-006, FR-008]
+    depends_on: [T003]
+    parallelizable: false
+    entity_refs: [how-to-buy-content, artwork]
+    contract_refs: [how-to-buy-endpoint]
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'HowToBuy — текст API / дефолт; ScaleDiagram — 80×60 на диване 200 даёт ширину прямоугольника 40% ширины дивана; null без размеров'
+      - order: 2
+        action: 'Подключение'
+        detail: 'page.tsx [slug]: серверный fetch how-to-buy (revalidate), блоки под ArtworkInfoCard'
+    technical_notes:
+      - path: frontend/app/gallery/[slug]/page.tsx
+        note: 'Не ломать MuseumLabel h1 (prod e2e ждёт h1[data-label-line])'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'На странице работы видны «Как купить» и схема масштаба'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Работа 80×60 см']
+        when: 'Рендер ScaleDiagram'
+        then: ['Прямоугольник работы шириной 40% дивана']
+        verification: [automated]
+        level: unit
+
+  - id: T010
+    title: 'Доверие на странице работы и «Хочу похожую»'
+    description: 'На странице работы TrustStrip и ReviewsPreview(prioritizeArtworkId); в AskPriceButton/ContactChannels ссылка «Хочу похожую» → /order?artwork=<название>'
+    context: 'Доверие и альтернатива для проданных работ (US2, US6)'
+    story_ref: US2
+    requirement_refs: [FR-004, FR-005, FR-012]
+    depends_on: [T007, T008, T009]
+    parallelizable: false
+    entity_refs: []
+    contract_refs: [order-form]
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'Страница работы рендерит TrustStrip; ссылка «Хочу похожую» ведёт на /order?artwork=…(encodeURIComponent)'
+    technical_notes:
+      - path: frontend/app/gallery/[slug]/AskPriceButton.tsx
+        note: 'Сохранить существующую цель ask_price'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'Ссылка «Хочу похожую» и блоки доверия на странице работы'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Работа «Цветы лета»']
+        when: 'Клик «Хочу похожую»'
+        then: ['Переход на /order?artwork=Цветы%20лета, комментарий префиллен']
+        verification: [automated]
+        level: unit
+
+  # ---------- S5: catalog + about (US5) ----------
+  - id: T011
+    title: 'Фильтры каталога в URL и раздел Сухоруких'
+    description: 'lib/gallery.ts: sizeClass(w,h) S ≤40 / M ≤80 / L >80 по большей стороне, null без размеров; filterArtworks({category, size, available}); GalleryFilters — тема, размер, «только в наличии», «Сбросить»; состояние в query (?category=&size=&available=1) через router.replace; Сухоруких (категория «Пейзажи Всеволода Сухоруких», по имени) исключены из вида по умолчанию и доступны отдельной вкладкой с подписью авторства; Фото с выставок исключены'
+    context: 'Покупатель ищет по теме, размеру и наличию (US5)'
+    story_ref: US5
+    requirement_refs: [FR-009, FR-010]
+    depends_on: []
+    parallelizable: true
+    entity_refs: [artwork]
+    contract_refs: []
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'sizeClass(40,30)=S, (80,50)=M, (81,10)=L, (null,10)=null; комбинация фильтров; query ↔ состояние (чтение при загрузке, запись при изменении); пустой результат показывает «Ничего не найдено» и «Сбросить»'
+      - order: 2
+        action: 'UI'
+        detail: 'Кнопки-фильтры с aria-pressed, кольцо фокуса sea; useSearchParams в Suspense'
+    technical_notes:
+      - path: frontend/lib/gallery.ts
+        note: 'Совпадение категорий по имени, как EXHIBITION_PHOTOS_CATEGORY_NAME'
+    acceptance_criteria:
+      - id: AC-1
+        description: '/gallery?size=M&available=1 после перезагрузки показывает тот же отбор'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['URL /gallery?size=S']
+        when: 'Загрузка галереи'
+        then: ['Показаны только работы с большей стороной ≤ 40 см']
+        verification: [automated]
+        level: unit
+
+  - id: T012
+    title: 'Выставки на /about'
+    description: 'AboutClientPage: раздел «Выставки» — сетка exhibitionPhotos (next/image, sizes), скрыт при пустом массиве'
+    context: 'Фото с выставок подтверждают опыт, но не засоряют каталог (US5, FR-010)'
+    story_ref: US5
+    requirement_refs: [FR-010]
+    depends_on: [T005]
+    parallelizable: true
+    entity_refs: [artwork]
+    contract_refs: [about-endpoint]
+    steps:
+      - order: 1
+        action: 'Тесты'
+        detail: 'Раздел рендерит N изображений; скрыт без данных'
+    technical_notes:
+      - path: frontend/app/about/AboutClientPage.tsx
+        note: 'prose-measure биографии не трогать (e2e US2-E2E2)'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'На /about виден раздел «Выставки»'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['about.exhibitionPhotos из 5 фото']
+        when: 'Рендер /about'
+        then: ['Раздел «Выставки» с 5 изображениями']
+        verification: [automated]
+        level: unit
+
+  # ---------- Polish ----------
+  - id: T013
+    title: 'e2e каталога на проде'
+    description: 'frontend/e2e/catalog-trust.spec.ts: главная (подзаголовок, «Сейчас в наличии», TrustStrip), /gallery?size=M фильтр, страница работы («Как купить», схема масштаба), /order открывается (без отправки на проде), /about «Выставки»; no-overflow 390 для /order'
+    context: 'Проверка после деплоя (цель — работает на проде)'
+    story_ref: US1
+    requirement_refs: [FR-001, FR-006, FR-009, FR-011]
+    depends_on: [T006, T010, T011, T012]
+    parallelizable: false
+    entity_refs: []
+    contract_refs: []
+    steps:
+      - order: 1
+        action: 'Спека'
+        detail: 'waitUntil domcontentloaded; без записи данных на прод; /order добавить в OVERFLOW_PAGES design-system.spec.ts'
+    technical_notes:
+      - path: frontend/e2e/design-system.spec.ts
+        note: 'Ошибки «Failed to fetch RSC payload» отфильтрованы'
+    acceptance_criteria:
+      - id: AC-1
+        description: 'e2e зелёные против https://angelamoiseenko.ru'
+        done: false
+    test_scenarios:
+      - id: TS-1
+        given: ['Задеплоенная версия']
+        when: 'Прогон e2e на проде'
+        then: ['Все проверки зелёные']
+        verification: [automated]
+        level: e2e

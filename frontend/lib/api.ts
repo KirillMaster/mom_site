@@ -204,6 +204,7 @@ export interface HomeData {
   contacts: ContactsData;
   seoTitle?: string;
   seoDescription?: string;
+  availableArtworks?: ArtworkDto[];
 }
 
 export interface GalleryData {
@@ -225,6 +226,12 @@ export interface AboutData {
   bannerDescription: string;
   additionalBiography: string;
   philosophy: string;
+  exhibitionPhotos?: ArtworkDto[];
+}
+
+export interface HowToBuyData {
+  text: string | null;
+  updatedAt: string | null;
 }
 
 export interface ContactsData {
@@ -272,6 +279,7 @@ export interface ContactMessage {
   name: string;
   email?: string;
   phone?: string;
+  telegramUsername?: string;
   subject: string;
   message: string;
   // Honeypot anti-spam field. Left empty by real visitors (the input is

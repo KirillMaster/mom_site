@@ -11,6 +11,7 @@ namespace MomSite.Core.Models
 
         private string? _email;
         private string? _phone;
+        private string? _telegramUsername;
 
         [EmailAddress(ErrorMessage = "Некорректный email")]
         [StringLength(200)]
@@ -25,6 +26,17 @@ namespace MomSite.Core.Models
         {
             get => _phone;
             set => _phone = string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+        }
+
+        [StringLength(64, ErrorMessage = "Telegram не длиннее 64 символов")]
+        public string? TelegramUsername
+        {
+            get => _telegramUsername;
+            set
+            {
+                var v = value?.Trim().TrimStart('@').Trim();
+                _telegramUsername = string.IsNullOrEmpty(v) ? null : v;
+            }
         }
 
         [Required(ErrorMessage = "Тема обязательна")]
@@ -58,11 +70,11 @@ namespace MomSite.Core.Models
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (Email is null && Phone is null)
+            if (Email is null && Phone is null && TelegramUsername is null)
             {
                 yield return new ValidationResult(
-                    "Укажите email или телефон",
-                    new[] { nameof(Email), nameof(Phone) });
+                    "Укажите email, телефон или Telegram",
+                    new[] { nameof(Email), nameof(Phone), nameof(TelegramUsername) });
             }
         }
     }

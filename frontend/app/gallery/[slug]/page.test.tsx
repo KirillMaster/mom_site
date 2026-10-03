@@ -1,11 +1,13 @@
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import ArtworkPage, { generateMetadata } from './page';
-import { getGalleryData } from '@/hooks/useApi';
+import { getGalleryData, getHowToBuy, getReviewsData } from '@/hooks/useApi';
 import { buildArtworkSlug } from '@/lib/artworkSlug';
 import { reachGoal, Goals } from '@/lib/analytics';
 
 jest.mock('@/hooks/useApi', () => ({
   getGalleryData: jest.fn(),
+  getHowToBuy: jest.fn(),
+  getReviewsData: jest.fn(),
   getContactsData: jest.fn(),
   getImageUrl: (path: string) => path,
 }));
@@ -478,7 +480,7 @@ describe('@US1-AS1 the artwork page shows the specs block', () => {
     );
     render(await ArtworkPage({ params: { slug: 'osenniy-sad-7' } }));
 
-    expect(screen.getByText('80 × 70 см')).toBeInTheDocument();
+    expect(screen.getAllByText('80 × 70 см').length).toBeGreaterThan(0);
     expect(screen.getByText('масло, холст на подрамнике')).toBeInTheDocument();
     expect(screen.getByText('2026')).toBeInTheDocument();
   });
@@ -630,5 +632,103 @@ describe('@US2 page wires contact channels and mobile bar', () => {
     render(await ArtworkPage({ params: { slug: buildArtworkSlug('Портрет', 12) } }));
     expect(screen.getByTestId('contact-channels')).toBeInTheDocument();
     expect(screen.getByLabelText('Позвонить')).toBeInTheDocument();
+  });
+});
+
+const oneWork = (extra: Record<string, unknown> = {}) =>
+  gallery([{ id: 7, title: 'Осенний сад', isForSale: true, status: 'Available', ...extra }]);
+
+describe('@US3-AS1 default "Как купить" when endpoint returns null', () => {
+  it('shows four default points', async () => {
+    mockedGetGalleryData.mockResolvedValue(oneWork());
+    (getHowToBuy as jest.Mock).mockResolvedValue(null);
+    render(await ArtworkPage({ params: { slug: 'osenniy-sad-7' } }));
+    const block = screen.getByTestId('how-to-buy');
+    expect(within(block).getByRole('heading', { name: 'Как купить' })).toBeInTheDocument();
+    expect(within(block).getAllByRole('listitem')).toHaveLength(4);
+  });
+});
+
+describe('@US3-AS2 stored "Как купить" text replaces the default', () => {
+  it('shows the admin text only', async () => {
+    mockedGetGalleryData.mockResolvedValue(oneWork());
+    (getHowToBuy as jest.Mock).mockResolvedValue('Доставка СДЭК');
+    render(await ArtworkPage({ params: { slug: 'osenniy-sad-7' } }));
+    const block = screen.getByTestId('how-to-buy');
+    expect(within(block).getByText('Доставка СДЭК')).toBeInTheDocument();
+    expect(within(block).queryByRole('listitem')).not.toBeInTheDocument();
+  });
+});
+
+describe('@US3-EC2 "Как купить" endpoint failure falls back to default', () => {
+  it('still renders the page with default text', async () => {
+    mockedGetGalleryData.mockResolvedValue(oneWork());
+    (getHowToBuy as jest.Mock).mockRejectedValue(new Error('boom'));
+    render(await ArtworkPage({ params: { slug: 'osenniy-sad-7' } }));
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Осенний сад');
+    expect(within(screen.getByTestId('how-to-buy')).getAllByRole('listitem')).toHaveLength(4);
+  });
+});
+
+describe('@US4-AS2 no size means no scale diagram', () => {
+  it('hides the diagram', async () => {
+    mockedGetGalleryData.mockResolvedValue(oneWork());
+    render(await ArtworkPage({ params: { slug: 'osenniy-sad-7' } }));
+    expect(screen.queryByTestId('scale-diagram')).not.toBeInTheDocument();
+  });
+});
+
+describe('@US4-EC1 only one dimension means no scale diagram', () => {
+  it('hides the diagram when only width is set', async () => {
+    mockedGetGalleryData.mockResolvedValue(oneWork({ widthCm: 80 }));
+    render(await ArtworkPage({ params: { slug: 'osenniy-sad-7' } }));
+    expect(screen.queryByTestId('scale-diagram')).not.toBeInTheDocument();
+  });
+});
+
+describe('@US2-AS2 reviews on the artwork page put the matching one first', () => {
+  it('shows 3 reviews, artwork review first, with "Все отзывы"', async () => {
+    mockedGetGalleryData.mockResolvedValue(oneWork());
+    const review = (id: number, artworkId: number | null) => ({
+      id, authorName: `Автор${id}`, text: `Текст${id}`, rating: 5, createdAt: '2026-01-01', sortOrder: id, artworkId,
+    });
+    (getReviewsData as jest.Mock).mockResolvedValue([review(1, null), review(2, null), review(3, null), review(4, 7)]);
+    render(await ArtworkPage({ params: { slug: 'osenniy-sad-7' } }));
+    const texts = Array.from(document.querySelectorAll('blockquote')).map((n) => n.textContent);
+    expect(texts).toEqual(['Текст4', 'Текст1', 'Текст2']);
+    expect(screen.getByRole('link', { name: 'Все отзывы' })).toHaveAttribute('href', '/reviews');
+  });
+});
+
+describe('@US2-FE1 trust strip on the artwork page keeps h1 label and ask_price goal', () => {
+  it('shows the three facts, the h1 and fires ask_price', async () => {
+    mockedGetGalleryData.mockResolvedValue(oneWork());
+    render(await ArtworkPage({ params: { slug: 'osenniy-sad-7' } }));
+    expect(screen.getByRole('region', { name: 'Доверие' }).querySelectorAll('li')).toHaveLength(3);
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('link', { name: 'Узнать цену' }));
+    expect(reachGoal).toHaveBeenCalledWith('contact_click', expect.objectContaining({ channel: 'ask_price' }));
+  });
+});
+
+describe('@US6-AS3 "Хочу похожую" leads to the order form', () => {
+  it('links to /order?artwork=<encoded title>', async () => {
+    mockedGetGalleryData.mockResolvedValue(gallery([{ id: 7, title: 'Цветы лета', isForSale: true, status: 'Available' }]));
+    render(await ArtworkPage({ params: { slug: 'cvety-leta-7' } }));
+    expect(screen.getByRole('link', { name: 'Хочу похожую' })).toHaveAttribute(
+      'href',
+      '/order?artwork=%D0%A6%D0%B2%D0%B5%D1%82%D1%8B%20%D0%BB%D0%B5%D1%82%D0%B0'
+    );
+  });
+});
+
+describe('@US6-EC2 title with quotes and ampersand is encoded and round-trips', () => {
+  it('encodes via encodeURIComponent', async () => {
+    const title = 'Вид «на море» & скалы';
+    mockedGetGalleryData.mockResolvedValue(gallery([{ id: 7, title, isForSale: true, status: 'Available' }]));
+    render(await ArtworkPage({ params: { slug: buildArtworkSlug(title, 7) } }));
+    const href = screen.getByRole('link', { name: 'Хочу похожую' }).getAttribute('href') as string;
+    expect(href).toBe(`/order?artwork=${encodeURIComponent(title)}`);
+    expect(new URL(href, 'http://x').searchParams.get('artwork')).toBe(title);
   });
 });

@@ -46,3 +46,12 @@ describe('@US2 в Footer есть ссылка на Telegram-бота', () => {
     expect(link).toHaveAttribute('target', '_blank');
   });
 });
+
+describe('@US6-FE1 в Footer есть ссылка на /order', () => {
+  it('рендерит ссылку «Заказать картину»', () => {
+    mockedUseFooterData.mockReturnValue({ data: undefined, isLoading: false });
+    render(<Footer />);
+
+    expect(screen.getByRole('link', { name: 'Заказать картину' })).toHaveAttribute('href', '/order');
+  });
+});

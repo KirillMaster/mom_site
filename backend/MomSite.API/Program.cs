@@ -156,6 +156,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IS3Service, S3Service>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IArtworkImageService, ArtworkImageService>();
+builder.Services.AddScoped<IRewatermarkService, RewatermarkService>();
 builder.Services.AddScoped<MomSite.Core.Interfaces.ICatalogImportService, MomSite.Infrastructure.Catalog.CatalogImportService>();
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<ICacheInvalidator, FrontendCacheInvalidator>();
@@ -282,6 +283,8 @@ using (var scope = app.Services.CreateScope())
     {
         dbContext.Database.Migrate();
     }
+
+    MomSite.Infrastructure.Services.DescriptionCleanup.Run(dbContext, scope.ServiceProvider.GetRequiredService<ILogger<Program>>());
 }
 
 app.Run();

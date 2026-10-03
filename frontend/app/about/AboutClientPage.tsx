@@ -8,6 +8,7 @@ import ExhibitionTimeline from '@/components/ExhibitionTimeline';
 import BiographySection from '@/components/about/BiographySection';
 import { CollectionsSection, PublicationsSection, StonePanelsSection } from '@/components/about/RecordSections';
 import { Button } from '@/components/ui';
+import ExhibitionPhotos from '@/components/about/ExhibitionPhotos';
 
 const AboutClientPage = ({ aboutData }: { aboutData: AboutData }) => {
   return (
@@ -42,6 +43,7 @@ const AboutClientPage = ({ aboutData }: { aboutData: AboutData }) => {
             экспозиции Севастопольского центра культуры и искусства.
           </p>
           <ExhibitionTimeline />
+          <ExhibitionPhotos photos={aboutData.exhibitionPhotos} />
         </div>
       </section>
 

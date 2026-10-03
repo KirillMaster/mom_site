@@ -125,6 +125,10 @@ namespace MomSite.Infrastructure.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<string>("OriginalPath")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
                     b.Property<int>("SortOrder")
                         .HasColumnType("integer");
 

@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Metadata } from 'next';
-import { getGalleryData, getContactsData, getImageUrl } from '@/hooks/useApi';
+import { getGalleryData, getContactsData, getImageUrl, getHowToBuy, getReviewsData } from '@/hooks/useApi';
 import { loadOrBuildFallback } from '@/lib/buildPhase';
 import { buildContactChannels } from '@/lib/contactChannels';
 import MobileContactBar from './MobileContactBar';
@@ -12,6 +12,10 @@ import { normalizeTitle } from '@/lib/normalizeTitle';
 import { resolveStatus } from '@/lib/artworkStatus';
 import ArtworkGallery from './ArtworkGallery';
 import RelatedWorks from './RelatedWorks';
+import HowToBuy from './HowToBuy';
+import ScaleDiagram from './ScaleDiagram';
+import TrustStrip from '@/components/home/TrustStrip';
+import ReviewsPreview from '@/components/home/ReviewsPreview';
 import {
   ARTIST_NAME,
   artworkPageUrl,
@@ -20,7 +24,7 @@ import {
   buildSeoDescription,
   buildSeoTitle,
 } from './artworkSeo';
-import type { ContactsData } from '@/lib/api';
+import type { ContactsData, ReviewDto } from '@/lib/api';
 import { getArtworkPhotos } from '@/lib/artworkPhotos';
 
 export const revalidate = 3600;
@@ -92,6 +96,14 @@ const categoryIdOf = (artwork: any) => artwork.category?.id ?? artwork.categoryI
 const categoryNameOf = (artwork: any, categories: any[]) =>
   artwork.category?.name ?? categories?.find((category) => category.id === artwork.categoryId)?.name;
 
+const safely = async <T,>(load: () => Promise<T>, fallback: T): Promise<T> => {
+  try {
+    return await load();
+  } catch {
+    return fallback;
+  }
+};
+
 const ArtworkPage = async ({ params }: ArtworkPageProps) => {
   let galleryData;
   try {
@@ -125,6 +137,9 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
         phone: contacts.phone,
       })
     : [];
+
+  const howToBuyText = await safely(() => getHowToBuy(), null as string | null);
+  const reviews = await safely(() => getReviewsData(), [] as ReviewDto[]);
 
   // Other for-sale works from the same category, excluding this one and
   // exhibition photos (S2-AS6/S2-AS7): an artwork alone in its category
@@ -168,8 +183,16 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
           <ArtworkInfoCard artwork={artwork} categoryName={categoryName} categories={categories} channels={channels} />
         </div>
 
+        <div className="mt-10 grid gap-6 md:grid-cols-2">
+          <HowToBuy text={howToBuyText} />
+          <ScaleDiagram widthCm={artwork.widthCm} heightCm={artwork.heightCm} />
+        </div>
+
         <RelatedWorks works={relatedWorks} categoryId={categoryIdOf(artwork)} />
       </div>
+
+      <TrustStrip />
+      <ReviewsPreview reviews={reviews} prioritizeArtworkId={artwork.id} />
 
       {showChannels && <MobileContactBar channels={channels} artwork={displayTitle} artworkId={artwork.id} />}
     </div>

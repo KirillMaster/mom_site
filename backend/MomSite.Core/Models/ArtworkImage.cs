@@ -17,6 +17,9 @@ public class ArtworkImage
     [MaxLength(500)]
     public string ThumbnailPath { get; set; } = string.Empty;
 
+    [MaxLength(500)]
+    public string? OriginalPath { get; set; }
+
     public int SortOrder { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

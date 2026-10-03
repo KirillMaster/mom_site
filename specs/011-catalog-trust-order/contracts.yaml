@@ -1,0 +1,62 @@
+feature: 011-catalog-trust-order
+contracts:
+  - id: how-to-buy-endpoint
+    name: 'GET api/public/how-to-buy'
+    kind: interface
+    request: []
+    response_cases:
+      - outcome: filled
+        fields:
+          - {name: text, type: string, required: true, description: 'Текст из PageContent how-to-buy/body'}
+          - {name: updatedAt, type: string, required: true, description: 'Время правки'}
+      - outcome: empty
+        fields:
+          - {name: text, type: string, required: false, description: 'null — фронт показывает дефолт'}
+    entity_refs: [how-to-buy-content]
+  - id: rewatermark-endpoint
+    name: 'POST api/admin/images/rewatermark?dryRun=true&take=25'
+    kind: interface
+    request:
+      - {name: dryRun, type: boolean, required: false, description: 'По умолчанию true'}
+      - {name: take, type: number, required: false, description: 'Размер пачки, по умолчанию 25, максимум 100'}
+    response_cases:
+      - outcome: ok
+        fields:
+          - {name: report, type: object, required: true, description: 'rewatermark-report'}
+      - outcome: unauthorized
+        fields: []
+    entity_refs: [artwork-image, rewatermark-report]
+  - id: home-endpoint
+    name: 'GET api/public/home (расширение)'
+    kind: interface
+    request: []
+    response_cases:
+      - outcome: ok
+        fields:
+          - {name: availableArtworks, type: array, required: true, description: 'НОВОЕ. До 8 опубликованных Available работ категорий главной, новые первыми'}
+    entity_refs: [artwork]
+  - id: about-endpoint
+    name: 'GET api/public/about (расширение)'
+    kind: interface
+    request: []
+    response_cases:
+      - outcome: ok
+        fields:
+          - {name: exhibitionPhotos, type: array, required: true, description: 'НОВОЕ. Опубликованные работы категории «Фото с выставок», до 24'}
+    entity_refs: [artwork]
+  - id: order-form
+    name: 'Форма /order → POST api/public/contact-message'
+    kind: interface
+    request:
+      - {name: name, type: string, required: true, description: Имя}
+      - {name: contact, type: string, required: true, description: 'Телефон, email или Telegram'}
+      - {name: subjectText, type: string, required: true, description: 'Сюжет'}
+      - {name: size, type: string, required: false, description: 'Желаемый размер'}
+      - {name: comment, type: string, required: false, description: 'Комментарий; из «Хочу похожую» — название работы'}
+    response_cases:
+      - outcome: sent
+        fields:
+          - {name: subject, type: string, required: true, description: '«Картина на заказ»; цель Метрики custom_order_submit'}
+      - outcome: error
+        fields: []
+    entity_refs: []
