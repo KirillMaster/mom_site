@@ -72,6 +72,10 @@ services:
       - INTERNAL_API_URL=http://mom_site_api_prod:5000/api
       - REVALIDATE_SECRET=${REVALIDATE_SECRET:?REVALIDATE_SECRET is required}
       - INDEXNOW_KEY=${INDEXNOW_KEY:-}
+    volumes:
+      # Оптимизированные картинки переживают деплой: без этого после каждого
+      # деплоя первые посетители ждут перекодирования в AVIF (до 30 с при 0.5 CPU).
+      - next_image_cache:/app/.next/cache/images
     expose:
       - "3000"
     healthcheck:
@@ -127,3 +131,6 @@ services:
 networks:
   mom_site_network:
     driver: bridge
+
+volumes:
+  next_image_cache:

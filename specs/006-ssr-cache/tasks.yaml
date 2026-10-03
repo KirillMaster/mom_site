@@ -31,10 +31,10 @@ tasks:
     acceptance_criteria:
       - id: "AC-1"
         description: "В публичных сегментах нет force-dynamic, есть revalidate = 3600"
-        done: false
+        done: true
       - id: "AC-2"
         description: "next build проходит без доступа к API"
-        done: false
+        done: true
     test_scenarios:
       - id: "TS-1"
         given: ["исходники публичных страниц"]
@@ -66,7 +66,7 @@ tasks:
     acceptance_criteria:
       - id: "AC-3"
         description: "При ошибке загрузчика серверный компонент страницы отклоняет промис"
-        done: false
+        done: true
     test_scenarios:
       - id: "TS-2"
         given: ["загрузчик замокан и бросает ошибку"]
@@ -98,7 +98,7 @@ tasks:
     acceptance_criteria:
       - id: "AC-4"
         description: "Верный секрет → 200 и revalidatePath вызван; неверный/пустой → 401 без вызова"
-        done: false
+        done: true
     test_scenarios:
       - id: "TS-3"
         given: ["REVALIDATE_SECRET задан"]
@@ -130,7 +130,7 @@ tasks:
     acceptance_criteria:
       - id: "AC-5"
         description: "Все URL sitemap запрошены, одновременно ≤ 3; параллельный вызов не запускает второй прогрев"
-        done: false
+        done: true
     test_scenarios:
       - id: "TS-4"
         given: ["fetch замокан, sitemap с 7 URL"]
@@ -165,10 +165,10 @@ tasks:
     acceptance_criteria:
       - id: "AC-6"
         description: "Успешный POST/PUT/DELETE админки вызывает инвалидатор; GET, login, 4xx — нет"
-        done: false
+        done: true
       - id: "AC-7"
         description: "Исключение инвалидатора не меняет ответ админки"
-        done: false
+        done: true
     test_scenarios:
       - id: "TS-5"
         given: ["WebApplicationFactory с фейковым ICacheInvalidator"]
@@ -209,10 +209,10 @@ tasks:
     acceptance_criteria:
       - id: "AC-8"
         description: "curl https://angelamoiseenko.ru/internal/revalidate → 404"
-        done: false
+        done: true
       - id: "AC-9"
         description: "после деплоя первый запрос страницы работы — x-nextjs-cache HIT"
-        done: false
+        done: true
     test_scenarios:
       - id: "TS-7"
         given: ["deploy_remote.sh"]
@@ -241,7 +241,7 @@ tasks:
     acceptance_criteria:
       - id: "AC-10"
         description: "Спека зелёная против прода после деплоя"
-        done: false
+        done: true
     test_scenarios:
       - id: "TS-8"
         given: ["прод после деплоя"]

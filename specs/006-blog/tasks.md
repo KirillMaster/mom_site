@@ -575,7 +575,7 @@ frontend/e2e/blog.spec.ts: войти → написать новость с ф�
 
 **Acceptance Criteria**:
 
-- [ ] `AC-1` Все тесты и сборка зелёные; quickstart 1–16 пройден
+- [x] `AC-1` Все тесты и сборка зелёные; quickstart 1–16 пройден
 
 **Test Scenarios**:
 
