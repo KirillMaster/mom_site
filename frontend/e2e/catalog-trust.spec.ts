@@ -13,8 +13,17 @@ test.describe('@US5-E2E1 фильтры галереи', () => {
     const filters = page.getByTestId('gallery-filters');
     await expect(filters).toBeVisible();
 
-    await filters.getByRole('button', { name: /^M/ }).click();
-    await filters.getByRole('button', { name: 'Только в наличии' }).click();
+    // The gallery HTML is heavy; a click landing before hydration is lost, so
+    // repeat the toggle until the client handler has taken it.
+    const press = async (name: string | RegExp) => {
+      const button = filters.getByRole('button', { name });
+      await expect(async () => {
+        if ((await button.getAttribute('aria-pressed')) !== 'true') await button.click();
+        await expect(button).toHaveAttribute('aria-pressed', 'true', { timeout: 1000 });
+      }).toPass({ timeout: 30_000 });
+    };
+    await press(/^M/);
+    await press('Только в наличии');
 
     await expect(page).toHaveURL(/size=M/);
     await expect(page).toHaveURL(/available=1/);
