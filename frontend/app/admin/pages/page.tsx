@@ -24,6 +24,7 @@ interface PageField {
   label: string;
   type: 'text' | 'textarea' | 'url' | 'image';
   required?: boolean;
+  hint?: string;
 }
 
 const pageFields: Record<string, PageField[]> = {
@@ -71,6 +72,9 @@ const pageFields: Record<string, PageField[]> = {
   ],
   footer: [
     { key: 'description', label: 'Описание в футере', type: 'textarea' }
+  ],
+  privacy: [
+    { key: 'body', label: 'Текст политики', type: 'textarea', hint: 'Пусто = текст по умолчанию. Абзацы разделяйте пустой строкой.' }
   ]
 };
 
@@ -80,7 +84,8 @@ const pageNames: Record<string, string> = {
   about: 'Обо мне',
   contacts: 'Контакты',
   social: 'Социальные сети',
-  footer: 'Футер'
+  footer: 'Футер',
+  privacy: 'Политика конфиденциальности'
 };
 
 export default function PageContentManagement() {
@@ -348,6 +353,7 @@ export default function PageContentManagement() {
                     placeholder={field.type === 'url' ? 'https://example.com' : `Введите ${field.label.toLowerCase()}`}
                   />
                 )}
+                {field.hint && <p className="text-xs text-gray-500">{field.hint}</p>}
               </div>
             ))}
           </div>
