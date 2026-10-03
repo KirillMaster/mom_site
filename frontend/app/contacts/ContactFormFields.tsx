@@ -1,4 +1,5 @@
 import { ChangeEvent, FormEvent } from 'react';
+import Link from 'next/link';
 
 export interface ContactFormState {
   name: string;
@@ -125,6 +126,12 @@ const ContactFormFields = ({
       >
         {isSubmitting ? 'Отправка...' : 'Отправить сообщение'}
       </button>
+      <p className="text-xs text-gray-500 text-center mt-3">
+        Отправляя форму, вы соглашаетесь с{' '}
+        <Link href="/privacy" className="underline hover:text-gray-700">
+          политикой конфиденциальности
+        </Link>
+      </p>
       {submissionResult === 'success' && (
         <p className="text-green-600 text-center mt-4">Сообщение успешно отправлено!</p>
       )}
