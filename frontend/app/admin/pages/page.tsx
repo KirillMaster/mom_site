@@ -75,6 +75,9 @@ const pageFields: Record<string, PageField[]> = {
   ],
   privacy: [
     { key: 'body', label: 'Текст политики', type: 'textarea', hint: 'Пусто = текст по умолчанию. Абзацы разделяйте пустой строкой.' }
+  ],
+  'how-to-buy': [
+    { key: 'body', label: 'Текст «Как купить»', type: 'textarea', hint: 'Абзацы разделяйте пустой строкой.' }
   ]
 };
 
@@ -85,7 +88,8 @@ const pageNames: Record<string, string> = {
   contacts: 'Контакты',
   social: 'Социальные сети',
   footer: 'Футер',
-  privacy: 'Политика конфиденциальности'
+  privacy: 'Политика конфиденциальности',
+  'how-to-buy': 'Как купить'
 };
 
 export default function PageContentManagement() {
