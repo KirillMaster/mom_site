@@ -367,5 +367,141 @@ namespace MomSite.Tests
             var saved = await _factory.WithDbAsync(c => c.ContactMessages.AsNoTracking().SingleAsync(m => m.Name == name));
             Assert.Equal("test@example.com", saved.Email);
         }
+
+        // ====== @US6-FE2 TelegramUsername Boundary Tests ======
+
+        [Fact, Trait("scenario", "US6-FE2")]
+        public async Task Degradation_TelegramOnly_NoEmailNoPhone_Returns200()
+        {
+            var name = "Deg-tg-only-" + Guid.NewGuid().ToString("N");
+            var res = await _factory.CreateClient().PostAsJsonAsync("/api/public/contact-message", new
+            {
+                name = name, email = "", phone = "", telegramUsername = "artist_name", subject = "ok", message = "msg"
+            });
+            Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+            var saved = await _factory.WithDbAsync(c => c.ContactMessages.AsNoTracking().SingleAsync(m => m.Name == name));
+            Assert.Equal("artist_name", saved.TelegramUsername);
+            Assert.Null(saved.Email);
+            Assert.Null(saved.Phone);
+        }
+
+        [Fact, Trait("scenario", "US6-FE2")]
+        public async Task Degradation_TelegramWithAtSymbol_Stripped()
+        {
+            var name = "Deg-tg-at-" + Guid.NewGuid().ToString("N");
+            var res = await _factory.CreateClient().PostAsJsonAsync("/api/public/contact-message", new
+            {
+                name = name, email = "", phone = "", telegramUsername = "@artist_name", subject = "ok", message = "msg"
+            });
+            Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+            var saved = await _factory.WithDbAsync(c => c.ContactMessages.AsNoTracking().SingleAsync(m => m.Name == name));
+            Assert.Equal("artist_name", saved.TelegramUsername);
+        }
+
+        [Theory, Trait("scenario", "US6-FE2")]
+        [InlineData("@")]
+        [InlineData("")]
+        [InlineData("   ")]
+        [InlineData("@  ")]
+        [InlineData("  @  ")]
+        public async Task Degradation_TelegramEmpty_AfterStripAndTrim_ReturnsNull(string telegram)
+        {
+            var name = "Deg-tg-empty-" + Guid.NewGuid().ToString("N");
+            var res = await _factory.CreateClient().PostAsJsonAsync("/api/public/contact-message", new
+            {
+                name = name, email = "test@example.com", phone = "", telegramUsername = telegram, subject = "ok", message = "msg"
+            });
+            Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+            var saved = await _factory.WithDbAsync(c => c.ContactMessages.AsNoTracking().SingleAsync(m => m.Name == name));
+            Assert.Null(saved.TelegramUsername);
+        }
+
+        [Fact, Trait("scenario", "US6-FE2")]
+        public async Task Degradation_TelegramWithSpaces_Trimmed()
+        {
+            var name = "Deg-tg-spaces-" + Guid.NewGuid().ToString("N");
+            var res = await _factory.CreateClient().PostAsJsonAsync("/api/public/contact-message", new
+            {
+                name = name, email = "", phone = "", telegramUsername = "  @artist_name  ", subject = "ok", message = "msg"
+            });
+            Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+            var saved = await _factory.WithDbAsync(c => c.ContactMessages.AsNoTracking().SingleAsync(m => m.Name == name));
+            Assert.Equal("artist_name", saved.TelegramUsername);
+        }
+
+        [Theory, Trait("scenario", "US6-FE2")]
+        [InlineData(63, HttpStatusCode.OK)]
+        [InlineData(64, HttpStatusCode.OK)]
+        [InlineData(65, HttpStatusCode.BadRequest)]
+        [InlineData(100, HttpStatusCode.BadRequest)]
+        public async Task Degradation_TelegramLengthBoundary(int length, HttpStatusCode expected)
+        {
+            var name = "Deg-tg-len-" + Guid.NewGuid().ToString("N");
+            var telegram = new string('a', length);
+            var res = await _factory.CreateClient().PostAsJsonAsync("/api/public/contact-message", new
+            {
+                name = name, email = "", phone = "", telegramUsername = telegram, subject = "ok", message = "msg"
+            });
+            Assert.Equal(expected, res.StatusCode);
+            Assert.Equal(expected == HttpStatusCode.OK ? 1 : 0, await Count(name));
+        }
+
+        [Fact, Trait("scenario", "US6-FE2")]
+        public async Task Degradation_NoContactsAtAll_Returns400()
+        {
+            var name = "Deg-no-contacts-" + Guid.NewGuid().ToString("N");
+            var res = await _factory.CreateClient().PostAsJsonAsync("/api/public/contact-message", new
+            {
+                name = name, email = "", phone = "", telegramUsername = "", subject = "ok", message = "msg"
+            });
+            Assert.Equal(HttpStatusCode.BadRequest, res.StatusCode);
+            Assert.Contains("email, телефон или Telegram", await res.Content.ReadAsStringAsync());
+            Assert.Equal(0, await Count(name));
+        }
+
+        [Fact, Trait("scenario", "US6-FE2")]
+        public async Task Degradation_TelegramAndEmail_BothAccepted()
+        {
+            var name = "Deg-tg-email-" + Guid.NewGuid().ToString("N");
+            var res = await _factory.CreateClient().PostAsJsonAsync("/api/public/contact-message", new
+            {
+                name = name, email = "test@example.com", phone = "", telegramUsername = "@artist", subject = "ok", message = "msg"
+            });
+            Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+            var saved = await _factory.WithDbAsync(c => c.ContactMessages.AsNoTracking().SingleAsync(m => m.Name == name));
+            Assert.Equal("test@example.com", saved.Email);
+            Assert.Equal("artist", saved.TelegramUsername);
+        }
+
+        [Fact, Trait("scenario", "US6-FE2")]
+        public async Task Degradation_TelegramAndPhone_BothAccepted()
+        {
+            var name = "Deg-tg-phone-" + Guid.NewGuid().ToString("N");
+            var res = await _factory.CreateClient().PostAsJsonAsync("/api/public/contact-message", new
+            {
+                name = name, email = "", phone = "+7 900 111-22-33", telegramUsername = "@artist", subject = "ok", message = "msg"
+            });
+            Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+            var saved = await _factory.WithDbAsync(c => c.ContactMessages.AsNoTracking().SingleAsync(m => m.Name == name));
+            Assert.Equal("+7 900 111-22-33", saved.Phone);
+            Assert.Equal("artist", saved.TelegramUsername);
+        }
+
+        [Theory, Trait("scenario", "US6-FE2")]
+        [InlineData("artist")]
+        [InlineData("artist_123")]
+        [InlineData("a")]
+        [InlineData("Artist_Name_12345")]
+        public async Task Degradation_TelegramValidFormats_Accepted(string telegram)
+        {
+            var name = "Deg-tg-fmt-" + Guid.NewGuid().ToString("N");
+            var res = await _factory.CreateClient().PostAsJsonAsync("/api/public/contact-message", new
+            {
+                name = name, email = "", phone = "", telegramUsername = telegram, subject = "ok", message = "msg"
+            });
+            Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+            var saved = await _factory.WithDbAsync(c => c.ContactMessages.AsNoTracking().SingleAsync(m => m.Name == name));
+            Assert.Equal(telegram, saved.TelegramUsername);
+        }
     }
 }

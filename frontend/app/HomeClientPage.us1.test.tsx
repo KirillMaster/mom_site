@@ -71,3 +71,90 @@ describe('@US2-EC1 без отзывов', () => {
     expect(screen.getByText('Работы в музейных собраниях')).toBeInTheDocument();
   });
 });
+
+// ====== Degradation Mode Boundary Tests for Home Page ======
+
+describe('@US1-AS2 @US1-EC2 @US1-EC1 доступные работы — boundary quantities', () => {
+  it('shows no available grid with 1 available artwork', () => {
+    render(<HomeClientPage homeData={{ ...base, availableArtworks: [art(1)] }} />);
+    expect(screen.getByRole('heading', { name: 'Сейчас в наличии' })).toBeInTheDocument();
+    const { container } = render(<HomeClientPage homeData={{ ...base, availableArtworks: [art(1)] }} />);
+    const cards = container.querySelectorAll('a[href^="/gallery/"]');
+    expect(cards.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('shows available grid with exactly 6 artworks', () => {
+    const { container } = render(<HomeClientPage homeData={{ ...base, availableArtworks: Array.from({ length: 6 }, (_, i) => art(i + 1)) }} />);
+    expect(screen.getByRole('heading', { name: 'Сейчас в наличии' })).toBeInTheDocument();
+    const cards = container.querySelectorAll('a[href^="/gallery/"]');
+    expect(cards).toHaveLength(6);
+  });
+
+  it('shows available grid with 7 artworks', () => {
+    const { container } = render(<HomeClientPage homeData={{ ...base, availableArtworks: Array.from({ length: 7 }, (_, i) => art(i + 1)) }} />);
+    const cards = container.querySelectorAll('a[href^="/gallery/"]');
+    expect(cards).toHaveLength(7);
+  });
+
+  it('shows available grid with 8 artworks', () => {
+    const { container } = render(<HomeClientPage homeData={{ ...base, availableArtworks: Array.from({ length: 8 }, (_, i) => art(i + 1)) }} />);
+    const cards = container.querySelectorAll('a[href^="/gallery/"]');
+    expect(cards).toHaveLength(8);
+  });
+});
+
+describe('@US2-AS1 @US2-AS3 доверие и отзывы в разных количествах', () => {
+  it('shows trust strip and 1 review', () => {
+    const { container } = render(<HomeClientPage homeData={base} reviews={[review(1)]} />);
+    expect(screen.getByText('Член Союза художников России')).toBeInTheDocument();
+    expect(container.querySelectorAll('blockquote')).toHaveLength(1);
+  });
+
+  it('shows trust strip and exactly 3 reviews from 3', () => {
+    const { container } = render(<HomeClientPage homeData={base} reviews={[review(1), review(2), review(3)]} />);
+    expect(screen.getByText('Работы в музейных собраниях')).toBeInTheDocument();
+    expect(container.querySelectorAll('blockquote')).toHaveLength(3);
+  });
+
+  it('shows trust strip and 3 reviews from 4', () => {
+    const { container } = render(<HomeClientPage homeData={base} reviews={[review(1), review(2), review(3), review(4)]} />);
+    expect(screen.getByText('Коллекционеры в 12 странах')).toBeInTheDocument();
+    expect(container.querySelectorAll('blockquote')).toHaveLength(3);
+  });
+});
+
+describe('@US1-AS1 hero section edge cases', () => {
+  it('hero button to /gallery allows optional available=1 param', () => {
+    const { container } = render(<HomeClientPage homeData={base} />);
+    const chooseBtn = screen.getByRole('link', { name: /Выбрать картину/ });
+    const href = chooseBtn.getAttribute('href');
+    expect(href).toMatch(/^\/gallery(\?available=1)?$/);
+  });
+
+  it('order button always goes to /order without params', () => {
+    render(<HomeClientPage homeData={base} />);
+    const orderBtn = screen.getByRole('link', { name: /Заказать картину/ });
+    expect(orderBtn).toHaveAttribute('href', '/order');
+  });
+});
+
+describe('@US1-AS3 all images in home have next/image wrapper', () => {
+  it('no raw S3 URLs in img src attributes', () => {
+    const { container } = render(<HomeClientPage homeData={base} reviews={[review(1), review(2), review(3)]} />);
+    const imgs = container.querySelectorAll('img');
+    imgs.forEach((img) => {
+      const src = img.getAttribute('src');
+      if (src && src.startsWith('http')) {
+        expect(src).not.toMatch(/^https:\/\/s3\./);
+      }
+    });
+  });
+
+  it('each work image has sizes attribute', () => {
+    const { container } = render(<HomeClientPage homeData={base} />);
+    const imgs = container.querySelectorAll('img[src*="/_next/image"]');
+    imgs.forEach((img) => {
+      expect(img.getAttribute('sizes')).toBeTruthy();
+    });
+  });
+});

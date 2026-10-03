@@ -114,3 +114,153 @@ describe('@US6-FE3 параметр artwork префиллит коммента�
     expect(container.querySelector('b')).toBeNull();
   });
 });
+
+// ====== Degradation Mode Boundary Tests for @US6 (Order Form & Telegram) ======
+
+describe('@US6-FE2 тип контакта — telegram boundary cases', () => {
+  const req = (contact: string) =>
+    buildOrderRequest({ name: 'А', contact, subjectText: 'с', size: '', comment: '' });
+
+  it('telegram с @', () => {
+    const r = req('@artist');
+    expect(r.telegramUsername).toBe('@artist');
+    expect(r.email).toBeUndefined();
+    expect(r.phone).toBeUndefined();
+  });
+
+  it('telegram с @ и пробелами (trimmed)', () => {
+    const r = req('  @artist  ');
+    expect(r.telegramUsername).toBe('@artist');
+    expect(r.email).toBeUndefined();
+    expect(r.phone).toBeUndefined();
+  });
+
+  it('telegram только имя', () => {
+    const r = req('artist_name');
+    expect(r.telegramUsername).toBe('artist_name');
+    expect(r.email).toBeUndefined();
+    expect(r.phone).toBeUndefined();
+  });
+
+  it('именно 64 символа', () => {
+    const r = req(new Array(65).join('a'));
+    expect(r.telegramUsername?.length).toBe(64);
+  });
+});
+
+describe('@US6-AS2 пусто контактных данных блокирует отправку — all variations', () => {
+  beforeEach(() => {
+    send.mockReset();
+    goal.mockReset();
+  });
+
+  it('только имя и сюжет, контакт пуст', async () => {
+    render(<OrderForm />);
+    fill(/Имя/, 'Анна');
+    fill(/Как с вами связаться/, '');
+    fill(/Сюжет/, 'Море на закате');
+    fireEvent.click(screen.getByRole('button', { name: 'Отправить' }));
+
+    await waitFor(() => expect(send).not.toHaveBeenCalled());
+    expect(goal).not.toHaveBeenCalled();
+  });
+
+  it('контакт содержит только пробелы', async () => {
+    render(<OrderForm />);
+    fill(/Имя/, 'Анна');
+    fill(/Как с вами связаться/, '   ');
+    fill(/Сюжет/, 'Море');
+    fireEvent.click(screen.getByRole('button', { name: 'Отправить' }));
+
+    await waitFor(() => expect(send).not.toHaveBeenCalled());
+  });
+});
+
+describe('@US6-AS1 @US6-FE2 отправка с telegram-only контактом', () => {
+  beforeEach(() => {
+    send.mockReset();
+    goal.mockReset();
+  });
+
+  it('accepts @telegram_handle', async () => {
+    send.mockResolvedValue({});
+    render(<OrderForm />);
+    fill(/Имя/, 'Анна');
+    fill(/Как с вами связаться/, '@artist_handle');
+    fill(/Сюжет/, 'Портрет');
+    fireEvent.click(screen.getByRole('button', { name: 'Отправить' }));
+
+    await waitFor(() => expect(send).toHaveBeenCalledTimes(1));
+    const payload = send.mock.calls[0][0];
+    expect(payload.telegramUsername).toBe('@artist_handle');
+    expect(payload.email).toBeUndefined();
+    expect(payload.phone).toBeUndefined();
+  });
+
+  it('accepts telegram without @', async () => {
+    send.mockResolvedValue({});
+    render(<OrderForm />);
+    fill(/Имя/, 'Анна');
+    fill(/Как с вами связаться/, 'artist_handle');
+    fill(/Сюжет/, 'Портрет');
+    fireEvent.click(screen.getByRole('button', { name: 'Отправить' }));
+
+    await waitFor(() => expect(send).toHaveBeenCalledTimes(1));
+    const payload = send.mock.calls[0][0];
+    expect(payload.telegramUsername).toBe('artist_handle');
+  });
+
+  it('persists form on server error with telegram', async () => {
+    send.mockRejectedValue(new Error('500'));
+    render(<OrderForm />);
+    fill(/Имя/, 'Анна');
+    fill(/Как с вами связаться/, '@artist');
+    fill(/Сюжет/, 'Портрет');
+    fireEvent.click(screen.getByRole('button', { name: 'Отправить' }));
+
+    const alert = await screen.findByText(/мессенджер/i);
+    expect(alert).toBeInTheDocument();
+    expect(screen.getByLabelText(/Как с вами связаться/)).toHaveValue('@artist');
+  });
+});
+
+describe('@US6-FE3 artwork parameter edge cases', () => {
+  it('very long artwork title', () => {
+    const longTitle = 'А'.repeat(200);
+    render(<OrderForm artwork={longTitle} />);
+    expect(screen.getByLabelText(/Комментарий/)).toHaveValue(`Хочу похожую на «${longTitle}»`);
+  });
+
+  it('artwork title with special characters', () => {
+    render(<OrderForm artwork="«Рассвет» & Тень" />);
+    expect(screen.getByLabelText(/Комментарий/)).toHaveValue('Хочу похожую на ««Рассвет» & Тень»');
+  });
+
+  it('artwork with quotes is not interpreted as HTML', () => {
+    const { container } = render(<OrderForm artwork='"quotes"' />);
+    expect(screen.getByLabelText(/Комментарий/)).toHaveValue('Хочу похожую на «"quotes"»');
+    expect(container.querySelector('b')).toBeNull();
+  });
+});
+
+describe('@US1-EC2 @US1-EC1 available grid boundary — 0, 1, 2 items', () => {
+  beforeEach(() => {
+    send.mockReset();
+  });
+
+  it('form still renders with no artworks', () => {
+    render(<OrderForm />);
+    expect(screen.getByRole('button', { name: 'Отправить' })).toBeInTheDocument();
+  });
+
+  it('form preserves textarea content on blur and focus', async () => {
+    render(<OrderForm />);
+    const textarea = screen.getByLabelText(/Сюжет/);
+
+    fireEvent.focus(textarea);
+    fireEvent.change(textarea, { target: { value: 'Морской пейзаж' } });
+    fireEvent.blur(textarea);
+
+    expect(textarea).toHaveValue('Морской пейзаж');
+  });
+});

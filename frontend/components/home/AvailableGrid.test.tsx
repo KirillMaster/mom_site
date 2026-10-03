@@ -47,3 +47,64 @@ describe('@US1-EC2 меньше шести работ', () => {
     expect(container.querySelectorAll('li')).toHaveLength(3);
   });
 });
+
+// ====== Degradation Mode Boundary Tests for AvailableGrid ======
+
+describe('@US1-AS2 @US1-EC2 сетка — boundary cases (1, 7 items)', () => {
+  it('shows single artwork card without placeholders', () => {
+    const { container } = render(<AvailableGrid artworks={[art(1)]} />);
+    expect(screen.getByRole('heading', { name: 'Сейчас в наличии' })).toBeInTheDocument();
+    expect(container.querySelectorAll('a[href^="/gallery/"]')).toHaveLength(1);
+    expect(container.querySelectorAll('[data-label-line]').length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('shows 7 cards without padding for 8th card', () => {
+    const { container } = render(<AvailableGrid artworks={Array.from({ length: 7 }, (_, i) => art(i + 1))} />);
+    const links = container.querySelectorAll('a[href^="/gallery/"]');
+    expect(links).toHaveLength(7);
+    expect(container.querySelectorAll('li')).toHaveLength(7);
+  });
+
+  it('shows exactly 5 cards', () => {
+    const { container } = render(<AvailableGrid artworks={Array.from({ length: 5 }, (_, i) => art(i + 1))} />);
+    expect(container.querySelectorAll('a[href^="/gallery/"]')).toHaveLength(5);
+    expect(container.querySelectorAll('li')).toHaveLength(5);
+  });
+});
+
+describe('@US1-AS3 AvailableGrid images — boundary & edge cases', () => {
+  it('single artwork image has sizes attribute', () => {
+    const { container } = render(<AvailableGrid artworks={[art(1)]} />);
+    const img = container.querySelector('img');
+    expect(img?.getAttribute('sizes')).toBeTruthy();
+  });
+
+  it('all images have different src patterns (next/image wrapped)', () => {
+    const { container } = render(<AvailableGrid artworks={[art(1), art(2), art(3)]} />);
+    const imgs = container.querySelectorAll('img');
+    expect(imgs.length).toBeGreaterThanOrEqual(3);
+    imgs.forEach((img, idx) => {
+      expect(img.getAttribute('src')).toMatch(/^\/_next\/image/);
+      expect(img.getAttribute('alt')).toBeTruthy();
+    });
+  });
+});
+
+describe('@US1-AS2 AvailableGrid links — slug generation', () => {
+  it('each card links to correct slug', () => {
+    const { container } = render(<AvailableGrid artworks={[art(1), art(2)]} />);
+    const links = Array.from(container.querySelectorAll('a[href^="/gallery/"]'));
+    expect(links[0].getAttribute('href')).toBe('/gallery/rabota-1-1');
+    expect(links[1].getAttribute('href')).toBe('/gallery/rabota-2-2');
+  });
+
+  it('handles 8 items with correct hrefs', () => {
+    const artworks = Array.from({ length: 8 }, (_, i) => art(i + 1));
+    const { container } = render(<AvailableGrid artworks={artworks} />);
+    const links = Array.from(container.querySelectorAll('a[href^="/gallery/"]'));
+    expect(links.length).toBe(8);
+    links.forEach((link, idx) => {
+      expect(link.getAttribute('href')).toMatch(/^\/gallery\/rabota-\d+-\d+$/);
+    });
+  });
+});
