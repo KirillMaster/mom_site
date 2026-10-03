@@ -91,13 +91,13 @@ describe('@US4-AS12 RelatedWorks edge cases', () => {
     expect(section).toBeInTheDocument();
   });
 
-  it('handles large number of works', () => {
+  it('@US5-AS1 caps a large number of works at 8', () => {
     const works = Array.from({ length: 100 }, (_, i) => artwork(i + 1, `Картина ${i + 1}`));
     render(<RelatedWorks works={works} />);
     const section = screen.getByRole('heading', { name: 'Другие работы этой категории' }).parentElement;
     if (!section) throw new Error('Section not found');
     const items = within(section).getAllByRole('link').filter(l => (l as HTMLAnchorElement).href.includes('/gallery/')) as HTMLAnchorElement[];
-    expect(items.length).toBeGreaterThanOrEqual(100);
+    expect(items).toHaveLength(8);
   });
 
   it('includes artwork links with proper href', () => {

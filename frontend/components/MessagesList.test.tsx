@@ -254,3 +254,107 @@ describe('MessagesList', () => {
     expect(screen.getByText(longSubject)).toBeInTheDocument();
   });
 });
+
+describe('MessagesList phone (@US3-BE4)', () => {
+  it('@US3-BE4 shows the phone and tolerates a missing email', () => {
+    const messages = [makeMessage({ id: 7, email: null, phone: '+7 900 111-22-33' })];
+
+    renderList({ messages });
+
+    const row = screen.getByTestId('message-row-7');
+    expect(row).toHaveTextContent('+7 900 111-22-33');
+    expect(row.querySelector('a[href^="mailto:"]')).toBeNull();
+    expect(row.querySelector('a[href="tel:+7 900 111-22-33"]')).not.toBeNull();
+  });
+
+  // Degradation mode tests for phone field
+  it('Degradation: shows both email and phone when both are present', () => {
+    const messages = [makeMessage({
+      id: 8,
+      email: 'test@example.com',
+      phone: '+7 900 222-33-44',
+    })];
+
+    renderList({ messages });
+
+    const row = screen.getByTestId('message-row-8');
+    expect(row).toHaveTextContent('test@example.com');
+    expect(row).toHaveTextContent('+7 900 222-33-44');
+    expect(row.querySelector('a[href="mailto:test@example.com"]')).not.toBeNull();
+    expect(row.querySelector('a[href="tel:+7 900 222-33-44"]')).not.toBeNull();
+  });
+
+  it('Degradation: phone is searchable in the messages list', () => {
+    const messages = [
+      makeMessage({ id: 1, name: 'Иван', email: null, phone: '+7 900 111-11-11' }),
+      makeMessage({ id: 2, name: 'Петр', email: 'petr@example.com', phone: '+7 950 222-22-22' }),
+    ];
+
+    renderList({ messages });
+
+    // Search for a specific phone number
+    fireEvent.change(screen.getByLabelText('Поиск по заявкам'), { target: { value: '111-11' } });
+
+    // Only the message with the matching phone should be visible
+    expect(screen.getByText('Иван')).toBeInTheDocument();
+    expect(screen.queryByText('Петр')).not.toBeInTheDocument();
+  });
+
+  it('Degradation: phone tel: link works with +7 format', () => {
+    const phone = '+7 900 111-22-33';
+    const messages = [makeMessage({ id: 100, email: null, phone })];
+    renderList({ messages });
+
+    const link = screen.getByRole('link', { name: phone });
+    expect(link).toHaveAttribute('href', `tel:${phone}`);
+  });
+
+  it('Degradation: empty phone is not displayed when email is present', () => {
+    const messages = [makeMessage({
+      id: 9,
+      email: 'test@example.com',
+      phone: null,
+    })];
+
+    renderList({ messages });
+
+    const row = screen.getByTestId('message-row-9');
+    expect(row).toHaveTextContent('test@example.com');
+    expect(row.querySelector('a[href^="tel:"]')).toBeNull();
+  });
+
+  it('Degradation: phone and email are rendered as separate links', () => {
+    const messages = [makeMessage({
+      id: 10,
+      email: 'artist@example.com',
+      phone: '+7 900 999-99-99',
+    })];
+
+    renderList({ messages });
+
+    const emailLink = screen.getByRole('link', { name: 'artist@example.com' });
+    const phoneLink = screen.getByRole('link', { name: '+7 900 999-99-99' });
+
+    expect(emailLink).toHaveAttribute('href', 'mailto:artist@example.com');
+    expect(phoneLink).toHaveAttribute('href', 'tel:+7 900 999-99-99');
+  });
+
+  it('Degradation: search works with email and phone together', () => {
+    const messages = [
+      makeMessage({
+        id: 11,
+        name: 'Анна',
+        email: 'anna@example.com',
+        phone: '+7 900 333-44-55',
+      }),
+    ];
+
+    renderList({ messages });
+
+    fireEvent.change(screen.getByLabelText('Поиск по заявкам'), { target: { value: 'anna@' } });
+    expect(screen.getByText('Анна')).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText('Поиск по заявкам'), { target: { value: '333-44' } });
+    expect(screen.getByText('Анна')).toBeInTheDocument();
+  });
+});

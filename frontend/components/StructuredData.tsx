@@ -1,4 +1,5 @@
 import { HomeData } from '@/lib/api';
+import { normalizeTitle } from '@/lib/normalizeTitle';
 
 interface StructuredDataProps {
   homeData: HomeData;
@@ -85,7 +86,7 @@ export default function StructuredData({ homeData }: StructuredDataProps) {
       "position": index + 1,
       "item": {
         "@type": "CreativeWork",
-        "name": artwork.title,
+        "name": normalizeTitle(artwork.title),
         "description": artwork.description,
         "image": artwork.imagePath,
         "creator": {

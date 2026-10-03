@@ -1,7 +1,10 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Metadata } from 'next';
-import { getGalleryData, getImageUrl } from '@/hooks/useApi';
+import { getGalleryData, getContactsData, getImageUrl } from '@/hooks/useApi';
+import { loadOrBuildFallback } from '@/lib/buildPhase';
+import { buildContactChannels } from '@/lib/contactChannels';
+import MobileContactBar from './MobileContactBar';
 import { resolveArtworkBySlug } from '@/lib/artworkSlug';
 import { isExhibitionPhoto } from '@/lib/gallery';
 import ArtworkInfoCard from './ArtworkInfoCard';
@@ -17,6 +20,7 @@ import {
   buildSeoDescription,
   buildSeoTitle,
 } from './artworkSeo';
+import type { ContactsData } from '@/lib/api';
 import { getArtworkPhotos } from '@/lib/artworkPhotos';
 
 export const revalidate = 3600;
@@ -68,7 +72,7 @@ export async function generateMetadata({ params }: ArtworkPageProps): Promise<Me
           url: imageUrl,
           width: 1200,
           height: 630,
-          alt: artwork.title,
+          alt: normalizeTitle(artwork.title),
         },
       ],
       locale: 'ru_RU',
@@ -109,6 +113,18 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
 
   const categoryName = categoryNameOf(artwork, categories);
   const photos = getArtworkPhotos(artwork);
+  const showChannels = !isExhibitionPhoto(artwork, categories);
+  const contacts = showChannels
+    ? await loadOrBuildFallback(getContactsData, { socialLinks: {} } as ContactsData).catch(() => null)
+    : null;
+  const channels = contacts
+    ? buildContactChannels({
+        title: displayTitle,
+        url: artworkPageUrl(artwork),
+        socialLinks: contacts.socialLinks,
+        phone: contacts.phone,
+      })
+    : [];
 
   // Other for-sale works from the same category, excluding this one and
   // exhibition photos (S2-AS6/S2-AS7): an artwork alone in its category
@@ -134,7 +150,7 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
 
       {/* pt-24 clears the fixed site header, which otherwise covers the top of
           the painting on this page. */}
-      <div className="mx-auto max-w-7xl px-4 pt-24 pb-16">
+      <div className="mx-auto max-w-7xl px-4 pt-24 pb-24 md:pb-16">
         <nav aria-label="breadcrumbs" className="mb-6 flex flex-wrap items-center gap-2 text-sm text-gray-500">
           <Link href="/" className="transition-colors hover:text-primary-600">Главная</Link>
           <span aria-hidden="true">/</span>
@@ -149,11 +165,13 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
             title={displayTitle}
           />
 
-          <ArtworkInfoCard artwork={artwork} categoryName={categoryName} categories={categories} />
+          <ArtworkInfoCard artwork={artwork} categoryName={categoryName} categories={categories} channels={channels} />
         </div>
 
-        <RelatedWorks works={relatedWorks} />
+        <RelatedWorks works={relatedWorks} categoryId={categoryIdOf(artwork)} />
       </div>
+
+      {showChannels && <MobileContactBar channels={channels} artwork={displayTitle} />}
     </div>
   );
 };

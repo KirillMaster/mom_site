@@ -1,0 +1,116 @@
+import { buildContactChannels, buildPrefilledMessage } from './contactChannels';
+
+const URL_ = 'https://angelamoiseenko.ru/gallery/utro-1';
+const base = {
+  title: 'Утро в Коктебеле',
+  url: URL_,
+  socialLinks: { telegram: 'https://t.me/angela', whatsapp: 'https://wa.me/79785458650', max: 'https://max.ru/+79785458650' },
+  phone: '+7 (978) 545-86-50',
+};
+
+describe('@US2-AS1 prefilled message', () => {
+  it('contains greeting, quoted title and page url', () => {
+    expect(buildPrefilledMessage('Утро в Коктебеле', URL_)).toBe(
+      `Здравствуйте! Интересует картина «Утро в Коктебеле» ${URL_}`
+    );
+  });
+  it('telegram channel carries the prefilled text', () => {
+    const tg = buildContactChannels(base).find((c) => c.channel === 'telegram');
+    expect(tg?.href).toBe('https://t.me/angela');
+    expect(tg?.prefilledText).toContain('Утро в Коктебеле');
+    expect(tg?.prefilledText).toContain(URL_);
+  });
+});
+
+describe('@US2-AS4 url encoding in messenger links', () => {
+  it('whatsapp link is url-encoded and decodes back to the message', () => {
+    const wa = buildContactChannels({ ...base, title: 'Утро "в" Коктебеле' }).find((c) => c.channel === 'whatsapp')!;
+    expect(wa.href.startsWith('https://wa.me/79785458650?text=')).toBe(true);
+    const text = decodeURIComponent(wa.href.split('?text=')[1]);
+    expect(text).toContain('Утро "в" Коктебеле');
+    expect(text).toContain(URL_);
+    expect(wa.href).not.toMatch(/[ «»]/);
+  });
+  it('builds whatsapp from phone when socialLinks has none', () => {
+    const wa = buildContactChannels({ ...base, socialLinks: {} }).find((c) => c.channel === 'whatsapp');
+    expect(wa?.href.startsWith('https://wa.me/79785458650?text=')).toBe(true);
+  });
+  it('phone channel is a tel: link', () => {
+    expect(buildContactChannels(base).find((c) => c.channel === 'phone')?.href).toBe('tel:+79785458650');
+  });
+  it('@US2-EC4 whatsapp url-encodes guillemets and special chars in title', () => {
+    const wa = buildContactChannels({ ...base, title: '«Утро "в" Коктебеле»' }).find((c) => c.channel === 'whatsapp')!;
+    const encoded = wa.href.split('?text=')[1];
+    expect(encoded).not.toContain('«');
+    expect(encoded).not.toContain('»');
+    expect(encoded).not.toContain('"');
+    const decoded = decodeURIComponent(encoded);
+    expect(decoded).toContain('«');
+    expect(decoded).toContain('»');
+    expect(decoded).toContain('"');
+  });
+});
+
+describe('@US2-AS6 channels without contact are omitted', () => {
+  it('no telegram when not configured, order preserved, no empty href', () => {
+    const channels = buildContactChannels({ ...base, socialLinks: { whatsapp: base.socialLinks.whatsapp } });
+    expect(channels.map((c) => c.channel)).toEqual(['whatsapp', 'max', 'phone']);
+    expect(channels.every((c) => c.href)).toBe(true);
+  });
+  it('returns nothing when phone is unusable and no links', () => {
+    expect(buildContactChannels({ title: 'A', url: URL_, socialLinks: {}, phone: '123' })).toEqual([]);
+  });
+  it('@US2-EC5 preserves order: telegram, whatsapp, max, phone even with partial channels', () => {
+    const channels = buildContactChannels({ title: 'A', url: URL_, socialLinks: { max: 'https://max.ru/+79785458650' }, phone: '+7 (978) 545-86-50' });
+    // Order is telegram (no), whatsapp (fallback from phone), max (yes), phone (yes)
+    expect(channels.map((c) => c.channel)).toEqual(['whatsapp', 'max', 'phone']);
+  });
+  it('@US2-EC6 handles null socialLinks gracefully', () => {
+    const channels = buildContactChannels({ title: 'A', url: URL_, socialLinks: null, phone: '+7 (978) 545-86-50' });
+    expect(channels.length).toBeGreaterThan(0);
+    expect(channels.map((c) => c.channel)).toContain('phone');
+  });
+  it('@US2-EC7 whatsapp builds from phone when socialLinks is empty', () => {
+    const channels = buildContactChannels({ title: 'A', url: URL_, socialLinks: {}, phone: '+7 (978) 545-86-50' });
+    expect(channels.map((c) => c.channel)).toContain('whatsapp');
+    expect(channels.map((c) => c.channel)).toContain('phone');
+  });
+});
+
+describe('@US2-EC8 phone number format handling', () => {
+  it.each([
+    ['+7 (978) 545-86-50', 'tel:+79785458650'],
+    ['+79785458650', 'tel:+79785458650'],
+    ['8 978 545 86 50', 'tel:89785458650'],
+    ['+7-978-545-86-50', 'tel:+79785458650'],
+  ])('extracts digits correctly from %s', (phone, expectedHref) => {
+    const channels = buildContactChannels({ title: 'A', url: URL_, socialLinks: {}, phone });
+    const phoneChannel = channels.find((c) => c.channel === 'phone');
+    expect(phoneChannel?.href).toBe(expectedHref);
+  });
+  it('@US2-EC9 ignores whatsapp explicit link with query params', () => {
+    const channels = buildContactChannels({
+      title: 'A',
+      url: URL_,
+      socialLinks: { whatsapp: 'https://wa.me/79785458650?text=preset' },
+      phone: '+7 (978) 545-86-50',
+    });
+    const wa = channels.find((c) => c.channel === 'whatsapp');
+    expect(wa?.href).toContain('https://wa.me/79785458650');
+    expect(wa?.href).toContain('?text=');
+  });
+  it('@US2-EC10 rejects phone with insufficient digits even with +7', () => {
+    const channels = buildContactChannels({ title: 'A', url: URL_, socialLinks: {}, phone: '+7 123' });
+    expect(channels.map((c) => c.channel)).not.toContain('phone');
+  });
+  it('@US2-EC11 rejects whatsapp if explicit has less than 10 digits', () => {
+    const channels = buildContactChannels({
+      title: 'A',
+      url: URL_,
+      socialLinks: { whatsapp: 'https://wa.me/123' },
+      phone: '+7 (978) 545-86-50',
+    });
+    const wa = channels.find((c) => c.channel === 'whatsapp');
+    expect(wa?.href).toBe('https://wa.me/79785458650?text=' + encodeURIComponent(`Здравствуйте! Интересует картина «A» ${URL_}`));
+  });
+});

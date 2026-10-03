@@ -77,3 +77,12 @@ describe('@S4-AS13 AggregateRating не выводится при нуле оп�
     expect(payloads.find((payload) => payload['@type'] === 'AggregateRating')).toBeUndefined();
   });
 });
+
+describe('@US7-AS2 описание /reviews в родительном падеже', () => {
+  it('содержит «художника-импрессиониста Анжелы Моисеенко»', async () => {
+    const metadata = await generateMetadata();
+
+    expect(String(metadata.description)).toContain('художника-импрессиониста Анжелы Моисеенко');
+    expect(String(metadata.openGraph?.description)).toContain('художника-импрессиониста Анжелы Моисеенко');
+  });
+});

@@ -1,258 +1,50 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Filter, Eye, ArrowRight } from 'lucide-react';
-import Lightbox from 'yet-another-react-lightbox';
-import Zoom from 'yet-another-react-lightbox/plugins/zoom';
-import 'yet-another-react-lightbox/styles.css';
-import { getImageUrl } from '@/hooks/useApi';
 import { GalleryData } from '@/lib/api';
-import { reachGoal, Goals } from '@/lib/analytics';
-import { artworksForSale, isExhibitionPhoto } from '@/lib/gallery';
-import { buildArtworkSlug } from '@/lib/artworkSlug';
-import { ARTWORK_STATUS_LABELS, resolveStatus } from '@/lib/artworkStatus';
+import { artworksForSale } from '@/lib/gallery';
+import { useGalleryPaging } from '@/lib/useGalleryPaging';
+import GalleryGrid from './GalleryGrid';
+import GalleryHeader from './GalleryHeader';
+import GalleryFilters from './GalleryFilters';
+
+// ?category=<id> preselects a category (the "Смотреть все" link of RelatedWorks).
+const categoryFromUrl = (): number | null => {
+  const raw = new URLSearchParams(window.location.search).get('category');
+  const id = raw ? Number(raw) : NaN;
+  return Number.isInteger(id) && id > 0 ? id : null;
+};
 
 const GalleryClientPage = ({ galleryData }: { galleryData: GalleryData }) => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [lightbox, setLightbox] = useState<{ isOpen: boolean; photoIndex: number }>({
-    isOpen: false,
-    photoIndex: 0
-  });
-  const [filteredArtworks, setFilteredArtworks] = useState<any[]>(galleryData.artworks || []);
+
+  useEffect(() => {
+    setSelectedCategory(categoryFromUrl());
+  }, []);
 
   const artworksToDisplay = selectedCategory
     ? galleryData.artworks.filter(artwork => artwork.categoryId === selectedCategory)
     : artworksForSale(galleryData);
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('ru-RU', {
-      style: 'currency',
-      currency: 'RUB',
-      minimumFractionDigits: 0
-    }).format(price);
-  };
-
-  // Prices are negotiated, so a painting usually has none. Saying so on the
-  // card adds nothing — the ask-price button below already says what to do.
-  const getPriceDisplay = (artwork: any) => {
-    if (!artwork.isForSale) return null;
-    if (artwork.price && typeof artwork.price === 'number' && artwork.price > 0) {
-      return formatPrice(artwork.price);
-    }
-    return null;
-  };
-
-  const getAskPriceHref = (artwork: any) => {
-    return `/contacts?artwork=${encodeURIComponent(artwork.title)}&id=${artwork.id}`;
-  };
-
-  // Each card links straight to its own artwork page (S2-AS1) — the lightbox
-  // eye button remains for a quick in-place preview, so its click must not
-  // also trigger this anchor's navigation.
-  const getArtworkHref = (artwork: any) => `/gallery/${buildArtworkSlug(artwork.title, artwork.id)}`;
-
-  const handleOpenLightbox = (event: React.MouseEvent, index: number) => {
-    event.preventDefault();
-    event.stopPropagation();
-    openLightbox(index);
-  };
-
-  const handleAskPriceClick = (artwork: any) => {
-    reachGoal(Goals.ContactClick, { channel: 'ask_price', artwork: artwork.title });
-  };
-
-  const openLightbox = (index: number) => {
-    setLightbox({ isOpen: true, photoIndex: index });
-    const artwork = artworksToDisplay[index];
-    reachGoal(Goals.ArtworkView, { id: artwork?.id, title: artwork?.title });
-  };
+  const { visible, remaining, showMore } = useGalleryPaging(artworksToDisplay, selectedCategory);
 
   return (
     <div className="min-h-screen">
-      
-      {/* Header */}
-      <section className="pt-24 pb-16 gradient-bg">
-        <div className="max-w-7xl mx-auto px-4">
-          <div
-            className="rise-in text-center"
-          >
-            <h1 className="text-5xl md:text-6xl font-serif font-bold mb-6 text-gradient">
-              {galleryData.bannerTitle || "Галерея работ"}
-            </h1>
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-              {galleryData.bannerDescription || "Исследуйте коллекцию уникальных работ в стиле импрессионизма. Каждая картина создана с любовью и передает особую атмосферу."}
-            </p>
-          </div>
-        </div>
-      </section>
+      <GalleryHeader title={galleryData.bannerTitle} description={galleryData.bannerDescription} />
 
-      {/* Filters */}
-      <section className="py-8 bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center space-x-2">
-              <Filter className="w-5 h-5 text-gray-600" />
-              <span className="font-medium text-gray-700">Фильтр:</span>
-            </div>
-            
-            <button
-              onClick={() => setSelectedCategory(null)}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                selectedCategory === null
-                  ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Все работы
-            </button>
-            
-            {galleryData.categories && Array.isArray(galleryData.categories) && galleryData.categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                  selectedCategory === category.id
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {category.name}
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Gallery Grid */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4">
-          <div
-            key={selectedCategory || 'all'}
-            className="animate-fade-in grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-            >
-              {artworksToDisplay.map((artwork, index) => (
-                <div
-                  key={artwork.id}
-                  className="rise-in card group"
-                >
-                  {/* A square frame with the whole painting inside it: a fixed
-                      height cropped tall canvases down to a letterbox strip and
-                      the work itself was barely visible in the card. */}
-                  <a href={getArtworkHref(artwork)} aria-label={artwork.title} className="block">
-                    <div className="relative overflow-hidden aspect-square bg-neutral-100">
-                      <img
-                        src={getImageUrl(artwork.thumbnailPath)}
-                        alt={artwork.title}
-                        className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
-                      />
-
-                      {artwork.images?.length > 1 && (
-                        <span
-                          data-testid="photo-count-badge"
-                          className="absolute bottom-2 left-2 rounded-full bg-black/60 px-2.5 py-1 text-xs font-medium text-white"
-                        >
-                          📷 {artwork.images.length}
-                        </span>
-                      )}
-
-                      {/* Overlay */}
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <button
-                          onClick={(event) => handleOpenLightbox(event, index)}
-                          className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors duration-200"
-                        >
-                          <Eye className="w-5 h-5" />
-                        </button>
-                      </div>
-
-                      {/* Touch devices never hover, so the overlay above stays
-                          invisible there and the eye is unreachable; this corner
-                          button is the same action, always visible below md. */}
-                      <button
-                        onClick={(event) => handleOpenLightbox(event, index)}
-                        aria-label={`Открыть «${artwork.title}» в полном размере`}
-                        className="md:hidden absolute top-2 right-2 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center text-white"
-                      >
-                        <Eye className="w-5 h-5" />
-                      </button>
-                    </div>
-                  </a>
-
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-primary-600 font-medium">
-                        {artwork.category?.name || 'Без категории'}
-                      </span>
-                      {artwork.isForSale && !isExhibitionPhoto(artwork, galleryData.categories) && (
-                        <span className="text-lg font-bold text-gray-900">
-                          {getPriceDisplay(artwork)}
-                        </span>
-                      )}
-                    </div>
-                    
-                    <h3 className="text-xl font-serif font-semibold mb-2 text-gray-900">
-                      {artwork.title}
-                    </h3>
-                    {!isExhibitionPhoto(artwork, galleryData.categories) && resolveStatus(artwork) !== 'Available' && (
-                      <span data-testid="status-badge" className="mb-2 inline-block rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-700">
-                        {ARTWORK_STATUS_LABELS[resolveStatus(artwork)]}
-                      </span>
-                    )}
-                    
-                    {/* The card carries the title only; the description lives on
-                        the work's own page, so the "подробнее" link is what sends
-                        both visitors and crawlers to the indexable slug URL. */}
-                    <div className="mt-4 flex flex-wrap gap-3">
-                      <a
-                        href={getArtworkHref(artwork)}
-                        className="inline-flex items-center gap-1 rounded-lg border border-primary-600 px-4 py-2 font-medium text-primary-700 transition-colors duration-200 hover:bg-primary-50"
-                      >
-                        Перейти к описанию
-                        <ArrowRight className="w-4 h-4" />
-                      </a>
-
-                      {artwork.isForSale && !isExhibitionPhoto(artwork, galleryData.categories) && (
-                        <a
-                          href={getAskPriceHref(artwork)}
-                          onClick={() => handleAskPriceClick(artwork)}
-                          data-ym-tracked="ask-price"
-                          className="inline-block px-4 py-2 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-700 transition-colors duration-200"
-                        >
-                          Узнать цену
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          
-          {artworksToDisplay.length === 0 && (
-            <div
-              className="rise-in text-center py-16"
-            >
-              <p className="text-xl text-gray-500">
-                В выбранной категории пока нет работ
-              </p>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Lightbox */}
-      <Lightbox
-        open={lightbox.isOpen}
-        close={() => setLightbox({ isOpen: false, photoIndex: 0 })}
-        index={lightbox.photoIndex}
-        plugins={[Zoom]}
-        zoom={{ maxZoomPixelRatio: 3, doubleTapDelay: 300 }}
-        slides={artworksToDisplay.map(artwork => ({
-          src: getImageUrl(artwork.imagePath),
-          title: artwork.title,
-          description: artwork.description
-        }))}
+      <GalleryFilters
+        categories={galleryData.categories}
+        selected={selectedCategory}
+        onSelect={setSelectedCategory}
       />
 
+      <GalleryGrid
+        artworks={visible}
+        categories={galleryData.categories}
+        remaining={remaining}
+        total={artworksToDisplay.length}
+        categoryKey={selectedCategory}
+        onShowMore={showMore}
+      />
     </div>
   );
 };
