@@ -117,6 +117,11 @@ export async function getReviewsData(): Promise<ReviewDto[]> {
   return response.data?.$values || response.data || [];
 }
 
+export async function getHowToBuy(): Promise<string | null> {
+  const response = await api.get('/public/how-to-buy');
+  return response.data?.text ?? null;
+}
+
 export const submitReview = async (payload: CreateReviewPayload) => {
   const response = await api.post('/public/reviews', payload);
   return response.data;
