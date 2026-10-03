@@ -1,4 +1,4 @@
-import { SITE_PHONE } from '@/components/PhoneLink';
+import { SITE_PHONE } from '@/lib/site';
 
 // MAX profiles are addressed by phone number, so the account link can always be
 // derived from the site phone. The admin panel can still override it with an

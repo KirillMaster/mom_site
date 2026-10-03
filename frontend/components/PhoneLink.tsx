@@ -3,7 +3,9 @@
 import { Phone } from 'lucide-react';
 import { reachGoal, Goals } from '@/lib/analytics';
 
-export const SITE_PHONE = '+7 (978) 545-86-50';
+import { SITE_PHONE } from '@/lib/site';
+
+export { SITE_PHONE };
 
 type PhoneLinkProps = {
   place: string;

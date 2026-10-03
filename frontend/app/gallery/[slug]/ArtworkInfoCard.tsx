@@ -1,19 +1,13 @@
 import Link from 'next/link';
 import { isExhibitionPhoto } from '@/lib/gallery';
 import { normalizeTitle, quotedTitle } from '@/lib/normalizeTitle';
+import { formatPrice } from '@/lib/price';
 import { resolveStatus } from '@/lib/artworkStatus';
 import type { ArtworkDto, GalleryData } from '@/lib/api';
 import AskPriceButton from './AskPriceButton';
 import ArtworkSpecs from './ArtworkSpecs';
 import ContactChannels from './ContactChannels';
 import type { ContactChannel } from '@/lib/contactChannels';
-
-const formatPrice = (price: number) =>
-  new Intl.NumberFormat('ru-RU', {
-    style: 'currency',
-    currency: 'RUB',
-    minimumFractionDigits: 0,
-  }).format(price);
 
 interface Props {
   artwork: ArtworkDto;

@@ -1,4 +1,4 @@
-import { SITE_PHONE } from '@/components/PhoneLink';
+import { SITE_PHONE } from '@/lib/site';
 import { maxProfileUrl } from '@/lib/social';
 import type { SocialLinks } from '@/lib/api';
 
