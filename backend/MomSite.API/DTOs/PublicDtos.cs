@@ -120,4 +120,6 @@ namespace MomSite.API.DTOs
         public int? ArtworkId { get; set; }
         public string? PhotoPath { get; set; }
     }
+
+    public record PrivacyDto(string? Text, DateTime? UpdatedAt);
 }

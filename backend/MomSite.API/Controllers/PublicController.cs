@@ -174,6 +174,19 @@ public class PublicController : ControllerBase
         });
     }
 
+    [HttpGet("privacy")]
+    public async Task<ActionResult<PrivacyDto>> GetPrivacy()
+    {
+        var body = await _context.PageContents
+            .Where(pc => pc.PageKey == "privacy" && pc.ContentKey == "body" && pc.IsActive)
+            .FirstOrDefaultAsync();
+
+        if (body == null || string.IsNullOrWhiteSpace(body.TextContent))
+            return Ok(new PrivacyDto(null, null));
+
+        return Ok(new PrivacyDto(body.TextContent, body.UpdatedAt));
+    }
+
     [HttpGet("about")] // Явный маршрут для страницы "Обо мне"
     public async Task<ActionResult<AboutData>> GetAboutData()
     {
