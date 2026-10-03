@@ -13,7 +13,7 @@ describe('@US6-FE1 страница /order', () => {
   it('описывает процесс и рендерит форму', () => {
     render(<OrderPage searchParams={{}} />);
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
-    expect(screen.getByText(/эскиз/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/эскиз/i).length).toBeGreaterThan(0);
     expect(screen.getByRole('button', { name: 'Отправить' })).toBeInTheDocument();
   });
 

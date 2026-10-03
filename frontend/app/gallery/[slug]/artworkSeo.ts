@@ -26,6 +26,7 @@ interface ArtworkSchema {
 
 export const SITE_URL = 'https://angelamoiseenko.ru';
 export const ARTIST_NAME = 'Анжела Моисеенко';
+const ARTIST_NAME_GENITIVE = 'Анжелы Моисеенко';
 
 export const artworkPageUrl = (artwork: Pick<ArtworkDto, 'id' | 'title'>) => `${SITE_URL}/gallery/${buildArtworkSlug(artwork.title, artwork.id)}`;
 
@@ -37,7 +38,7 @@ export const buildSeoTitle = (artwork: Pick<ArtworkDto, 'title'>) => `Купит
 export const buildSeoDescription = (artwork: Pick<SeoArtwork, 'title' | 'description' | 'shortDescription'>) => {
   const lead = artwork.shortDescription || artwork.description;
   const details = lead ? `${lead}. ` : '';
-  const text = `«${normalizeTitle(artwork.title)}» — ${details}Купить картину художника ${ARTIST_NAME} с доставкой.`;
+  const text = `«${normalizeTitle(artwork.title)}» — ${details}Купить картину ${ARTIST_NAME_GENITIVE}, художника из Севастополя, с доставкой.`;
   return text.length > 160 ? `${text.slice(0, 157)}...` : text;
 };
 

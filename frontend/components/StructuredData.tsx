@@ -1,6 +1,13 @@
 import { HomeData } from '@/lib/api';
 import { normalizeTitle } from '@/lib/normalizeTitle';
 
+const SEVASTOPOL_ADDRESS = {
+  "@type": "PostalAddress",
+  "addressLocality": "Севастополь",
+  "addressRegion": "Крым",
+  "addressCountry": "RU"
+};
+
 interface StructuredDataProps {
   homeData: HomeData;
 }
@@ -25,13 +32,14 @@ export default function StructuredData({ homeData }: StructuredDataProps) {
       "@type": "Organization",
       "name": "Анжела Моисеенко - Художник"
     },
+    "homeLocation": { "@type": "Place", "address": SEVASTOPOL_ADDRESS },
     "knowsAbout": ["Импрессионизм", "Живопись", "Театральные работы", "Натюрморты", "Искусство"],
     "hasOccupation": {
       "@type": "Occupation",
       "name": "Художник-импрессионист",
       "occupationLocation": {
-        "@type": "Place",
-        "name": "Россия"
+        "@type": "City",
+        "name": "Севастополь"
       }
     }
   };
@@ -61,11 +69,8 @@ export default function StructuredData({ homeData }: StructuredDataProps) {
       "email": homeData.contacts?.email,
       "telephone": homeData.contacts?.phone
     },
-    "address": homeData.contacts?.address ? {
-      "@type": "PostalAddress",
-      "addressLocality": "Россия",
-      "addressCountry": "RU"
-    } : undefined,
+    "address": SEVASTOPOL_ADDRESS,
+    "areaServed": "Россия",
     "sameAs": [
       homeData.contacts?.socialLinks?.instagram && `https://instagram.com/${homeData.contacts.socialLinks.instagram}`,
       homeData.contacts?.socialLinks?.vk && `https://vk.com/${homeData.contacts.socialLinks.vk}`,
