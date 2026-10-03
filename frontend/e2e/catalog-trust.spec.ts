@@ -59,7 +59,7 @@ test.describe('@US1-E2E1 сквозная проверка 011 на 390 px', () 
     let found = false;
     for (const href of links.slice(0, 12)) {
       await open(page, href);
-      if (await page.locator('[data-testid="scale-diagram"], svg[aria-label*="масштаб" i]').count()) {
+      if (await page.getByTestId('scale-diagram').count()) {
         found = true;
         break;
       }
