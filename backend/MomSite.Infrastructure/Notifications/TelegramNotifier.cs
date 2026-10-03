@@ -16,7 +16,12 @@ namespace MomSite.Infrastructure.Notifications;
 /// </summary>
 public class TelegramNotifier : IFeedbackNotifier
 {
-    private static readonly TimeSpan SendTimeout = TimeSpan.FromSeconds(10);
+    // Telegram is reachable from the VPS only intermittently (some connects
+    // hang), so each chat gets several short attempts instead of one long one.
+    public const int MaxAttempts = 4;
+    private static readonly TimeSpan AttemptTimeout = TimeSpan.FromSeconds(6);
+
+    public TimeSpan RetryDelay { get; init; } = TimeSpan.FromSeconds(1);
 
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<TelegramNotifier> _logger;
@@ -37,54 +42,58 @@ public class TelegramNotifier : IFeedbackNotifier
 
     public async Task NotifyAsync(ContactMessage message, CancellationToken cancellationToken = default)
     {
-        using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        cts.CancelAfter(SendTimeout);
-
-        var text = BuildText(message);
-
-        var client = _httpClientFactory.CreateClient(nameof(TelegramNotifier));
-        var token = BotToken;
-
-        foreach (var chatId in ChatIds)
-        {
-            var url = $"https://api.telegram.org/bot{token}/sendMessage";
-            var response = await client.PostAsJsonAsync(url, new { chat_id = chatId, text }, cts.Token);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                var body = await response.Content.ReadAsStringAsync(cts.Token);
-                throw new InvalidOperationException(
-                    $"Telegram sendMessage to chat {chatId} failed with {(int)response.StatusCode}: {body}");
-            }
-        }
-
+        await SendToAllChatsAsync(BuildText(message), cancellationToken);
         _logger.LogInformation("Contact message notification sent to Telegram chats {ChatIds}", string.Join(",", ChatIds));
     }
 
     public async Task NotifyAsync(Review review, CancellationToken cancellationToken = default)
     {
-        using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        cts.CancelAfter(SendTimeout);
-
-        var text = BuildReviewText(review);
-
-        var client = _httpClientFactory.CreateClient(nameof(TelegramNotifier));
-        var token = BotToken;
-
-        foreach (var chatId in ChatIds)
-        {
-            var url = $"https://api.telegram.org/bot{token}/sendMessage";
-            var response = await client.PostAsJsonAsync(url, new { chat_id = chatId, text }, cts.Token);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                var body = await response.Content.ReadAsStringAsync(cts.Token);
-                throw new InvalidOperationException(
-                    $"Telegram sendMessage to chat {chatId} failed with {(int)response.StatusCode}: {body}");
-            }
-        }
-
+        await SendToAllChatsAsync(BuildReviewText(review), cancellationToken);
         _logger.LogInformation("New review notification sent to Telegram chats {ChatIds}", string.Join(",", ChatIds));
+    }
+
+    private async Task SendToAllChatsAsync(string text, CancellationToken cancellationToken)
+    {
+        var client = _httpClientFactory.CreateClient(nameof(TelegramNotifier));
+        var url = $"https://api.telegram.org/bot{BotToken}/sendMessage";
+
+        await Task.WhenAll(ChatIds.Select(chatId =>
+            SendWithRetryAsync(client, url, new { chat_id = chatId, text }, chatId, cancellationToken)));
+    }
+
+    private async Task SendWithRetryAsync(HttpClient client, string url, object payload, string chatId, CancellationToken cancellationToken)
+    {
+        for (var attempt = 1; ; attempt++)
+        {
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            cts.CancelAfter(AttemptTimeout);
+
+            try
+            {
+                using var response = await client.PostAsJsonAsync(url, payload, cts.Token);
+                if (response.IsSuccessStatusCode)
+                {
+                    return;
+                }
+
+                var status = (int)response.StatusCode;
+                if ((status < 500 && status != 429) || attempt >= MaxAttempts)
+                {
+                    var body = await response.Content.ReadAsStringAsync(cancellationToken);
+                    throw new InvalidOperationException(
+                        $"Telegram sendMessage to chat {chatId} failed with {status}: {body}");
+                }
+            }
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException
+                                       && !cancellationToken.IsCancellationRequested
+                                       && attempt < MaxAttempts)
+            {
+                _logger.LogWarning("Telegram sendMessage to chat {ChatId} attempt {Attempt} failed: {Error}",
+                    chatId, attempt, ex.GetType().Name);
+            }
+
+            await Task.Delay(RetryDelay, cancellationToken);
+        }
     }
 
     /// <summary>
