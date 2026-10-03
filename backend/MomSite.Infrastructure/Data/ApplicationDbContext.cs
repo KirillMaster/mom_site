@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MomSite.Core.Models;
@@ -166,8 +167,8 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.FileName).IsRequired().HasMaxLength(300);
             entity.Property(e => e.FileSha256).IsRequired().HasMaxLength(64);
             entity.Property(e => e.Summary).HasConversion(JsonConverter<ImportSummary>()).HasColumnType("jsonb");
-            entity.Property(e => e.Snapshot).HasConversion(JsonConverter<List<SnapshotEntry>>()).HasColumnType("jsonb");
-            entity.Property(e => e.CreatedIds).HasConversion(JsonConverter<List<int>>()).HasColumnType("jsonb");
+            entity.Property(e => e.Snapshot).HasConversion(JsonConverter<List<SnapshotEntry>>(), JsonComparer<List<SnapshotEntry>>()).HasColumnType("jsonb");
+            entity.Property(e => e.CreatedIds).HasConversion(JsonConverter<List<int>>(), JsonComparer<List<int>>()).HasColumnType("jsonb");
             entity.HasIndex(e => e.CreatedAt);
         });
     }
@@ -175,6 +176,11 @@ public class ApplicationDbContext : DbContext
     private static ValueConverter<T, string> JsonConverter<T>() => new(
         v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
         v => JsonSerializer.Deserialize<T>(v, (JsonSerializerOptions?)null) !);
+
+    private static ValueComparer<T> JsonComparer<T>() => new(
+        (a, b) => JsonSerializer.Serialize(a, (JsonSerializerOptions?)null) == JsonSerializer.Serialize(b, (JsonSerializerOptions?)null),
+        v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null).GetHashCode(),
+        v => JsonSerializer.Deserialize<T>(JsonSerializer.Serialize(v, (JsonSerializerOptions?)null), (JsonSerializerOptions?)null) !);
 
     private static void ConfigureBlog(ModelBuilder modelBuilder)
     {

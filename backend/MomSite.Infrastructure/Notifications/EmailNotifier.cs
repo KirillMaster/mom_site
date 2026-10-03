@@ -70,7 +70,7 @@ public class EmailNotifier : IFeedbackNotifier
         await smtp.SendAsync(email, cts.Token);
         await smtp.DisconnectAsync(true, cts.Token);
 
-        _logger.LogInformation("Contact message notification emailed to {To} from {FromEmail}", toAddr, message.Email ?? message.Phone);
+        _logger.LogInformation("Contact message notification emailed to {To} from {FromEmail}", toAddr, message.Email ?? message.Phone ?? (message.TelegramUsername is { } tg ? "@" + tg : message.TelegramUserId is { } id ? $"tg:{id}" : "(контакт не указан)"));
     }
 
     public static (string Html, string Text) BuildBodies(ContactMessage message)
