@@ -22,7 +22,7 @@ export default function CategoryTabs({ categories, activeSlug }: CategoryTabsPro
             href={tab.href}
             aria-current={active ? 'page' : undefined}
             className={`inline-flex min-h-[44px] items-center rounded-full px-4 text-sm font-medium ${
-              active ? 'bg-primary-600 text-white' : 'bg-white text-gray-700 ring-1 ring-black/10 hover:bg-gray-100'
+              active ? 'bg-sea text-white' : 'bg-paper-50 text-ink-600 border border-line hover:bg-paper-200'
             }`}
           >
             {tab.name}
