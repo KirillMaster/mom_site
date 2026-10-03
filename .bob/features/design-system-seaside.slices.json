@@ -1,0 +1,33 @@
+{
+  "feature": "design-system-seaside",
+  "slices": [
+    {
+      "id": "S1",
+      "title": "Токены палитры, шрифты, globals, lib/price + lib/site, UI-примитивы",
+      "depends_on": [],
+      "tasks": ["T001", "T002", "T003", "T004"],
+      "scenario_refs": ["US1-FE1", "US1-FE2", "US2-AS1", "US2-EC1", "US2-AS2", "US4-EC4", "US3-FE1", "US3-FE2", "US3-FE3", "US4-FE1", "US4-FE2", "US4-FE3"]
+    },
+    {
+      "id": "S2",
+      "title": "Музейная этикетка и галерея/страница работы",
+      "depends_on": ["S1"],
+      "tasks": ["T005", "T007"],
+      "scenario_refs": ["US3-AS1", "US3-AS2", "US3-AS3", "US3-AS4", "US3-EC2", "US3-EC3", "US3-FE4", "US3-FE5", "US1-AS3", "US4-FE7"]
+    },
+    {
+      "id": "S3",
+      "title": "Шапка, мобильное меню, футер, панель контактов и страница контактов",
+      "depends_on": ["S1"],
+      "tasks": ["T006", "T010"],
+      "scenario_refs": ["US5-AS1", "US5-AS2", "US5-FE1", "US5-FE2", "US4-AS1", "US4-FE4", "US4-FE5", "US4-FE6"]
+    },
+    {
+      "id": "S4",
+      "title": "Главная, о художнице, видео, отзывы, блог, гард запрещённых цветов и e2e",
+      "depends_on": ["S2", "S3"],
+      "tasks": ["T008", "T009", "T011", "T012", "T013"],
+      "scenario_refs": ["US1-AS1", "US1-AS2", "US1-FE4", "US1-FE5", "US2-E2E1", "US2-E2E2", "US4-AS2", "US4-AS3", "US1-FE6", "US1-FE7", "US1-EC5"]
+    }
+  ]
+}
