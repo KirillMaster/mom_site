@@ -87,3 +87,26 @@ export const filtersToQuery = (filters: CatalogueFilters): string => {
   const query = params.toString();
   return query ? `?${query}` : '';
 };
+
+// The gallery hands the whole catalogue to the client for instant filtering, so
+// every byte per artwork is paid ~430 times in the page. Only what a card, its
+// museum label and the filters read crosses over; images keep just their count.
+export const slimGalleryData = (galleryData: GalleryData): GalleryData => ({
+  ...galleryData,
+  artworks: (galleryData.artworks || []).map((artwork) => ({
+    id: artwork.id,
+    title: artwork.title,
+    thumbnailPath: artwork.thumbnailPath,
+    price: artwork.price,
+    isForSale: artwork.isForSale,
+    status: artwork.status,
+    widthCm: artwork.widthCm,
+    heightCm: artwork.heightCm,
+    year: artwork.year,
+    support: artwork.support,
+    technique: artwork.technique,
+    categoryId: artwork.categoryId,
+    ...(artwork.category && { category: { id: artwork.category.id, name: artwork.category.name } }),
+    images: (artwork.images || []).map(({ id, sortOrder }) => ({ id, sortOrder })),
+  })) as unknown as GalleryData['artworks'],
+});
